@@ -3,7 +3,7 @@ package itacademy.pawalert.domain;
 public class SeenStatusAlert implements StatusAlert {
     @Override
     public void open(Alert alert) {
-        System.out.println("Thea alert is already opened");
+        System.out.println("The alert is already opened");
     }
 
     @Override

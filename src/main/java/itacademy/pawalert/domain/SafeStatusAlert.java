@@ -3,12 +3,12 @@ package itacademy.pawalert.domain;
 public class SafeStatusAlert implements StatusAlert {
     @Override
     public void open(Alert alert) {
-        System.out.println("Thea alert is already opened");
+        System.out.println("The alert is already opened");
     }
 
     @Override
     public void seen(Alert alert) {
-        System.out.println("Thea alert is safe");
+        System.out.println("The alert is safe");
     }
 
     @Override
@@ -18,7 +18,7 @@ public class SafeStatusAlert implements StatusAlert {
 
     @Override
     public void safe(Alert alert) {
-        System.out.println("Thea alert is safe");
+        System.out.println("The alert is safe");
     }
 
     @Override

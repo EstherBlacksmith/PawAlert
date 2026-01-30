@@ -6,26 +6,48 @@ import java.util.UUID;
 public class Alert {
 
     private UUID id;
-    private Tittle tittle;
-    private Description description;
+    private final Tittle tittle;
+    private final Description description;
     private StatusAlert statusAlert;
     private ClosureReason closureReason;
-    private final List<AlertEvent> history;
+    private  List<AlertEvent> history;
 
-    public Alert(Tittle tittle, Description description, StatusAlert statusAlert, List<AlertEvent> history) {
+    public Alert(Tittle tittle, Description description) {
         this.tittle = tittle;
         this.description = description;
-        this.statusAlert = statusAlert;
-        this.history = history;
+        this.statusAlert = new OpenedStateAlert();
+
     }
 
     public AlertEvent getPreviousState() {
         return history.getLast();
     }
-    public void previousState(){}
-    public void nextState(){}
-    public void currentState(){}
+
+    public AlertEvent getNextState(){
+        return history.getLast();
+    }
+
+    public StatusAlert currentState(){
+        return statusAlert;
+    }
 
     public void setStatus(StatusAlert statusAlert) {
+        this.statusAlert = statusAlert;
+    }
+
+    public void open() {
+        statusAlert.open(this);
+    }
+
+    public void seen() {
+        statusAlert.seen(this);
+    }
+
+    public void safe() {
+        statusAlert.safe(this);
+    }
+
+    public void closed() {
+        statusAlert.closed(this);
     }
 }
