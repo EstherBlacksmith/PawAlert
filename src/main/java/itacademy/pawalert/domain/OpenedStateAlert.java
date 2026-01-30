@@ -1,9 +1,11 @@
 package itacademy.pawalert.domain;
 
+import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
+
 public class OpenedStateAlert implements StatusAlert {
     @Override
     public void open(Alert alert) {
-        System.out.println("Thea alert is already opened");
+      throw new InvalidAlertStatusChange("The alert is already open");
     }
 
     @Override
