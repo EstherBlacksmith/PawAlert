@@ -1,6 +1,8 @@
 package itacademy.pawalert.infrastructure.exception;
 
+import itacademy.pawalert.application.AlertNotFoundException;
 import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
+import itacademy.pawalert.infrastructure.rest.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,22 +13,28 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidAlertStatusChange.class)
-    public ResponseEntity<Map<String, String>> handleInvalidAlertStatusChange(
+    public ResponseEntity<ErrorResponse> handleInvalidAlertStatusChange(
             InvalidAlertStatusChange ex) {
         return ResponseEntity.badRequest()
-                .body(Map.of("error", ex.getMessage()));
+                .body(new  ErrorResponse(400, "Bad Request", ex.getMessage()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
             IllegalArgumentException ex) {
         return ResponseEntity.badRequest()
-                .body(Map.of("error", ex.getMessage()));
-    }
+                .body(new ErrorResponse(400, "Bad Request", ex.getMessage()));    }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occurred"));
+                .body(new ErrorResponse(500, "Internal Server Error", "An unexpected error occurred"));    }
+
+    @ExceptionHandler(AlertNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleAlertNotFoundException(
+            AlertNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(404, "Not Found", ex.getMessage()));
     }
+
 }
