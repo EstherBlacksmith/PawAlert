@@ -35,7 +35,7 @@ public class AlertController {
     @PatchMapping("/{id}/status")
     public Alert changeStatus(@PathVariable String id,
                               @RequestBody StatusChangeRequest request) {
-        // Pasa el userId que hace el cambio
+        // Pass the userId making the change
         return alertService.changeStatus(
                 id,
                 request.getNewStatus(),
