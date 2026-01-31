@@ -9,4 +9,7 @@ public class AlertDTO {
     private String tittle;
     private String description;
 
+    public String getUserId() {
+        return "userID_pruebas";
+    }
 }

@@ -1,7 +1,12 @@
 package itacademy.pawalert.domain;
 
-public class ClosedStatusAlert implements StatusAlert {
+import lombok.Getter;
+import lombok.Setter;
 
+public class ClosedStatusAlert implements StatusAlert {
+    @Getter
+    @Setter
+    ClosureReason closureReason;
 
     @Override
     public void open(Alert alert) {
