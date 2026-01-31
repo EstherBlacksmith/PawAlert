@@ -1,6 +1,7 @@
 package itacademy.pawalert.infrastructure.rest;
 
 import itacademy.pawalert.application.service.AlertService;
+import itacademy.pawalert.domain.Alert;
 import itacademy.pawalert.infrastructure.persistence.AlertEntity;
 import itacademy.pawalert.infrastructure.rest.dto.AlertDTO;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,16 @@ public class AlertController {
     }
 
     @PostMapping
-    public ResponseEntity<AlertEntity> createAlert(@RequestBody AlertDTO dto) {
-        return
+    public Alert createAlert(@RequestBody AlertDTO alertDTO) {
+        return alertService.createOpenedAlert(alertDTO.getPetId(),
+                alertDTO.getTittle(),
+                alertDTO.getDescription()
+        );
+
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AlertEntity> getAlert(@PathVariable Long id) {
-        AlertEntity alert = alertService.findById(id);  // Lanza 404 si no existe
-        return ResponseEntity.ok(alert);
+    public Alert getAlert(@PathVariable String id) {
+        return alertService.findById(id);
     }
 }
