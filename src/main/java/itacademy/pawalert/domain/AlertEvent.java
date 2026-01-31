@@ -1,10 +1,6 @@
 package itacademy.pawalert.domain;
 
-import io.micrometer.observation.annotation.ObservationKeyValue;
 import lombok.Getter;
-
-import java.net.ProtocolFamily;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -44,7 +40,7 @@ public class AlertEvent {
     }
 
     public static AlertEvent create(StatusNames previous, StatusNames statusNames, UserId userId) {
-        return null;
+        return new AlertEvent(previous,statusNames,ChangedAt.now(),userId);
     }
 
     @Override

@@ -1,9 +1,6 @@
 package itacademy.pawalert.infrastructure.persistence;
 
-import itacademy.pawalert.domain.Alert;
-import itacademy.pawalert.domain.Description;
-import itacademy.pawalert.domain.StatusNames;
-import itacademy.pawalert.domain.Tittle;
+import itacademy.pawalert.domain.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -11,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static itacademy.pawalert.domain.AlertEvent.create;
 
 @Getter
 @Entity
@@ -43,6 +42,7 @@ public class AlertEntity {
         this.createdAt = LocalDateTime.now();
     }
 
+    // Constructor with StatusNames
     public AlertEntity(String id, String petId, String title, String description, StatusNames statusNames) {
         this.id = id;
         this.petId = petId;
@@ -54,12 +54,23 @@ public class AlertEntity {
 
     public Alert toDomain() {
         return new Alert(
+                UUID.fromString(this.id),
                 UUID.fromString(this.petId),
                 new Tittle(this.title),
-                new Description(this.description)
+                new Description(this.description),
+                mapToStatusAlert(StatusNames.valueOf(this.status))
         );
     }
 
+    // This implementation allows to change the status in toDomain method without creating setters
+    private StatusAlert mapToStatusAlert(StatusNames status) {
+        return switch (status) {
+            case OPENED -> new OpenedStateAlert();
+            case SEEN -> new SeenStatusAlert();
+            case SAFE -> new SafeStatusAlert();
+            case CLOSED -> new ClosedStatusAlert();
+        };
+    }
 
 
 }
