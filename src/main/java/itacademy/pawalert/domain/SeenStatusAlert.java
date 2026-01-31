@@ -22,7 +22,7 @@ public class SeenStatusAlert implements StatusAlert {
     }
 
     @Override
-    public StatusNames getStateName() {
+    public StatusNames getStatusName() {
         return StatusNames.SEEN;
     }
 }

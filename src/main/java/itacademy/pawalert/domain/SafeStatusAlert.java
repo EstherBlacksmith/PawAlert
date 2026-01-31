@@ -22,7 +22,7 @@ public class SafeStatusAlert implements StatusAlert {
     }
 
     @Override
-    public StatusNames getStateName() {
+    public StatusNames getStatusName() {
         return StatusNames.SAFE;
     }
 }

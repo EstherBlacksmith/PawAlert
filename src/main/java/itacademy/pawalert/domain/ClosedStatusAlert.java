@@ -24,7 +24,7 @@ public class ClosedStatusAlert implements StatusAlert {
     }
 
     @Override
-    public StatusNames getStateName() {
+    public StatusNames getStatusName() {
         return StatusNames.CLOSED;
     }
 }
