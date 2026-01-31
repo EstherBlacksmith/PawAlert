@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -16,11 +18,18 @@ import java.util.UUID;
 public class AlertEntity {
     @Id
     private String id;
+    @Column(name = "pet_id")
     private String petId;
+
     private String title;
     private String description;
     private String status;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL)
+    private List<AlertEventEntity> history = new ArrayList<>();
 
     // Empty constructor required by JPA/Hibernate
     public AlertEntity() {}

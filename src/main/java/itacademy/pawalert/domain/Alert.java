@@ -14,8 +14,6 @@ public class Alert {
     private final Tittle tittle;
     private final Description description;
     private StatusAlert statusAlert;
-    private ClosureReason closureReason;
-    private List<AlertEvent> history;
 
     public Alert(UUID petId, Tittle tittle, Description description) {
         this.id = UUID.randomUUID();
@@ -44,14 +42,7 @@ public class Alert {
         );
     }
 
- /* public AlertEvent getPreviousState() {
-        return history.getLast();
-    }
-
-    public AlertEvent getNextState(){
-        return history.getLast();
-    }
-*/  public StatusAlert currentStatus(){
+  public StatusAlert currentStatus(){
         return statusAlert;
     }
 

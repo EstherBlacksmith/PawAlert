@@ -4,6 +4,7 @@ import itacademy.pawalert.application.service.AlertService;
 import itacademy.pawalert.domain.Alert;
 import itacademy.pawalert.infrastructure.persistence.AlertEntity;
 import itacademy.pawalert.infrastructure.rest.dto.AlertDTO;
+import itacademy.pawalert.infrastructure.rest.dto.StatusChangeRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,8 @@ public class AlertController {
     public Alert createAlert(@RequestBody AlertDTO alertDTO) {
         return alertService.createOpenedAlert(alertDTO.getPetId(),
                 alertDTO.getTittle(),
-                alertDTO.getDescription()
+                alertDTO.getDescription(),
+                alertDTO.getUserId()
         );
 
     }
@@ -28,5 +30,16 @@ public class AlertController {
     @GetMapping("/{id}")
     public Alert getAlert(@PathVariable String id) {
         return alertService.findById(id);
+    }
+
+    @PatchMapping("/{id}/status")
+    public Alert changeStatus(@PathVariable String id,
+                              @RequestBody StatusChangeRequest request) {
+        // Pasa el userId que hace el cambio
+        return alertService.changeStatus(
+                id,
+                request.getNewStatus(),
+                request.getUserId()
+        );
     }
 }
