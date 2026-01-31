@@ -44,13 +44,13 @@ class AlertServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Inicializar IDs
+        // Initialize IDs
         alertId = "12345678-1234-1234-1234-123456789abc";
         userId = "user-1";
         petId = UUID.randomUUID();
 
-        // USANDO EL FACTORY METHOD para crear entidades
-        // El factory asegura que las transiciones de estado sean válidas
+        // USING THE FACTORY METHOD to create entities
+        // The factory ensures valid state transitions
         Alert openedAlert = TestAlertFactory.createOpenedAlert(
             UUID.fromString(alertId), petId);
         openedEntity = openedAlert.toEntity();
@@ -67,7 +67,7 @@ class AlertServiceTest {
             UUID.fromString(alertId), petId);
         closedEntity = closedAlert.toEntity();
 
-        // Configurar mocks compartidos
+        // Configure shared mocks
         lenient().when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         lenient().when(eventRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
     }
