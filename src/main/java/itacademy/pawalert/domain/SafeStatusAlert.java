@@ -1,14 +1,16 @@
 package itacademy.pawalert.domain;
 
+import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
+
 public class SafeStatusAlert implements StatusAlert {
     @Override
     public void open(Alert alert) {
-        System.out.println("The alert is already opened");
+        throw InvalidAlertStatusChange.invalidTransition("SAFE", "OPENED");
     }
 
     @Override
     public void seen(Alert alert) {
-        System.out.println("The alert is safe");
+        throw InvalidAlertStatusChange.invalidTransition("SAFE", "SEEN");
     }
 
     @Override
@@ -18,7 +20,7 @@ public class SafeStatusAlert implements StatusAlert {
 
     @Override
     public void safe(Alert alert) {
-        System.out.println("The alert is safe");
+        throw InvalidAlertStatusChange.invalidTransition("SAFE", "SAFE");
     }
 
     @Override

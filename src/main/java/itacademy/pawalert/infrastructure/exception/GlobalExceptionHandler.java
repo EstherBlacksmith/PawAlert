@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(500, "Internal Server Error", "An unexpected error occurred"));    }
+                .body(new ErrorResponse(500, "Internal Server Error",  ex.getMessage()));    }
 
     @ExceptionHandler(AlertNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleAlertNotFoundException(
