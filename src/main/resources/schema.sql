@@ -1,0 +1,9 @@
+
+CREATE TABLE IF NOT EXISTS alerts (
+    id VARCHAR(255) PRIMARY KEY AUTO_INCREMENT,
+    pet_id VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    status VARCHAR(50) NOT NULL,
+    created_at DATETIME NOT NULL
+    );
