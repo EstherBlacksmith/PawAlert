@@ -3,11 +3,10 @@ package itacademy.pawalert.domain;
 import itacademy.pawalert.infrastructure.persistence.AlertEntity;
 import lombok.Getter;
 
-import java.util.List;
 import java.util.UUID;
 
 public class Alert {
-
+    @Getter
     private final UUID id;
     @Getter
     private final UUID petId;
@@ -30,6 +29,14 @@ public class Alert {
         this.tittle = tittle;
         this.description = description;
         this.statusAlert = new OpenedStateAlert();
+    }
+
+    public Alert(UUID id, UUID petId, Tittle tittle, Description description, StatusAlert status) {
+        this.id = id;
+        this.petId = petId;
+        this.tittle = tittle;
+        this.description = description;
+        this.statusAlert = status;
     }
 
     public AlertEntity toEntity() {
@@ -66,4 +73,4 @@ public class Alert {
         statusAlert.closed(this);
     }
 
-   }
+}
