@@ -1,5 +1,6 @@
 package itacademy.pawalert.domain;
 
+import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,22 +11,22 @@ public class ClosedStatusAlert implements StatusAlert {
 
     @Override
     public void open(Alert alert) {
-        System.out.println("The alert is already closed");
+        throw InvalidAlertStatusChange.alreadyClosed(alert.getId().toString());
     }
 
     @Override
     public void seen(Alert alert) {
-        System.out.println("Thea alert is already closed");
+        throw InvalidAlertStatusChange.alreadyClosed(alert.getId().toString());
     }
 
     @Override
     public void closed(Alert alert) {
-        System.out.println("Thea alert is already closed");
+        throw InvalidAlertStatusChange.alreadyClosed(alert.getId().toString());
     }
 
     @Override
     public void safe(Alert alert) {
-        System.out.println("Thea alert is already closed");
+        throw InvalidAlertStatusChange.alreadyClosed(alert.getId().toString());
     }
 
     @Override

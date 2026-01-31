@@ -25,8 +25,7 @@ public class PawAlertApplication {
         alert.seen();
         alert.seen();
         alert.closed();
-        alert.open();
-        alert.closed();
+
     }
 
 }
