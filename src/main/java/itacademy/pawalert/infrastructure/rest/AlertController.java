@@ -32,7 +32,7 @@ public class AlertController {
         return alertService.findById(id);
     }
 
-    @PatchMapping("/{id}/status")
+   /* @PatchMapping("/{id}/status")
     public Alert changeStatus(@PathVariable String id,
                               @RequestBody StatusChangeRequest request) {
         // Pass the userId making the change
@@ -41,5 +41,5 @@ public class AlertController {
                 request.getNewStatus(),
                 request.getUserId()
         );
-    }
+    }*/
 }

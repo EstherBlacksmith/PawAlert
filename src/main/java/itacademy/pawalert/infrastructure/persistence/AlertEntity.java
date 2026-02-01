@@ -19,7 +19,8 @@ public class AlertEntity {
     private String id;
     @Column(name = "pet_id")
     private String petId;
-
+    @Column(name = "user_id")
+    private String userId;
     private String title;
     private String description;
     private String status;
@@ -33,9 +34,10 @@ public class AlertEntity {
     // Empty constructor required by JPA/Hibernate
     public AlertEntity() {}
 
-    public AlertEntity(String id, String petId, String title, String description, String status) {
+    public AlertEntity(String id, String petId, String userId, String title, String description, String status) {
         this.id = id;
         this.petId = petId;
+        this.userId = userId;
         this.title = title;
         this.description = description;
         this.status = status;
@@ -43,9 +45,10 @@ public class AlertEntity {
     }
 
     // Constructor with StatusNames
-    public AlertEntity(String id, String petId, String title, String description, StatusNames statusNames) {
+    public AlertEntity(String id, String petId, String userId, String title, String description, StatusNames statusNames) {
         this.id = id;
         this.petId = petId;
+        this.userId = userId;
         this.title = title;
         this.description = description;
         this.status = statusNames.toString();
@@ -56,6 +59,7 @@ public class AlertEntity {
         return new Alert(
                 UUID.fromString(this.id),
                 UUID.fromString(this.petId),
+                new UserId(this.userId),
                 new Tittle(this.title),
                 new Description(this.description),
                 mapToStatusAlert(StatusNames.valueOf(this.status))

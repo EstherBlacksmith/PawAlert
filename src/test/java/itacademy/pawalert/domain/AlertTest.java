@@ -1,5 +1,6 @@
 package itacademy.pawalert.domain;
 
+import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -9,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.UUID;
 
+import static itacademy.pawalert.domain.UserId.fromUUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -23,9 +25,10 @@ class AlertTest {
     @BeforeEach
     void setUp() {
         UUID petId = UUID.randomUUID();
+        UserId userId = fromUUID(UUID.randomUUID());
         tittle = new Tittle("Test Alert");
         description = new Description("Test Description");
-        alert = new Alert(petId,tittle, description);
+        alert = new Alert(petId,userId,tittle, description);
     }
 
     @Nested
@@ -201,7 +204,9 @@ class AlertTest {
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // When: Try to open (should not work from SAFE)
-            alert.currentStatus().open(alert);
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().open(alert);
+            });
 
             // Then: Should remain in SAFE state
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
@@ -225,7 +230,11 @@ class AlertTest {
         @DisplayName("Alert in CLOSED state should not transition to SEEN")
         void closedAlertShouldNotGoToSeen() {
             alert.currentStatus().closed(alert);
-            alert.currentStatus().seen(alert);
+
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().open(alert);
+            });
+
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
 
@@ -236,10 +245,9 @@ class AlertTest {
             alert.currentStatus().seen(alert);
             StatusNames initialState = alert.currentStatus().getStatusName();
 
-            // When: Apply multiple invalid transitions
-            alert.currentStatus().open(alert);      // Invalid: SEEN -> OPENED
-            alert.currentStatus().seen(alert);      // Valid: SEEN -> SEEN (idempotent)
-            alert.currentStatus().open(alert);      // Invalid again
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().open(alert);
+            });
 
             // Then: Should remain in SEEN state
             assertEquals(initialState, alert.currentStatus().getStatusName());
@@ -253,16 +261,28 @@ class AlertTest {
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
             // When: Try all possible invalid transitions
-            alert.currentStatus().open(alert);
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().open(alert);
+            });
+
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
-            alert.currentStatus().seen(alert);
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().open(alert);
+            });
+
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
-            alert.currentStatus().safe(alert);
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().open(alert);
+            });
+
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
-            alert.currentStatus().closed(alert);
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().open(alert);
+            });
+
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
     }
@@ -276,6 +296,7 @@ class AlertTest {
         void directOpenedToClosedShouldBeAllowed() {
             // This is a valid transition in your implementation
             alert.currentStatus().closed(alert);
+
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
 
@@ -284,6 +305,7 @@ class AlertTest {
         void directOpenedToSafeShouldBeAllowed() {
             // This is a valid transition in your implementation
             alert.currentStatus().safe(alert);
+
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
         }
 
@@ -296,11 +318,16 @@ class AlertTest {
 
             // Cannot go back from SAFE to SEEN in your current implementation
             alert.currentStatus().safe(alert);
-            alert.currentStatus().seen(alert); // Invalid - should stay in SAFE
+
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().open(alert);
+            });// Invalid - should stay in SAFE
+
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // But can close from any state
             alert.currentStatus().closed(alert);
+
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
     }

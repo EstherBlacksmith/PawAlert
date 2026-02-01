@@ -10,11 +10,14 @@ public class Alert {
     private final UUID id;
     @Getter
     private final UUID petId;
+    @Getter
+    private final UserId userID;
     private final Tittle tittle;
     private final Description description;
     private StatusAlert statusAlert;
 
-    public Alert(UUID petId, Tittle tittle, Description description) {
+    public Alert(UUID petId, UserId userID, Tittle tittle, Description description) {
+        this.userID = userID;
         this.id = UUID.randomUUID();
         this.petId = petId;
         this.tittle = tittle;
@@ -23,17 +26,19 @@ public class Alert {
 
     }
 
-    public Alert(UUID id, UUID petId, Tittle tittle, Description description) {
+    public Alert(UUID id, UUID petId, UserId userID, Tittle tittle, Description description) {
         this.id = id;
         this.petId = petId;
+        this.userID = userID;
         this.tittle = tittle;
         this.description = description;
         this.statusAlert = new OpenedStateAlert();
     }
 
-    public Alert(UUID id, UUID petId, Tittle tittle, Description description, StatusAlert status) {
+    public Alert(UUID id, UUID petId, UserId userID, Tittle tittle, Description description, StatusAlert status) {
         this.id = id;
         this.petId = petId;
+        this.userID = userID;
         this.tittle = tittle;
         this.description = description;
         this.statusAlert = status;
@@ -43,6 +48,7 @@ public class Alert {
         return new AlertEntity(
                 this.id.toString(),
                 this.petId.toString(),
+                this.userID.value(),
                 this.tittle.getValue(),
                 this.description.getValue(),
                 this.statusAlert.getStatusName()

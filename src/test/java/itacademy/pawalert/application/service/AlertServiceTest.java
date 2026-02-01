@@ -35,7 +35,7 @@ class AlertServiceTest {
     // ═══════════════════════════════════════════════════════════════════════
 
     private String alertId;
-    private String userId;
+    private UserId userId;
     private UUID petId;
     private AlertEntity openedEntity;
     private AlertEntity seenEntity;
@@ -45,26 +45,26 @@ class AlertServiceTest {
     @BeforeEach
     void setUp() {
         // Initialize IDs
-        alertId = "12345678-1234-1234-1234-123456789abc";
-        userId = "user-1";
+        alertId = UUID.randomUUID().toString();
+        userId =  UserId.fromUUID(UUID.randomUUID());
         petId = UUID.randomUUID();
 
         // USING THE FACTORY METHOD to create entities
         // The factory ensures valid state transitions
         Alert openedAlert = TestAlertFactory.createOpenedAlert(
-            UUID.fromString(alertId), petId);
+            UUID.fromString(alertId), petId,userId);
         openedEntity = openedAlert.toEntity();
 
         Alert seenAlert = TestAlertFactory.createSeenAlert(
-            UUID.fromString(alertId), petId);
+            UUID.fromString(alertId), petId,userId);
         seenEntity = seenAlert.toEntity();
 
         Alert safeAlert = TestAlertFactory.createSafeAlert(
-            UUID.fromString(alertId), petId);
+            UUID.fromString(alertId), petId,userId);
         safeEntity = safeAlert.toEntity();
 
         Alert closedAlert = TestAlertFactory.createClosedAlert(
-            UUID.fromString(alertId), petId);
+            UUID.fromString(alertId), petId,userId);
         closedEntity = closedAlert.toEntity();
 
         // Configure shared mocks
@@ -91,7 +91,7 @@ class AlertServiceTest {
             when(eventRepository.save(any(AlertEventEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
-            Alert result = alertService.createOpenedAlert(petId.toString(), title, description, userId);
+            Alert result = alertService.createOpenedAlert(petId.toString(), title, description, userId.toString());
 
             // Then
             assertNotNull(result);
@@ -107,7 +107,7 @@ class AlertServiceTest {
             when(eventRepository.save(any(AlertEventEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
-            alertService.createOpenedAlert(petId.toString(), "Title", "Desc", userId);
+            alertService.createOpenedAlert(petId.toString(), "Title", "Desc", userId.toString());
 
             // Then
             verify(alertRepository, times(1)).save(any(AlertEntity.class));
@@ -155,8 +155,7 @@ class AlertServiceTest {
         @Test
         void shouldChangeStatusFromOpenedToSeen() {
             // Given - Create entity WITH the initial event in its history
-            AlertEntity openedEntity = new AlertEntity(alertId, petId.toString(),
-                    "Test", "Test", StatusNames.OPENED);
+            new AlertEntity(alertId, petId.toString(), userId.toString(), "Test", "Test", StatusNames.OPENED);
 
             AlertEventEntity initialEvent = new AlertEventEntity(
                     UUID.randomUUID().toString(),
@@ -171,7 +170,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(openedEntity));
 
             // When
-            Alert result = alertService.changeStatus(alertId, StatusNames.SEEN, userId);
+            Alert result = alertService.changeStatus(alertId, StatusNames.SEEN, userId.toString());
 
             // Then - Expect 2 saves: initial event (already saved) + change event
             verify(eventRepository, times(1)).save(any(AlertEventEntity.class));
@@ -186,7 +185,7 @@ class AlertServiceTest {
 
             // When/Then
             assertThrows(InvalidAlertStatusChange.class,
-                    () -> alertService.changeStatus("non-existent", StatusNames.SEEN, userId));
+                    () -> alertService.changeStatus("non-existent", StatusNames.SEEN, userId.toString()));
         }
 
         @Test
@@ -197,7 +196,7 @@ class AlertServiceTest {
 
             // When/Then
             assertThrows(InvalidAlertStatusChange.class,
-                    () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId));
+                    () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId.toString()));
         }
     }
 
@@ -216,7 +215,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(openedEntity));
 
             // When
-            Alert result = alertService.markAsSeen(alertId, userId);
+            Alert result = alertService.markAsSeen(alertId, userId.toString());
 
             // Then
             assertEquals(StatusNames.SEEN, result.currentStatus().getStatusName());
@@ -229,7 +228,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(seenEntity));
 
             // When
-            Alert result = alertService.markAsSafe(alertId, userId);
+            Alert result = alertService.markAsSafe(alertId, userId.toString());
 
             // Then
             assertEquals(StatusNames.SAFE, result.currentStatus().getStatusName());
@@ -242,7 +241,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(safeEntity));
 
             // When
-            Alert result = alertService.close(alertId, userId);
+            Alert result = alertService.close(alertId, userId.toString());
 
             // Then
             assertEquals(StatusNames.CLOSED, result.currentStatus().getStatusName());
@@ -290,7 +289,7 @@ class AlertServiceTest {
 
         // When/Then
         assertThrows(InvalidAlertStatusChange.class,
-                () -> alertService.changeStatus(nonExistentId, StatusNames.SEEN, userId));
+                () -> alertService.changeStatus(nonExistentId, StatusNames.SEEN, userId.toString()));
     }
 
     @Test
@@ -301,6 +300,6 @@ class AlertServiceTest {
 
         // When/Then
         assertThrows(InvalidAlertStatusChange.class,
-                () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId));
+                () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId.toString()));
     }
 }
