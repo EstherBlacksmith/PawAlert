@@ -2,8 +2,8 @@ package itacademy.pawalert.infrastructure.exception;
 
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
-import itacademy.pawalert.domain.exception.AlertModificationNotAllowedException;
-import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
+import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
+import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
 import itacademy.pawalert.infrastructure.rest.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

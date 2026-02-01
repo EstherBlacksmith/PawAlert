@@ -1,7 +1,8 @@
 package itacademy.pawalert.domain;
 
-import itacademy.pawalert.domain.exception.AlertModificationNotAllowedException;
-import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
+import itacademy.pawalert.domain.alert.model.*;
+import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
+import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.UUID;
 
-import static itacademy.pawalert.domain.UserId.fromUUID;
+import static itacademy.pawalert.domain.alert.model.UserId.fromUUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest

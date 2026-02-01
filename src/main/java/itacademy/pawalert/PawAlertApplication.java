@@ -1,9 +1,9 @@
 package itacademy.pawalert;
 
-import itacademy.pawalert.domain.Alert;
-import itacademy.pawalert.domain.Description;
-import itacademy.pawalert.domain.Title;
-import itacademy.pawalert.domain.UserId;
+import itacademy.pawalert.domain.alert.model.Alert;
+import itacademy.pawalert.domain.alert.model.Description;
+import itacademy.pawalert.domain.alert.model.Title;
+import itacademy.pawalert.domain.alert.model.UserId;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
