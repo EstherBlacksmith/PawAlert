@@ -1,7 +1,7 @@
-package itacademy.pawalert.domain;
+package itacademy.pawalert.domain.alert.model;
 
-import itacademy.pawalert.domain.exception.AlertModificationNotAllowedException;
-import itacademy.pawalert.infrastructure.persistence.AlertEntity;
+import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
+import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 import lombok.Getter;
 
 import java.util.UUID;

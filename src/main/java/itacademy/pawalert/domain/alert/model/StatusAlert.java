@@ -1,4 +1,4 @@
-package itacademy.pawalert.domain;
+package itacademy.pawalert.domain.alert.model;
 
 public interface StatusAlert {
     void open(Alert alert);

@@ -1,11 +1,9 @@
-package itacademy.pawalert.domain;
+package itacademy.pawalert.domain.alert.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-
-import java.util.Objects;
 
 public record Title(@NotBlank(message = "The Title can not be empty")
                      @Min(value = 5, message = "The title must be almost 5 characters")

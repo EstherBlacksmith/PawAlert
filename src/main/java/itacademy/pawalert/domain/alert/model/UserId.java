@@ -1,4 +1,4 @@
-package itacademy.pawalert.domain;
+package itacademy.pawalert.domain.alert.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.validation.constraints.NotBlank;

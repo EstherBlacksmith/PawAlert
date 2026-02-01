@@ -1,6 +1,6 @@
-package itacademy.pawalert.domain;
+package itacademy.pawalert.domain.alert.model;
 
-import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
+import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
 
 public class OpenedStateAlert implements StatusAlert {
     @Override

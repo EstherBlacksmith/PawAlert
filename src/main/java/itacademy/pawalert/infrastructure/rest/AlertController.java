@@ -1,7 +1,7 @@
 package itacademy.pawalert.infrastructure.rest;
 
 import itacademy.pawalert.application.service.AlertService;
-import itacademy.pawalert.domain.Alert;
+import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.infrastructure.rest.dto.AlertDTO;
 import itacademy.pawalert.infrastructure.rest.dto.DescriptionUpdateRequest;
 import itacademy.pawalert.infrastructure.rest.dto.StatusChangeRequest;

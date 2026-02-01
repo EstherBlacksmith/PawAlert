@@ -1,4 +1,4 @@
-package itacademy.pawalert.infrastructure.persistence;
+package itacademy.pawalert.infrastructure.persistence.alert;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

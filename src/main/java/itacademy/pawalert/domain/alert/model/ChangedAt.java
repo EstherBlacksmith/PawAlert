@@ -1,4 +1,4 @@
-package itacademy.pawalert.domain;
+package itacademy.pawalert.domain.alert.model;
 
 import jakarta.validation.constraints.NotNull;
 

@@ -1,7 +1,9 @@
-package itacademy.pawalert.infrastructure.persistence;
+package itacademy.pawalert.infrastructure.persistence.alert;
 
-import itacademy.pawalert.domain.*;
-import java.util.UUID;
+import itacademy.pawalert.domain.alert.model.Alert;
+import itacademy.pawalert.domain.alert.model.ChangedAt;
+import itacademy.pawalert.domain.alert.model.StatusNames;
+import itacademy.pawalert.domain.alert.model.UserId;
 
 public class AlertEventFactory {
 
