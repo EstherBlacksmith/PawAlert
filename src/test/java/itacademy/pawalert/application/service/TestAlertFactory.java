@@ -45,6 +45,8 @@ public final class TestAlertFactory {
         );
     }
 
+
+
     /**
      * Crea un Alert en estado SEEN.
      * Transición: OPENED → SEEN
@@ -109,6 +111,17 @@ public final class TestAlertFactory {
      */
     public static AlertBuilder builder() {
         return new AlertBuilder();
+    }
+
+    public static Alert createModificableAlert(String alertId, String creatorId, String títuloOriginal, String descripción) {
+        return new Alert(
+                UUID.fromString(alertId),
+                UUID.randomUUID(),
+                new UserId(creatorId),
+                new Title(títuloOriginal),
+                new Description(descripción)
+        );
+
     }
 
     /**

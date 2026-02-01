@@ -3,6 +3,9 @@ package itacademy.pawalert.infrastructure.rest;
 import itacademy.pawalert.application.service.AlertService;
 import itacademy.pawalert.domain.Alert;
 import itacademy.pawalert.infrastructure.rest.dto.AlertDTO;
+import itacademy.pawalert.infrastructure.rest.dto.DescriptionUpdateRequest;
+import itacademy.pawalert.infrastructure.rest.dto.StatusChangeRequest;
+import itacademy.pawalert.infrastructure.rest.dto.TitleUpdateRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,7 +32,7 @@ public class AlertController {
         return alertService.findById(id);
     }
 
-   /* @PatchMapping("/{id}/status")
+    @PatchMapping("/{id}/status")
     public Alert changeStatus(@PathVariable String id,
                               @RequestBody StatusChangeRequest request) {
         // Pass the userId making the change
@@ -38,5 +41,26 @@ public class AlertController {
                 request.getNewStatus(),
                 request.getUserId()
         );
-    }*/
+    }
+
+    @PutMapping("/{alertId}/title")
+    public Alert updateTitleDescription(
+            @PathVariable String alertId,
+            @RequestBody TitleUpdateRequest titleUpdateRequest
+    ) {
+        return alertService.updateTitle(alertId,
+                String.valueOf(titleUpdateRequest.userId().value()
+                ), String.valueOf(titleUpdateRequest.title().getValue()));
+    }
+
+    @PutMapping("/{alertId}/description")
+    public Alert updateTitleDescription(
+            @PathVariable String alertId,
+            @RequestBody DescriptionUpdateRequest descriptionUpdateRequest
+    ) {
+        return alertService.updateDescription(alertId,
+                String.valueOf(descriptionUpdateRequest.userId()
+                ), String.valueOf(descriptionUpdateRequest.description()));
+    }
+
 }

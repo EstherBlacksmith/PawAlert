@@ -1,6 +1,7 @@
 package itacademy.pawalert.infrastructure.exception;
 
-import itacademy.pawalert.application.AlertNotFoundException;
+import itacademy.pawalert.application.exception.AlertNotFoundException;
+import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
 import itacademy.pawalert.infrastructure.rest.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -38,4 +39,10 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(404, "Not Found", ex.getMessage()));
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(
+            UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(401, "Unauthorized", ex.getMessage()));
+    }
 }
