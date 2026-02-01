@@ -1,6 +1,6 @@
-package itacademy.pawalert.infrastructure.persistence;
+package itacademy.pawalert.infrastructure.persistence.alert;
 
-import itacademy.pawalert.domain.*;
+import itacademy.pawalert.domain.alert.model.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 

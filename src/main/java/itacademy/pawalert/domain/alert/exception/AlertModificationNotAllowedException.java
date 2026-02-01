@@ -1,4 +1,4 @@
-package itacademy.pawalert.domain.exception;
+package itacademy.pawalert.domain.alert.exception;
 
 public class AlertModificationNotAllowedException extends RuntimeException {
 
