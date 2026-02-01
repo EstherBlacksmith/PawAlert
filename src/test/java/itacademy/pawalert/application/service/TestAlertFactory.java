@@ -1,6 +1,6 @@
 package itacademy.pawalert.application.service;
 
-import itacademy.pawalert.domain.*;
+import itacademy.pawalert.domain.alert.model.*;
 
 import java.util.UUID;
 
