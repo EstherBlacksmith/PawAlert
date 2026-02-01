@@ -11,16 +11,17 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.UUID;
 
 import static itacademy.pawalert.domain.UserId.fromUUID;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @DisplayName("Alert State Machine Tests")
 @ActiveProfiles("test")
 class AlertTest {
 
+    Description description;
     private Alert alert;
     private Tittle tittle;
-    Description description;
 
     @BeforeEach
     void setUp() {
@@ -28,7 +29,7 @@ class AlertTest {
         UserId userId = fromUUID(UUID.randomUUID());
         tittle = new Tittle("Test Alert");
         description = new Description("Test Description");
-        alert = new Alert(petId,userId,tittle, description);
+        alert = new Alert(petId, userId, tittle, description);
     }
 
     @Nested

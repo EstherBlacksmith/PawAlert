@@ -28,7 +28,7 @@ public class AlertService {
 
         Tittle tittle = new Tittle(tittleString);
         Description description = new Description(descriptionString);
-        Alert alert = new Alert( UUID.fromString(petId), new UserId(userId), tittle, description);
+        Alert alert = new Alert(UUID.fromString(petId), new UserId(userId), tittle, description);
         UserId creatorId = new UserId(userId);
 
         //New event
@@ -52,7 +52,7 @@ public class AlertService {
                 .toList();
     }
 
-    public Alert findById(String alertId){
+    public Alert findById(String alertId) {
         return alertRepository.findById(alertId)
                 .map(AlertEntity::toDomain)
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));

@@ -1,6 +1,7 @@
 package itacademy.pawalert.domain;
 
 import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -40,7 +41,7 @@ public class AlertEvent {
     }
 
     public static AlertEvent create(StatusNames previous, StatusNames statusNames, UserId userId) {
-        return new AlertEvent(previous,statusNames,ChangedAt.now(),userId);
+        return new AlertEvent(previous, statusNames, ChangedAt.now(), userId);
     }
 
     @Override

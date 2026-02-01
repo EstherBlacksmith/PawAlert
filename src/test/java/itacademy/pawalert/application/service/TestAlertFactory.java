@@ -1,14 +1,16 @@
 package itacademy.pawalert.application.service;
+
 import itacademy.pawalert.domain.*;
+
 import java.util.UUID;
 
 /**
  * Factory para crear instancias de Alert específicamente para testing.
- *
+ * <p>
  * Este factory proporciona métodos convenientes para crear Alerts con
  * diferentes estados (OPENED, SEEN, SAFE, CLOSED) respetando las
  * transiciones de estado válidas del dominio.
- *
+ * <p>
  * Principios aplicados:
  * - Factory Method: Métodos estáticos para creación
  * - Builder Pattern: API fluida para máxima flexibilidad
@@ -28,11 +30,11 @@ public final class TestAlertFactory {
     /**
      * Crea un Alert en estado OPENED (inicial).
      *
-     * @param id ID del alert
+     * @param id    ID del alert
      * @param petId ID de la mascota
      * @return Alert en estado OPENED
      */
-    public static Alert createOpenedAlert(UUID id, UUID petId,UserId userId) {
+    public static Alert createOpenedAlert(UUID id, UUID petId, UserId userId) {
         // Estado inicial por defecto es OPENED, no necesita transición
         return new Alert(
                 id,
@@ -47,12 +49,12 @@ public final class TestAlertFactory {
      * Crea un Alert en estado SEEN.
      * Transición: OPENED → SEEN
      *
-     * @param id ID del alert
+     * @param id    ID del alert
      * @param petId ID de la mascota
      * @return Alert en estado SEEN
      */
-    public static Alert createSeenAlert(UUID id, UUID petId, UserId userId){
-        Alert alert = createOpenedAlert(id, petId,userId);
+    public static Alert createSeenAlert(UUID id, UUID petId, UserId userId) {
+        Alert alert = createOpenedAlert(id, petId, userId);
         alert.seen();
         return alert;
     }
@@ -61,12 +63,12 @@ public final class TestAlertFactory {
      * Crea un Alert en estado SAFE.
      * Transición: OPENED → SEEN → SAFE
      *
-     * @param id ID del alert
+     * @param id    ID del alert
      * @param petId ID de la mascota
      * @return Alert en estado SAFE
      */
     public static Alert createSafeAlert(UUID id, UUID petId, UserId userId) {
-        Alert alert = createSeenAlert(id, petId,userId);
+        Alert alert = createSeenAlert(id, petId, userId);
         alert.safe();
         return alert;
     }
@@ -75,12 +77,12 @@ public final class TestAlertFactory {
      * Crea un Alert en estado CLOSED.
      * Transición: OPENED → SEEN → SAFE → CLOSED
      *
-     * @param id ID del alert
+     * @param id    ID del alert
      * @param petId ID de la mascota
      * @return Alert en estado CLOSED
      */
     public static Alert createClosedAlert(UUID id, UUID petId, UserId userId) {
-        Alert alert = createSafeAlert(id, petId,userId);
+        Alert alert = createSafeAlert(id, petId, userId);
         alert.closed();
         return alert;
     }
@@ -91,7 +93,7 @@ public final class TestAlertFactory {
 
     /**
      * Inicia la construcción de un Alert personalizado.
-     *
+     * <p>
      * Uso típico:
      * <pre>
      * Alert alert = TestAlertFactory.builder()
@@ -111,7 +113,7 @@ public final class TestAlertFactory {
 
     /**
      * Builder para crear Alerts con configuración personalizada.
-     *
+     * <p>
      * Ejemplo de uso:
      * <pre>
      * Alert alert = TestAlertFactory.builder()
@@ -127,16 +129,18 @@ public final class TestAlertFactory {
 
         private UUID id = UUID.randomUUID();
         private UUID petId = UUID.randomUUID();
-        private UUID userId = UUID.randomUUID();;
+        private final UUID userId = UUID.randomUUID();
         private String title = "Test Alert";
         private String description = "Test Description";
         private StatusNames status = StatusNames.OPENED;
 
         // Constructor package-private
-        AlertBuilder() {}
+        AlertBuilder() {
+        }
 
         /**
          * Define el ID del Alert.
+         *
          * @param id UUID del alert
          * @return this (para encadenamiento)
          */
@@ -147,6 +151,7 @@ public final class TestAlertFactory {
 
         /**
          * Define el ID de la mascota.
+         *
          * @param petId UUID de la mascota
          * @return this (para encadenamiento)
          */
@@ -157,6 +162,7 @@ public final class TestAlertFactory {
 
         /**
          * Define el título del Alert.
+         *
          * @param title Título del alert
          * @return this (para encadenamiento)
          */
@@ -167,6 +173,7 @@ public final class TestAlertFactory {
 
         /**
          * Define la descripción del Alert.
+         *
          * @param description Descripción del alert
          * @return this (para encadenamiento)
          */

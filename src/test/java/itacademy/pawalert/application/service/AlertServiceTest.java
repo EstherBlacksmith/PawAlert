@@ -1,19 +1,32 @@
 package itacademy.pawalert.application.service;
 
 
-import static org.junit.jupiter.api.Assertions.*;
 import itacademy.pawalert.application.AlertNotFoundException;
-import itacademy.pawalert.domain.*;
+import itacademy.pawalert.domain.Alert;
+import itacademy.pawalert.domain.AlertEvent;
+import itacademy.pawalert.domain.StatusNames;
+import itacademy.pawalert.domain.UserId;
 import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
-import itacademy.pawalert.infrastructure.persistence.*;
-import org.junit.jupiter.api.*;
+import itacademy.pawalert.infrastructure.persistence.AlertEntity;
+import itacademy.pawalert.infrastructure.persistence.AlertEventEntity;
+import itacademy.pawalert.infrastructure.persistence.AlertEventRepository;
+import itacademy.pawalert.infrastructure.persistence.AlertRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -46,31 +59,58 @@ class AlertServiceTest {
     void setUp() {
         // Initialize IDs
         alertId = UUID.randomUUID().toString();
-        userId =  UserId.fromUUID(UUID.randomUUID());
+        userId = UserId.fromUUID(UUID.randomUUID());
         petId = UUID.randomUUID();
 
         // USING THE FACTORY METHOD to create entities
         // The factory ensures valid state transitions
         Alert openedAlert = TestAlertFactory.createOpenedAlert(
-            UUID.fromString(alertId), petId,userId);
+                UUID.fromString(alertId), petId, userId);
         openedEntity = openedAlert.toEntity();
 
         Alert seenAlert = TestAlertFactory.createSeenAlert(
-            UUID.fromString(alertId), petId,userId);
+                UUID.fromString(alertId), petId, userId);
         seenEntity = seenAlert.toEntity();
 
         Alert safeAlert = TestAlertFactory.createSafeAlert(
-            UUID.fromString(alertId), petId,userId);
+                UUID.fromString(alertId), petId, userId);
         safeEntity = safeAlert.toEntity();
 
         Alert closedAlert = TestAlertFactory.createClosedAlert(
-            UUID.fromString(alertId), petId,userId);
+                UUID.fromString(alertId), petId, userId);
         closedEntity = closedAlert.toEntity();
 
         // Configure shared mocks
         lenient().when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         lenient().when(eventRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
     }
+
+    @Test
+    @DisplayName("Should throw when changing status of non-existent alert")
+    void shouldThrowWhenAlertNotFound() {
+        // Given
+        String nonExistentId = "non-existent-id";
+        when(alertRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        // When/Then
+        assertThrows(InvalidAlertStatusChange.class,
+                () -> alertService.changeStatus(nonExistentId, StatusNames.SEEN, userId.toString()));
+    }
+
+    @Test
+    @DisplayName("Should throw when changing status of already closed alert")
+    void shouldThrowWhenAlertAlreadyClosed() {
+        // Given
+        when(alertRepository.findById(alertId)).thenReturn(Optional.of(closedEntity));
+
+        // When/Then
+        assertThrows(InvalidAlertStatusChange.class,
+                () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId.toString()));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // changeStatus Tests
+    // ═══════════════════════════════════════════════════════════════════════
 
     // ═══════════════════════════════════════════════════════════════════════
     // findById Tests
@@ -114,6 +154,10 @@ class AlertServiceTest {
         }
     }
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // Convenience Method Tests
+    // ═══════════════════════════════════════════════════════════════════════
+
     @Nested
     @DisplayName("findById Tests")
     class FindByIdTests {
@@ -145,7 +189,7 @@ class AlertServiceTest {
     }
 
     // ═══════════════════════════════════════════════════════════════════════
-    // changeStatus Tests
+    // getAlertHistory Tests
     // ═══════════════════════════════════════════════════════════════════════
 
     @Nested
@@ -200,10 +244,6 @@ class AlertServiceTest {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // Convenience Method Tests
-    // ═══════════════════════════════════════════════════════════════════════
-
     @Nested
     @DisplayName("Convenience Method Tests")
     class ConvenienceMethodTests {
@@ -248,10 +288,6 @@ class AlertServiceTest {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // getAlertHistory Tests
-    // ═══════════════════════════════════════════════════════════════════════
-
     @Nested
     @DisplayName("getAlertHistory Tests")
     class GetAlertHistoryTests {
@@ -262,8 +298,8 @@ class AlertServiceTest {
             // Given
             String testAlertId = "123";
 
-            AlertEventEntity event1 = new AlertEventEntity("event-1",null,"OPENED",java.time.LocalDateTime.now().minusHours(1),"user-1");
-            AlertEventEntity event2 = new AlertEventEntity("event-2","OPENED","SEEN",java.time.LocalDateTime.now(),"user-2");
+            AlertEventEntity event1 = new AlertEventEntity("event-1", null, "OPENED", java.time.LocalDateTime.now().minusHours(1), "user-1");
+            AlertEventEntity event2 = new AlertEventEntity("event-2", "OPENED", "SEEN", java.time.LocalDateTime.now(), "user-2");
 
             when(eventRepository.findByAlertIdOrderByChangedAtDesc(testAlertId))
                     .thenReturn(Arrays.asList(event2, event1));
@@ -278,28 +314,5 @@ class AlertServiceTest {
             assertEquals(StatusNames.OPENED, history.get(1).getNewStatus());
 
         }
-    }
-
-    @Test
-    @DisplayName("Should throw when changing status of non-existent alert")
-    void shouldThrowWhenAlertNotFound() {
-        // Given
-        String nonExistentId = "non-existent-id";
-        when(alertRepository.findById(nonExistentId)).thenReturn(Optional.empty());
-
-        // When/Then
-        assertThrows(InvalidAlertStatusChange.class,
-                () -> alertService.changeStatus(nonExistentId, StatusNames.SEEN, userId.toString()));
-    }
-
-    @Test
-    @DisplayName("Should throw when changing status of already closed alert")
-    void shouldThrowWhenAlertAlreadyClosed() {
-        // Given
-        when(alertRepository.findById(alertId)).thenReturn(Optional.of(closedEntity));
-
-        // When/Then
-        assertThrows(InvalidAlertStatusChange.class,
-                () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId.toString()));
     }
 }

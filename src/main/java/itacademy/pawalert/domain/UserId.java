@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Objects;
 import java.util.UUID;
 
-public record UserId(String value ) {
+public record UserId(String value) {
 
 
     @JsonCreator  // Jackson will use this for deserialization
@@ -16,13 +16,13 @@ public record UserId(String value ) {
         }
     }
 
-    public UUID toUUID() {
-        return UUID.fromString(this.value);
-    }
-
     // Factory method
     public static UserId fromUUID(UUID uuid) {
         return new UserId(uuid.toString());
+    }
+
+    public UUID toUUID() {
+        return UUID.fromString(this.value);
     }
 
 }

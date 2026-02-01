@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static itacademy.pawalert.domain.AlertEvent.create;
-
 @Getter
 @Entity
 @Table(name = "alerts")
@@ -29,10 +27,11 @@ public class AlertEntity {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL)
-    private List<AlertEventEntity> history = new ArrayList<>();
+    private final List<AlertEventEntity> history = new ArrayList<>();
 
     // Empty constructor required by JPA/Hibernate
-    public AlertEntity() {}
+    public AlertEntity() {
+    }
 
     public AlertEntity(String id, String petId, String userId, String title, String description, String status) {
         this.id = id;
