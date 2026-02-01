@@ -40,7 +40,7 @@ public final class TestAlertFactory {
                 id,
                 petId,
                 new UserId(userId.toString()),
-                new Tittle("Test Alert - " + id.toString().substring(0, 8)),
+                new Title("Test Alert - " + id.toString().substring(0, 8)),
                 new Description("Test alert created for testing purposes")
         );
     }
@@ -222,7 +222,7 @@ public final class TestAlertFactory {
                     id,
                     petId,
                     new UserId(userId.toString()),
-                    new Tittle(title),
+                    new Title(title),
                     new Description(description)
             );
 

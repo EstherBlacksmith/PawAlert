@@ -6,7 +6,7 @@ import lombok.Getter;
 public class AlertDTO {
 
     private String petId;
-    private String tittle;
+    private String title;
     private String description;
 
     public String getUserId() {

@@ -21,15 +21,15 @@ class AlertTest {
 
     Description description;
     private Alert alert;
-    private Tittle tittle;
+    private Title title;
 
     @BeforeEach
     void setUp() {
         UUID petId = UUID.randomUUID();
         UserId userId = fromUUID(UUID.randomUUID());
-        tittle = new Tittle("Test Alert");
+        title = new Title("Test Alert");
         description = new Description("Test Description");
-        alert = new Alert(petId, userId, tittle, description);
+        alert = new Alert(petId, userId, title, description);
     }
 
     @Nested
