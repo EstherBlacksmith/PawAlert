@@ -18,4 +18,9 @@ public class InvalidAlertStatusChange extends RuntimeException {
                 "Cannot transition from " + current + " to " + next
         );
     }
+
+    public static InvalidAlertStatusChange already(String alertId) {
+        return new InvalidAlertStatusChange("Alert is already closed: " + alertId);
+    }
+
 }

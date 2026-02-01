@@ -2,6 +2,7 @@ package itacademy.pawalert.infrastructure.exception;
 
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
+import itacademy.pawalert.domain.exception.AlertModificationNotAllowedException;
 import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
 import itacademy.pawalert.infrastructure.rest.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -45,4 +46,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse(401, "Unauthorized", ex.getMessage()));
     }
+
+    @ExceptionHandler(AlertModificationNotAllowedException.class)
+    public ResponseEntity<ErrorResponse> handleAlertModificationNotAllowedException(
+            AlertModificationNotAllowedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(401, "Unauthorized Alert modification", ex.getMessage()));
+    }
+
+
 }
