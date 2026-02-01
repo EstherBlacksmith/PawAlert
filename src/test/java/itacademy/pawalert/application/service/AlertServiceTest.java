@@ -123,7 +123,7 @@ class AlertServiceTest {
         @Test
         @DisplayName("Should create alert with OPENED status and save initial event")
         void shouldCreateAlertWithInitialEvent() {
-            // Given - Usar UUID válido
+            // Given - Use valid UUID
             String title = "Test Alert";
             String description = "Test description";
 
@@ -323,9 +323,9 @@ class AlertServiceTest {
         // Given
         String alertId = UUID.randomUUID().toString();
         String creatorId = "user-123";
-        String newTitle = "Perro encontrado en el parque";
+        String newTitle = "Dog found in the park";
 
-        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Título original", "Descripción");
+        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Original Title", "Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert.toEntity()));
         when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -344,12 +344,12 @@ class AlertServiceTest {
         String creatorId = "user-123";
         String otherUserId = "user-456";
 
-        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Título", "Descripción");
+        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert.toEntity()));
 
         // When/Then
         assertThrows(UnauthorizedException.class,
-                () -> alertService.updateTitle(alertId, otherUserId, "Nuevo título"));
+                () -> alertService.updateTitle(alertId, otherUserId, "New title"));
 
         verify(alertRepository, never()).save(any());
 
@@ -360,9 +360,9 @@ class AlertServiceTest {
         // Given
         String alertId = UUID.randomUUID().toString();
         String creatorId = "user-123";
-        String newDescription = "El perro es de color marrón, tiene collar azul";
+        String newDescription = "The dog is brown, has a blue collar";
 
-        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Título", "Descripción original");
+        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Original Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert.toEntity()));
         when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -371,7 +371,7 @@ class AlertServiceTest {
 
         // Then
         assertEquals(newDescription, result.getDescription().getValue());
-
+        
         verify(alertRepository,times(1)).save(any());
     }
 
@@ -384,7 +384,7 @@ class AlertServiceTest {
 
         // When/Then
         assertThrows(AlertNotFoundException.class,
-                () -> alertService.updateTitle(alertId, userId, "Nuevo título"));
+                () -> alertService.updateTitle(alertId, userId, "New title"));
         verify(alertRepository, never()).save(any());
     }
 }
