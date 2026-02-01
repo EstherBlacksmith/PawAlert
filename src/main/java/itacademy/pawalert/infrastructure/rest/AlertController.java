@@ -59,7 +59,7 @@ public class AlertController {
             @RequestBody DescriptionUpdateRequest descriptionUpdateRequest
     ) {
         return alertService.updateDescription(alertId,
-                String.valueOf(descriptionUpdateRequest.userId()
+                String.valueOf(descriptionUpdateRequest.userId().value()
                 ), String.valueOf(descriptionUpdateRequest.description()));
     }
 

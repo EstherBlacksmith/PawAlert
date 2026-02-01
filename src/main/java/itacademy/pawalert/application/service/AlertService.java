@@ -3,11 +3,7 @@ package itacademy.pawalert.application.service;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.domain.*;
-import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
-import itacademy.pawalert.infrastructure.persistence.AlertEntity;
-import itacademy.pawalert.infrastructure.persistence.AlertEventEntity;
-import itacademy.pawalert.infrastructure.persistence.AlertEventRepository;
-import itacademy.pawalert.infrastructure.persistence.AlertRepository;
+import itacademy.pawalert.infrastructure.persistence.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -32,16 +28,15 @@ public class AlertService {
         Alert alert = new Alert(UUID.fromString(petId), new UserId(userId), title, description);
         UserId creatorId = new UserId(userId);
 
-        //New event
-        AlertEvent initialEvent = AlertEvent.initialEvent(creatorId);
-
         //Persist the object
         AlertEntity entity = alert.toEntity();
         AlertEntity savedAlert = alertRepository.save(entity);
 
-        //Persist the event
-        AlertEventEntity eventEntity = AlertEventEntity.fromDomain(initialEvent, savedAlert);
-        eventRepository.save(eventEntity);
+        AlertEventEntity event = AlertEventFactory.createStatusChangedEvent(
+                alert, StatusNames.OPENED,StatusNames.OPENED,new UserId(userId)
+        );
+
+        eventRepository.save(event);
 
         return savedAlert.toDomain();
     }
@@ -84,18 +79,9 @@ public class AlertService {
     @Transactional
     public Alert changeStatus(String alertId, StatusNames newStatus, String userId) {
 
-        AlertEntity alertEntity = alertRepository.findById(alertId)
-                .orElseThrow(() -> InvalidAlertStatusChange.alertNotFound(alertId));
-
-        Alert alert = alertEntity.toDomain();
-
-        if (alert.currentStatus().getStatusName().equals(StatusNames.CLOSED)) {
-            throw InvalidAlertStatusChange.alreadyClosed(alertId);
-        }
-
+        Alert alert = findById(alertId);
         StatusNames previousStatus = alert.currentStatus().getStatusName();
 
-        // Changing the status in the domain
         switch (newStatus) {
             case SEEN -> alert.seen();
             case SAFE -> alert.safe();
@@ -103,21 +89,14 @@ public class AlertService {
             case OPENED -> alert.open();
         }
 
-        // New event
-        AlertEvent event = AlertEvent.create(
-                previousStatus,
-                newStatus,
-                new UserId(userId)
+        // Use factory
+        AlertEventEntity event = AlertEventFactory.createStatusChangedEvent(
+                alert, previousStatus, newStatus, new UserId(userId)
         );
 
-        // Persist changes
-        AlertEntity updatedAlert = alertRepository.save(alert.toEntity());
+        eventRepository.save(event);
 
-        // Persist event
-        AlertEventEntity eventEntity = AlertEventEntity.fromDomain(event, updatedAlert);
-        eventRepository.save(eventEntity);
-
-        return updatedAlert.toDomain();
+        return alertRepository.save(alert.toEntity()).toDomain();
     }
 
     @Transactional
@@ -128,6 +107,15 @@ public class AlertService {
             throw new UnauthorizedException("Just authorized users can modify this alert");
         }
 
+        String oldTitle = alert.getTitle().getValue();
+        UserId editorId = new UserId(userId);
+
+        AlertEventEntity eventEntity = AlertEventFactory.createTitleChangedEvent(
+                alert, oldTitle, title, editorId
+        );
+
+        eventRepository.save(eventEntity);
+
         alert.updateTitle(new Title(title));
         return alertRepository.save(alert.toEntity()).toDomain();
     }
@@ -135,10 +123,24 @@ public class AlertService {
     @Transactional
     public Alert updateDescription(String alertId,String userId,String  description) {
         Alert alert = findById(alertId);
-
+        System.out.println("DEBUG: alertUserId='" + alert.getUserID().value() + "'");
+        System.out.println("DEBUG: requestUserId='" + userId + "'");
+        System.out.println("DEBUG: charCodes alertUserId=" + alert.getUserID().value().chars().boxed().toList());
+        System.out.println("DEBUG: charCodes requestUserId=" + userId.chars().boxed().toList());
         if (!alert.getUserID().value().equals(userId)) {
-            throw new UnauthorizedException("Just authorized users can modify this alert");
+            throw new UnauthorizedException("Just authorized users can modify this alert" + "---" +
+                    alert.getUserID() +"---"+ userId);
         }
+
+        String oldDescription= alert.getDescription().description();
+        UserId editorId = new UserId(userId);
+
+        AlertEventEntity eventEntity = AlertEventFactory.createDescriptionChangedEvent(
+                alert, oldDescription, description, editorId
+        );
+
+        eventRepository.save(eventEntity);
+
 
         alert.updateDescription( new Description(description));
         return alertRepository.save(alert.toEntity()).toDomain();

@@ -1,5 +1,6 @@
 package itacademy.pawalert.domain;
 
+import itacademy.pawalert.domain.exception.AlertModificationNotAllowedException;
 import itacademy.pawalert.infrastructure.persistence.AlertEntity;
 import lombok.Getter;
 
@@ -81,11 +82,21 @@ public class Alert {
         statusAlert.closed(this);
     }
 
-    public void updateTitle(Title title){
+    public void updateTitle(Title title) {
+        StatusNames currentStatus = statusAlert.getStatusName();
+
+        if(currentStatus!=StatusNames.OPENED){
+            throw AlertModificationNotAllowedException.cannotModifyTitle(id.toString());
+        }
         this.title = title;
     }
 
-    public void updateDescription(Description description){
+    public void updateDescription(Description description) {
+        StatusNames currentStatus = statusAlert.getStatusName();
+
+        if(currentStatus!=StatusNames.OPENED){
+            throw AlertModificationNotAllowedException.cannotModifyDescription(id.toString());
+        }
         this.description = description;
     }
 
