@@ -2,10 +2,7 @@ package itacademy.pawalert.infrastructure.rest;
 
 import itacademy.pawalert.application.service.AlertService;
 import itacademy.pawalert.domain.Alert;
-import itacademy.pawalert.infrastructure.persistence.AlertEntity;
 import itacademy.pawalert.infrastructure.rest.dto.AlertDTO;
-import itacademy.pawalert.infrastructure.rest.dto.StatusChangeRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

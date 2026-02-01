@@ -55,7 +55,7 @@ public class Alert {
         );
     }
 
-  public StatusAlert currentStatus(){
+    public StatusAlert currentStatus() {
         return statusAlert;
     }
 

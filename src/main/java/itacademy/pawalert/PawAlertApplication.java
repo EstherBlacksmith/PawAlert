@@ -2,7 +2,6 @@ package itacademy.pawalert;
 
 import itacademy.pawalert.domain.Alert;
 import itacademy.pawalert.domain.Description;
-
 import itacademy.pawalert.domain.Tittle;
 import itacademy.pawalert.domain.UserId;
 import org.springframework.boot.SpringApplication;
@@ -21,7 +20,7 @@ public class PawAlertApplication {
     public static void main(String[] args) {
         SpringApplication.run(PawAlertApplication.class, args);
         UserId userId = new UserId(UUID.randomUUID().toString());
-        Alert alert = new Alert(UUID.randomUUID(),userId,new Tittle("prueba"),new Description("prueba desc" ));
+        Alert alert = new Alert(UUID.randomUUID(), userId, new Tittle("prueba"), new Description("prueba desc"));
         System.out.println(alert);
         alert.seen();
         alert.seen();

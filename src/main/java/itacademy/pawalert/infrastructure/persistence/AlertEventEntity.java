@@ -1,6 +1,8 @@
 package itacademy.pawalert.infrastructure.persistence;
 
-import itacademy.pawalert.domain.*;
+import itacademy.pawalert.domain.AlertEvent;
+import itacademy.pawalert.domain.StatusNames;
+import itacademy.pawalert.domain.UserId;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -34,7 +36,8 @@ public class AlertEventEntity {
     @JoinColumn(name = "alert_id")
     private AlertEntity alert;
 
-    public AlertEventEntity() {}
+    public AlertEventEntity() {
+    }
 
     public AlertEventEntity(String id, String previousStatus, String newStatus,
                             LocalDateTime changedAt, String changedByUserId) {

@@ -7,7 +7,8 @@ import jakarta.validation.constraints.NotNull;
 public record StatusChangeRequest(
         @NotNull StatusNames newStatus,
         @NotNull UserId userId
-) {}
+) {
+}
 
 
 
