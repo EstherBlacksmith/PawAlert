@@ -1,7 +1,7 @@
 package itacademy.pawalert.infrastructure.rest.dto;
 
-import itacademy.pawalert.domain.StatusNames;
-import itacademy.pawalert.domain.UserId;
+import itacademy.pawalert.domain.alert.model.StatusNames;
+import itacademy.pawalert.domain.alert.model.UserId;
 import jakarta.validation.constraints.NotNull;
 
 public record StatusChangeRequest(
