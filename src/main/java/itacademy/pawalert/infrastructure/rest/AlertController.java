@@ -17,7 +17,7 @@ public class AlertController {
     @PostMapping
     public Alert createAlert(@RequestBody AlertDTO alertDTO) {
         return alertService.createOpenedAlert(alertDTO.getPetId(),
-                alertDTO.getTittle(),
+                alertDTO.getTitle(),
                 alertDTO.getDescription(),
                 alertDTO.getUserId()
         );

@@ -24,11 +24,11 @@ public class AlertService {
     }
 
     @Transactional
-    public Alert createOpenedAlert(String petId, String tittleString, String descriptionString, String userId) {
+    public Alert createOpenedAlert(String petId, String titleString, String descriptionString, String userId) {
 
-        Tittle tittle = new Tittle(tittleString);
+        Title title = new Title(titleString);
         Description description = new Description(descriptionString);
-        Alert alert = new Alert(UUID.fromString(petId), new UserId(userId), tittle, description);
+        Alert alert = new Alert(UUID.fromString(petId), new UserId(userId), title, description);
         UserId creatorId = new UserId(userId);
 
         //New event
@@ -119,5 +119,17 @@ public class AlertService {
         return updatedAlert.toDomain();
     }
 
+    @Transactional
+    public Alert updateTitle(String alertId, String title) {
+        Alert alert = findById(alertId);
+        alert.updateTitle(new Title(title));
+        return alertRepository.save(alert.toEntity()).toDomain();
+    }
+    @Transactional
+    public Alert updateDescription(String alertId,String description) {
+        Alert alert = findById(alertId);
+        alert.updateDescription( new Description(description));
+        return alertRepository.save(alert.toEntity()).toDomain();
+    }
 
 }
