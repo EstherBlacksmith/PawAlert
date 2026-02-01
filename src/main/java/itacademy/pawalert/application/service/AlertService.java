@@ -28,7 +28,7 @@ public class AlertService {
 
         Tittle tittle = new Tittle(tittleString);
         Description description = new Description(descriptionString);
-        Alert alert = new Alert( UUID.fromString(petId), tittle, description);
+        Alert alert = new Alert( UUID.fromString(petId), new UserId(userId), tittle, description);
         UserId creatorId = new UserId(userId);
 
         //New event

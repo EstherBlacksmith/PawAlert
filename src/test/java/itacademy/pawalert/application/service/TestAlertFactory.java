@@ -32,15 +32,15 @@ public final class TestAlertFactory {
      * @param petId ID de la mascota
      * @return Alert en estado OPENED
      */
-    public static Alert createOpenedAlert(UUID id, UUID petId) {
-        Alert alert = new Alert(
+    public static Alert createOpenedAlert(UUID id, UUID petId,UserId userId) {
+        // Estado inicial por defecto es OPENED, no necesita transición
+        return new Alert(
                 id,
                 petId,
+                new UserId(userId.toString()),
                 new Tittle("Test Alert - " + id.toString().substring(0, 8)),
                 new Description("Test alert created for testing purposes")
         );
-        // Estado inicial por defecto es OPENED, no necesita transición
-        return alert;
     }
 
     /**
@@ -51,8 +51,8 @@ public final class TestAlertFactory {
      * @param petId ID de la mascota
      * @return Alert en estado SEEN
      */
-    public static Alert createSeenAlert(UUID id, UUID petId) {
-        Alert alert = createOpenedAlert(id, petId);
+    public static Alert createSeenAlert(UUID id, UUID petId, UserId userId){
+        Alert alert = createOpenedAlert(id, petId,userId);
         alert.seen();
         return alert;
     }
@@ -65,8 +65,8 @@ public final class TestAlertFactory {
      * @param petId ID de la mascota
      * @return Alert en estado SAFE
      */
-    public static Alert createSafeAlert(UUID id, UUID petId) {
-        Alert alert = createSeenAlert(id, petId);
+    public static Alert createSafeAlert(UUID id, UUID petId, UserId userId) {
+        Alert alert = createSeenAlert(id, petId,userId);
         alert.safe();
         return alert;
     }
@@ -79,8 +79,8 @@ public final class TestAlertFactory {
      * @param petId ID de la mascota
      * @return Alert en estado CLOSED
      */
-    public static Alert createClosedAlert(UUID id, UUID petId) {
-        Alert alert = createSafeAlert(id, petId);
+    public static Alert createClosedAlert(UUID id, UUID petId, UserId userId) {
+        Alert alert = createSafeAlert(id, petId,userId);
         alert.closed();
         return alert;
     }
@@ -127,6 +127,7 @@ public final class TestAlertFactory {
 
         private UUID id = UUID.randomUUID();
         private UUID petId = UUID.randomUUID();
+        private UUID userId = UUID.randomUUID();;
         private String title = "Test Alert";
         private String description = "Test Description";
         private StatusNames status = StatusNames.OPENED;
@@ -205,10 +206,15 @@ public final class TestAlertFactory {
                 throw new IllegalStateException("El petId no puede ser null");
             }
 
+            if (userId == null) {
+                throw new IllegalStateException("The userId can't be null");
+            }
+
             // Crear el Alert base
             Alert alert = new Alert(
                     id,
                     petId,
+                    new UserId(userId.toString()),
                     new Tittle(title),
                     new Description(description)
             );
