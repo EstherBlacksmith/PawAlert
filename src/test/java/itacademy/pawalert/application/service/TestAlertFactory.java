@@ -5,37 +5,37 @@ import itacademy.pawalert.domain.*;
 import java.util.UUID;
 
 /**
- * Factory para crear instancias de Alert específicamente para testing.
+ * Factory to create Alert instances specifically for testing.
  * <p>
- * Este factory proporciona métodos convenientes para crear Alerts con
- * diferentes estados (OPENED, SEEN, SAFE, CLOSED) respetando las
- * transiciones de estado válidas del dominio.
+ * This factory provides convenient methods to create Alerts with
+ * different states (OPENED, SEEN, SAFE, CLOSED) respecting the
+ * valid state transitions of the domain.
  * <p>
- * Principios aplicados:
- * - Factory Method: Métodos estáticos para creación
- * - Builder Pattern: API fluida para máxima flexibilidad
- * - DDD: Respeta invariantes y transiciones de estado
+ * Applied principles:
+ * - Factory Method: Static methods for creation
+ * - Builder Pattern: Fluent API for maximum flexibility
+ * - DDD: Respects invariants and state transitions
  */
 public final class TestAlertFactory {
 
-    // Constructor privado para evitar instanciación
+    // Private constructor to prevent instantiation
     private TestAlertFactory() {
-        throw new UnsupportedOperationException("Esta es una clase de utilidad, no instanciable");
+        throw new UnsupportedOperationException("This is a utility class, not instantiable");
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // Métodos de conveniencia - Crean Alerts con estados específicos
+    // Convenience Methods - Create Alerts with specific states
     // ═══════════════════════════════════════════════════════════════════════════
 
     /**
-     * Crea un Alert en estado OPENED (inicial).
+     * Creates an Alert in OPENED state (initial).
      *
-     * @param id    ID del alert
-     * @param petId ID de la mascota
-     * @return Alert en estado OPENED
+     * @param id    ID of the alert
+     * @param petId ID of the pet
+     * @return Alert in OPENED state
      */
     public static Alert createOpenedAlert(UUID id, UUID petId, UserId userId) {
-        // Estado inicial por defecto es OPENED, no necesita transición
+        // Initial state is OPENED by default, no transition needed
         return new Alert(
                 id,
                 petId,
@@ -48,12 +48,12 @@ public final class TestAlertFactory {
 
 
     /**
-     * Crea un Alert en estado SEEN.
-     * Transición: OPENED → SEEN
+     * Creates an Alert in SEEN state.
+     * Transition: OPENED → SEEN
      *
-     * @param id    ID del alert
-     * @param petId ID de la mascota
-     * @return Alert en estado SEEN
+     * @param id    ID of the alert
+     * @param petId ID of the pet
+     * @return Alert in SEEN state
      */
     public static Alert createSeenAlert(UUID id, UUID petId, UserId userId) {
         Alert alert = createOpenedAlert(id, petId, userId);
@@ -62,12 +62,12 @@ public final class TestAlertFactory {
     }
 
     /**
-     * Crea un Alert en estado SAFE.
-     * Transición: OPENED → SEEN → SAFE
+     * Creates an Alert in SAFE state.
+     * Transition: OPENED → SEEN → SAFE
      *
-     * @param id    ID del alert
-     * @param petId ID de la mascota
-     * @return Alert en estado SAFE
+     * @param id    ID of the alert
+     * @param petId ID of the pet
+     * @return Alert in SAFE state
      */
     public static Alert createSafeAlert(UUID id, UUID petId, UserId userId) {
         Alert alert = createSeenAlert(id, petId, userId);
@@ -76,12 +76,12 @@ public final class TestAlertFactory {
     }
 
     /**
-     * Crea un Alert en estado CLOSED.
-     * Transición: OPENED → SEEN → SAFE → CLOSED
+     * Creates an Alert in CLOSED state.
+     * Transition: OPENED → SEEN → SAFE → CLOSED
      *
-     * @param id    ID del alert
-     * @param petId ID de la mascota
-     * @return Alert en estado CLOSED
+     * @param id    ID of the alert
+     * @param petId ID of the pet
+     * @return Alert in CLOSED state
      */
     public static Alert createClosedAlert(UUID id, UUID petId, UserId userId) {
         Alert alert = createSafeAlert(id, petId, userId);
@@ -90,50 +90,50 @@ public final class TestAlertFactory {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // Builder Pattern - Para máxima flexibilidad en tests
+    // Builder Pattern - For maximum flexibility in tests
     // ═══════════════════════════════════════════════════════════════════════════
 
     /**
-     * Inicia la construcción de un Alert personalizado.
+     * Starts building a custom Alert.
      * <p>
-     * Uso típico:
+     * Typical usage:
      * <pre>
      * Alert alert = TestAlertFactory.builder()
      *     .id(UUID.randomUUID())
      *     .petId(petId)
-     *     .title("Mi Alert de Test")
-     *     .description("Descripción personalizada")
+     *     .title("My Test Alert")
+     *     .description("Custom description")
      *     .status(StatusNames.SEEN)
      *     .build();
      * </pre>
      *
-     * @return Builder configurado para crear Alerts
+     * @return Builder configured to create Alerts
      */
     public static AlertBuilder builder() {
         return new AlertBuilder();
     }
 
-    public static Alert createModificableAlert(String alertId, String creatorId, String títuloOriginal, String descripción) {
+    public static Alert createModificableAlert(String alertId, String creatorId, String originalTitle, String description) {
         return new Alert(
                 UUID.fromString(alertId),
                 UUID.randomUUID(),
                 new UserId(creatorId),
-                new Title(títuloOriginal),
-                new Description(descripción)
+                new Title(originalTitle),
+                new Description(description)
         );
 
     }
 
     /**
-     * Builder para crear Alerts con configuración personalizada.
+     * Builder to create Alerts with custom configuration.
      * <p>
-     * Ejemplo de uso:
+     * Usage example:
      * <pre>
      * Alert alert = TestAlertFactory.builder()
      *     .id(alertId)
      *     .petId(petId)
-     *     .title("Alert de prueba")
-     *     .description("Descripción")
+     *     .title("Test Alert")
+     *     .description("Description")
      *     .status(StatusNames.OPENED)
      *     .build();
      * </pre>
@@ -147,15 +147,15 @@ public final class TestAlertFactory {
         private String description = "Test Description";
         private StatusNames status = StatusNames.OPENED;
 
-        // Constructor package-private
+        // Package-private constructor
         AlertBuilder() {
         }
 
         /**
-         * Define el ID del Alert.
+         * Sets the Alert ID.
          *
-         * @param id UUID del alert
-         * @return this (para encadenamiento)
+         * @param id UUID of the alert
+         * @return this (for chaining)
          */
         public AlertBuilder id(UUID id) {
             this.id = id;
@@ -163,10 +163,10 @@ public final class TestAlertFactory {
         }
 
         /**
-         * Define el ID de la mascota.
+         * Sets the pet ID.
          *
-         * @param petId UUID de la mascota
-         * @return this (para encadenamiento)
+         * @param petId UUID of the pet
+         * @return this (for chaining)
          */
         public AlertBuilder petId(UUID petId) {
             this.petId = petId;
@@ -174,10 +174,10 @@ public final class TestAlertFactory {
         }
 
         /**
-         * Define el título del Alert.
+         * Sets the Alert title.
          *
-         * @param title Título del alert
-         * @return this (para encadenamiento)
+         * @param title Title of the alert
+         * @return this (for chaining)
          */
         public AlertBuilder title(String title) {
             this.title = title;
@@ -185,10 +185,10 @@ public final class TestAlertFactory {
         }
 
         /**
-         * Define la descripción del Alert.
+         * Sets the Alert description.
          *
-         * @param description Descripción del alert
-         * @return this (para encadenamiento)
+         * @param description Description of the alert
+         * @return this (for chaining)
          */
         public AlertBuilder description(String description) {
             this.description = description;
@@ -196,15 +196,15 @@ public final class TestAlertFactory {
         }
 
         /**
-         * Define el estado del Alert.
-         * El builder会自动处理 las transiciones necesarias:
-         * - OPENED: sin transiciones
+         * Sets the Alert state.
+         * The builder will automatically handle the necessary transitions:
+         * - OPENED: no transitions
          * - SEEN: OPENED → SEEN
          * - SAFE: OPENED → SEEN → SAFE
          * - CLOSED: OPENED → SEEN → SAFE → CLOSED
          *
-         * @param status Estado deseado del alert
-         * @return this (para encadenamiento)
+         * @param status Desired state of the alert
+         * @return this (for chaining)
          */
         public AlertBuilder status(StatusNames status) {
             this.status = status;
@@ -212,25 +212,25 @@ public final class TestAlertFactory {
         }
 
         /**
-         * Construye y retorna el Alert con la configuración especificada.
+         * Builds and returns the Alert with the specified configuration.
          *
-         * @return Alert listo para usar en tests
-         * @throws IllegalStateException si la configuración es inválida
+         * @return Alert ready to use in tests
+         * @throws IllegalStateException if configuration is invalid
          */
         public Alert build() {
-            // Validación básica
+            // Basic validation
             if (id == null) {
-                throw new IllegalStateException("El ID del alert no puede ser null");
+                throw new IllegalStateException("Alert ID cannot be null");
             }
             if (petId == null) {
-                throw new IllegalStateException("El petId no puede ser null");
+                throw new IllegalStateException("Pet ID cannot be null");
             }
 
             if (userId == null) {
-                throw new IllegalStateException("The userId can't be null");
+                throw new IllegalStateException("User ID cannot be null");
             }
 
-            // Crear el Alert base
+            // Create the base Alert
             Alert alert = new Alert(
                     id,
                     petId,
@@ -239,11 +239,11 @@ public final class TestAlertFactory {
                     new Description(description)
             );
 
-            // Aplicar transiciones de estado necesarias
-            // Esto asegura que siempre sigamos las transiciones válidas del dominio
+            // Apply necessary state transitions
+            // This ensures we always follow valid domain transitions
             switch (status) {
                 case OPENED:
-                    // Estado inicial, no necesita transición
+                    // Initial state, no transition needed
                     break;
                 case SEEN:
                     alert.seen();
@@ -258,7 +258,7 @@ public final class TestAlertFactory {
                     alert.closed();
                     break;
                 default:
-                    throw new IllegalArgumentException("Estado no reconocido: " + status);
+                    throw new IllegalArgumentException("Unrecognized state: " + status);
             }
 
             return alert;

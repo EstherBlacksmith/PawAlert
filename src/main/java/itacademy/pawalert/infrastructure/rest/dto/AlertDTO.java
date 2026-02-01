@@ -10,6 +10,6 @@ public class AlertDTO {
     private String description;
 
     public String getUserId() {
-        return "userID_pruebas";
+        return "userID_test";
     }
 }
