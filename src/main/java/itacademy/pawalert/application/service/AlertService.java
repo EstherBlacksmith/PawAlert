@@ -2,8 +2,8 @@ package itacademy.pawalert.application.service;
 
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
-import itacademy.pawalert.domain.*;
-import itacademy.pawalert.infrastructure.persistence.*;
+import itacademy.pawalert.domain.alert.model.*;
+import itacademy.pawalert.infrastructure.persistence.alert.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
