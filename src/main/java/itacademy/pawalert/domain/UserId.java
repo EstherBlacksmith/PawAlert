@@ -1,19 +1,14 @@
 package itacademy.pawalert.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import jakarta.validation.constraints.NotBlank;
 
-import java.util.Objects;
 import java.util.UUID;
 
-public record UserId(String value) {
-
+public record UserId(@NotBlank(message ="UserId cannot be empty" ) String value) {
 
     @JsonCreator  // Jackson will use this for deserialization
     public UserId {
-        Objects.requireNonNull(value, "UserId cannot be null");
-        if (value.isBlank()) {
-            throw new IllegalArgumentException("UserId cannot be empty");
-        }
     }
 
     // Factory method

@@ -1,7 +1,8 @@
 package itacademy.pawalert.application.service;
 
 
-import itacademy.pawalert.application.AlertNotFoundException;
+import itacademy.pawalert.application.exception.AlertNotFoundException;
+import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.domain.Alert;
 import itacademy.pawalert.domain.AlertEvent;
 import itacademy.pawalert.domain.StatusNames;
@@ -314,5 +315,76 @@ class AlertServiceTest {
             assertEquals(StatusNames.OPENED, history.get(1).getNewStatus());
 
         }
+    }
+
+
+    @Test
+    void updateTitle_WhenCreator_ShouldUpdateTitle() {
+        // Given
+        String alertId = UUID.randomUUID().toString();
+        String creatorId = "user-123";
+        String newTitle = "Perro encontrado en el parque";
+
+        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Título original", "Descripción");
+        when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert.toEntity()));
+        when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        // When
+        Alert result = alertService.updateTitle(alertId, creatorId, newTitle);
+
+        // Then
+        assertEquals(newTitle, result.getTitle().getValue());
+        verify(alertRepository).save(any());
+    }
+
+    @Test
+    void updateTitle_WhenNotCreator_ShouldThrowUnauthorized() {
+        // Given
+        String alertId = UUID.randomUUID().toString();
+        String creatorId = "user-123";
+        String otherUserId = "user-456";
+
+        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Título", "Descripción");
+        when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert.toEntity()));
+
+        // When/Then
+        assertThrows(UnauthorizedException.class,
+                () -> alertService.updateTitle(alertId, otherUserId, "Nuevo título"));
+
+        verify(alertRepository, never()).save(any());
+
+    }
+
+    @Test
+    void updateDescription_WhenCreator_ShouldUpdateDescription() {
+        // Given
+        String alertId = UUID.randomUUID().toString();
+        String creatorId = "user-123";
+        String newDescription = "El perro es de color marrón, tiene collar azul";
+
+        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Título", "Descripción original");
+        when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert.toEntity()));
+        when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        // When
+        Alert result = alertService.updateDescription(alertId, creatorId, newDescription);
+
+        // Then
+        assertEquals(newDescription, result.getDescription().getValue());
+
+        verify(alertRepository,times(1)).save(any());
+    }
+
+    @Test
+    void updateTitle_WhenAlertNotFound_ShouldThrowAlertNotFoundException() {
+        // Given
+        String alertId = "non-existent-id";
+        String userId = "user-123";
+        when(alertRepository.findById(alertId)).thenReturn(Optional.empty());
+
+        // When/Then
+        assertThrows(AlertNotFoundException.class,
+                () -> alertService.updateTitle(alertId, userId, "Nuevo título"));
+        verify(alertRepository, never()).save(any());
     }
 }

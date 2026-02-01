@@ -8,6 +8,13 @@ public record StatusChangeRequest(
         @NotNull StatusNames newStatus,
         @NotNull UserId userId
 ) {
+    public StatusNames getNewStatus() {
+        return newStatus;
+    }
+
+    public String getUserId() {
+        return userId.value();
+    }
 }
 
 

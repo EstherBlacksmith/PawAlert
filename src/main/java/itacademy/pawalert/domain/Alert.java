@@ -12,7 +12,9 @@ public class Alert {
     private final UUID petId;
     @Getter
     private final UserId userID;
+    @Getter
     private Title title;
+    @Getter
     private Description description;
     private StatusAlert statusAlert;
 
@@ -82,6 +84,7 @@ public class Alert {
     public void updateTitle(Title title){
         this.title = title;
     }
+
     public void updateDescription(Description description){
         this.description = description;
     }

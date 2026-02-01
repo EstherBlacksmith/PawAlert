@@ -1,6 +1,7 @@
 package itacademy.pawalert.application.service;
 
-import itacademy.pawalert.application.AlertNotFoundException;
+import itacademy.pawalert.application.exception.AlertNotFoundException;
+import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.domain.*;
 import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
 import itacademy.pawalert.infrastructure.persistence.AlertEntity;
@@ -120,14 +121,25 @@ public class AlertService {
     }
 
     @Transactional
-    public Alert updateTitle(String alertId, String title) {
+    public Alert updateTitle(String alertId,String userId, String title) {
         Alert alert = findById(alertId);
+
+        if (!alert.getUserID().value().equals(userId)) {
+            throw new UnauthorizedException("Just authorized users can modify this alert");
+        }
+
         alert.updateTitle(new Title(title));
         return alertRepository.save(alert.toEntity()).toDomain();
     }
+
     @Transactional
-    public Alert updateDescription(String alertId,String description) {
+    public Alert updateDescription(String alertId,String userId,String  description) {
         Alert alert = findById(alertId);
+
+        if (!alert.getUserID().value().equals(userId)) {
+            throw new UnauthorizedException("Just authorized users can modify this alert");
+        }
+
         alert.updateDescription( new Description(description));
         return alertRepository.save(alert.toEntity()).toDomain();
     }
