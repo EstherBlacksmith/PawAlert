@@ -1,5 +1,6 @@
 package itacademy.pawalert.domain;
 
+import itacademy.pawalert.domain.exception.AlertModificationNotAllowedException;
 import itacademy.pawalert.domain.exception.InvalidAlertStatusChange;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,8 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.UUID;
 
 import static itacademy.pawalert.domain.UserId.fromUUID;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @DisplayName("Alert State Machine Tests")
@@ -156,7 +156,10 @@ class AlertTest {
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
             // Try to reopen (should not change state)
-            alert.currentStatus().open(alert);
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().open(alert);
+            });
+
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
 
@@ -164,7 +167,11 @@ class AlertTest {
         @DisplayName("Alert in CLOSED state should not transition to SAFE")
         void closedAlertShouldNotGoToSafe() {
             alert.currentStatus().closed(alert);
-            alert.currentStatus().safe(alert);
+
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().safe(alert);
+            });
+
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
 
@@ -177,7 +184,9 @@ class AlertTest {
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // When: Try to mark as seen (should not work from SAFE)
-            alert.currentStatus().seen(alert);
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().seen(alert);
+            });
 
             // Then: Should remain in SAFE state
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
@@ -191,7 +200,9 @@ class AlertTest {
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
 
             // When: Try to open (should not work from SEEN)
-            alert.currentStatus().open(alert);
+            assertThrows(InvalidAlertStatusChange.class, () -> {
+                alert.currentStatus().open(alert);
+            });
 
             // Then: Should remain in SEEN state
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
@@ -332,5 +343,133 @@ class AlertTest {
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
     }
+
+    @Nested
+    @DisplayName("Alert Modification Restriction Tests")
+    class AlertModificationRestrictionTests {
+
+        @Test
+        @DisplayName("Should allow updating description when alert is in OPENED status")
+        void shouldAllowDescriptionUpdateWhenOpened() {
+            // Given: Alert is in OPENED state
+            assertEquals(StatusNames.OPENED, alert.currentStatus().getStatusName());
+
+            // When: Update description
+            Description newDescription = new Description("Updated description");
+            alert.updateDescription(newDescription);
+
+            // Then: Description should be updated
+            assertEquals("Updated description", alert.getDescription().getValue());
+        }
+
+        @Test
+        @DisplayName("Should allow updating title when alert is in OPENED status")
+        void shouldAllowTitleUpdateWhenOpened() {
+            // Given: Alert is in OPENED state
+            assertEquals(StatusNames.OPENED, alert.currentStatus().getStatusName());
+
+            // When: Update title
+            Title newTitle = new Title("Updated title");
+            alert.updateTitle(newTitle);
+
+            // Then: Title should be updated
+            assertEquals("Updated title", alert.getTitle().getValue());
+        }
+
+        @Test
+        @DisplayName("Should throw exception when updating description after SEEN status")
+        void shouldThrowExceptionWhenUpdatingDescriptionAfterSeen() {
+            // Given: Alert is in SEEN state
+            alert.seen();
+            assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
+
+            // When/Then: Update should throw exception
+            assertThrows(AlertModificationNotAllowedException.class, () -> {
+                alert.updateDescription(new Description("New description"));
+            });
+        }
+
+        @Test
+        @DisplayName("Should throw exception when updating title after SEEN status")
+        void shouldThrowExceptionWhenUpdatingTitleAfterSeen() {
+            // Given: Alert is in SEEN state
+            alert.seen();
+            assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
+
+            // When/Then: Update should throw exception
+            assertThrows(AlertModificationNotAllowedException.class, () -> {
+                alert.updateTitle(new Title("New title"));
+            });
+        }
+
+        @Test
+        @DisplayName("Should throw exception when updating description after SAFE status")
+        void shouldThrowExceptionWhenUpdatingDescriptionAfterSafe() {
+            // Given: Alert is in SAFE state
+            alert.safe();
+            assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
+
+            // When/Then: Update should throw exception
+            assertThrows(AlertModificationNotAllowedException.class, () -> {
+                alert.updateDescription(new Description("New description"));
+            });
+        }
+
+        @Test
+        @DisplayName("Should throw exception when updating title after SAFE status")
+        void shouldThrowExceptionWhenUpdatingTitleAfterSafe() {
+            // Given: Alert is in SAFE state
+            alert.safe();
+            assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
+
+            // When/Then: Update should throw exception
+            assertThrows(AlertModificationNotAllowedException.class, () -> {
+                alert.updateTitle(new Title("New title"));
+            });
+        }
+
+        @Test
+        @DisplayName("Should throw exception when updating description after CLOSED status")
+        void shouldThrowExceptionWhenUpdatingDescriptionAfterClosed() {
+            // Given: Alert is in CLOSED state
+            alert.closed();
+            assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
+
+            // When/Then: Update should throw exception
+            assertThrows(AlertModificationNotAllowedException.class, () -> {
+                alert.updateDescription(new Description("New description"));
+            });
+        }
+
+        @Test
+        @DisplayName("Should throw exception when updating title after CLOSED status")
+        void shouldThrowExceptionWhenUpdatingTitleAfterClosed() {
+            // Given: Alert is in CLOSED state
+            alert.closed();
+            assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
+
+            // When/Then: Update should throw exception
+            assertThrows(AlertModificationNotAllowedException.class, () -> {
+                alert.updateTitle(new Title("New title"));
+            });
+        }
+
+        @Test
+        @DisplayName("Exception message should contain alert ID")
+        void exceptionMessageShouldContainAlertId() {
+            // Given: Alert is in SEEN state
+            alert.seen();
+
+            // When: Try to update description
+            AlertModificationNotAllowedException exception = assertThrows(
+                    AlertModificationNotAllowedException.class,
+                    () -> alert.updateDescription(new Description("Test"))
+            );
+
+            // Then: Exception message should contain the alert ID
+            assertTrue(exception.getMessage().contains(alert.getId().toString()));
+        }
+    }
+
 
 }

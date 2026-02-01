@@ -94,7 +94,7 @@ class AlertServiceTest {
         when(alertRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
         // When/Then
-        assertThrows(InvalidAlertStatusChange.class,
+        assertThrows(AlertNotFoundException.class,
                 () -> alertService.changeStatus(nonExistentId, StatusNames.SEEN, userId.toString()));
     }
 
@@ -229,7 +229,7 @@ class AlertServiceTest {
             when(alertRepository.findById("non-existent")).thenReturn(Optional.empty());
 
             // When/Then
-            assertThrows(InvalidAlertStatusChange.class,
+            assertThrows(AlertNotFoundException.class,
                     () -> alertService.changeStatus("non-existent", StatusNames.SEEN, userId.toString()));
         }
 
@@ -387,4 +387,81 @@ class AlertServiceTest {
                 () -> alertService.updateTitle(alertId, userId, "New title"));
         verify(alertRepository, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Should throw exception when alert is closed and trying to update title")
+    void updateTitle_WhenAlertIsClosed_ShouldThrowException() {
+        // Given
+        String alertId = UUID.randomUUID().toString();
+        String creatorId = "user-123";
+
+        Alert closedAlert = TestAlertFactory.createClosedAlert(
+                UUID.fromString(alertId), UUID.randomUUID(), new UserId(creatorId)
+        );
+        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(closedAlert.toEntity()));
+
+        // When/Then
+        assertThrows(UnauthorizedException.class,
+                () -> alertService.updateTitle(alertId, creatorId, "New Title"));
+
+        verify(eventRepository, never()).save(any(AlertEventEntity.class));
+    }
+
+    @Test
+    @DisplayName("Should throw exception when alert is closed and trying to update description")
+    void updateDescription_WhenAlertIsClosed_ShouldThrowException() {
+        // Given
+        String alertId = UUID.randomUUID().toString();
+        String creatorId = "user-123";
+
+        Alert closedAlert = TestAlertFactory.createClosedAlert(
+                UUID.fromString(alertId), UUID.randomUUID(), new UserId(creatorId)
+        );
+        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(closedAlert.toEntity()));
+
+        // When/Then
+        assertThrows(UnauthorizedException.class,
+                () -> alertService.updateDescription(alertId, creatorId, "New Description"));
+
+        verify(eventRepository, never()).save(any(AlertEventEntity.class));
+    }
+
+    @Test
+    @DisplayName("Should NOT save event when unauthorized user tries to update title")
+    void updateTitle_WhenNotCreator_ShouldNotSaveEvent() {
+        // Given
+        String alertId = UUID.randomUUID().toString();
+        String creatorId = "user-123";
+        String otherUserId = "user-456";
+
+        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Description");
+        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(alert.toEntity()));
+
+        // When/Then
+        assertThrows(UnauthorizedException.class,
+                () -> alertService.updateTitle(alertId, otherUserId, "New Title"));
+
+        // Key assertion: NO event saved
+        verify(eventRepository, never()).save(any(AlertEventEntity.class));
+    }
+
+    @Test
+    @DisplayName("Should NOT save event when unauthorized user tries to update description")
+    void updateDescription_WhenNotCreator_ShouldNotSaveEvent() {
+        // Given
+        String alertId = UUID.randomUUID().toString();
+        String creatorId = "user-123";
+        String otherUserId = "user-456";
+
+        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Description");
+        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(alert.toEntity()));
+
+        // When/Then
+        assertThrows(UnauthorizedException.class,
+                () -> alertService.updateDescription(alertId, otherUserId, "New Description"));
+
+        // Key assertion: NO event saved
+        verify(eventRepository, never()).save(any(AlertEventEntity.class));
+    }
+
 }
