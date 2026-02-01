@@ -1,13 +1,10 @@
 package itacademy.pawalert.infrastructure.persistence;
 
-import itacademy.pawalert.domain.AlertEvent;
-import itacademy.pawalert.domain.StatusNames;
-import itacademy.pawalert.domain.UserId;
+import itacademy.pawalert.domain.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-
 /**
  * JPA Entity for persistence AlertEvent in database.
  * Maps the domain into the table alert_events.
@@ -20,6 +17,14 @@ public class AlertEventEntity {
     @Id
     private String id;
 
+    @Column(name = "event_type")
+    private String eventType;
+
+    @Column(name = "old_value")
+    private String oldValue;
+
+    @Column(name = "new_value")
+    private String newValue;
     @Column(name = "previous_status")
     private String previousStatus;
 
@@ -39,24 +44,49 @@ public class AlertEventEntity {
     public AlertEventEntity() {
     }
 
+    //For status changes
     public AlertEventEntity(String id, String previousStatus, String newStatus,
                             LocalDateTime changedAt, String changedByUserId) {
         this.id = id;
+        this.eventType = "STATUS_CHANGED";
         this.previousStatus = previousStatus;
         this.newStatus = newStatus;
         this.changedAt = changedAt;
         this.changedByUserId = changedByUserId;
     }
 
+    //For title and description events
+    public AlertEventEntity(String id, String eventType, String oldValue, String newValue,
+                            LocalDateTime changedAt, String changedByUserId) {
+        this.id = id;
+        this.eventType = eventType;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
+        this.changedAt = changedAt;
+        this.changedByUserId = changedByUserId;
+    }
+
     // Conversion Domain -> Entity
-    public static AlertEventEntity fromDomain(AlertEvent event, AlertEntity alert) {
+    public static AlertEventEntity fromDomain(DomainEvent event, AlertEntity alert) {
+        LocalDateTime changedAt = event.getChangedAt().value();
+        String userId = event.getUserId().value();
+
+        String previousStatus = null;
+        String newStatus = null;
+
+        if (event instanceof StatusChangedEvent statusEvent) {
+            previousStatus = statusEvent.getPreviousStatus().name();
+            newStatus = statusEvent.getNewStatus().name();
+        }
+
         return new AlertEventEntity(
-                event.getId().toString(),
-                event.getPreviousStatus() != null ? event.getPreviousStatus().name() : null,
-                event.getNewStatus().name(),
-                event.getChangedAt().value(),
-                event.getChangedBy().value()
+                event.getAlertId().toString(),
+                previousStatus,
+                newStatus,
+                changedAt,
+                userId
         );
+
     }
 
     // Conversion Entity -> Domain
