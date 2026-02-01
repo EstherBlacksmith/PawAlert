@@ -14,9 +14,14 @@ public class CountryChipCodeValidator implements ConstraintValidator <ValidCount
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value == null || value.length() < 3) {
+        if (value == null || value.isEmpty()) {
+            return true;
+        }
+
+        if (value.length() < 3) {
             return false;
         }
+
         String countryCode = value.substring(0, 3);
         return VALID_COUNTRY_CODES.contains(countryCode);
     }
