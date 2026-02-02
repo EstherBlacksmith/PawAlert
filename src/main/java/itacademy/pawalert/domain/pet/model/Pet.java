@@ -1,20 +1,94 @@
 package itacademy.pawalert.domain.pet.model;
 
+import itacademy.pawalert.domain.alert.model.UserId;
+
+import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
+import lombok.Getter;
 import java.util.function.Consumer;
 
-public record Pet(PetId petId, ChipNumber chipNumber, PetName oficialPetName, PetName workingPetName, Species species,
-                  Breed breed, Size size, Color color, PetDescription petDescription, PetImage petImage) {
+@Getter
+public class Pet {
+    private final UserId userId;
+    private final PetId petId;
+    private final ChipNumber chipNumber;
+    private final PetName officialPetName;
+    private final PetName workingPetName;
+    private final Species species;
+    private final Breed breed;
+    private final Size size;
+    private final Color color;
+    private final PetDescription petDescription;
+    private final PetImage petImage;
 
-    public Pet with(Consumer<PetBuilder> builderConsumer) {
-        PetBuilder petBuilder = new PetBuilder(this);
-        builderConsumer.accept(petBuilder);
-        return petBuilder.build();
+    public Pet(UserId userId, PetId petId, ChipNumber chipNumber, PetName officialPetName, PetName workingPetName,
+               Species species, Breed breed, Size size, Color color, PetDescription petDescription, PetImage petImage) {
+        this.userId = userId;
+        this.petId = petId;
+        this.chipNumber = chipNumber;
+        this.officialPetName = officialPetName;
+        this.workingPetName = workingPetName;
+        this.species = species;
+        this.breed = breed;
+        this.size = size;
+        this.color = color;
+        this.petDescription = petDescription;
+        this.petImage = petImage;
     }
 
+
+    private Pet(PetBuilder builder) {
+        this.userId = builder.userId;
+        this.petId = builder.petId;
+        this.chipNumber = builder.chipNumber;
+        this.officialPetName = builder.officialPetName;
+        this.workingPetName = builder.workingPetName;
+        this.species = builder.species;
+        this.breed = builder.breed;
+        this.size = builder.size;
+        this.color = builder.color;
+        this.petDescription = builder.petDescription;
+        this.petImage = builder.petImage;
+    }
+
+    public static PetBuilder builder() {
+        return new PetBuilder();
+    }
+
+
+    public Pet with(Consumer<PetBuilder> updater) {
+        PetBuilder newBuilder = new PetBuilder();
+
+        newBuilder.userId = this.userId;           // Inmutable
+        newBuilder.petId = this.petId;             // Inmutable
+        newBuilder.chipNumber = this.chipNumber;
+        newBuilder.officialPetName = this.officialPetName;
+        newBuilder.workingPetName = this.workingPetName;
+        newBuilder.species = this.species;
+        newBuilder.breed = this.breed;
+        newBuilder.size = this.size;
+        newBuilder.color = this.color;
+        newBuilder.petDescription = this.petDescription;
+        newBuilder.petImage = this.petImage;
+
+        updater.accept(newBuilder);
+
+        return newBuilder.build();
+    }
+
+
+    //TODO y arreglar el pet mapper y el petbuilder
+    public PetEntity toEntity() {
+        return new PetEntity(userId, petId, chipNumber);
+    }
+
+
+
+
     private static class PetBuilder {
-        private final PetId petId;
-        private final ChipNumber chipNumber;
-        private PetName oficialPetName;
+        private UserId userId;
+        private PetId petId;
+        private ChipNumber chipNumber;
+        private PetName officialPetName;
         private PetName workingPetName;
         private Species species;
         private Breed breed;
@@ -23,21 +97,23 @@ public record Pet(PetId petId, ChipNumber chipNumber, PetName oficialPetName, Pe
         private PetDescription petDescription;
         private PetImage petImage;
 
-        public PetBuilder(Pet originalPet) {
-            this.petId = originalPet.petId;
-            this.chipNumber = originalPet.chipNumber;
-            this.oficialPetName = originalPet.oficialPetName;
-            this.workingPetName = originalPet.workingPetName;
-            this.species = originalPet.species;
-            this.breed = originalPet.breed;
-            this.size = originalPet.size;
-            this.color = originalPet.color;
-            this.petDescription = originalPet.petDescription;
-            this.petImage = originalPet.petImage;
+        public PetBuilder userId(UserId userId) {
+            this.userId = userId;
+            return this;
         }
 
-        public PetBuilder officialPetName(PetName oficialPetName) {
-            this.oficialPetName = oficialPetName;
+        public PetBuilder petId(PetId petId) {
+            this.petId = petId;
+            return this;
+        }
+
+        public PetBuilder chipNumber(ChipNumber chipNumber) {
+            this.chipNumber = chipNumber;
+            return this;
+        }
+
+        public PetBuilder officialPetName(PetName officialPetName) {
+            this.officialPetName = officialPetName;
             return this;
         }
 
@@ -75,13 +151,9 @@ public record Pet(PetId petId, ChipNumber chipNumber, PetName oficialPetName, Pe
             this.petImage = petImage;
             return this;
         }
-
         public Pet build() {
-            return new Pet(petId, chipNumber, oficialPetName, workingPetName,
-                    species, breed, size, color, petDescription, petImage);
+            return new Pet(this);
         }
-
     }
-
 }
 

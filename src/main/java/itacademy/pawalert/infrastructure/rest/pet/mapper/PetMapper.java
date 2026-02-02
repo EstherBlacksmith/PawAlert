@@ -9,8 +9,8 @@ public class PetMapper {
         return PetDTO.builder()
                 .petId(pet.petId().toString())
                 .chipNumber(pet.chipNumber().toString())
-                .oficialPetName(pet.oficialPetName().toString())
-                .oficialPetName(pet.workingPetName().toString())
+                .officialPetName(pet.officialPetName().toString())
+                .workingPetName(pet.workingPetName().toString())
                 .species(pet.species().name())
                 .breed(pet.breed().toString())
                 .size(pet.size().name())
@@ -26,7 +26,7 @@ public class PetMapper {
         return new Pet(
                 petId,
                 new ChipNumber(petDTO.getChipNumber()),
-                new PetName(petDTO.getOficialPetName()),
+                new PetName(petDTO.getOfficialPetName()),
                 new PetName(petDTO.getWorkingPetName()),
                 Species.valueOf(petDTO.getSpecies()),
                 new Breed(petDTO.getBreed()),

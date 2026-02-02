@@ -1,6 +1,7 @@
 package itacademy.pawalert.infrastructure.persistence.alert;
 
 import itacademy.pawalert.domain.alert.model.*;
+import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -13,7 +14,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "alerts")
 public class AlertEntity {
-    @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pet_id")
+    private PetEntity pet;
     private final List<AlertEventEntity> history = new ArrayList<>();
     @Id
     private String id;

@@ -130,9 +130,9 @@ public class AlertService {
     @Transactional
     public Alert updateDescription(String alertId, String userId, String description) {
         Alert alert = findById(alertId);
+
         if (!alert.getUserID().value().equals(userId)) {
-            throw new UnauthorizedException("Just authorized users can modify this alert" + "---" +
-                    alert.getUserID() + "---" + userId);
+            throw new UnauthorizedException("Just authorized users can modify this alert");
         }
 
         String oldDescription = alert.getDescription().description();
@@ -143,7 +143,6 @@ public class AlertService {
         );
 
         eventRepository.save(eventEntity);
-
 
         Alert alertCopy = alert.updateDescription(new Description(description));
         return alertRepository.save(alertCopy.toEntity()).toDomain();

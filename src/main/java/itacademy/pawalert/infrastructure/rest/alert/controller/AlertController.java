@@ -55,7 +55,7 @@ public class AlertController {
     }
 
     @PutMapping("/{alertId}/title")
-    public ResponseEntity<AlertDTO> updateTitleDescription(
+    public ResponseEntity<AlertDTO> updateTitle(
             @PathVariable String alertId,
             @RequestBody TitleUpdateRequest titleUpdateRequest) {
         Alert updated = alertService.updateTitle(alertId,
@@ -66,7 +66,7 @@ public class AlertController {
     }
 
     @PutMapping("/{alertId}/description")
-    public ResponseEntity<AlertDTO> updateTitleDescription(
+    public ResponseEntity<AlertDTO> updateDescription(
             @PathVariable String alertId,
             @RequestBody DescriptionUpdateRequest descriptionUpdateRequest) {
         Alert updated = alertService.updateDescription(alertId,
