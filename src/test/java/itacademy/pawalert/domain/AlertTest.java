@@ -55,7 +55,7 @@ class AlertTest {
             assertEquals(StatusNames.OPENED, alert.currentStatus().getStatusName());
 
             // When: Mark as seen
-            alert.currentStatus().seen(alert);
+            alert = alert.currentStatus().seen(alert);
 
             // Then: Alert should be in SEEN state
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
@@ -70,11 +70,11 @@ class AlertTest {
         @DisplayName("Alert should transition from SEEN to SAFE when marked as safe")
         void alertShouldTransitionFromSeenToSafe() {
             // Given: Alert is in SEEN state
-            alert.currentStatus().seen(alert);
+            alert = alert.currentStatus().seen(alert);
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
 
             // When: Mark as safe
-            alert.currentStatus().safe(alert);
+            alert =  alert.currentStatus().safe(alert);
 
             // Then: Alert should be in SAFE state
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
@@ -89,12 +89,12 @@ class AlertTest {
         @DisplayName("Alert should transition from SAFE to CLOSED when closed")
         void alertShouldTransitionFromSafeToClosed() {
             // Given: Alert is in SAFE state
-            alert.currentStatus().seen(alert);
-            alert.currentStatus().safe(alert);
+            alert = alert.currentStatus().seen(alert);
+            alert = alert.currentStatus().safe(alert);
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // When: Close the alert
-            alert.currentStatus().closed(alert);
+            alert = alert.currentStatus().closed(alert);
 
             // Then: Alert should be in CLOSED state
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
@@ -112,15 +112,15 @@ class AlertTest {
             assertEquals(StatusNames.OPENED, alert.currentStatus().getStatusName());
 
             // Transition: OPENED → SEEN
-            alert.currentStatus().seen(alert);
+            alert =  alert.currentStatus().seen(alert);
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
 
             // Transition: SEEN → SAFE
-            alert.currentStatus().safe(alert);
+            alert = alert.currentStatus().safe(alert);
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // Transition: SAFE → CLOSED
-            alert.currentStatus().closed(alert);
+            alert = alert.currentStatus().closed(alert);
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
 
@@ -128,11 +128,11 @@ class AlertTest {
         @DisplayName("Alert should allow skipping states (OPENED → SAFE → CLOSED)")
         void alertShouldAllowSkippingStates() {
             // Direct from OPENED to SAFE (valid in your implementation)
-            alert.currentStatus().safe(alert);
+            alert = alert.currentStatus().safe(alert);
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // From SAFE to CLOSED
-            alert.currentStatus().closed(alert);
+            alert = alert.currentStatus().closed(alert);
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
 
@@ -140,7 +140,7 @@ class AlertTest {
         @DisplayName("Alert should allow skipping states (OPENED → CLOSED)")
         void alertShouldAllowDirectClosure() {
             // Direct from OPENED to CLOSED (valid in your implementation)
-            alert.currentStatus().closed(alert);
+            alert = alert.currentStatus().closed(alert);
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
     }
@@ -153,12 +153,12 @@ class AlertTest {
         @DisplayName("Alert in CLOSED state should not transition back to OPENED")
         void closedAlertShouldNotReopen() {
             // Close the alert
-            alert.currentStatus().closed(alert);
+            alert = alert.currentStatus().closed(alert);
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
             // Try to reopen (should not change state)
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().open(alert);
+                alert = alert.currentStatus().open(alert);
             });
 
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
@@ -167,10 +167,10 @@ class AlertTest {
         @Test
         @DisplayName("Alert in CLOSED state should not transition to SAFE")
         void closedAlertShouldNotGoToSafe() {
-            alert.currentStatus().closed(alert);
+            alert = alert.currentStatus().closed(alert);
 
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().safe(alert);
+                alert = alert.currentStatus().safe(alert);
             });
 
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
@@ -180,13 +180,13 @@ class AlertTest {
         @DisplayName("Alert in SAFE state should not transition back to SEEN")
         void safeAlertShouldNotGoBackToSeen() {
             // Given: Alert is in SAFE state
-            alert.currentStatus().seen(alert);
-            alert.currentStatus().safe(alert);
+            alert = alert.currentStatus().seen(alert);
+            alert = alert.currentStatus().safe(alert);
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // When: Try to mark as seen (should not work from SAFE)
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().seen(alert);
+                alert = alert.currentStatus().seen(alert);
             });
 
             // Then: Should remain in SAFE state
@@ -197,12 +197,12 @@ class AlertTest {
         @DisplayName("Alert in SEEN state should not transition back to OPENED")
         void seenAlertShouldNotGoBackToOpened() {
             // Given: Alert is in SEEN state
-            alert.currentStatus().seen(alert);
+            alert = alert.currentStatus().seen(alert);
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
 
             // When: Try to open (should not work from SEEN)
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().open(alert);
+                alert = alert.currentStatus().open(alert);
             });
 
             // Then: Should remain in SEEN state
@@ -213,12 +213,12 @@ class AlertTest {
         @DisplayName("Alert in SAFE state should not transition back to OPENED")
         void safeAlertShouldNotGoBackToOpened() {
             // Given: Alert is in SAFE state
-            alert.currentStatus().safe(alert);
+            alert = alert.currentStatus().safe(alert);
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // When: Try to open (should not work from SAFE)
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().open(alert);
+                alert =  alert.currentStatus().open(alert);
             });
 
             // Then: Should remain in SAFE state
@@ -229,11 +229,11 @@ class AlertTest {
         @DisplayName("Alert in SEEN state should not transition to SEEN again (idempotency)")
         void seenAlertShouldRemainSeenWhenMarkedSeenAgain() {
             // Given: Alert is in SEEN state
-            alert.currentStatus().seen(alert);
+            alert = alert.currentStatus().seen(alert);
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
 
             // When: Mark as seen again
-            alert.currentStatus().seen(alert);
+            alert = alert.currentStatus().seen(alert);
 
             // Then: Should remain in SEEN state
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
@@ -242,10 +242,10 @@ class AlertTest {
         @Test
         @DisplayName("Alert in CLOSED state should not transition to SEEN")
         void closedAlertShouldNotGoToSeen() {
-            alert.currentStatus().closed(alert);
+            alert = alert.currentStatus().closed(alert);
 
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().open(alert);
+                alert = alert.currentStatus().open(alert);
             });
 
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
@@ -255,11 +255,11 @@ class AlertTest {
         @DisplayName("Multiple invalid transitions should not affect final state")
         void multipleInvalidTransitionsShouldNotAffectState() {
             // Given: Alert is in SEEN state
-            alert.currentStatus().seen(alert);
+            alert = alert.currentStatus().seen(alert);
             StatusNames initialState = alert.currentStatus().getStatusName();
 
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().open(alert);
+                alert = alert.currentStatus().open(alert);
             });
 
             // Then: Should remain in SEEN state
@@ -270,30 +270,30 @@ class AlertTest {
         @DisplayName("Closed alert should remain closed after any transition attempt")
         void closedAlertShouldRemainClosedAfterAnyAttempt() {
             // Given: Alert is closed
-            alert.currentStatus().closed(alert);
+            alert = alert.currentStatus().closed(alert);
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
             // When: Try all possible invalid transitions
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().open(alert);
+                alert = alert.currentStatus().open(alert);
             });
 
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().open(alert);
+                alert = alert.currentStatus().open(alert);
             });
 
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().open(alert);
+                alert = alert.currentStatus().open(alert);
             });
 
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().open(alert);
+                alert = alert.currentStatus().open(alert);
             });
 
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
@@ -308,7 +308,7 @@ class AlertTest {
         @DisplayName("Direct transition from OPENED to CLOSED should be allowed")
         void directOpenedToClosedShouldBeAllowed() {
             // This is a valid transition in your implementation
-            alert.currentStatus().closed(alert);
+            alert = alert.currentStatus().closed(alert);
 
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
@@ -317,7 +317,7 @@ class AlertTest {
         @DisplayName("Direct transition from OPENED to SAFE should be allowed")
         void directOpenedToSafeShouldBeAllowed() {
             // This is a valid transition in your implementation
-            alert.currentStatus().safe(alert);
+            alert = alert.currentStatus().safe(alert);
 
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
         }
@@ -326,20 +326,20 @@ class AlertTest {
         @DisplayName("State transitions should be reversible until CLOSED")
         void stateTransitionsShouldBeReversibleUntilClosed() {
             // OPENED -> SEEN -> SAFE -> CLOSED
-            alert.currentStatus().seen(alert);
+            alert = alert.currentStatus().seen(alert);
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
 
             // Cannot go back from SAFE to SEEN in your current implementation
-            alert.currentStatus().safe(alert);
+            alert =  alert.currentStatus().safe(alert);
 
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert.currentStatus().open(alert);
-            });// Invalid - should stay in SAFE
+                alert = alert.currentStatus().open(alert);
+            });  // Invalid - should stay in SAFE
 
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // But can close from any state
-            alert.currentStatus().closed(alert);
+            alert =  alert.currentStatus().closed(alert);
 
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
@@ -357,7 +357,7 @@ class AlertTest {
 
             // When: Update description
             Description newDescription = new Description("Updated description");
-            Alert alertCopy =  alert.updateDescription(newDescription);
+            Alert alertCopy = alert.updateDescription(newDescription);
 
             // Then: Description should be updated
             assertEquals("Updated description", alertCopy.getDescription().getValue());
@@ -381,12 +381,12 @@ class AlertTest {
         @DisplayName("Should throw exception when updating description after SEEN status")
         void shouldThrowExceptionWhenUpdatingDescriptionAfterSeen() {
             // Given: Alert is in SEEN state
-            alert.seen();
+            alert = alert.seen();
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateDescription(new Description("New description"));
+                 alert.updateDescription(new Description("New description"));
             });
         }
 
@@ -394,12 +394,12 @@ class AlertTest {
         @DisplayName("Should throw exception when updating title after SEEN status")
         void shouldThrowExceptionWhenUpdatingTitleAfterSeen() {
             // Given: Alert is in SEEN state
-            alert.seen();
+            alert = alert.seen();
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateTitle(new Title("New title"));
+               alert.updateTitle(new Title("New title"));
             });
         }
 
@@ -407,7 +407,7 @@ class AlertTest {
         @DisplayName("Should throw exception when updating description after SAFE status")
         void shouldThrowExceptionWhenUpdatingDescriptionAfterSafe() {
             // Given: Alert is in SAFE state
-            alert.safe();
+            alert = alert.safe();
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // When/Then: Update should throw exception
@@ -420,7 +420,7 @@ class AlertTest {
         @DisplayName("Should throw exception when updating title after SAFE status")
         void shouldThrowExceptionWhenUpdatingTitleAfterSafe() {
             // Given: Alert is in SAFE state
-            alert.safe();
+            alert = alert.safe();
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // When/Then: Update should throw exception
@@ -433,7 +433,7 @@ class AlertTest {
         @DisplayName("Should throw exception when updating description after CLOSED status")
         void shouldThrowExceptionWhenUpdatingDescriptionAfterClosed() {
             // Given: Alert is in CLOSED state
-            alert.closed();
+            alert = alert.closed();
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
             // When/Then: Update should throw exception
@@ -446,7 +446,7 @@ class AlertTest {
         @DisplayName("Should throw exception when updating title after CLOSED status")
         void shouldThrowExceptionWhenUpdatingTitleAfterClosed() {
             // Given: Alert is in CLOSED state
-            alert.closed();
+            alert = alert.closed();
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
 
             // When/Then: Update should throw exception
@@ -459,12 +459,12 @@ class AlertTest {
         @DisplayName("Exception message should contain alert ID")
         void exceptionMessageShouldContainAlertId() {
             // Given: Alert is in SEEN state
-            alert.seen();
+            alert =alert.seen();
 
             // When: Try to update description
             AlertModificationNotAllowedException exception = assertThrows(
                     AlertModificationNotAllowedException.class,
-                    () -> alert.updateDescription(new Description("Test"))
+                    () -> alert =alert.updateDescription(new Description("Test"))
             );
 
             // Then: Exception message should contain the alert ID
