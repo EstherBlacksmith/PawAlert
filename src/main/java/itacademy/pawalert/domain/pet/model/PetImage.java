@@ -1,4 +1,4 @@
 package itacademy.pawalert.domain.pet.model;
 
-public record PetId() {
+public class PetImage {
 }
