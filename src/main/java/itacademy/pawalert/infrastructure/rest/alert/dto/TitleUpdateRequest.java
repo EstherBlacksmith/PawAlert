@@ -7,6 +7,7 @@ import itacademy.pawalert.domain.alert.model.UserId;
 
 public record TitleUpdateRequest(UserId userId, Title title) {
     @JsonCreator
-    public TitleUpdateRequest {}
+    public TitleUpdateRequest {
+    }
 
 }

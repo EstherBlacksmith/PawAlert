@@ -23,7 +23,7 @@ public class AlertController {
     }
 
     @PostMapping
-    public ResponseEntity<AlertDTO>  createAlert(@RequestBody AlertDTO alertDTO) {
+    public ResponseEntity<AlertDTO> createAlert(@RequestBody AlertDTO alertDTO) {
         Alert created = alertService.createOpenedAlert(alertDTO.getPetId(),
                 alertDTO.getTitle(),
                 alertDTO.getDescription(),
@@ -43,37 +43,37 @@ public class AlertController {
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<AlertDTO> changeStatus(@PathVariable String id,
-                              @RequestBody StatusChangeRequest request) {
+                                                 @RequestBody StatusChangeRequest request) {
 
-        Alert updated =  alertService.changeStatus(
+        Alert updated = alertService.changeStatus(
                 id,
                 request.getNewStatus(),
                 request.getUserId()
         );
 
-        return  ResponseEntity.ok(alertMapper.toDTO(updated));
+        return ResponseEntity.ok(alertMapper.toDTO(updated));
     }
 
     @PutMapping("/{alertId}/title")
-    public ResponseEntity<AlertDTO>  updateTitleDescription(
+    public ResponseEntity<AlertDTO> updateTitleDescription(
             @PathVariable String alertId,
             @RequestBody TitleUpdateRequest titleUpdateRequest) {
         Alert updated = alertService.updateTitle(alertId,
                 String.valueOf(titleUpdateRequest.userId().value()
                 ), String.valueOf(titleUpdateRequest.title().getValue()));
 
-        return  ResponseEntity.ok(alertMapper.toDTO(updated));
+        return ResponseEntity.ok(alertMapper.toDTO(updated));
     }
 
     @PutMapping("/{alertId}/description")
-    public  ResponseEntity<AlertDTO>  updateTitleDescription(
+    public ResponseEntity<AlertDTO> updateTitleDescription(
             @PathVariable String alertId,
             @RequestBody DescriptionUpdateRequest descriptionUpdateRequest) {
-        Alert updated =  alertService.updateDescription(alertId,
+        Alert updated = alertService.updateDescription(alertId,
                 String.valueOf(descriptionUpdateRequest.userId().value()
                 ), String.valueOf(descriptionUpdateRequest.description()));
 
-        return  ResponseEntity.ok(alertMapper.toDTO(updated));
+        return ResponseEntity.ok(alertMapper.toDTO(updated));
     }
 
 }

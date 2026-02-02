@@ -46,7 +46,6 @@ public final class TestAlertFactory {
     }
 
 
-
     /**
      * Creates an Alert in SEEN state.
      * Transition: OPENED → SEEN
@@ -57,7 +56,7 @@ public final class TestAlertFactory {
      */
     public static Alert createSeenAlert(UUID id, UUID petId, UserId userId) {
         Alert alert = createOpenedAlert(id, petId, userId);
-        return  alert.seen();
+        return alert.seen();
     }
 
     /**
@@ -137,9 +136,9 @@ public final class TestAlertFactory {
      */
     public static final class AlertBuilder {
 
+        private final UUID userId = UUID.randomUUID();
         private UUID id = UUID.randomUUID();
         private UUID petId = UUID.randomUUID();
-        private final UUID userId = UUID.randomUUID();
         private String title = "Test Alert";
         private String description = "Test Description";
         private StatusNames status = StatusNames.OPENED;
@@ -256,7 +255,7 @@ public final class TestAlertFactory {
                     throw new IllegalArgumentException("Unrecognized state: " + status);
             }
 
-            return newAlert ;
+            return newAlert;
         }
     }
 }

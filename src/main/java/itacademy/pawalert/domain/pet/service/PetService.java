@@ -19,9 +19,9 @@ public class PetService {
         PetImage newPetImage = new PetImage(petImage);
 
         Species newSpecies = Species.valueOf(species.toUpperCase());
-        Size newSize =  Size.valueOf(size.toUpperCase());
+        Size newSize = Size.valueOf(size.toUpperCase());
 
 
-        return new Pet(newPetId,newChipNumber,newOficialPetName,newWorkingPetName,newSpecies,newBreed,newSize,newColor,newPetDescription,newPetImage);
+        return new Pet(newPetId, newChipNumber, newOficialPetName, newWorkingPetName, newSpecies, newBreed, newSize, newColor, newPetDescription, newPetImage);
     }
 }

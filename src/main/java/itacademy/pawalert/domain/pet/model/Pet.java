@@ -1,38 +1,11 @@
 package itacademy.pawalert.domain.pet.model;
 
-import lombok.Getter;
-import java.util.UUID;
 import java.util.function.Consumer;
 
-@Getter
-public class Pet {
+public record Pet(PetId petId, ChipNumber chipNumber, PetName oficialPetName, PetName workingPetName, Species species,
+                  Breed breed, Size size, Color color, PetDescription petDescription, PetImage petImage) {
 
-    private final PetId petId;
-    private final ChipNumber chipNumber;
-    private final PetName oficialPetName;
-    private final PetName workingPetName;
-    private final Species species;
-    private final Breed breed;
-    private final Size size;
-    private final Color color;
-    private final PetDescription petDescription;
-    private final PetImage petImage;
-
-    public Pet(PetId petId, ChipNumber chipNumber, PetName oficialPetName, PetName workingPetName, Species species,
-               Breed breed, Size size, Color color, PetDescription petDescription, PetImage petImage) {
-        this.petId = petId;
-        this.chipNumber = chipNumber;
-        this.oficialPetName = oficialPetName;
-        this.workingPetName = workingPetName;
-        this.species = species;
-        this.breed = breed;
-        this.size = size;
-        this.color = color;
-        this.petDescription = petDescription;
-        this.petImage = petImage;
-    }
-
-    public Pet with (Consumer<PetBuilder> builderConsumer){
+    public Pet with(Consumer<PetBuilder> builderConsumer) {
         PetBuilder petBuilder = new PetBuilder(this);
         builderConsumer.accept(petBuilder);
         return petBuilder.build();
@@ -50,7 +23,7 @@ public class Pet {
         private PetDescription petDescription;
         private PetImage petImage;
 
-        public PetBuilder(Pet originalPet){
+        public PetBuilder(Pet originalPet) {
             this.petId = originalPet.petId;
             this.chipNumber = originalPet.chipNumber;
             this.oficialPetName = originalPet.oficialPetName;
@@ -103,8 +76,8 @@ public class Pet {
             return this;
         }
 
-        public Pet build(){
-            return new Pet( petId, chipNumber, oficialPetName, workingPetName,
+        public Pet build() {
+            return new Pet(petId, chipNumber, oficialPetName, workingPetName,
                     species, breed, size, color, petDescription, petImage);
         }
 

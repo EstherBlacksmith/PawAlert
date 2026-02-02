@@ -1,8 +1,8 @@
 package itacademy.pawalert.domain;
 
-import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
+import itacademy.pawalert.domain.alert.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -74,7 +74,7 @@ class AlertTest {
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
 
             // When: Mark as safe
-            alert =  alert.currentStatus().safe(alert);
+            alert = alert.currentStatus().safe(alert);
 
             // Then: Alert should be in SAFE state
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
@@ -112,7 +112,7 @@ class AlertTest {
             assertEquals(StatusNames.OPENED, alert.currentStatus().getStatusName());
 
             // Transition: OPENED → SEEN
-            alert =  alert.currentStatus().seen(alert);
+            alert = alert.currentStatus().seen(alert);
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
 
             // Transition: SEEN → SAFE
@@ -218,7 +218,7 @@ class AlertTest {
 
             // When: Try to open (should not work from SAFE)
             assertThrows(InvalidAlertStatusChange.class, () -> {
-                alert =  alert.currentStatus().open(alert);
+                alert = alert.currentStatus().open(alert);
             });
 
             // Then: Should remain in SAFE state
@@ -330,7 +330,7 @@ class AlertTest {
             assertEquals(StatusNames.SEEN, alert.currentStatus().getStatusName());
 
             // Cannot go back from SAFE to SEEN in your current implementation
-            alert =  alert.currentStatus().safe(alert);
+            alert = alert.currentStatus().safe(alert);
 
             assertThrows(InvalidAlertStatusChange.class, () -> {
                 alert = alert.currentStatus().open(alert);
@@ -339,7 +339,7 @@ class AlertTest {
             assertEquals(StatusNames.SAFE, alert.currentStatus().getStatusName());
 
             // But can close from any state
-            alert =  alert.currentStatus().closed(alert);
+            alert = alert.currentStatus().closed(alert);
 
             assertEquals(StatusNames.CLOSED, alert.currentStatus().getStatusName());
         }
@@ -386,7 +386,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                 alert.updateDescription(new Description("New description"));
+                alert.updateDescription(new Description("New description"));
             });
         }
 
@@ -399,7 +399,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-               alert.updateTitle(new Title("New title"));
+                alert.updateTitle(new Title("New title"));
             });
         }
 
@@ -459,12 +459,12 @@ class AlertTest {
         @DisplayName("Exception message should contain alert ID")
         void exceptionMessageShouldContainAlertId() {
             // Given: Alert is in SEEN state
-            alert =alert.seen();
+            alert = alert.seen();
 
             // When: Try to update description
             AlertModificationNotAllowedException exception = assertThrows(
                     AlertModificationNotAllowedException.class,
-                    () -> alert =alert.updateDescription(new Description("Test"))
+                    () -> alert = alert.updateDescription(new Description("Test"))
             );
 
             // Then: Exception message should contain the alert ID

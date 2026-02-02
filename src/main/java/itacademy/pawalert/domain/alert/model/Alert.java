@@ -14,10 +14,10 @@ public class Alert {
     @Getter
     private final UserId userID;
     @Getter
-    private Title title;
+    private final Title title;
     @Getter
-    private Description description;
-    private StatusAlert statusAlert;
+    private final Description description;
+    private final StatusAlert statusAlert;
 
     public Alert(UUID petId, UserId userID, Title title, Description description) {
         this.userID = userID;
@@ -77,7 +77,7 @@ public class Alert {
     public Alert updateTitle(Title newTitle) {
         StatusNames currentStatus = statusAlert.getStatusName();
 
-        if(currentStatus!=StatusNames.OPENED){
+        if (currentStatus != StatusNames.OPENED) {
             throw AlertModificationNotAllowedException.cannotModifyTitle(id.toString());
         }
 
@@ -87,7 +87,7 @@ public class Alert {
     public Alert updateDescription(Description newDescription) {
         StatusNames currentStatus = statusAlert.getStatusName();
 
-        if(currentStatus!=StatusNames.OPENED){
+        if (currentStatus != StatusNames.OPENED) {
             throw AlertModificationNotAllowedException.cannotModifyDescription(id.toString());
         }
 

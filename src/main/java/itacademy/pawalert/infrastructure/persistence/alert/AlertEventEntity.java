@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+
 /**
  * JPA Entity for persistence AlertEvent in database.
  * Maps the domain into the table alert_events.

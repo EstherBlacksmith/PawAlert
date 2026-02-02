@@ -13,6 +13,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "alerts")
 public class AlertEntity {
+    @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL)
+    private final List<AlertEventEntity> history = new ArrayList<>();
     @Id
     private String id;
     @Column(name = "pet_id")
@@ -29,9 +31,6 @@ public class AlertEntity {
     private String closureReason;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL)
-    private final List<AlertEventEntity> history = new ArrayList<>();
 
     // Empty constructor required by JPA/Hibernate
     public AlertEntity() {
