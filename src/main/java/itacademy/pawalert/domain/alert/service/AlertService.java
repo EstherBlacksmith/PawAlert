@@ -129,10 +129,6 @@ public class AlertService {
     @Transactional
     public Alert updateDescription(String alertId,String userId,String  description) {
         Alert alert = findById(alertId);
-        System.out.println("DEBUG: alertUserId='" + alert.getUserID().value() + "'");
-        System.out.println("DEBUG: requestUserId='" + userId + "'");
-        System.out.println("DEBUG: charCodes alertUserId=" + alert.getUserID().value().chars().boxed().toList());
-        System.out.println("DEBUG: charCodes requestUserId=" + userId.chars().boxed().toList());
         if (!alert.getUserID().value().equals(userId)) {
             throw new UnauthorizedException("Just authorized users can modify this alert" + "---" +
                     alert.getUserID() +"---"+ userId);
