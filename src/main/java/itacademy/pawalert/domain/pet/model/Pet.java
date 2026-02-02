@@ -39,7 +39,7 @@ public class Pet {
     }
 
     private static class PetBuilder {
-        private final UUID petId;
+        private final PetId petId;
         private final ChipNumber chipNumber;
         private PetName oficialPetName;
         private PetName workingPetName;
