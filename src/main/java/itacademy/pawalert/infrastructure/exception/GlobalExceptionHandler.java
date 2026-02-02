@@ -4,6 +4,7 @@ import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
+import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.infrastructure.rest.alert.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAlertNotFoundException(
             AlertNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(404, "Not Found", ex.getMessage()));
+                .body(new ErrorResponse(404, "Alert not Found", ex.getMessage()));
     }
 
     @ExceptionHandler(UnauthorizedException.class)
@@ -54,5 +55,10 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(401, "Unauthorized Alert modification", ex.getMessage()));
     }
 
-
+    @ExceptionHandler(PetNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePetNotFoundException(
+            PetNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(404, "Pet not found", ex.getMessage()));
+    }
 }
