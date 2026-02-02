@@ -9,7 +9,7 @@ import java.util.UUID;
 @Component
 public class AlertMapper {
 
-    public AlertDTO toDTO(Alert alert){
+    public AlertDTO toDTO(Alert alert) {
         return AlertDTO.builder()
                 .id(alert.getId().toString())
                 .petId(alert.getPetId().toString())
@@ -20,7 +20,7 @@ public class AlertMapper {
                 .build();
     }
 
-    public Alert toDomain(AlertDTO alertDTO, StatusAlert status){
+    public Alert toDomain(AlertDTO alertDTO, StatusAlert status) {
         Title title = new Title(alertDTO.getTitle());
         Description description = new Description(alertDTO.getDescription());
         UserId userId = new UserId(alertDTO.getUserId());

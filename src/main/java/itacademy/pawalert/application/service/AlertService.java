@@ -28,7 +28,7 @@ public class AlertService {
         Description description = new Description(descriptionString);
         UserId creatorId = new UserId(userId);
 
-        Alert alert =  AlertFactory.createAlert(
+        Alert alert = AlertFactory.createAlert(
                 UUID.fromString(petId),
                 new UserId(userId),
                 title,
@@ -39,7 +39,7 @@ public class AlertService {
         AlertEntity savedAlert = alertRepository.save(entity);
 
         AlertEventEntity event = AlertEventFactory.createStatusChangedEvent(
-                alert, StatusNames.OPENED,StatusNames.OPENED,creatorId
+                alert, StatusNames.OPENED, StatusNames.OPENED, creatorId
         );
 
         eventRepository.save(event);
@@ -92,7 +92,7 @@ public class AlertService {
         switch (newStatus) {
             case SEEN -> alertCopy = alert.seen();
             case SAFE -> alertCopy = alert.safe();
-            case CLOSED ->alertCopy = alert.closed();
+            case CLOSED -> alertCopy = alert.closed();
             case OPENED -> alertCopy = alert.open();
         }
 
@@ -107,7 +107,7 @@ public class AlertService {
     }
 
     @Transactional
-    public Alert updateTitle(String alertId,String userId, String title) {
+    public Alert updateTitle(String alertId, String userId, String title) {
         Alert alert = findById(alertId);
 
         if (!alert.getUserID().value().equals(userId)) {
@@ -128,14 +128,14 @@ public class AlertService {
     }
 
     @Transactional
-    public Alert updateDescription(String alertId,String userId,String  description) {
+    public Alert updateDescription(String alertId, String userId, String description) {
         Alert alert = findById(alertId);
         if (!alert.getUserID().value().equals(userId)) {
             throw new UnauthorizedException("Just authorized users can modify this alert" + "---" +
-                    alert.getUserID() +"---"+ userId);
+                    alert.getUserID() + "---" + userId);
         }
 
-        String oldDescription= alert.getDescription().description();
+        String oldDescription = alert.getDescription().description();
         UserId editorId = new UserId(userId);
 
         AlertEventEntity eventEntity = AlertEventFactory.createDescriptionChangedEvent(
@@ -145,7 +145,7 @@ public class AlertService {
         eventRepository.save(eventEntity);
 
 
-        Alert alertCopy = alert.updateDescription( new Description(description));
+        Alert alertCopy = alert.updateDescription(new Description(description));
         return alertRepository.save(alertCopy.toEntity()).toDomain();
     }
 

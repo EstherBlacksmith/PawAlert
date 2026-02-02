@@ -1,25 +1,22 @@
 package itacademy.pawalert.infrastructure.rest.pet.mapper;
 
-import itacademy.pawalert.domain.alert.model.UserId;
 import itacademy.pawalert.domain.pet.model.*;
 import itacademy.pawalert.infrastructure.rest.pet.dto.PetDTO;
-
-import java.util.UUID;
 
 public class PetMapper {
 
     public PetDTO toDTO(Pet pet) {
         return PetDTO.builder()
-                .petId(pet.getPetId().toString())
-                .chipNumber(pet.getChipNumber().toString())
-                .oficialPetName(pet.getOficialPetName().toString())
-                .oficialPetName(pet.getWorkingPetName().toString())
-                .species(pet.getSpecies().name())
-                .breed(pet.getBreed().toString())
-                .size(pet.getSize().name())
-                .color(pet.getColor().toString())
-                .petDescription(pet.getPetDescription().toString())
-                .petImage(pet.getPetImage().toString())
+                .petId(pet.petId().toString())
+                .chipNumber(pet.chipNumber().toString())
+                .oficialPetName(pet.oficialPetName().toString())
+                .oficialPetName(pet.workingPetName().toString())
+                .species(pet.species().name())
+                .breed(pet.breed().toString())
+                .size(pet.size().name())
+                .color(pet.color().toString())
+                .petDescription(pet.petDescription().toString())
+                .petImage(pet.petImage().toString())
                 .build();
     }
 

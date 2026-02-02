@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import java.util.UUID;
 
-public record UserId(@NotBlank(message ="UserId cannot be empty" ) String value) {
+public record UserId(@NotBlank(message = "UserId cannot be empty") String value) {
 
     @JsonCreator  // Jackson will use this for deserialization
     public UserId {

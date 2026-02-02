@@ -5,7 +5,8 @@ import itacademy.pawalert.domain.alert.model.Description;
 import itacademy.pawalert.domain.alert.model.UserId;
 
 
-public record DescriptionUpdateRequest(UserId userId,Description description) {
+public record DescriptionUpdateRequest(UserId userId, Description description) {
     @JsonCreator
-    public DescriptionUpdateRequest {}
+    public DescriptionUpdateRequest {
+    }
 }

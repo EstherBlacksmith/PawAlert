@@ -25,7 +25,7 @@ public class OpenedStateAlert implements StatusAlert {
     }
 
     @Override
-    public StatusNames getStatusName()  {
+    public StatusNames getStatusName() {
         return StatusNames.OPENED;
     }
 }

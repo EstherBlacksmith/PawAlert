@@ -1,7 +1,7 @@
 package itacademy.pawalert.infrastructure.rest.pet.controller;
 
 
-import itacademy.pawalert.domain.pet.model.*;
+import itacademy.pawalert.domain.pet.model.Pet;
 import itacademy.pawalert.domain.pet.service.PetService;
 import itacademy.pawalert.infrastructure.rest.pet.dto.PetDTO;
 import org.springframework.web.bind.annotation.PostMapping;
