@@ -8,7 +8,6 @@ import itacademy.pawalert.domain.alert.model.AlertEvent;
 import itacademy.pawalert.domain.alert.model.StatusNames;
 import itacademy.pawalert.domain.alert.model.UserId;
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
-import itacademy.pawalert.domain.alert.service.AlertService;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventEntity;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventRepository;

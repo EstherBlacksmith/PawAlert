@@ -1,4 +1,4 @@
-package itacademy.pawalert.infrastructure.rest.dto;
+package itacademy.pawalert.infrastructure.rest.alert.dto;
 
 import itacademy.pawalert.domain.alert.model.StatusNames;
 import itacademy.pawalert.domain.alert.model.UserId;

@@ -1,4 +1,4 @@
-package itacademy.pawalert.infrastructure.rest.dto;
+package itacademy.pawalert.infrastructure.rest.alert.dto;
 
 import lombok.Getter;
 

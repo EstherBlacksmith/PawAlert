@@ -1,11 +1,11 @@
-package itacademy.pawalert.infrastructure.rest;
+package itacademy.pawalert.infrastructure.rest.alert.controller;
 
-import itacademy.pawalert.domain.alert.service.AlertService;
+import itacademy.pawalert.application.service.AlertService;
 import itacademy.pawalert.domain.alert.model.Alert;
-import itacademy.pawalert.infrastructure.rest.dto.AlertDTO;
-import itacademy.pawalert.infrastructure.rest.dto.DescriptionUpdateRequest;
-import itacademy.pawalert.infrastructure.rest.dto.StatusChangeRequest;
-import itacademy.pawalert.infrastructure.rest.dto.TitleUpdateRequest;
+import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
+import itacademy.pawalert.infrastructure.rest.alert.dto.DescriptionUpdateRequest;
+import itacademy.pawalert.infrastructure.rest.alert.dto.StatusChangeRequest;
+import itacademy.pawalert.infrastructure.rest.alert.dto.TitleUpdateRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
