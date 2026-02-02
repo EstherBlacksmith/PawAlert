@@ -1,31 +1,26 @@
 package itacademy.pawalert.domain.alert.model;
 
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
-import lombok.Getter;
-import lombok.Setter;
 
-public class ClosedStatusAlert implements StatusAlert {
-    @Getter
-    @Setter
-    ClosureReason closureReason;
+public record ClosedStatusAlert() implements StatusAlert {
 
     @Override
-    public void open(Alert alert) {
+    public Alert open(Alert alert) {
         throw InvalidAlertStatusChange.alreadyClosed(alert.getId().toString());
     }
 
     @Override
-    public void seen(Alert alert) {
+    public Alert seen(Alert alert) {
         throw InvalidAlertStatusChange.alreadyClosed(alert.getId().toString());
     }
 
     @Override
-    public void closed(Alert alert) {
+    public Alert closed(Alert alert) {
         throw InvalidAlertStatusChange.alreadyClosed(alert.getId().toString());
     }
 
     @Override
-    public void safe(Alert alert) {
+    public Alert safe(Alert alert) {
         throw InvalidAlertStatusChange.alreadyClosed(alert.getId().toString());
     }
 

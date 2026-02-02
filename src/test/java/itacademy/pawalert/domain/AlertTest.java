@@ -357,10 +357,10 @@ class AlertTest {
 
             // When: Update description
             Description newDescription = new Description("Updated description");
-            alert.updateDescription(newDescription);
+            Alert alertCopy =  alert.updateDescription(newDescription);
 
             // Then: Description should be updated
-            assertEquals("Updated description", alert.getDescription().getValue());
+            assertEquals("Updated description", alertCopy.getDescription().getValue());
         }
 
         @Test
@@ -371,10 +371,10 @@ class AlertTest {
 
             // When: Update title
             Title newTitle = new Title("Updated title");
-            alert.updateTitle(newTitle);
+            Alert alertCopy = alert.updateTitle(newTitle);
 
             // Then: Title should be updated
-            assertEquals("Updated title", alert.getTitle().getValue());
+            assertEquals("Updated title", alertCopy.getTitle().getValue());
         }
 
         @Test

@@ -1,4 +1,4 @@
-package itacademy.pawalert.application.service;
+package itacademy.pawalert.domain.alert.service;
 
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
@@ -25,15 +25,20 @@ public class AlertService {
 
         Title title = new Title(titleString);
         Description description = new Description(descriptionString);
-        Alert alert = new Alert(UUID.fromString(petId), new UserId(userId), title, description);
         UserId creatorId = new UserId(userId);
+
+        Alert alert =  AlertFactory.createAlert(
+                UUID.fromString(petId),
+                new UserId(userId),
+                title,
+                description);
 
         //Persist the object
         AlertEntity entity = alert.toEntity();
         AlertEntity savedAlert = alertRepository.save(entity);
 
         AlertEventEntity event = AlertEventFactory.createStatusChangedEvent(
-                alert, StatusNames.OPENED,StatusNames.OPENED,new UserId(userId)
+                alert, StatusNames.OPENED,StatusNames.OPENED,creatorId
         );
 
         eventRepository.save(event);
@@ -72,7 +77,7 @@ public class AlertService {
     }
 
     @Transactional
-    public Alert close(String alertId, String userId) {
+    public Alert markAsClose(String alertId, String userId) {
         return changeStatus(alertId, StatusNames.CLOSED, userId);
     }
 
@@ -82,21 +87,22 @@ public class AlertService {
         Alert alert = findById(alertId);
         StatusNames previousStatus = alert.currentStatus().getStatusName();
 
+        Alert alertCopy = null;
         switch (newStatus) {
-            case SEEN -> alert.seen();
-            case SAFE -> alert.safe();
-            case CLOSED -> alert.closed();
-            case OPENED -> alert.open();
+            case SEEN -> alertCopy = alert.seen();
+            case SAFE -> alertCopy = alert.safe();
+            case CLOSED ->alertCopy = alert.closed();
+            case OPENED -> alertCopy = alert.open();
         }
 
         // Use factory
         AlertEventEntity event = AlertEventFactory.createStatusChangedEvent(
-                alert, previousStatus, newStatus, new UserId(userId)
+                alertCopy, previousStatus, newStatus, new UserId(userId)
         );
 
         eventRepository.save(event);
 
-        return alertRepository.save(alert.toEntity()).toDomain();
+        return alertRepository.save(alertCopy.toEntity()).toDomain();
     }
 
     @Transactional
@@ -116,8 +122,8 @@ public class AlertService {
 
         eventRepository.save(eventEntity);
 
-        alert.updateTitle(new Title(title));
-        return alertRepository.save(alert.toEntity()).toDomain();
+        Alert alertCopy = alert.updateTitle(new Title(title));
+        return alertRepository.save(alertCopy.toEntity()).toDomain();
     }
 
     @Transactional
@@ -142,8 +148,8 @@ public class AlertService {
         eventRepository.save(eventEntity);
 
 
-        alert.updateDescription( new Description(description));
-        return alertRepository.save(alert.toEntity()).toDomain();
+        Alert alertCopy = alert.updateDescription( new Description(description));
+        return alertRepository.save(alertCopy.toEntity()).toDomain();
     }
 
 }

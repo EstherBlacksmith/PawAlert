@@ -30,12 +30,7 @@ public class Alert {
     }
 
     public Alert(UUID id, UUID petId, UserId userID, Title title, Description description) {
-        this.id = id;
-        this.petId = petId;
-        this.userID = userID;
-        this.title = title;
-        this.description = description;
-        this.statusAlert = new OpenedStateAlert();
+        this(id, petId, userID, title, description, new OpenedStateAlert());
     }
 
     public Alert(UUID id, UUID petId, UserId userID, Title title, Description description, StatusAlert status) {
@@ -62,42 +57,41 @@ public class Alert {
         return statusAlert;
     }
 
-    public void setStatus(StatusAlert statusAlert) {
-        this.statusAlert = statusAlert;
+    public Alert open() {
+        return statusAlert.open(this);
     }
 
-    public void open() {
-        statusAlert.open(this);
+    public Alert seen() {
+        return statusAlert.seen(this);
+
     }
 
-    public void seen() {
-        statusAlert.seen(this);
+    public Alert safe() {
+        return statusAlert.safe(this);
     }
 
-    public void safe() {
-        statusAlert.safe(this);
+    public Alert closed() {
+        return statusAlert.closed(this);
     }
 
-    public void closed() {
-        statusAlert.closed(this);
-    }
-
-    public void updateTitle(Title title) {
+    public Alert updateTitle(Title newTitle) {
         StatusNames currentStatus = statusAlert.getStatusName();
 
         if(currentStatus!=StatusNames.OPENED){
             throw AlertModificationNotAllowedException.cannotModifyTitle(id.toString());
         }
-        this.title = title;
+
+        return new Alert(this.id, this.petId, this.userID, newTitle, this.description, this.statusAlert);
     }
 
-    public void updateDescription(Description description) {
+    public Alert updateDescription(Description newDescription) {
         StatusNames currentStatus = statusAlert.getStatusName();
 
         if(currentStatus!=StatusNames.OPENED){
             throw AlertModificationNotAllowedException.cannotModifyDescription(id.toString());
         }
-        this.description = description;
+
+        return new Alert(this.id, this.petId, this.userID, this.title, newDescription, this.statusAlert);
     }
 
 }

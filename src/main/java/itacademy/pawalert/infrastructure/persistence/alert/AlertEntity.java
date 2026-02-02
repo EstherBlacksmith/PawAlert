@@ -19,10 +19,14 @@ public class AlertEntity {
     private String petId;
     @Column(name = "user_id")
     private String userId;
+    @Column(name = "title")
     private String title;
+    @Column(name = "description")
     private String description;
+    @Column(name = "status")
     private String status;
-
+    @Column(name = "closure_reason")
+    private String closureReason;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -31,16 +35,6 @@ public class AlertEntity {
 
     // Empty constructor required by JPA/Hibernate
     public AlertEntity() {
-    }
-
-    public AlertEntity(String id, String petId, String userId, String title, String description, String status) {
-        this.id = id;
-        this.petId = petId;
-        this.userId = userId;
-        this.title = title;
-        this.description = description;
-        this.status = status;
-        this.createdAt = LocalDateTime.now();
     }
 
     // Constructor with StatusNames
@@ -55,6 +49,7 @@ public class AlertEntity {
     }
 
     public Alert toDomain() {
+
         return new Alert(
                 UUID.fromString(this.id),
                 UUID.fromString(this.petId),
@@ -67,6 +62,7 @@ public class AlertEntity {
 
     // This implementation allows to change the status in toDomain method without creating setters
     private StatusAlert mapToStatusAlert(StatusNames status) {
+
         return switch (status) {
             case OPENED -> new OpenedStateAlert();
             case SEEN -> new SeenStatusAlert();
