@@ -1,25 +1,26 @@
 package itacademy.pawalert.domain.alert.model;
 
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
+import itacademy.pawalert.domain.alert.service.AlertFactory;
 
 public class SafeStatusAlert implements StatusAlert {
     @Override
-    public void open(Alert alert) {
+    public Alert open(Alert alert) {
         throw InvalidAlertStatusChange.invalidTransition("SAFE", "OPENED");
     }
 
     @Override
-    public void seen(Alert alert) {
+    public Alert seen(Alert alert) {
         throw InvalidAlertStatusChange.invalidTransition("SAFE", "SEEN");
     }
 
     @Override
-    public void closed(Alert alert) {
-        alert.setStatus(new ClosedStatusAlert());
+    public Alert closed(Alert alert) {
+        return AlertFactory.markAsClose(alert);
     }
 
     @Override
-    public void safe(Alert alert) {
+    public Alert safe(Alert alert) {
         throw InvalidAlertStatusChange.invalidTransition("SAFE", "SAFE");
     }
 

@@ -57,8 +57,7 @@ public final class TestAlertFactory {
      */
     public static Alert createSeenAlert(UUID id, UUID petId, UserId userId) {
         Alert alert = createOpenedAlert(id, petId, userId);
-        alert.seen();
-        return alert;
+        return  alert.seen();
     }
 
     /**
@@ -71,8 +70,7 @@ public final class TestAlertFactory {
      */
     public static Alert createSafeAlert(UUID id, UUID petId, UserId userId) {
         Alert alert = createSeenAlert(id, petId, userId);
-        alert.safe();
-        return alert;
+        return alert.safe();
     }
 
     /**
@@ -84,9 +82,8 @@ public final class TestAlertFactory {
      * @return Alert in CLOSED state
      */
     public static Alert createClosedAlert(UUID id, UUID petId, UserId userId) {
-        Alert alert = createSafeAlert(id, petId, userId);
-        alert.closed();
-        return alert;
+        Alert alert = createSeenAlert(id, petId, userId);
+        return alert.closed();
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -241,27 +238,25 @@ public final class TestAlertFactory {
 
             // Apply necessary state transitions
             // This ensures we always follow valid domain transitions
+            Alert newAlert = null;
             switch (status) {
                 case OPENED:
                     // Initial state, no transition needed
                     break;
                 case SEEN:
-                    alert.seen();
+                    newAlert = alert.seen();
                     break;
                 case SAFE:
-                    alert.seen();
-                    alert.safe();
+                    newAlert = alert.seen().safe();
                     break;
                 case CLOSED:
-                    alert.seen();
-                    alert.safe();
-                    alert.closed();
+                    newAlert = alert.seen().safe().closed();
                     break;
                 default:
                     throw new IllegalArgumentException("Unrecognized state: " + status);
             }
 
-            return alert;
+            return newAlert ;
         }
     }
 }
