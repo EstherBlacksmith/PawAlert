@@ -1,21 +1,27 @@
 package itacademy.pawalert.infrastructure.rest.pet.dto;
 
-import itacademy.pawalert.domain.pet.model.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.UUID;
 
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PetDTO {
 
-    private UUID petId;
-    private ChipNumber chipNumber;
-    private PetName oficialPetName;
-    private PetName workingPetName;
-    private Species species;
-    private Breed breed;
-    private Size size;
-    private Color color;
-    private PetDescription petDescription;
-    private PetImage petImage;
+    private String petId;
+    private String chipNumber;
+    private String oficialPetName;
+    private String workingPetName;
+    private String species;
+    private String breed;
+    private String size;
+    private String color;
+    private String petDescription;
+    private String petImage;
+
 }
+

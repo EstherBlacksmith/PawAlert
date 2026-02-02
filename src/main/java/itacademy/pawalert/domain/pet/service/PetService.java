@@ -1,10 +1,9 @@
 package itacademy.pawalert.domain.pet.service;
 
-import itacademy.pawalert.domain.alert.model.UserId;
 import itacademy.pawalert.domain.pet.model.*;
+import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
+@Service
 public class PetService {
     public Pet createPet(String petId, String chipNumber, String oficialPetName, String workingPetName,
                          String species, String breed, String size, String color, String petDescription,
@@ -13,17 +12,16 @@ public class PetService {
         PetId newPetId = new PetId(petId);
         PetName newOficialPetName = new PetName(oficialPetName);
         PetName newWorkingPetName = new PetName(workingPetName);
-        PetName newChipNumber = new PetName(chipNumber);
+        ChipNumber newChipNumber = new ChipNumber(chipNumber);
         Breed newBreed = new Breed(breed);
         Color newColor = new Color(color);
         PetDescription newPetDescription = new PetDescription(petDescription);
         PetImage newPetImage = new PetImage(petImage);
 
-        Species newSpecies = new Species(species);
-        Size newSize = new Size(size);
+        Species newSpecies = Species.valueOf(species.toUpperCase());
+        Size newSize =  Size.valueOf(size.toUpperCase());
 
 
-
-        Pet pet = new Pet(newPetId,newChipNumber,newOficialPetName,newWorkingPetName,species,newBreed,Size,newColor,newPetDescription,newPetImage);
+        return new Pet(newPetId,newChipNumber,newOficialPetName,newWorkingPetName,newSpecies,newBreed,newSize,newColor,newPetDescription,newPetImage);
     }
 }
