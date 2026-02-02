@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 @Getter
 public class Pet {
 
-    private final UUID petId;
+    private final PetId petId;
     private final ChipNumber chipNumber;
     private final PetName oficialPetName;
     private final PetName workingPetName;
@@ -18,7 +18,7 @@ public class Pet {
     private final PetDescription petDescription;
     private final PetImage petImage;
 
-    public Pet(UUID petId, ChipNumber chipNumber, PetName oficialPetName, PetName workingPetName, Species species,
+    public Pet(PetId petId, ChipNumber chipNumber, PetName oficialPetName, PetName workingPetName, Species species,
                Breed breed, Size size, Color color, PetDescription petDescription, PetImage petImage) {
         this.petId = petId;
         this.chipNumber = chipNumber;
