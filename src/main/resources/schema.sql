@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS alerts (
     title VARCHAR(255) NOT NULL,
     description TEXT,
     status VARCHAR(50) NOT NULL,
-    created_at DATETIME NOT NULL
+    created_at TIMESTAMP NOT NULL
     );
 
 CREATE TABLE IF NOT EXISTS alert_events (
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS alert_events (
     alert_id VARCHAR(255) NOT NULL,
     previous_status VARCHAR(50),
     new_status VARCHAR(50) NOT NULL,
-    changed_at DATETIME NOT NULL,
+    changed_at TIMESTAMP NOT NULL,
     changed_by_user_id VARCHAR(255),
     FOREIGN KEY (alert_id) REFERENCES alerts (id)
     );
@@ -30,5 +30,5 @@ CREATE TABLE IF NOT EXISTS pets (
     pet_gender VARCHAR(20),
     pet_description TEXT,
     pet_image TEXT,
-    created_at DATETIME NOT NULL
+    created_at TIMESTAMP NOT NULL
     );
