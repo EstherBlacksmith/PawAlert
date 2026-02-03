@@ -2,10 +2,13 @@ package itacademy.pawalert.infrastructure.persistence.pet;
 import itacademy.pawalert.domain.alert.model.UserId;
 import itacademy.pawalert.domain.pet.model.*;
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
-
+@Getter
 @Entity
 @Table(name = "pets")
 public class PetEntity {
@@ -14,8 +17,6 @@ public class PetEntity {
     private String id;
     @Column(name = "user_id")
     private String userId;
-    @Column(name = "pet_id")
-    private String petId;
     @Column(name = "pet_chip_number")
     private String chipNumber;
     @Column(name = "pet_offical_name")
@@ -30,6 +31,8 @@ public class PetEntity {
     private String size;
     @Column(name = "pet_color")
     private String color;
+    @Column(name = "pet_gender")
+    private String gender;
     @Column(name = "pet_description")
     private String petDescription;
     @Column(name = "pet_image")
@@ -40,17 +43,38 @@ public class PetEntity {
     public PetEntity() {
     }
 
+    public PetEntity(String id, String userId, String chipNumber,
+                     String officialPetName, String workingPetName, String species,
+                     String breed, String size, String color, String gender, String petDescription,
+                     String petImage) {
+        this.id = id;
+        this.userId = userId;
+        this.chipNumber = chipNumber;
+        this.officialPetName = officialPetName;
+        this.workingPetName = workingPetName;
+        this.species = species;
+        this.breed = breed;
+        this.size = size;
+        this.color = color;
+        this.gender = gender;
+        this.petDescription = petDescription;
+        this.petImage = petImage;
+        this.createdAt = LocalDateTime.now();
+    }
+
+
     public Pet toDomain() {
         return new Pet(
-                new UserId(this.userId),
-                new PetId (this.petId),
+                UUID.fromString(this.id),
+                UUID.fromString(this.userId),
                 new ChipNumber (this.chipNumber),
                 new PetName(this.officialPetName),
                 new PetName (this.workingPetName),
                 Species.valueOf(this.species),
                 new Breed (this.breed),
                 Size.valueOf(this.size),
-                new  Color (this.color),
+                new Color (this.color),
+                Gender.valueOf(this.gender),
                 new PetDescription (this.petDescription),
                 new PetImage (this.petImage)
         );

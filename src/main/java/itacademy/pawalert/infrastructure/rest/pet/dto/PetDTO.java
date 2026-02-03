@@ -5,14 +5,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PetDTO {
 
-    private String userID;
+    private String userId;
     private String petId;
     private String chipNumber;
     private String officialPetName;
@@ -21,6 +20,7 @@ public class PetDTO {
     private String breed;
     private String size;
     private String color;
+    private String gender;
     private String petDescription;
     private String petImage;
 
