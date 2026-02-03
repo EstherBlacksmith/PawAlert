@@ -23,13 +23,14 @@ public class PetService {
     }
 
     public Pet createPet(String userId, String petId, String chipNumber, String officialPetName, String workingPetName,
-                         String species, String breed, String size, String color, String petDescription,
+                         String species, String breed, String size, String color, String gender, String petDescription,
                          String petImage) {
         PetName newOfficialPetName = new PetName(officialPetName);
         PetName newWorkingPetName = new PetName(workingPetName);
         ChipNumber newChipNumber = new ChipNumber(chipNumber);
         Breed newBreed = new Breed(breed);
         Color newColor = new Color(color);
+        Gender newGender = Gender.valueOf(gender.toUpperCase());
         PetDescription newPetDescription = new PetDescription(petDescription);
         PetImage newPetImage = new PetImage(petImage);
         Species newSpecies = Species.valueOf(species.toUpperCase());
@@ -45,6 +46,7 @@ public class PetService {
                 .breed( newBreed)
                 .size(newSize)
                 .color(newColor)
+                .gender(newGender)
                 .petDescription(newPetDescription)
                 .petImage(newPetImage)
                 .build();

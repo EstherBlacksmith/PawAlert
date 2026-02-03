@@ -12,6 +12,7 @@ import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventEntity;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventRepository;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertRepository;
+import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -65,21 +66,19 @@ class AlertServiceTest {
 
         // USING THE FACTORY METHOD to create entities
         // The factory ensures valid state transitions
-        Alert openedAlert = TestAlertFactory.createOpenedAlert(
-                UUID.fromString(alertId), petId, userId);
-        openedEntity = openedAlert.toEntity();
 
-        Alert seenAlert = TestAlertFactory.createSeenAlert(
-                UUID.fromString(alertId), petId, userId);
-        seenEntity = seenAlert.toEntity();
+        openedEntity = TestAlertFactory.createOpenedAlertEntity(
+                UUID.fromString(alertId), petId, userId.toString()
+        );
 
-        Alert safeAlert = TestAlertFactory.createSafeAlert(
-                UUID.fromString(alertId), petId, userId);
-        safeEntity = safeAlert.toEntity();
+        seenEntity = TestAlertFactory.createSeenAlertEntity(
+                UUID.fromString(alertId), petId, userId.toString());
 
-        Alert closedAlert = TestAlertFactory.createClosedAlert(
-                UUID.fromString(alertId), petId, userId);
-        closedEntity = closedAlert.toEntity();
+        safeEntity = TestAlertFactory.createSafeAlertEntity(
+                UUID.fromString(alertId), petId, userId.toString());
+
+        closedEntity = TestAlertFactory.createClosedAlertEntity(
+                UUID.fromString(alertId), petId, userId.toString());
 
         // Configure shared mocks
         lenient().when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -356,8 +355,6 @@ class AlertServiceTest {
                     LocalDateTime.now(),
                     "user-1"
             );
-
-            openedEntity.getHistory().add(initialEvent);
 
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(openedEntity));
 

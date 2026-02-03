@@ -1,6 +1,7 @@
 package itacademy.pawalert.application.service;
 
 import itacademy.pawalert.domain.alert.model.*;
+import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 
 import java.util.UUID;
 
@@ -258,4 +259,29 @@ public final class TestAlertFactory {
             return newAlert;
         }
     }
+    // ═══════════════════════════════════════════════════════════════════════════
+    // AlertEntity Factory Methods - Fot the tests that need PetEntity
+    // ═══════════════════════════════════════════════════════════════════════════
+
+
+    public static AlertEntity createOpenedAlertEntity(UUID id, UUID petId, String userId) {
+        return new AlertEntity(id.toString(), petId.toString(), userId,
+                "Test Alert", "Test description", StatusNames.OPENED);
+    }
+
+    public static AlertEntity createSeenAlertEntity(UUID id, UUID petId, String userId) {
+        return new AlertEntity(id.toString(), petId.toString(), userId,
+                "Test Alert", "Test description", StatusNames.SEEN);
+    }
+
+    public static AlertEntity createSafeAlertEntity(UUID id, UUID petId, String userId) {
+        return new AlertEntity(id.toString(), petId.toString(), userId,
+                "Test Alert", "Test description", StatusNames.SAFE);
+    }
+
+    public static AlertEntity createClosedAlertEntity(UUID id, UUID petId, String userId) {
+        return new AlertEntity(id.toString(), petId.toString(), userId,
+                "Test Alert", "Test description", StatusNames.CLOSED);
+    }
+
 }
