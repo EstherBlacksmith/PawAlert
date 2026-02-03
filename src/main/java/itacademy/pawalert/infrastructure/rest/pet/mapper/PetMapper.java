@@ -2,9 +2,11 @@ package itacademy.pawalert.infrastructure.rest.pet.mapper;
 
 import itacademy.pawalert.domain.pet.model.*;
 import itacademy.pawalert.infrastructure.rest.pet.dto.PetDTO;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Component
 public class PetMapper {
 
     public PetDTO toDTO(Pet pet) {
