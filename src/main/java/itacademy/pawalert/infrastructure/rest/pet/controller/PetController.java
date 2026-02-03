@@ -36,6 +36,7 @@ public class PetController {
                 petDTO.getBreed(),
                 petDTO.getSize(),
                 petDTO.getColor(),
+                petDTO.getGender(),
                 petDTO.getPetDescription(),
                 petDTO.getPetImage()
         );

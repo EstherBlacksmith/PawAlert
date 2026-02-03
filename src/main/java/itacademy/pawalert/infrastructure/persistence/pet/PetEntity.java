@@ -1,9 +1,12 @@
 package itacademy.pawalert.infrastructure.persistence.pet;
 import itacademy.pawalert.domain.pet.model.*;
+import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -11,8 +14,10 @@ import java.util.UUID;
 @Entity
 @Table(name = "pets")
 public class PetEntity {
-    @OneToMany(mappedBy = "alert_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL)
+    private List<AlertEntity> alerts = new ArrayList<>();
     @Id
+    @Column(name = "id")
     private String id;
     @Column(name = "user_id")
     private String userId;

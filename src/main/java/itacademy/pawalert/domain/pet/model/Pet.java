@@ -84,8 +84,8 @@ public class Pet {
 
     public PetEntity toEntity() {
         return new PetEntity(
-                this.userId.toString(),
                 this.petId.toString(),
+                this.userId.toString(),
                 this.chipNumber.value(),
                 this.officialPetName.value(),
                 this.workingPetName.value(),
