@@ -86,16 +86,16 @@ public class Pet {
         return new PetEntity(
                 this.userId.toString(),
                 this.petId.toString(),
-                this.chipNumber.toString(),
-                this.officialPetName.toString(),
-                this.workingPetName.toString(),
+                this.chipNumber.value(),
+                this.officialPetName.value(),
+                this.workingPetName.value(),
                 this.species.toString(),
-                this.breed.toString(),
+                this.breed.value(),
                 this.size.toString(),
-                this.color.toString(),
+                this.color.value(),
                 this.gender.toString(),
-                this.petDescription.toString(),
-                this.petImage.toString()
+                this.petDescription.value(),
+                this.petImage.value()
         );
     }
 

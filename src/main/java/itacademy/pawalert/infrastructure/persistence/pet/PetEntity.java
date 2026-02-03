@@ -1,5 +1,4 @@
 package itacademy.pawalert.infrastructure.persistence.pet;
-import itacademy.pawalert.domain.alert.model.UserId;
 import itacademy.pawalert.domain.pet.model.*;
 import jakarta.persistence.*;
 import lombok.Getter;

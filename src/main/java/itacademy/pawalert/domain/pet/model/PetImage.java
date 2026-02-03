@@ -1,6 +1,5 @@
 package itacademy.pawalert.domain.pet.model;
 
-public class PetImage {
-    public PetImage(String petImage) {
-    }
+public record PetImage(String petImage) {
+    public String value() { return this.petImage; }
 }
