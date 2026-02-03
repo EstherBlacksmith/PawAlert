@@ -10,16 +10,16 @@ public class PetMapper {
     public PetDTO toDTO(Pet pet) {
         return PetDTO.builder()
                 .petId(pet.getPetId().toString())
-                .chipNumber(pet.getChipNumber().toString())
-                .officialPetName(pet.getOfficialPetName().toString())
-                .workingPetName(pet.getWorkingPetName().toString())
+                .chipNumber(pet.getChipNumber().value())
+                .officialPetName(pet.getOfficialPetName().value())
+                .workingPetName(pet.getWorkingPetName().value())
                 .species(pet.getSpecies().name())
-                .breed(pet.getBreed().toString())
+                .breed(pet.getBreed().value())
                 .size(pet.getSize().name())
-                .color(pet.getColor().toString())
+                .color(pet.getColor().value())
                 .gender(pet.getGender().toString())
-                .petDescription(pet.getPetDescription().toString())
-                .petImage(pet.getPetImage().toString())
+                .petDescription(pet.getPetDescription().value())
+                .petImage(pet.getPetImage().value())
                 .build();
     }
 

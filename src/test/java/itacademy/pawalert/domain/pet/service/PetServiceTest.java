@@ -77,7 +77,8 @@ class PetServiceTest {
             // Given
             String newWorkingName = "NewBuddy";
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, newWorkingName, null, null, null, null, null, null, null, null, null
+                    null, newWorkingName,null, null,
+                    null, null, null, null, null, null
             );
 
             when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
@@ -88,7 +89,7 @@ class PetServiceTest {
 
             // Then
             assertNotNull(result);
-            assertEquals(newWorkingName, result.getWorkingPetName().toString());
+            assertEquals(newWorkingName, result.getWorkingPetName().value());
             verify(petRepository).save(any(PetEntity.class));
         }
 
@@ -97,7 +98,8 @@ class PetServiceTest {
         void updatePet_whenUpdatingMultipleFields_updatesAllFields() {
             // Given
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, "NewName", null, "Cat", null, "Small", "White", null, null, null, null
+                    null, "NewName", null, "Cat", null,
+                    "Small", "White", null, null, null
             );
 
             when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
@@ -107,10 +109,10 @@ class PetServiceTest {
             Pet result = petService.updatePet(petId, userId, request);
 
             // Then
-            assertEquals("NewName", result.getWorkingPetName().toString());
+            assertEquals("NewName", result.getWorkingPetName().value());
             assertEquals(Species.CAT, result.getSpecies());
             assertEquals(Size.SMALL, result.getSize());
-            assertEquals("White", result.getColor().toString());
+            assertEquals("White", result.getColor().value());
         }
 
         @Test
@@ -118,7 +120,8 @@ class PetServiceTest {
         void updatePet_whenFieldIsNull_keepsExistingValue() {
             // Given
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, null, null, null, null, "Brown", null, null, null, null
+                    null, null, null, null, null,
+                    null, "Brown", null, null, null
             );
 
             when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
@@ -128,8 +131,8 @@ class PetServiceTest {
             Pet result = petService.updatePet(petId, userId, request);
 
             // Then
-            assertEquals("Brown", result.getColor().toString());
-            assertEquals("Buddy", result.getWorkingPetName().toString()); // Original value
+            assertEquals("Brown", result.getColor().value());
+            assertEquals("Buddy", result.getWorkingPetName().value()); // Original value
             assertEquals(Species.DOG, result.getSpecies()); // Original value
         }
     }
@@ -148,7 +151,8 @@ class PetServiceTest {
             // Given
             String nonExistentPetId = "non-existent-id";
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, "NewName", null, null, null, null, null, null, null, null, null
+                    null, "NewName", null, null, null,
+                    null, null, null, null, null
             );
 
             when(petRepository.findById(nonExistentPetId)).thenReturn(Optional.empty());
@@ -166,7 +170,8 @@ class PetServiceTest {
             // Given
             String differentUserId = UUID.randomUUID().toString();
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, "NewName", null, null, null, null, null, null, null, null, null
+                    null, "NewName", null, null, null,
+                    null, null, null, null, null
             );
 
             when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
@@ -193,7 +198,8 @@ class PetServiceTest {
             // Given
             String newChipNumber = "987654321098765";
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, null, null, null, null, null, null, newChipNumber, null, null
+                    null, null, null, null, null,
+                    null, null, null, newChipNumber, null
             );
 
             when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
@@ -203,7 +209,7 @@ class PetServiceTest {
             Pet result = petService.updatePet(petId, userId, request);
 
             // Then
-            assertEquals(newChipNumber, result.getChipNumber().toString());
+            assertEquals(newChipNumber, result.getChipNumber().value());
         }
 
         @Test
@@ -212,7 +218,8 @@ class PetServiceTest {
             // Given
             String newDescription = "Updated description";
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, newDescription, null, null, null, null, null, null, null, null
+                    null, null, newDescription, null, null,
+                    null, null, null, null, null
             );
 
             when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
@@ -222,7 +229,7 @@ class PetServiceTest {
             Pet result = petService.updatePet(petId, userId, request);
 
             // Then
-            assertEquals(newDescription, result.getPetDescription().toString());
+            assertEquals(newDescription, result.getPetDescription().value());
         }
 
         @Test
@@ -230,7 +237,8 @@ class PetServiceTest {
         void updatePet_whenGenderProvided_updatesGender() {
             // Given
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, null, null, null, null, null, "FEMALE", null, null, null
+                    null, null, null, null, null,
+                    null, null, "FEMALE", null, null
             );
 
             when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
@@ -248,7 +256,8 @@ class PetServiceTest {
         void updatePet_whenSizeProvided_updatesSize() {
             // Given
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, null, null, null, "LARGE", null, null, null, null, null
+                    null, null, null, null, null,
+                    "LARGE", null, null, null, null
             );
 
             when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
@@ -267,7 +276,8 @@ class PetServiceTest {
             // Given
             String newBreed = "Labrador";
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, null, null, newBreed, null, null, null, null, null, null
+                    null, null, null, null, newBreed,
+                    null, null, null, null, null
             );
 
             when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
@@ -277,7 +287,7 @@ class PetServiceTest {
             Pet result = petService.updatePet(petId, userId, request);
 
             // Then
-            assertEquals(newBreed, result.getBreed().toString());
+            assertEquals(newBreed, result.getBreed().value());
         }
 
         @Test
@@ -286,7 +296,8 @@ class PetServiceTest {
             // Given
             String newOfficialName = "Maximilian";
             UpdatePetRequest request = new UpdatePetRequest(
-                    newOfficialName, null, null, null, null, null, null, null, null, null, null
+                    newOfficialName, null, null, null, null,
+                    null, null, null, null, null
             );
 
             when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
@@ -296,7 +307,39 @@ class PetServiceTest {
             Pet result = petService.updatePet(petId, userId, request);
 
             // Then
-            assertEquals(newOfficialName, result.getOfficialPetName().toString());
+            assertEquals(newOfficialName, result.getOfficialPetName().value());
+        }
+
+        @Test
+        @DisplayName("Should not update other fields  when ChipNumber is provided")
+        void updatePet_whenChipNumberProvided_updatesOnlyChipNumber() {
+            // Given
+            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
+            Pet originalPet = petService.findById(petId);
+
+            String newChipNumber = "987654321098765";
+            UpdatePetRequest request = new UpdatePetRequest(
+                    null, null, null, null, null,
+                    null, null, null, newChipNumber, null
+            );
+
+            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
+            when(petRepository.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+
+            // When
+            Pet result = petService.updatePet(petId, userId, request);
+
+            // Then
+            assertEquals(newChipNumber, result.getChipNumber().value());
+            assertEquals(originalPet.getWorkingPetName().value(), result.getWorkingPetName().value());
+            assertEquals(originalPet.getPetId().toString(), result.getPetId().toString());
+            assertEquals(originalPet.getPetDescription().value(), result.getPetDescription().value());
+            assertEquals(originalPet.getColor().value(), result.getColor().value());
+            assertEquals(originalPet.getSize().toString(), result.getSize().toString());
+            assertEquals( originalPet.getSpecies().toString(), result.getSpecies().toString());
+            assertEquals( originalPet.getGender().toString(), result.getGender().toString());
+            assertEquals( originalPet.getOfficialPetName().value(), result.getOfficialPetName().value());
+            assertEquals(originalPet.getUserId().toString(), result.getUserId().toString());
         }
     }
 

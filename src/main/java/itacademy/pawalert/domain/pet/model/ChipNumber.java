@@ -14,4 +14,6 @@ public record ChipNumber(@Size(min = 15, max = 15, message = "The chip must be e
     public boolean isPresent() {
         return chip != null;
     }
+
+    public String value() { return this.chip; }
 }
