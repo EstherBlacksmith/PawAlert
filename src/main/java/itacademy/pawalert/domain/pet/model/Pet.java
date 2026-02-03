@@ -3,13 +3,16 @@ package itacademy.pawalert.domain.pet.model;
 import itacademy.pawalert.domain.alert.model.UserId;
 
 import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
+import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import lombok.Getter;
+
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Getter
 public class Pet {
-    private final UserId userId;
-    private final PetId petId;
+    private final UUID userId;
+    private final UUID petId;
     private final ChipNumber chipNumber;
     private final PetName officialPetName;
     private final PetName workingPetName;
@@ -17,11 +20,12 @@ public class Pet {
     private final Breed breed;
     private final Size size;
     private final Color color;
+    private final Gender gender;
     private final PetDescription petDescription;
     private final PetImage petImage;
 
-    public Pet(UserId userId, PetId petId, ChipNumber chipNumber, PetName officialPetName, PetName workingPetName,
-               Species species, Breed breed, Size size, Color color, PetDescription petDescription, PetImage petImage) {
+    public Pet(UUID userId, UUID petId, ChipNumber chipNumber, PetName officialPetName, PetName workingPetName,
+               Species species, Breed breed, Size size, Color color, Gender gender, PetDescription petDescription, PetImage petImage) {
         this.userId = userId;
         this.petId = petId;
         this.chipNumber = chipNumber;
@@ -31,6 +35,7 @@ public class Pet {
         this.breed = breed;
         this.size = size;
         this.color = color;
+        this.gender = gender;
         this.petDescription = petDescription;
         this.petImage = petImage;
     }
@@ -48,6 +53,7 @@ public class Pet {
         this.color = builder.color;
         this.petDescription = builder.petDescription;
         this.petImage = builder.petImage;
+        this.gender = builder.gender;
     }
 
     public static PetBuilder builder() {
@@ -66,6 +72,7 @@ public class Pet {
         newBuilder.species = this.species;
         newBuilder.breed = this.breed;
         newBuilder.size = this.size;
+        newBuilder.gender = this.gender;
         newBuilder.color = this.color;
         newBuilder.petDescription = this.petDescription;
         newBuilder.petImage = this.petImage;
@@ -75,18 +82,26 @@ public class Pet {
         return newBuilder.build();
     }
 
-
-    //TODO y arreglar el pet mapper y el petbuilder
     public PetEntity toEntity() {
-        return new PetEntity(userId, petId, chipNumber);
+        return new PetEntity(
+                this.userId.toString(),
+                this.petId.toString(),
+                this.chipNumber.toString(),
+                this.officialPetName.toString(),
+                this.workingPetName.toString(),
+                this.species.toString(),
+                this.breed.toString(),
+                this.size.toString(),
+                this.color.toString(),
+                this.gender.toString(),
+                this.petDescription.toString(),
+                this.petImage.toString()
+        );
     }
 
-
-
-
-    private static class PetBuilder {
-        private UserId userId;
-        private PetId petId;
+    public static class PetBuilder {
+        private UUID userId;
+        private UUID petId;
         private ChipNumber chipNumber;
         private PetName officialPetName;
         private PetName workingPetName;
@@ -96,13 +111,14 @@ public class Pet {
         private Color color;
         private PetDescription petDescription;
         private PetImage petImage;
+        private Gender gender;
 
-        public PetBuilder userId(UserId userId) {
+        public PetBuilder userId(UUID userId) {
             this.userId = userId;
             return this;
         }
 
-        public PetBuilder petId(PetId petId) {
+        public PetBuilder petId(UUID petId) {
             this.petId = petId;
             return this;
         }
@@ -151,9 +167,33 @@ public class Pet {
             this.petImage = petImage;
             return this;
         }
+
+        public PetBuilder gender(Gender gender) {
+            this.gender = gender;
+            return this;
+        }
+
         public Pet build() {
             return new Pet(this);
         }
+
+    }
+
+    public Pet apply(UpdatePetRequest request) {
+        return new Pet.PetBuilder()
+                .userId(this.userId)
+                .petId(this.petId)
+                .chipNumber(request.hasChipNumber() ? new ChipNumber(request.chipNumber()) : this.chipNumber)
+                .officialPetName(request.hasOfficialPetName() ? new PetName(request.officialPetName()) : this.officialPetName)
+                .workingPetName(request.hasWorkingPetName() ? new PetName(request.workingPetName()) : this.workingPetName)
+                .species(request.hasSpecies() ? Species.fromString(request.species()) : this.species)
+                .breed(request.hasBreed() ? new Breed(request.breed()) : this.breed)
+                .size(request.hasSize() ? Size.fromString(request.size()) : this.size)
+                .gender(request.hasGender() ? Gender.fromString(request.gender()) : this.gender)
+                .color(request.hasColor() ? new Color(request.color()) : this.color)
+                .petDescription(request.hasPetDescription() ? new PetDescription(request.petDescription()) : this.petDescription)
+                .petImage(request.hasPetImage() ? new PetImage(request.petImage()) :this.petImage)
+                .build();
     }
 }
 
