@@ -2,6 +2,7 @@ package itacademy.pawalert.infrastructure.exception;
 
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
+import itacademy.pawalert.application.service.UserNotFoundException;
 import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
@@ -60,5 +61,12 @@ public class GlobalExceptionHandler {
             PetNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(404, "Pet not found", ex.getMessage()));
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(
+            UserNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(404, "User not found", ex.getMessage()));
     }
 }
