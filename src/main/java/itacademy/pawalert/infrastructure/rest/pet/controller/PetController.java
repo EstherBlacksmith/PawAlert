@@ -1,7 +1,7 @@
 package itacademy.pawalert.infrastructure.rest.pet.controller;
 
 import itacademy.pawalert.domain.pet.model.Pet;
-import itacademy.pawalert.domain.pet.service.PetService;
+import itacademy.pawalert.application.port.inbound.*;
 import itacademy.pawalert.infrastructure.rest.pet.dto.PetDTO;
 
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
@@ -14,17 +14,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/pets")
 public class PetController {
 
+    private final CreatePetUseCase createPetUseCase;
+    private final GetPetUseCase getPetUseCase;
+    private final UpdatePetUseCase updatePetUseCase;
     private final PetMapper petMapper;
-    private final PetService petService;
 
-    public PetController(PetMapper petMapper, PetService petService) {
+    public PetController(CreatePetUseCase createPetUseCase,
+                         GetPetUseCase getPetUseCase,
+                         UpdatePetUseCase updatePetUseCase,
+                         PetMapper petMapper) {
+        this.createPetUseCase = createPetUseCase;
+        this.getPetUseCase = getPetUseCase;
+        this.updatePetUseCase = updatePetUseCase;
         this.petMapper = petMapper;
-        this.petService = petService;
+
     }
 
     @PostMapping
     public Pet createPet(@RequestBody PetDTO petDTO) {
-        return petService.createPet(
+        return createPetUseCase.createPet(
                 petDTO.getUserId(),
                 petDTO.getPetId(),
                 petDTO.getChipNumber(),
@@ -43,7 +51,7 @@ public class PetController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PetDTO> getPet(@PathVariable String id) {
-        Pet pet = petService.findById(id);
+        Pet pet = getPetUseCase.getPetdById(id);
 
         return ResponseEntity.ok(petMapper.toDTO(pet));
     }
@@ -53,7 +61,7 @@ public class PetController {
             @Valid @RequestBody UpdatePetRequest request) {
 
         String userId = getCurrentUserId();
-        Pet updated = petService.updatePet(petId, userId, request);
+        Pet updated = updatePetUseCase.updatePet(petId, userId, request);
 
         return ResponseEntity.ok(petMapper.toDTO(updated));
     }

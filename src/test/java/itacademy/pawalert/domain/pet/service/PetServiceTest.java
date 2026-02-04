@@ -1,6 +1,7 @@
 package itacademy.pawalert.domain.pet.service;
 
 import itacademy.pawalert.application.exception.UnauthorizedException;
+import itacademy.pawalert.application.service.PetService;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.pet.model.*;
 import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
