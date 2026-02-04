@@ -1,6 +1,7 @@
 package itacademy.pawalert.application.service;
 
 
+import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.application.port.inbound.CreatePetUseCase;
 import itacademy.pawalert.application.port.inbound.DeletePetUseCase;
@@ -68,11 +69,17 @@ public class PetService implements
         return savedPet.toDomain();
 
     }
+
     @Override
-    public Pet deletePetdById(String petId) {
-        return petRepositoryPort.findById(petId)
-                .orElseThrow(() -> new PetNotFoundException("Pet not found: " + petId));
+    public void deletePetdById(String petId) {
+        if (!petRepositoryPort.existsById(petId)) {
+            throw new PetNotFoundException("Pet not found: " + petId);
+        }
+        petRepositoryPort.deleteById(petId);
     }
+
+
+
     @Override
     public Pet updatePet(String petId, String userId, UpdatePetRequest request) {
         Pet existing = petRepositoryPort.findById(petId);

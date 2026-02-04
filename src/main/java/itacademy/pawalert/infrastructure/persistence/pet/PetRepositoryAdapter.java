@@ -24,4 +24,14 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
         return petRepository.findById(petId)
                 .map(PetEntity::toDomain);
     }
+
+    @Override
+    public void deleteById(String petId) {
+        petRepository.deleteById(petId);
+    }
+
+    @Override
+    public boolean existsById(String petId) {
+        return petRepository.existsById(petId);
+    }
 }
