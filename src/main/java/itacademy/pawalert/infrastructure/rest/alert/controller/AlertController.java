@@ -1,5 +1,9 @@
 package itacademy.pawalert.infrastructure.rest.alert.controller;
 
+import itacademy.pawalert.application.port.inbound.CreateAlertUseCase;
+import itacademy.pawalert.application.port.inbound.GetAlertUseCase;
+import itacademy.pawalert.application.port.inbound.UpdateAlertStatusUseCase;
+import itacademy.pawalert.application.port.inbound.UpdateAlertUseCase;
 import itacademy.pawalert.application.service.AlertService;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
@@ -14,17 +18,25 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/alerts")
 public class AlertController {
-    private final AlertMapper alertMapper;
+    private final CreateAlertUseCase createAlertUseCase;
+    private final GetAlertUseCase getAlertUseCase;
+    private final UpdateAlertStatusUseCase updateAlertStatusUseCase;
+    private final UpdateAlertUseCase updateAlertUseCase;
     private final AlertService alertService;
+    private final AlertMapper alertMapper;
 
-    public AlertController(AlertMapper alertMapper, AlertService alertService) {
+    public AlertController(AlertMapper alertMapper, AlertService alertService, CreateAlertUseCase createAlertUseCase, GetAlertUseCase getAlertUseCase, UpdateAlertStatusUseCase updateAlertStatusUseCase, UpdateAlertUseCase updateAlertUseCase) {
+        this.createAlertUseCase = createAlertUseCase;
+        this.getAlertUseCase = getAlertUseCase;
+        this.updateAlertStatusUseCase = updateAlertStatusUseCase;
+        this.updateAlertUseCase = updateAlertUseCase;
         this.alertMapper = alertMapper;
         this.alertService = alertService;
     }
 
     @PostMapping
     public ResponseEntity<AlertDTO> createAlert(@RequestBody AlertDTO alertDTO) {
-        Alert created = alertService.createOpenedAlert(alertDTO.getPetId(),
+        Alert created = createAlertUseCase.createOpenedAlert(alertDTO.getPetId(),
                 alertDTO.getTitle(),
                 alertDTO.getDescription(),
                 alertDTO.getUserId()
@@ -36,7 +48,7 @@ public class AlertController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AlertDTO> getAlert(@PathVariable String id) {
-        Alert alert = alertService.findById(id);
+        Alert alert = getAlertUseCase.getAlertById(id);
 
         return ResponseEntity.ok(alertMapper.toDTO(alert));
     }
@@ -45,7 +57,7 @@ public class AlertController {
     public ResponseEntity<AlertDTO> changeStatus(@PathVariable String id,
                                                  @RequestBody StatusChangeRequest request) {
 
-        Alert updated = alertService.changeStatus(
+        Alert updated = updateAlertStatusUseCase.changeStatus(
                 id,
                 request.getNewStatus(),
                 request.getUserId()
@@ -58,7 +70,7 @@ public class AlertController {
     public ResponseEntity<AlertDTO> updateTitle(
             @PathVariable String alertId,
             @RequestBody TitleUpdateRequest titleUpdateRequest) {
-        Alert updated = alertService.updateTitle(alertId,
+        Alert updated = updateAlertUseCase.updateTitle(alertId,
                 String.valueOf(titleUpdateRequest.userId().value()
                 ), String.valueOf(titleUpdateRequest.title().getValue()));
 
@@ -69,7 +81,7 @@ public class AlertController {
     public ResponseEntity<AlertDTO> updateDescription(
             @PathVariable String alertId,
             @RequestBody DescriptionUpdateRequest descriptionUpdateRequest) {
-        Alert updated = alertService.updateDescription(alertId,
+        Alert updated = updateAlertUseCase.updateDescription(alertId,
                 String.valueOf(descriptionUpdateRequest.userId().value()
                 ), String.valueOf(descriptionUpdateRequest.description()));
 

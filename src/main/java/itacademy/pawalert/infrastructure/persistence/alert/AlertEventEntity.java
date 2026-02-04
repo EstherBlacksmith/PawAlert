@@ -17,27 +17,20 @@ public class AlertEventEntity {
 
     @Id
     private String id;
-
     @Column(name = "event_type")
     private String eventType;
-
     @Column(name = "old_value")
     private String oldValue;
-
     @Column(name = "new_value")
     private String newValue;
     @Column(name = "previous_status")
     private String previousStatus;
-
     @Column(name = "new_status")
     private String newStatus;
-
     @Column(name = "changed_at")
     private LocalDateTime changedAt;
-
     @Column(name = "changed_by_user_id")
     private String changedByUserId;
-
     @ManyToOne
     @JoinColumn(name = "alert_id")
     private AlertEntity alert;
@@ -68,38 +61,62 @@ public class AlertEventEntity {
     }
 
     // Conversion Domain -> Entity
-    public static AlertEventEntity fromDomain(DomainEvent event, AlertEntity alert) {
+    public static AlertEventEntity fromDomain(AlertEvent event, AlertEntity alert) {
         LocalDateTime changedAt = event.getChangedAt().value();
-        String userId = event.getUserId().value();
+        String userId = event.getChangedBy().value();
 
-        String previousStatus = null;
-        String newStatus = null;
+        String previousStatus = event.getPreviousStatus() != null
+                ? event.getPreviousStatus().name()
+                : null;
+        String newStatus = event.getNewStatus() != null
+                ? event.getNewStatus().name()
+                : null;
+        String eventType = event.getEventType().name();
 
-        if (event instanceof StatusChangedEvent statusEvent) {
-            previousStatus = statusEvent.getPreviousStatus().name();
-            newStatus = statusEvent.getNewStatus().name();
+        // Usar el constructor correcto según el tipo de evento
+        if (event.getOldValue() != null) {
+            // TITLE_CHANGED o DESCRIPTION_CHANGED
+            return new AlertEventEntity(
+                    event.getId().toString(),
+                    eventType,
+                    event.getOldValue(),
+                    event.getNewValue(),
+                    changedAt,
+                    userId
+            );
+        } else {
+            // STATUS_CHANGED
+            return new AlertEventEntity(
+                    event.getId().toString(),
+                    previousStatus,
+                    newStatus,
+                    changedAt,
+                    userId
+            );
         }
-
-        return new AlertEventEntity(
-                event.getAlertId().toString(),
-                previousStatus,
-                newStatus,
-                changedAt,
-                userId
-        );
-
     }
 
     // Conversion Entity -> Domain
     public AlertEvent toDomain() {
+        // EventType from String to enum
+        EventType type = EventType.valueOf(eventType);
+
+
         StatusNames previous = previousStatus != null
                 ? StatusNames.valueOf(previousStatus)
                 : null;
 
-        return AlertEvent.create(
-                previous,
-                StatusNames.valueOf(newStatus),
-                new UserId(changedByUserId)
-        );
+
+        StatusNames newStat = newStatus != null
+                ? StatusNames.valueOf(newStatus)
+                : null;
+
+
+        return switch (type) {
+            case STATUS_CHANGED -> AlertEvent.createStatusEvent(previous, newStat, new UserId(changedByUserId));
+            case TITLE_CHANGED -> AlertEvent.createTitleEvent(oldValue, newValue, new UserId(changedByUserId));
+            case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(oldValue, newValue, new UserId(changedByUserId));
+        };
     }
+
 }

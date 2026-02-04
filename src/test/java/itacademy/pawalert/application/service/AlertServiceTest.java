@@ -3,6 +3,8 @@ package itacademy.pawalert.application.service;
 
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
+import itacademy.pawalert.application.port.outbound.AlertEventRepositoryPort;
+import itacademy.pawalert.application.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertEvent;
@@ -37,10 +39,10 @@ import static org.mockito.Mockito.*;
 class AlertServiceTest {
 
     @Mock
-    private AlertRepository alertRepository;
+    private AlertRepositoryPort alertRepository;
 
     @Mock
-    private AlertEventRepository eventRepository;
+    private AlertEventRepositoryPort eventRepository;
 
     @InjectMocks
     private AlertService alertService;
@@ -52,33 +54,19 @@ class AlertServiceTest {
     private String alertId;
     private UserId userId;
     private UUID petId;
-    private AlertEntity openedEntity;
-    private AlertEntity seenEntity;
-    private AlertEntity safeEntity;
-    private AlertEntity closedEntity;
+    private Alert testAlert;
 
     @BeforeEach
     void setUp() {
         // Initialize IDs
         alertId = UUID.randomUUID().toString();
-        userId = UserId.fromUUID(UUID.randomUUID());
-        petId = UUID.randomUUID();
-
-        // USING THE FACTORY METHOD to create entities
-        // The factory ensures valid state transitions
-
-        openedEntity = TestAlertFactory.createOpenedAlertEntity(
-                UUID.fromString(alertId), petId, userId.toString()
+        userId = new UserId(UUID.randomUUID().toString());
+        testAlert = TestAlertFactory.createOpenedAlert(
+                UUID.fromString(alertId),
+                UUID.randomUUID(),
+                userId
         );
 
-        seenEntity = TestAlertFactory.createSeenAlertEntity(
-                UUID.fromString(alertId), petId, userId.toString());
-
-        safeEntity = TestAlertFactory.createSafeAlertEntity(
-                UUID.fromString(alertId), petId, userId.toString());
-
-        closedEntity = TestAlertFactory.createClosedAlertEntity(
-                UUID.fromString(alertId), petId, userId.toString());
 
         // Configure shared mocks
         lenient().when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -102,7 +90,7 @@ class AlertServiceTest {
     void shouldThrowWhenAlertAlreadyClosed() {
 
         // Given
-        when(alertRepository.findById(alertId)).thenReturn(Optional.of(closedEntity));
+        when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
         // When/Then
         assertThrows(InvalidAlertStatusChange.class,
@@ -121,7 +109,7 @@ class AlertServiceTest {
         String newTitle = "Dog found in the park";
 
         Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Original Title", "Description");
-        when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert.toEntity()));
+        when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
         when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         // When
@@ -144,7 +132,7 @@ class AlertServiceTest {
         String otherUserId = "user-456";
 
         Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Description");
-        when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert.toEntity()));
+        when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
 
         // When/Then
         assertThrows(UnauthorizedException.class,
@@ -166,7 +154,7 @@ class AlertServiceTest {
         String newDescription = "The dog is brown, has a blue collar";
 
         Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Original Description");
-        when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert.toEntity()));
+        when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
         when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         // When
@@ -201,13 +189,13 @@ class AlertServiceTest {
         Alert closedAlert = TestAlertFactory.createClosedAlert(
                 UUID.fromString(alertId), UUID.randomUUID(), new UserId(creatorId)
         );
-        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(closedAlert.toEntity()));
+        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(closedAlert));
 
         // When/Then
         assertThrows(UnauthorizedException.class,
                 () -> alertService.updateTitle(alertId, creatorId, "New Title"));
 
-        verify(eventRepository, never()).save(any(AlertEventEntity.class));
+        verify(eventRepository, never()).save(any(AlertEvent.class));
     }
 
     @Test
@@ -220,13 +208,13 @@ class AlertServiceTest {
         Alert closedAlert = TestAlertFactory.createClosedAlert(
                 UUID.fromString(alertId), UUID.randomUUID(), new UserId(creatorId)
         );
-        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(closedAlert.toEntity()));
+        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(closedAlert));
 
         // When/Then
         assertThrows(UnauthorizedException.class,
                 () -> alertService.updateDescription(alertId, creatorId, "New Description"));
 
-        verify(eventRepository, never()).save(any(AlertEventEntity.class));
+        verify(eventRepository, never()).save(any(AlertEvent.class));
     }
 
     @Test
@@ -238,14 +226,14 @@ class AlertServiceTest {
         String otherUserId = "user-456";
 
         Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Description");
-        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(alert.toEntity()));
+        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(alert));
 
         // When/Then
         assertThrows(UnauthorizedException.class,
                 () -> alertService.updateTitle(alertId, otherUserId, "New Title"));
 
         // Key assertion: NO event saved
-        verify(eventRepository, never()).save(any(AlertEventEntity.class));
+        verify(eventRepository, never()).save(any(AlertEvent.class));
     }
 
     @Test
@@ -257,14 +245,14 @@ class AlertServiceTest {
         String otherUserId = "user-456";
 
         Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Description");
-        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(alert.toEntity()));
+        when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(alert));
 
         // When/Then
         assertThrows(UnauthorizedException.class,
                 () -> alertService.updateDescription(alertId, otherUserId, "New Description"));
 
         // Key assertion: NO event saved
-        verify(eventRepository, never()).save(any(AlertEventEntity.class));
+        verify(eventRepository, never()).save(any(AlertEvent.class));
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -281,9 +269,9 @@ class AlertServiceTest {
             String title = "Test Alert";
             String description = "Test description";
 
-            when(alertRepository.save(any(AlertEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(alertRepository.save(any(Alert.class))).thenAnswer(inv -> inv.getArgument(0));
 
-            when(eventRepository.save(any(AlertEventEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(eventRepository.save(any(AlertEvent.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             Alert result = alertService.createOpenedAlert(petId.toString(), title, description, userId.toString());
@@ -291,21 +279,21 @@ class AlertServiceTest {
             // Then
             assertNotNull(result);
             assertEquals(StatusNames.OPENED, result.currentStatus().getStatusName());
-            verify(eventRepository, times(1)).save(any(AlertEventEntity.class));
+            verify(eventRepository, times(1)).save(any(AlertEvent.class));
         }
 
         @Test
         @DisplayName("Should call alertRepository.save() when creating alert")
         void shouldSaveAlertWhenCreating() {
             // Given
-            when(alertRepository.save(any(AlertEntity.class))).thenAnswer(inv -> inv.getArgument(0));
-            when(eventRepository.save(any(AlertEventEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(alertRepository.save(any(Alert.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(eventRepository.save(any(AlertEvent.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             alertService.createOpenedAlert(petId.toString(), "Title", "Desc", userId.toString());
 
             // Then
-            verify(alertRepository, times(1)).save(any(AlertEntity.class));
+            verify(alertRepository, times(1)).save(any(Alert.class));
         }
     }
 
@@ -317,10 +305,10 @@ class AlertServiceTest {
         @DisplayName("Should return alert when found")
         void shouldReturnAlertWhenFound() {
             // Given
-            when(alertRepository.findById(alertId)).thenReturn(Optional.of(openedEntity));
+            when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.findById(alertId);
+            Alert result = alertService.getAlertById(alertId);
 
             // Then
             assertNotNull(result);
@@ -335,7 +323,7 @@ class AlertServiceTest {
             when(alertRepository.findById("non-existent")).thenReturn(Optional.empty());
 
             // When/Then
-            assertThrows(AlertNotFoundException.class, () -> alertService.findById("non-existent"));
+            assertThrows(AlertNotFoundException.class, () -> alertService.getAlertById("non-existent"));
         }
     }
 
@@ -356,13 +344,13 @@ class AlertServiceTest {
                     "user-1"
             );
 
-            when(alertRepository.findById(alertId)).thenReturn(Optional.of(openedEntity));
+            when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
             Alert result = alertService.changeStatus(alertId, StatusNames.SEEN, userId.toString());
 
             // Then - Expect 2 saves: initial event (already saved) + change event
-            verify(eventRepository, times(1)).save(any(AlertEventEntity.class));
+            verify(eventRepository, times(1)).save(any(AlertEvent.class));
             assertEquals(StatusNames.SEEN, result.currentStatus().getStatusName());
         }
 
@@ -381,7 +369,7 @@ class AlertServiceTest {
         @DisplayName("Should throw exception when alert is already closed")
         void shouldThrowWhenAlertAlreadyClosed() {
             // Given
-            when(alertRepository.findById(alertId)).thenReturn(Optional.of(closedEntity));
+            when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When/Then
             assertThrows(InvalidAlertStatusChange.class,
@@ -397,7 +385,7 @@ class AlertServiceTest {
         @DisplayName("markAsSeen should delegate to changeStatus")
         void markAsSeenShouldDelegate() {
             // Given
-            when(alertRepository.findById(alertId)).thenReturn(Optional.of(openedEntity));
+            when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
             Alert result = alertService.markAsSeen(alertId, userId.toString());
@@ -410,7 +398,7 @@ class AlertServiceTest {
         @DisplayName("markAsSafe should delegate to changeStatus")
         void markAsSafeShouldDelegate() {
             // Given
-            when(alertRepository.findById(alertId)).thenReturn(Optional.of(seenEntity));
+            when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
             Alert result = alertService.markAsSafe(alertId, userId.toString());
@@ -423,7 +411,7 @@ class AlertServiceTest {
         @DisplayName("close should delegate to changeStatus")
         void closeShouldDelegate() {
             // Given
-            when(alertRepository.findById(alertId)).thenReturn(Optional.of(safeEntity));
+            when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
             Alert result = alertService.markAsClose(alertId, userId.toString());
@@ -443,8 +431,13 @@ class AlertServiceTest {
             // Given
             String testAlertId = "123";
 
-            AlertEventEntity event1 = new AlertEventEntity("event-1", null, "OPENED", java.time.LocalDateTime.now().minusHours(1), "user-1");
-            AlertEventEntity event2 = new AlertEventEntity("event-2", "OPENED", "SEEN", java.time.LocalDateTime.now(), "user-2");
+            AlertEvent event1 = AlertEvent.createStatusEvent(
+                    StatusNames.OPENED, StatusNames.SEEN, new UserId("user-1")
+            );
+
+            AlertEvent event2 = AlertEvent.createStatusEvent(
+                    StatusNames.SEEN, StatusNames.CLOSED, new UserId("user-2")
+            );
 
             when(eventRepository.findByAlertIdOrderByChangedAtDesc(testAlertId))
                     .thenReturn(Arrays.asList(event2, event1));

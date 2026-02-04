@@ -78,11 +78,11 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PatchMapping("/email/{email}")
+  /*  @PatchMapping("/email/{email}")
     public ResponseEntity<User> updateUsername(@PathVariable String email, @RequestBody UpdateUserRequest updateUserRequest) {
         User user = userService.updateUsername(email);
         return ResponseEntity.ok(user);
     }
 
-
+*/
 }
