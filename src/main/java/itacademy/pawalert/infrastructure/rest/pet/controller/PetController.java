@@ -55,6 +55,7 @@ public class PetController {
 
         return ResponseEntity.ok(petMapper.toDTO(pet));
     }
+
     @PatchMapping("/{petId}")
     public ResponseEntity<PetDTO> updatePet(
             @PathVariable String petId,

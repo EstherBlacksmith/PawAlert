@@ -10,4 +10,8 @@ public interface PetRepositoryPort {
     PetEntity save(PetEntity entity);
 
     Optional<Pet> findById(String petId);
+
+   void deleteById(String petId);
+
+    boolean existsById(String petId);
 }
