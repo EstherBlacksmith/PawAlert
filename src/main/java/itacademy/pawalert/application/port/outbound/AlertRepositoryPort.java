@@ -13,4 +13,6 @@ public interface AlertRepositoryPort {
     List<Alert> findAllByPetId(String petId);
 
     boolean existsById(String alertId);
+
+    void deleteById(String alertId);
 }

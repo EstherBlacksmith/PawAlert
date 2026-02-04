@@ -1,9 +1,6 @@
 package itacademy.pawalert.infrastructure.rest.alert.controller;
 
-import itacademy.pawalert.application.port.inbound.CreateAlertUseCase;
-import itacademy.pawalert.application.port.inbound.GetAlertUseCase;
-import itacademy.pawalert.application.port.inbound.UpdateAlertStatusUseCase;
-import itacademy.pawalert.application.port.inbound.UpdateAlertUseCase;
+import itacademy.pawalert.application.port.inbound.*;
 import itacademy.pawalert.application.service.AlertService;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
@@ -15,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/alerts")
 public class AlertController {
@@ -22,16 +21,16 @@ public class AlertController {
     private final GetAlertUseCase getAlertUseCase;
     private final UpdateAlertStatusUseCase updateAlertStatusUseCase;
     private final UpdateAlertUseCase updateAlertUseCase;
-    private final AlertService alertService;
+    private final DeleteAlertUseCase deleteAlertUseCase;
     private final AlertMapper alertMapper;
 
-    public AlertController(AlertMapper alertMapper, AlertService alertService, CreateAlertUseCase createAlertUseCase, GetAlertUseCase getAlertUseCase, UpdateAlertStatusUseCase updateAlertStatusUseCase, UpdateAlertUseCase updateAlertUseCase) {
+    public AlertController(AlertMapper alertMapper, AlertService alertService, CreateAlertUseCase createAlertUseCase, GetAlertUseCase getAlertUseCase, UpdateAlertStatusUseCase updateAlertStatusUseCase, UpdateAlertUseCase updateAlertUseCase, DeleteAlertUseCase deleteAlertUseCase) {
         this.createAlertUseCase = createAlertUseCase;
         this.getAlertUseCase = getAlertUseCase;
         this.updateAlertStatusUseCase = updateAlertStatusUseCase;
         this.updateAlertUseCase = updateAlertUseCase;
         this.alertMapper = alertMapper;
-        this.alertService = alertService;
+        this.deleteAlertUseCase = deleteAlertUseCase;
     }
 
     @PostMapping
@@ -51,6 +50,12 @@ public class AlertController {
         Alert alert = getAlertUseCase.getAlertById(id);
 
         return ResponseEntity.ok(alertMapper.toDTO(alert));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAlert(@PathVariable String id) {
+         deleteAlertUseCase.deleteAlertById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/status")
