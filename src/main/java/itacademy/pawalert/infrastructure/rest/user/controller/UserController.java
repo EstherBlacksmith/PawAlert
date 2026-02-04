@@ -1,8 +1,10 @@
 package itacademy.pawalert.infrastructure.rest.user.controller;
 
-import itacademy.pawalert.application.service.UserService;
+import itacademy.pawalert.application.port.inbound.CreateUserUseCase;
+import itacademy.pawalert.application.port.inbound.DeleteUserUseCase;
+import itacademy.pawalert.application.port.inbound.GetUserUseCase;
+import itacademy.pawalert.application.port.inbound.UpdateUserUseCase;
 import itacademy.pawalert.domain.user.User;
-import itacademy.pawalert.infrastructure.persistence.user.UserRepositoryAdapter;
 import itacademy.pawalert.infrastructure.rest.user.dto.CreateUserRequest;
 import itacademy.pawalert.infrastructure.rest.user.dto.UpdateUserRequest;
 import org.springframework.http.HttpStatus;
@@ -16,35 +18,41 @@ import java.util.UUID;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserService userService;
-    private final UserRepositoryAdapter userRepositoryAdapter;
+    private final CreateUserUseCase createUserUseCase;
+    private final GetUserUseCase getUserUseCase;
+    private final UpdateUserUseCase updateUserUseCase;
+    private final DeleteUserUseCase deleteUserUseCase;
 
-    public UserController(UserService userService, UserRepositoryAdapter userRepositoryAdapter) {
-        this.userService = userService;
-        this.userRepositoryAdapter = userRepositoryAdapter;
+    public UserController(CreateUserUseCase createUserUseCase,
+                          GetUserUseCase getUserUseCase,
+                          UpdateUserUseCase updateUserUseCase,
+                          DeleteUserUseCase deleteUserUseCase) {
+
+        this.createUserUseCase = createUserUseCase;
+        this.getUserUseCase = getUserUseCase;
+        this.updateUserUseCase = updateUserUseCase;
+        this.deleteUserUseCase = deleteUserUseCase;
     }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody CreateUserRequest request) {
-        if (userService.existsByUsername(request.getUsername())) {
+        if (getUserUseCase.existsByUsername(request.getUsername())) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Username already exists"));
         }
 
-        if (userService.existsByEmail(request.getEmail())) {
+        if (getUserUseCase.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Email already exists"));
         }
 
-        User user = new User(
-                UUID.randomUUID(),
+        User saved = createUserUseCase.register(
                 request.username(),
-                request.email(),
                 request.fullName(),
-                request.phoneNumber()
+                request.email(),
+                request.phoneNumber(),
+                request.password()
         );
-
-        User saved = userRepositoryAdapter.saveWithPlainPassword(user, request.password());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of(
@@ -55,34 +63,34 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable String id) {
-        User user = userService.findById(id);
+    public ResponseEntity<User> getUserBuId(@PathVariable String id) {
+        User user = getUserUseCase.getById(id);
         return ResponseEntity.ok(user);
     }
 
     @GetMapping("/username/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
-        User user = userService.findByUsername(username);
+        User user = getUserUseCase.getByUsername(username);
         return ResponseEntity.ok(user);
     }
 
     @GetMapping("/email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
-        User user = userService.findByEmail(email);
+        User user = getUserUseCase.getByEmail(email);
         return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/email/{email}")
-    public ResponseEntity<User> deleteUserByEmail(@PathVariable String email) {
-        User user = userService.deleteByEmail(email);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<Void> deleteUserByEmail(@PathVariable String email) {
+        deleteUserUseCase.deleteByEmail(email);
+        return ResponseEntity.noContent().build();
     }
 
-  /*  @PatchMapping("/email/{email}")
+    @PatchMapping("/email/{email}")
     public ResponseEntity<User> updateUsername(@PathVariable String email, @RequestBody UpdateUserRequest updateUserRequest) {
-        User user = userService.updateUsername(email);
+        User user = updateUserUseCase.updateUsername(email,updateUserRequest.newUsername());
         return ResponseEntity.ok(user);
     }
 
-*/
+
 }
