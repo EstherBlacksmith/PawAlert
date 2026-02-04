@@ -1,4 +1,4 @@
-package itacademy.pawalert.infrastructure.rest.auth.dto;
+package itacademy.pawalert.infrastructure.rest.auth;
 
 public record AuthResponse(
         String token,

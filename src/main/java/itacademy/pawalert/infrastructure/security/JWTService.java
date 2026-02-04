@@ -14,6 +14,16 @@ public class JWTService {
     private static final long EXPIRATION = 3600000; // 1 hour
     private static final String SECRET = "miClaveSecretaQueDebeSerMuyLarga123456";
 
+    //This method is for generate the token only with the username
+    public String generateToken(String username) {
+        return Jwts.builder()
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
