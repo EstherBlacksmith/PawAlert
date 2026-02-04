@@ -36,12 +36,12 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody CreateUserRequest request) {
-        if (getUserUseCase.existsByUsername(request.getUsername())) {
+        if (getUserUseCase.existsByUsername(request.username())) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Username already exists"));
         }
 
-        if (getUserUseCase.existsByEmail(request.getEmail())) {
+        if (getUserUseCase.existsByEmail(request.email())) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Email already exists"));
         }

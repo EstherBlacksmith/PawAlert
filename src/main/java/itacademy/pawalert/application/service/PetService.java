@@ -31,8 +31,6 @@ public class PetService implements
         this.petRepositoryPort = petRepositoryPort;
     }
 
-
-
     @Override
     public Pet createPet(String userId, String petId, String chipNumber, String officialPetName, String workingPetName,
                          String species, String breed, String size, String color, String gender, String petDescription,
@@ -78,11 +76,9 @@ public class PetService implements
         petRepositoryPort.deleteById(petId);
     }
 
-
-
     @Override
     public Pet updatePet(String petId, String userId, UpdatePetRequest request) {
-        Pet existing = petRepositoryPort.findById(petId);
+        Pet existing = petRepositoryPort.findById(petId).orElseThrow(()->new PetNotFoundException("Pet not found"));
 
         checkOwnership(existing, userId);
 
@@ -128,7 +124,7 @@ public class PetService implements
 
     @Override
     public Pet getPetdById(String petId) {
-        return null;
+        return petRepositoryPort.findById(petId).orElseThrow(()->new PetNotFoundException("Pet not found"));
     }
 }
 
