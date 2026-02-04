@@ -32,3 +32,13 @@ CREATE TABLE IF NOT EXISTS pets (
     pet_image TEXT,
     created_at TIMESTAMP NOT NULL
     );
+
+CREATE TABLE IF NOT EXISTS users (
+    id VARCHAR(255) PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255),
+    phone_number VARCHAR(50),
+    created_at TIMESTAMP NOT NULL
+    );
