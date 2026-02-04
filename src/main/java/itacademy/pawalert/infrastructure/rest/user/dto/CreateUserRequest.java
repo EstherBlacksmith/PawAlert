@@ -7,9 +7,4 @@ public record CreateUserRequest(
         String fullName,
         String phoneNumber
 ) {
-    public String getEmail() {
-    }
-
-    public String getUsername() {
-    }
 }
