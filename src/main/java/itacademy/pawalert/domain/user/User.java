@@ -1,5 +1,7 @@
 package itacademy.pawalert.domain.user;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.UUID;
 
 public class User {
@@ -23,4 +25,8 @@ public class User {
     public String getEmail() { return email; }
     public String getFullName() { return fullName; }
     public String getPhoneNumber() { return phoneNumber; }
+
+    public @Nullable String getPassword() {
+        return phoneNumber;
+    }
 }
