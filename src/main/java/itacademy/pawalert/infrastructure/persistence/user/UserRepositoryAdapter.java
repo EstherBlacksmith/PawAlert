@@ -60,7 +60,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         return saved.toDomain();
     }
 
-
+    @Override
     public User saveWithPlainPassword(User user, String plainPassword) {
         // Hash the password here (adapter responsibility)
         String hashedPassword = passwordEncoder.encode(plainPassword);

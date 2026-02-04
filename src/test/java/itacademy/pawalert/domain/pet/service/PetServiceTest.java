@@ -5,7 +5,7 @@ import itacademy.pawalert.application.service.PetService;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.pet.model.*;
 import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
-import itacademy.pawalert.infrastructure.persistence.pet.PetRepository;
+import itacademy.pawalert.application.port.outbound.PetRepositoryPort;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 class PetServiceTest {
 
     @Mock
-    private PetRepository petRepository;
+    private PetRepositoryPort petRepositoryPort;
 
     @InjectMocks
     private PetService petService;
@@ -82,8 +82,8 @@ class PetServiceTest {
                     null, null, null, null, null, null
             );
 
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
-            when(petRepository.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -91,7 +91,7 @@ class PetServiceTest {
             // Then
             assertNotNull(result);
             assertEquals(newWorkingName, result.getWorkingPetName().value());
-            verify(petRepository).save(any(PetEntity.class));
+            verify(petRepositoryPort).save(any(PetEntity.class));
         }
 
         @Test
@@ -103,8 +103,8 @@ class PetServiceTest {
                     "Small", "White", null, null, null
             );
 
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
-            when(petRepository.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -125,8 +125,8 @@ class PetServiceTest {
                     null, "Brown", null, null, null
             );
 
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
-            when(petRepository.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -156,13 +156,13 @@ class PetServiceTest {
                     null, null, null, null, null
             );
 
-            when(petRepository.findById(nonExistentPetId)).thenReturn(Optional.empty());
+            when(petRepositoryPort.findById(nonExistentPetId)).thenReturn(Optional.empty());
 
             // When/Then
             assertThrows(PetNotFoundException.class,
                     () -> petService.updatePet(nonExistentPetId, userId, request));
 
-            verify(petRepository, never()).save(any(PetEntity.class));
+            verify(petRepositoryPort, never()).save(any(PetEntity.class));
         }
 
         @Test
@@ -175,13 +175,13 @@ class PetServiceTest {
                     null, null, null, null, null
             );
 
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
 
             // When/Then
             assertThrows(UnauthorizedException.class,
                     () -> petService.updatePet(petId, differentUserId, request));
 
-            verify(petRepository, never()).save(any(PetEntity.class));
+            verify(petRepositoryPort, never()).save(any(PetEntity.class));
         }
     }
 
@@ -203,8 +203,8 @@ class PetServiceTest {
                     null, null, null, newChipNumber, null
             );
 
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
-            when(petRepository.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -223,8 +223,8 @@ class PetServiceTest {
                     null, null, null, null, null
             );
 
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
-            when(petRepository.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -242,8 +242,8 @@ class PetServiceTest {
                     null, null, "FEMALE", null, null
             );
 
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
-            when(petRepository.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -261,8 +261,8 @@ class PetServiceTest {
                     "LARGE", null, null, null, null
             );
 
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
-            when(petRepository.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -281,8 +281,8 @@ class PetServiceTest {
                     null, null, null, null, null
             );
 
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
-            when(petRepository.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -301,8 +301,8 @@ class PetServiceTest {
                     null, null, null, null, null
             );
 
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
-            when(petRepository.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -315,8 +315,8 @@ class PetServiceTest {
         @DisplayName("Should not update other fields  when ChipNumber is provided")
         void updatePet_whenChipNumberProvided_updatesOnlyChipNumber() {
             // Given
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
-            Pet originalPet = petService.findById(petId);
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            Pet originalPet = petService.getPetdById(petId);
 
             String newChipNumber = "987654321098765";
             UpdatePetRequest request = new UpdatePetRequest(
@@ -324,8 +324,8 @@ class PetServiceTest {
                     null, null, null, newChipNumber, null
             );
 
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
-            when(petRepository.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -356,26 +356,26 @@ class PetServiceTest {
         @DisplayName("Should return pet when found")
         void findById_whenFound_returnsPet() {
             // Given
-            when(petRepository.findById(petId)).thenReturn(Optional.of(testPetEntity));
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
 
             // When
-            Pet result = petService.findById(petId);
+            Pet result = petService.getPetdById(petId);
 
             // Then
             assertNotNull(result);
             assertEquals(petId, result.getPetId().toString());
-            verify(petRepository).findById(petId);
+            verify(petRepositoryPort).findById(petId);
         }
 
         @Test
         @DisplayName("Should throw PetNotFoundException when not found")
         void findById_whenNotFound_throwsException() {
             // Given
-            when(petRepository.findById("non-existent")).thenReturn(Optional.empty());
+            when(petRepositoryPort.findById("non-existent")).thenReturn(Optional.empty());
 
             // When/Then
             assertThrows(PetNotFoundException.class,
-                    () -> petService.findById("non-existent"));
+                    () -> petService.getPetdById("non-existent"));
         }
     }
 }

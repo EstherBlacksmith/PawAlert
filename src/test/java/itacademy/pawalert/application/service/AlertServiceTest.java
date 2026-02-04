@@ -59,11 +59,12 @@ class AlertServiceTest {
     @BeforeEach
     void setUp() {
         // Initialize IDs
+        petId = UUID.randomUUID();
         alertId = UUID.randomUUID().toString();
         userId = new UserId(UUID.randomUUID().toString());
         testAlert = TestAlertFactory.createOpenedAlert(
                 UUID.fromString(alertId),
-                UUID.randomUUID(),
+                petId,
                 userId
         );
 
@@ -90,7 +91,10 @@ class AlertServiceTest {
     void shouldThrowWhenAlertAlreadyClosed() {
 
         // Given
-        when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
+        Alert closedAlert = TestAlertFactory.createClosedAlert(
+                UUID.fromString(alertId), petId, userId
+        );
+        when(alertRepository.findById(alertId)).thenReturn(Optional.of(closedAlert));
 
         // When/Then
         assertThrows(InvalidAlertStatusChange.class,
@@ -364,17 +368,6 @@ class AlertServiceTest {
             assertThrows(AlertNotFoundException.class,
                     () -> alertService.changeStatus("non-existent", StatusNames.SEEN, userId.toString()));
         }
-
-        @Test
-        @DisplayName("Should throw exception when alert is already closed")
-        void shouldThrowWhenAlertAlreadyClosed() {
-            // Given
-            when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
-
-            // When/Then
-            assertThrows(InvalidAlertStatusChange.class,
-                    () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId.toString()));
-        }
     }
 
     @Nested
@@ -429,18 +422,17 @@ class AlertServiceTest {
         @DisplayName("Should return alert history")
         void shouldReturnAlertHistory() {
             // Given
-            String testAlertId = "123";
-
             AlertEvent event1 = AlertEvent.createStatusEvent(
-                    StatusNames.OPENED, StatusNames.SEEN, new UserId("user-1")
+                    StatusNames.OPENED, StatusNames.SEEN, new UserId("user-2")
             );
 
             AlertEvent event2 = AlertEvent.createStatusEvent(
-                    StatusNames.SEEN, StatusNames.CLOSED, new UserId("user-2")
+                    StatusNames.SEEN, StatusNames.CLOSED, new UserId("user-1")
             );
+            String testAlertId = "123";
 
             when(eventRepository.findByAlertIdOrderByChangedAtDesc(testAlertId))
-                    .thenReturn(Arrays.asList(event2, event1));
+                    .thenReturn(Arrays.asList(event1, event2));
 
             // When
             List<AlertEvent> history = alertService.getAlertHistory(testAlertId);
@@ -449,7 +441,7 @@ class AlertServiceTest {
             assertNotNull(history);
             assertEquals(2, history.size());
             assertEquals(StatusNames.SEEN, history.get(0).getNewStatus());
-            assertEquals(StatusNames.OPENED, history.get(1).getNewStatus());
+            assertEquals(StatusNames.CLOSED, history.get(1).getNewStatus());
 
         }
     }
