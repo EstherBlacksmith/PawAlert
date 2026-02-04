@@ -1,27 +1,38 @@
-package itacademy.pawalert.domain.pet.service;
+package itacademy.pawalert.application.service;
+
 
 import itacademy.pawalert.application.exception.UnauthorizedException;
+import itacademy.pawalert.application.port.inbound.CreatePetUseCase;
+import itacademy.pawalert.application.port.inbound.DeletePetUseCase;
+import itacademy.pawalert.application.port.inbound.GetPetUseCase;
+import itacademy.pawalert.application.port.inbound.UpdatePetUseCase;
+import itacademy.pawalert.application.port.outbound.PetRepositoryPort;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.pet.model.*;
 
 import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
-import itacademy.pawalert.infrastructure.persistence.pet.PetRepository;
-
-
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
-public class PetService {
+public class PetService implements
+        CreatePetUseCase,
+        DeletePetUseCase,
+        GetPetUseCase,
+        UpdatePetUseCase
+{
 
-    private final PetRepository petRepository;
+    private final PetRepositoryPort petRepositoryPort;
 
-    public PetService(PetRepository petRepository) {
-        this.petRepository = petRepository;
+    public PetService(PetRepositoryPort petRepositoryPort) {
+        this.petRepositoryPort = petRepositoryPort;
     }
 
+
+
+    @Override
     public Pet createPet(String userId, String petId, String chipNumber, String officialPetName, String workingPetName,
                          String species, String breed, String size, String color, String gender, String petDescription,
                          String petImage) {
@@ -52,20 +63,19 @@ public class PetService {
                 .build();
 
         PetEntity entity = pet.toEntity();
-        PetEntity savedPet = petRepository.save(entity);
+        PetEntity savedPet = petRepositoryPort.save(entity);
 
         return savedPet.toDomain();
 
     }
-
-    public Pet findById(String petId) {
-        return petRepository.findById(petId)
-                .map(PetEntity::toDomain)
+    @Override
+    public Pet deletePetdById(String petId) {
+        return petRepositoryPort.findById(petId)
                 .orElseThrow(() -> new PetNotFoundException("Pet not found: " + petId));
     }
-
+    @Override
     public Pet updatePet(String petId, String userId, UpdatePetRequest request) {
-        Pet existing = findById(petId);
+        Pet existing = petRepositoryPort.findById(petId);
 
         checkOwnership(existing, userId);
 
@@ -99,7 +109,7 @@ public class PetService {
             }
         });
 
-        return petRepository.save(updatedPet.toEntity()).toDomain();
+        return petRepositoryPort.save(updatedPet.toEntity()).toDomain();
     }
 
     private void checkOwnership(Pet existingPet, String userId) {
@@ -108,5 +118,10 @@ public class PetService {
         }
     }
 
+
+    @Override
+    public Pet getPetdById(String petId) {
+        return null;
+    }
 }
 
