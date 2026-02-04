@@ -62,7 +62,6 @@ public class AlertService implements
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
     }
 
-
     @Override
     public List<Alert> getAlertsByPetId(String petId) {
         return alertRepository.findAllByPetId(petId);
@@ -120,6 +119,15 @@ public class AlertService implements
         eventRepository.save(event);
 
         return alertRepository.save(alertCopy);
+    }
+
+    @Transactional
+    @Override
+    public void deleteAlertById(String alertId) {
+        if (!alertRepository.existsById(alertId)) {
+            throw new AlertNotFoundException("Alert not found: " + alertId);
+        }
+        alertRepository.deleteById(alertId);
     }
 
     @Override

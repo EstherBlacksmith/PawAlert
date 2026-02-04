@@ -43,4 +43,10 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
     public boolean existsById(String alertId) {
         return alertRepository.existsById(alertId);
     }
+
+    @Override
+    public void deleteById(String alertId) {
+        alertRepository.deleteById(alertId);
+    }
+
 }
