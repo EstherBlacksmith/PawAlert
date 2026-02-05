@@ -2,16 +2,15 @@ package itacademy.pawalert.application.service;
 
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
-import itacademy.pawalert.application.port.inbound.CreateAlertUseCase;
-import itacademy.pawalert.application.port.inbound.GetAlertUseCase;
-import itacademy.pawalert.application.port.inbound.UpdateAlertStatusUseCase;
-import itacademy.pawalert.application.port.inbound.UpdateAlertUseCase;
+import itacademy.pawalert.application.port.inbound.*;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.alert.service.AlertFactory;
 import itacademy.pawalert.application.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.application.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventFactory;
+import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
 import jakarta.transaction.Transactional;
+import itacademy.pawalert.domain.user.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,10 +25,14 @@ public class AlertService implements
 
     private final AlertRepositoryPort alertRepository;
     private final AlertEventRepositoryPort eventRepository;
+    private final GetUserUseCase userUseCase;
+    private final AlertMapper alertMapper;
 
-    public AlertService(AlertRepositoryPort alertRepository, AlertEventRepositoryPort eventRepository){
+    public AlertService(AlertRepositoryPort alertRepository, AlertEventRepositoryPort eventRepository, GetUserUseCase userUseCase, AlertMapper alertMapper){
         this.alertRepository = alertRepository;
         this.eventRepository = eventRepository;
+        this.userUseCase = userUseCase;
+        this.alertMapper = alertMapper;
     }
 
     @Transactional
@@ -70,6 +73,13 @@ public class AlertService implements
     @Override
     public List<AlertEvent> getAlertHistory(String alertId) {
         return eventRepository.findByAlertIdOrderByChangedAtDesc(alertId);
+    }
+
+    @Override
+    public AlertWithContactDTO getAlertWithCreatorPhone(String alertId) {
+        Alert alert = getAlertById(alertId);
+        User creator = userUseCase.getById(alert.getUserID().value());
+        return alertMapper.toWithContact(alert, creator);
     }
 
     @Override

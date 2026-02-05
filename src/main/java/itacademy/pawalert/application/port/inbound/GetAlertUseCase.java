@@ -9,6 +9,6 @@ public interface GetAlertUseCase {
     Alert getAlertById(String alertId);
     List<Alert> getAlertsByPetId(String petId);
     List<AlertEvent> getAlertHistory(String alertId);
-
+    AlertWithContactDTO getAlertWithCreatorPhone(String alertId);
 
 }

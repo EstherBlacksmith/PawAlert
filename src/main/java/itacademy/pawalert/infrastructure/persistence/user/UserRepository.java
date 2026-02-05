@@ -1,5 +1,6 @@
 package itacademy.pawalert.infrastructure.persistence.user;
 
+import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
@@ -11,5 +12,5 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     boolean existsByEmail(String email);
     void delete(Optional<UserEntity> user);
 
-    User create(String userNane, String fullname, String email, String phoneNumber);
+    Role findRoleById(String userId);
 }

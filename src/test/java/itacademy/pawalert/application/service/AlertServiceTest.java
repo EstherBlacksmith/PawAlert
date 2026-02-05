@@ -3,6 +3,8 @@ package itacademy.pawalert.application.service;
 
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
+import itacademy.pawalert.application.port.inbound.AlertWithContactDTO;
+import itacademy.pawalert.application.port.inbound.GetUserUseCase;
 import itacademy.pawalert.application.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.application.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
@@ -10,11 +12,13 @@ import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertEvent;
 import itacademy.pawalert.domain.alert.model.StatusNames;
 import itacademy.pawalert.domain.alert.model.UserId;
+import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventEntity;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventRepository;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertRepository;
 import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
+import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -43,6 +47,13 @@ class AlertServiceTest {
 
     @Mock
     private AlertEventRepositoryPort eventRepository;
+
+
+    @Mock
+    private GetUserUseCase userUseCase;
+
+    @Mock
+    private AlertMapper alertMapper;
 
     @InjectMocks
     private AlertService alertService;
@@ -446,4 +457,78 @@ class AlertServiceTest {
         }
     }
 
+    // ═══════════════════════════════════════════════════════════════════════
+    // getPhoneUser in alert Tests
+    // ═══════════════════════════════════════════════════════════════════════
+
+    @Nested
+    @DisplayName("getAlertWithCreatorPhone Tests")
+    class GetAlertWithCreatorPhoneTests {
+
+        @Test
+        @DisplayName("Should return AlertWithContactDTO with creator phone")
+        void shouldReturnAlertWithCreatorPhone() {
+            // Given
+            String alertId = UUID.randomUUID().toString();
+            String creatorId = UUID.randomUUID().toString();
+            UUID petId = UUID.randomUUID();
+
+            Alert alert = TestAlertFactory.createOpenedAlert(
+                    UUID.fromString(alertId),
+                    petId,
+                    new UserId(creatorId)
+            );
+
+            User creator = new User(
+                    UUID.fromString(creatorId),
+                    "john_doe",
+                    "john@example.com",
+                    "John Doe",
+                    "+34 612 345 678"
+            );
+
+            AlertWithContactDTO expectedDTO = new AlertWithContactDTO(
+                    alertId,
+                    petId.toString(),
+                    creatorId,
+                    "Test Alert",
+                    "Test description",
+                    "OPENED",
+                    "+34 612 345 678",
+                    "John Doe"
+            );
+
+            when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
+            when(userUseCase.getById(creatorId)).thenReturn(creator);
+            when(alertMapper.toWithContact(alert, creator)).thenReturn(expectedDTO);
+
+            // When
+            AlertWithContactDTO result = alertService.getAlertWithCreatorPhone(alertId);
+
+            // Then
+            assertNotNull(result);
+            assertEquals(alertId, result.id());
+            assertEquals("+34 612 345 678", result.creatorPhone());
+            assertEquals("John Doe", result.creatorName());
+
+            verify(alertRepository).findById(alertId);
+            verify(userUseCase).getById(creatorId);
+            verify(alertMapper).toWithContact(alert, creator);
+        }
+
+        @Test
+        @DisplayName("Should throw AlertNotFoundException when alert does not exist")
+        void shouldThrowWhenAlertNotFound() {
+            // Given
+            String nonExistentId = "non-existent-id";
+            when(alertRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+            // When/Then
+            assertThrows(AlertNotFoundException.class,
+                    () -> alertService.getAlertWithCreatorPhone(nonExistentId));
+
+            verify(userUseCase, never()).getById(any());
+            verify(alertMapper, never()).toWithContact(any(), any());
+        }
+    }
 }

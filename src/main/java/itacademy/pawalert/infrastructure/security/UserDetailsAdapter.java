@@ -1,6 +1,7 @@
 package itacademy.pawalert.infrastructure.security;
 
 import itacademy.pawalert.domain.user.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +11,7 @@ import java.util.List;
 
 public class UserDetailsAdapter implements UserDetails {
 
+    @Getter
     private final User user;
     private final String password;
     private final List<GrantedAuthority> authorities;
@@ -17,7 +19,7 @@ public class UserDetailsAdapter implements UserDetails {
     public UserDetailsAdapter(User user, String password) {
         this.user = user;
         this.password = password;
-        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
     }
 
     @Override
@@ -35,5 +37,4 @@ public class UserDetailsAdapter implements UserDetails {
     @Override
     public boolean isEnabled() { return true; }
 
-    public User getUser() { return user; }
 }

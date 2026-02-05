@@ -1,7 +1,9 @@
 package itacademy.pawalert.infrastructure.rest.alert.mapper;
 
+import itacademy.pawalert.application.port.inbound.AlertWithContactDTO;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
+import itacademy.pawalert.domain.user.User;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -32,5 +34,18 @@ public class AlertMapper {
                 title,
                 description,
                 status);
+    }
+
+    public AlertWithContactDTO toWithContact(Alert alert, User creator) {
+        return new AlertWithContactDTO(
+                alert.getId().toString(),
+                alert.getPetId().toString(),
+                alert.getUserID().value(),
+                alert.getTitle().getValue(),
+                alert.getDescription().getValue(),
+                alert.currentStatus().getStatusName().name(),
+                creator.getPhoneNumber(),
+                creator.getFullName()
+        );
     }
 }
