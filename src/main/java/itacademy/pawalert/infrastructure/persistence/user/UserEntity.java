@@ -1,5 +1,6 @@
 package itacademy.pawalert.infrastructure.persistence.user;
 
+import itacademy.pawalert.domain.user.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import itacademy.pawalert.domain.user.User;
@@ -32,12 +33,15 @@ public class UserEntity {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role;
 
     // Empty Constructor for JPA
     public UserEntity() {}
 
     public UserEntity(String id, String username, String email, String passwordHash,
-                      String fullName, String phoneNumber, LocalDateTime createdAt) {
+                      String fullName, String phoneNumber, Role role, LocalDateTime createdAt) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -45,6 +49,7 @@ public class UserEntity {
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.createdAt = createdAt;
+        this.role = role;
     }
 
     public User toDomain() {
@@ -53,7 +58,8 @@ public class UserEntity {
                 this.username,
                 this.email,
                 this.fullName,
-                this.phoneNumber
+                this.phoneNumber,
+                this.role
         );
     }
 }

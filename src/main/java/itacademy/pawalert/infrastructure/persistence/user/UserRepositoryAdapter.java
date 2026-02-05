@@ -1,8 +1,13 @@
 package itacademy.pawalert.infrastructure.persistence.user;
 
+import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.application.port.outbound.UserRepositoryPort;
+import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.UserWithPassword;
+import itacademy.pawalert.infrastructure.security.UserDetailsAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
@@ -91,6 +96,12 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         jpaUserRepository.deleteById(user.getId().toString());
     }
 
+    @Override
+    public Role getUserRol(String userId) {
+        return jpaUserRepository.findRoleById(userId);
+    }
+
+
     private UserEntity toEntity(User user, String passwordHash) {
         return new UserEntity(
                 user.getId().toString(),
@@ -99,7 +110,11 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
                 passwordHash,
                 user.getFullName(),
                 user.getPhoneNumber(),
+                user.getRole(),
                 LocalDateTime.now()
         );
     }
+
+
+
 }

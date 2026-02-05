@@ -19,4 +19,5 @@ public class UserWithPassword {
     public String getEmail() { return user.getEmail(); }
     public String getFullName() { return user.getFullName(); }
     public String getPhoneNumber() { return user.getPhoneNumber(); }
+    public Role getRole() { return user.getRole(); }
 }

@@ -2,13 +2,20 @@ package itacademy.pawalert.infrastructure.rest.pet.controller;
 
 import itacademy.pawalert.domain.pet.model.Pet;
 import itacademy.pawalert.application.port.inbound.*;
+import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.infrastructure.rest.pet.dto.PetDTO;
 
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import itacademy.pawalert.infrastructure.rest.pet.mapper.PetMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import itacademy.pawalert.infrastructure.security.UserDetailsAdapter;
+import itacademy.pawalert.application.exception.UnauthorizedException;
+
 
 @RestController
 @RequestMapping("/api/pets")
@@ -68,7 +75,16 @@ public class PetController {
     }
 
     private String getCurrentUserId() {
-        //TODO
-        return "";
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth == null || !auth.isAuthenticated()){
+            throw new UnauthorizedException("User not authenticated");
+        }
+        Object principal = auth.getPrincipal();
+
+        if(principal instanceof UserDetailsAdapter){
+            return ((UserDetailsAdapter)principal).getUser().getId().toString();
+        }
+        throw new UnauthorizedException("Invalid authentication principal");
     }
+
 }

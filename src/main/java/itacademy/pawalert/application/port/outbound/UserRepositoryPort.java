@@ -1,5 +1,6 @@
 package itacademy.pawalert.application.port.outbound;
 
+import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.UserWithPassword;
 
@@ -17,4 +18,5 @@ public interface UserRepositoryPort {
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
     void delete(User user);
+    Role getUserRol(String userId);
 }

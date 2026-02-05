@@ -1,16 +1,13 @@
 package itacademy.pawalert.application.service;
 
-import itacademy.pawalert.application.port.inbound.CreateUserUseCase;
-import itacademy.pawalert.application.port.inbound.DeleteUserUseCase;
-import itacademy.pawalert.application.port.inbound.GetUserUseCase;
-import itacademy.pawalert.application.port.inbound.UpdateUserUseCase;
+import itacademy.pawalert.application.port.inbound.*;
 
 import itacademy.pawalert.application.port.outbound.UserRepositoryPort;
+import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.user.User;
-import itacademy.pawalert.infrastructure.persistence.user.UserEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+
 import java.util.UUID;
 
 @Service
@@ -42,6 +39,7 @@ public class UserService implements
     public boolean existsByUsername(String username) {
        return userRepositoryPort.existsByUsername(username);
     }
+
 
     @Override
     public boolean existsByEmail(String email) {

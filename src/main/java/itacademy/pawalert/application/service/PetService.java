@@ -8,9 +8,11 @@ import itacademy.pawalert.application.port.inbound.DeletePetUseCase;
 import itacademy.pawalert.application.port.inbound.GetPetUseCase;
 import itacademy.pawalert.application.port.inbound.UpdatePetUseCase;
 import itacademy.pawalert.application.port.outbound.PetRepositoryPort;
+import itacademy.pawalert.application.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.pet.model.*;
 
+import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import org.springframework.stereotype.Service;
@@ -26,9 +28,11 @@ public class PetService implements
 {
 
     private final PetRepositoryPort petRepositoryPort;
+    private final UserRepositoryPort userRepositoryPort;
 
-    public PetService(PetRepositoryPort petRepositoryPort) {
+    public PetService(PetRepositoryPort petRepositoryPort, UserRepositoryPort userRepositoryPort) {
         this.petRepositoryPort = petRepositoryPort;
+        this.userRepositoryPort = userRepositoryPort;
     }
 
     @Override
@@ -80,7 +84,9 @@ public class PetService implements
     public Pet updatePet(String petId, String userId, UpdatePetRequest request) {
         Pet existing = petRepositoryPort.findById(petId).orElseThrow(()->new PetNotFoundException("Pet not found"));
 
-        checkOwnership(existing, userId);
+        Role userRole = getUserRole(userId);
+
+        checkOwnership(existing, userId,userRole);
 
         Pet updatedPet = existing.with(builder -> {
             if (request.chipNumber() != null) {
@@ -115,12 +121,17 @@ public class PetService implements
         return petRepositoryPort.save(updatedPet.toEntity()).toDomain();
     }
 
-    private void checkOwnership(Pet existingPet, String userId) {
-        if(!existingPet.getUserId().toString().equals(userId)){
-            throw new UnauthorizedException("Only the owner cant modify the pet data");
+    private void checkOwnership(Pet existingPet, String userId, Role userRole) {
+        boolean isOwner = existingPet.getUserId().toString().equals(userId);
+        boolean isAdmin = userRole == Role.ADMIN;
+
+        if (!isOwner && !isAdmin) {
+            throw new UnauthorizedException("Only the owner or admin can modify the pet data");
         }
     }
-
+    private Role getUserRole(String userId) {
+        return  userRepositoryPort.getUserRol(userId);
+    }
 
     @Override
     public Pet getPetdById(String petId) {
