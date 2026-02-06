@@ -1,11 +1,13 @@
 package itacademy.pawalert.application.port.inbound;
 
-import itacademy.pawalert.domain.pet.model.Pet;
+import itacademy.pawalert.domain.pet.model.*;
+
+import java.util.UUID;
 
 public interface CreatePetUseCase {
 
 
-    Pet createPet(String userId, String petId, String chipNumber, String officialPetName, String workingPetName,
-                  String species, String breed, String size, String color, String gender, String petDescription,
-                  String petImage);
+    Pet createPet(UUID userId, UUID petId, ChipNumber chipNumber, PetName officialPetName, PetName workingPetName,
+                  Species species, Breed breed, Size size, Color color, Gender gender, PetDescription petDescription,
+                  PetImage petImage);
 }
