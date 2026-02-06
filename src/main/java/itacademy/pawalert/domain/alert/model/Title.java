@@ -1,6 +1,7 @@
 package itacademy.pawalert.domain.alert.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import itacademy.pawalert.domain.user.model.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -14,8 +15,11 @@ public record Title(@NotBlank(message = "The Title can not be empty")
     public Title {
     }
 
-
     public String getValue() {
         return title;
+    }
+
+    public static Title of(String title) {
+        return new Title(title);
     }
 }

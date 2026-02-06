@@ -1,5 +1,6 @@
 package itacademy.pawalert.domain.pet.model;
 
+import itacademy.pawalert.domain.user.model.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -16,4 +17,7 @@ public record ChipNumber(@Size(min = 15, max = 15, message = "The chip must be e
     }
 
     public String value() { return this.chip; }
+    public static ChipNumber of(String chip) {
+        return new ChipNumber(chip);
+    }
 }

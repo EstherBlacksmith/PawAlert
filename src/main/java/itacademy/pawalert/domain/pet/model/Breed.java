@@ -7,4 +7,7 @@ public record Breed(@NotBlank(message = "Breed can not be empty") String breed) 
     public String value() {
         return this.breed;
     }
+    public static Breed of(String breed) {
+        return new Breed(breed);
+    }
 }
