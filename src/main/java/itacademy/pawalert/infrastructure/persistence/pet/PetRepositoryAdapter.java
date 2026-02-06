@@ -5,6 +5,7 @@ import itacademy.pawalert.domain.pet.model.Pet;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class PetRepositoryAdapter implements PetRepositoryPort {
@@ -20,18 +21,18 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
     }
 
     @Override
-    public Optional<Pet> findById(String petId) {
-        return petRepository.findById(petId)
+    public Optional<Pet> findById(UUID petId) {
+        return petRepository.findById(petId.toString())
                 .map(PetEntity::toDomain);
     }
 
     @Override
-    public void deleteById(String petId) {
-        petRepository.deleteById(petId);
+    public void deleteById(UUID petId) {
+        petRepository.deleteById(petId.toString());
     }
 
     @Override
-    public boolean existsById(String petId) {
-        return petRepository.existsById(petId);
+    public boolean existsById(UUID petId) {
+        return petRepository.existsById(petId.toString());
     }
 }

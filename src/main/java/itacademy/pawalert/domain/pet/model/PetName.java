@@ -9,4 +9,8 @@ public record PetName(@NotBlank(message = "The name cant be empty")
     public String value() {
         return this.petName;
     }
+    public static PetName of(String petName) {
+        return new PetName(petName);
+    }
+
 }
