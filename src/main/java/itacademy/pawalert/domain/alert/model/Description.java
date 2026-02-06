@@ -11,4 +11,9 @@ public record Description(@NotBlank(message = "Description can not be empty")
     public String getValue() {
         return description;
     }
+
+    public static Description of(String description) {
+        return new Description(description);
+    }
+
 }
