@@ -4,11 +4,11 @@ import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertEvent;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface GetAlertUseCase {
-    Alert getAlertById(String alertId);
-    List<Alert> getAlertsByPetId(String petId);
-    List<AlertEvent> getAlertHistory(String alertId);
-    AlertWithContactDTO getAlertWithCreatorPhone(String alertId);
-
+    Alert getAlertById(UUID alertId);
+    List<Alert> getAlertsByPetId(UUID petId);
+    List<AlertEvent> getAlertHistory(UUID alertId);
+    AlertWithContactDTO getAlertWithCreatorPhone(UUID alertId);
 }

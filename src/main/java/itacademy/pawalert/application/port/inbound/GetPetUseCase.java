@@ -2,6 +2,8 @@ package itacademy.pawalert.application.port.inbound;
 
 import itacademy.pawalert.domain.pet.model.Pet;
 
+import java.util.UUID;
+
 public interface GetPetUseCase {
-    Pet getPetdById(String petId);
+      Pet getPetdById(UUID petId);
 }

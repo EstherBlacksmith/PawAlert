@@ -1,8 +1,19 @@
 package itacademy.pawalert.application.port.inbound;
 
 import itacademy.pawalert.domain.user.User;
+import itacademy.pawalert.domain.user.model.*;
+
+import java.util.UUID;
 
 public interface UpdateUserUseCase {
-    User updateUsername(String email, String userName);
-    User updateFullname(String email, String fullName);
+    void changePassword(UUID userId, Password currentPassword, Password newPassword);
+    User updatePhonenumber(UUID userId, PhoneNumber phoneNumber);
+
+
+    User updateUsername(UUID userId, Username userName);
+    User updateSurname(UUID userId, Surname fullName);
+    User updateEmail(UUID userId, Email newEmail);
+
+
+
 }

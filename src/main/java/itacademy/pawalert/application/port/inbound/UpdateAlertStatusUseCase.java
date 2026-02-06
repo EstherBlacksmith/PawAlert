@@ -2,13 +2,21 @@ package itacademy.pawalert.application.port.inbound;
 
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.StatusNames;
+import jakarta.transaction.Transactional;
+
+import java.util.UUID;
 
 public interface UpdateAlertStatusUseCase {
-    Alert changeStatus(String alertId, StatusNames newStatus, String userId);
 
-    Alert markAsSeen(String alertId, String userId);
+    @Transactional
+    Alert markAsSeen(UUID alertId, UUID userId);
 
-    Alert markAsSafe(String alertId, String userId);
+    @Transactional
+    Alert markAsSafe(UUID alertId, UUID userId);
 
-    Alert close(String alertId, String userId);
+    @Transactional
+    Alert markAsClosed(UUID alertId, UUID userId);
+
+    @Transactional
+    Alert changeStatus(UUID alertId, StatusNames newStatus, UUID userId);
 }

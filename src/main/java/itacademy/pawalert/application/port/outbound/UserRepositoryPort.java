@@ -3,20 +3,32 @@ package itacademy.pawalert.application.port.outbound;
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.UserWithPassword;
+import itacademy.pawalert.domain.user.model.Email;
+import itacademy.pawalert.domain.user.model.PhoneNumber;
+import itacademy.pawalert.domain.user.model.Surname;
+import itacademy.pawalert.domain.user.model.Username;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepositoryPort {
-    Optional<UserWithPassword> findByUsernameWithPassword(String username);
+    Optional<UserWithPassword> findByUsernameWithPassword(Username username);
     User save(User user);
     User saveWithPlainPassword(User user, String plainPassword);
     Optional<User> findById(UUID id);
-    Optional<User> findByUsername(String username);
-    Optional<User> findByEmail(String email);
+    Optional<User> findByUsername(Username username);
+    Optional<User> findBySurname(Surname surname);
+    Optional<User> findByEmail(Email email);
     boolean existsById(UUID id);
-    boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
+    boolean existsSurname(Surname surname);
+    boolean existsByEmail(Email email);
     void delete(User user);
-    Role getUserRol(String userId);
+    Role getUserRol(UUID userId);
+    User saveWithPasswordHash(User user, String passwordHash);
+    String getPasswordHashByEmail(Email email);
+    void updatePasswordHash(UUID userId, String newHash);
+    User updatePhoneNumber(UUID userId, PhoneNumber phoneNumber);
+    User updateSurname(UUID userId, Surname surname);
+    boolean existsBySurname(Surname surname);
+    String getPasswordHashById(UUID userId);
 }
