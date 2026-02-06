@@ -35,12 +35,12 @@ public final class TestAlertFactory {
      * @param petId ID of the pet
      * @return Alert in OPENED state
      */
-    public static Alert createOpenedAlert(UUID id, UUID petId, UserId userId) {
+    public static Alert createOpenedAlert(UUID id, UUID petId, UUID userId) {
         // Initial state is OPENED by default, no transition needed
         return new Alert(
                 id,
                 petId,
-                new UserId(userId.toString()),
+                userId,
                 new Title("Test Alert - " + id.toString().substring(0, 8)),
                 new Description("Test alert created for testing purposes")
         );
@@ -55,7 +55,7 @@ public final class TestAlertFactory {
      * @param petId ID of the pet
      * @return Alert in SEEN state
      */
-    public static Alert createSeenAlert(UUID id, UUID petId, UserId userId) {
+    public static Alert createSeenAlert(UUID id, UUID petId, UUID userId) {
         Alert alert = createOpenedAlert(id, petId, userId);
         return alert.seen();
     }
@@ -68,7 +68,7 @@ public final class TestAlertFactory {
      * @param petId ID of the pet
      * @return Alert in SAFE state
      */
-    public static Alert createSafeAlert(UUID id, UUID petId, UserId userId) {
+    public static Alert createSafeAlert(UUID id, UUID petId, UUID userId) {
         Alert alert = createSeenAlert(id, petId, userId);
         return alert.safe();
     }
@@ -81,7 +81,7 @@ public final class TestAlertFactory {
      * @param petId ID of the pet
      * @return Alert in CLOSED state
      */
-    public static Alert createClosedAlert(UUID id, UUID petId, UserId userId) {
+    public static Alert createClosedAlert(UUID id, UUID petId, UUID userId) {
         Alert alert = createSeenAlert(id, petId, userId);
         return alert.closed();
     }
@@ -114,7 +114,7 @@ public final class TestAlertFactory {
         return new Alert(
                 UUID.fromString(alertId),
                 UUID.randomUUID(),
-                new UserId(creatorId),
+                UUID.fromString( creatorId),
                 new Title(originalTitle),
                 new Description(description)
         );
@@ -231,7 +231,7 @@ public final class TestAlertFactory {
             Alert alert = new Alert(
                     id,
                     petId,
-                    new UserId(userId.toString()),
+                    userId,
                     new Title(title),
                     new Description(description)
             );

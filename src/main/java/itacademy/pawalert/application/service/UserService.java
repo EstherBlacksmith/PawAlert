@@ -3,8 +3,11 @@ package itacademy.pawalert.application.service;
 import itacademy.pawalert.application.port.inbound.*;
 
 import itacademy.pawalert.application.port.outbound.UserRepositoryPort;
-import itacademy.pawalert.domain.alert.model.Alert;
+import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
+import itacademy.pawalert.domain.user.model.*;
+import itacademy.pawalert.infrastructure.rest.user.dto.RegistrationInput;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -17,86 +20,143 @@ public class UserService implements
         DeleteUserUseCase,
         UpdateUserUseCase {
 
-    private final UserRepositoryPort userRepositoryPort;
 
-    public UserService(UserRepositoryPort userRepository) {
-        this.userRepositoryPort = userRepository;
+    private final UserRepositoryPort userRepositoryPort;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepositoryPort userRepositoryPort, PasswordEncoder passwordEncoder) {
+        this.userRepositoryPort = userRepositoryPort;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public User register(String username, String fullname, String email, String phoneNumber,String password) {
+    public User register(RegistrationInput input) {
+
+        Username username = Username.of(input.username());
+        Email email = Email.of(input.email());
+        Surname surname =  Surname.of(input.surname());
+        PhoneNumber phoneNumber =  PhoneNumber.of(input.phoneNumber());
+
+
         User user = new User(
-                java.util.UUID.randomUUID(),
+                UUID.randomUUID(),
                 username,
                 email,
-                fullname,
-                phoneNumber
+                surname,
+                phoneNumber,
+                Role.USER
         );
-        return userRepositoryPort.saveWithPlainPassword(user, password);
+
+        String hashedPassword = passwordEncoder.encode(input.password());
+        return userRepositoryPort.saveWithPasswordHash(user, hashedPassword);
     }
 
     @Override
-    public boolean existsByUsername(String username) {
-       return userRepositoryPort.existsByUsername(username);
+    public void changePassword(UUID userId, Password currentPassword, Password newPassword) {
+
+        String storedHash = userRepositoryPort.getPasswordHashById(userId);
+
+        if (!passwordEncoder.matches(currentPassword.value(), storedHash)) {
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+
+        String newHash = passwordEncoder.encode(newPassword.value());
+
+        userRepositoryPort.updatePasswordHash(userId, newHash);
     }
 
 
     @Override
-    public boolean existsByEmail(String email) {
+    public User updatePhonenumber(UUID userId, PhoneNumber phoneNumber) {
+
+        return userRepositoryPort.updatePhoneNumber(userId,phoneNumber);
+    }
+
+    @Override
+    public boolean existsByEmail(Email email) {
         return userRepositoryPort.existsByEmail(email);
     }
 
     @Override
-    public User getById(String userId) {
-        return userRepositoryPort.findById(UUID.fromString(userId))
+    public User getBySurname(Surname surname) {
+        return userRepositoryPort.findBySurname(surname)
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + surname));
+    }
+
+    @Override
+    public User getById(UUID userId) {
+        return userRepositoryPort.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
     }
 
 
     @Override
-    public void deleteByEmail(String email) {
+    public void deleteByEmail(Email email) {
         User user = getByEmail(email);
         userRepositoryPort.delete(user);
 
     }
 
     @Override
-    public User getByUsername(String username) {
+    public User getByUsername(Username username) {
         return userRepositoryPort.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
     }
 
     @Override
-    public User getByEmail(String email) {
+    public User getByEmail(Email email) {
         return userRepositoryPort.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
     }
 
     @Override
-    public User updateUsername(String email, String newUsername) {
-        User user = getByEmail(email);
+    public boolean existsBySurname(Surname surname) {
+        return userRepositoryPort.existsSurname(surname);
+    }
+
+
+    @Override
+    public User updateUsername(UUID userId, Username newUsername) {
+        User user = getById(userId);
         User updated = new User(
                 user.getId(),
                 newUsername,
                 user.getEmail(),
-                user.getFullName(),
-                user.getPhoneNumber()
+                user.getSurname(),
+                user.getPhoneNumber(),
+                user.getRole()
         );
         return userRepositoryPort.save(updated);
     }
 
     @Override
-    public User updateFullname(String email, String fullName) {
-        User user = getByEmail(email);
+    public User updateSurname(UUID userId, Surname newSurname) {
+        User user = getById(userId);
         User updated = new User(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                fullName,
-                user.getPhoneNumber()
+                newSurname,
+                user.getPhoneNumber(),
+                user.getRole()
         );
         return userRepositoryPort.save(updated);
     }
+
+    @Override
+    public User updateEmail(UUID userId, Email newEmail) {
+        User user = getById(userId);
+        User updated = new User(
+                user.getId(),
+                user.getUsername(),
+                newEmail,  // 👈 Email actualizado
+                user.getSurname(),
+                user.getPhoneNumber(),
+                user.getRole()
+        );
+        return userRepositoryPort.save(updated);
+    }
+
 
 
 }

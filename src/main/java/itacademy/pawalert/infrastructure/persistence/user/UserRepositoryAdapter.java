@@ -1,13 +1,15 @@
 package itacademy.pawalert.infrastructure.persistence.user;
 
-import itacademy.pawalert.application.exception.UnauthorizedException;
+
 import itacademy.pawalert.application.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.UserWithPassword;
-import itacademy.pawalert.infrastructure.security.UserDetailsAdapter;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
+import itacademy.pawalert.domain.user.model.Email;
+import itacademy.pawalert.domain.user.model.PhoneNumber;
+import itacademy.pawalert.domain.user.model.Surname;
+import itacademy.pawalert.domain.user.model.Username;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
@@ -33,19 +35,24 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return jpaUserRepository.findByUsername(username)
+    public Optional<User> findByUsername(Username username) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<User> findBySurname(Surname surname) {
+        return jpaUserRepository.findBySurname(surname)
                 .map(UserEntity::toDomain);
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<User> findByEmail(Email email) {
         return jpaUserRepository.findByEmail(email)
                 .map(UserEntity::toDomain);
     }
 
     @Override
-    public Optional<UserWithPassword> findByUsernameWithPassword(String username) {
+    public Optional<UserWithPassword> findByUsernameWithPassword(Username username) {
         return jpaUserRepository.findByUsername(username)
                 .map(entity -> new UserWithPassword(
                         entity.toDomain(),
@@ -65,6 +72,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         return saved.toDomain();
     }
 
+
     @Override
     public User saveWithPlainPassword(User user, String plainPassword) {
         // Hash the password here (adapter responsibility)
@@ -82,12 +90,12 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public boolean existsByUsername(String username) {
-        return jpaUserRepository.existsByUsername(username);
+    public boolean existsSurname(Surname surname) {
+        return jpaUserRepository.existsBySurname(surname);
     }
 
     @Override
-    public boolean existsByEmail(String email) {
+    public boolean existsByEmail(Email email) {
         return jpaUserRepository.existsByEmail(email);
     }
 
@@ -97,24 +105,67 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public Role getUserRol(String userId) {
+    public Role getUserRol(UUID userId) {
         return jpaUserRepository.findRoleById(userId);
     }
-
 
     private UserEntity toEntity(User user, String passwordHash) {
         return new UserEntity(
                 user.getId().toString(),
-                user.getUsername(),
-                user.getEmail(),
+                user.getUsername().value(),
+                user.getEmail().value(),
                 passwordHash,
-                user.getFullName(),
-                user.getPhoneNumber(),
+                user.getSurname().value(),
+                user.getPhoneNumber().value(),
                 user.getRole(),
                 LocalDateTime.now()
         );
     }
+    @Override
+    public User saveWithPasswordHash(User user, String passwordHash) {
+        UserEntity entity = toEntity(user, passwordHash);
+        UserEntity saved = jpaUserRepository.save(entity);
+        return saved.toDomain();
+    }
+
+    @Override
+    public String getPasswordHashByEmail(Email email) {
+        return jpaUserRepository.findByEmail(email)
+                .map(UserEntity::getPasswordHash)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+    }
+
+    @Override
+    public String getPasswordHashById(UUID userId) {
+        return jpaUserRepository.findById(String.valueOf(userId))
+                .map(UserEntity::getPasswordHash)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
+    @Override
+    public void updatePasswordHash(UUID userId, String newHash) {
+        UserEntity entity = jpaUserRepository.findById(String.valueOf(userId))
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        // You need to add a setter for passwordHash in UserEntity
+        entity.setPasswordHash(newHash);
+        jpaUserRepository.save(entity);
+    }
+
+    @Override
+    public User updatePhoneNumber(UUID userId, PhoneNumber phoneNumber) {
+        return jpaUserRepository.updatePhonenumber(userId,phoneNumber);
+    }
 
 
+    @Override
+    public User updateSurname(UUID userId, Surname surname) {
+        return jpaUserRepository.updateSurname(userId,surname);
+    }
+
+    @Override
+    public boolean existsBySurname(Surname surname) {
+         return jpaUserRepository.existsBySurname(surname);
+    }
 
 }

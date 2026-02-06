@@ -23,7 +23,7 @@ public class UserDetailsAdapter implements UserDetails {
     }
 
     @Override
-    public String getUsername() { return user.getUsername(); }
+    public String getUsername() { return user.getUsername().value(); }
     @Override
     public String getPassword() { return password; }
     @Override

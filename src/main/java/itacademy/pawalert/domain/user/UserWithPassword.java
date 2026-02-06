@@ -1,9 +1,14 @@
 package itacademy.pawalert.domain.user;
 
+import lombok.Getter;
+
 import java.util.UUID;
 
+
 public class UserWithPassword {
+    @Getter
     private final User user;
+    @Getter
     private final String passwordHash;
 
     public UserWithPassword(User user, String passwordHash) {
@@ -11,13 +16,10 @@ public class UserWithPassword {
         this.passwordHash = passwordHash;
     }
 
-    public User getUser() { return user; }
-    public String getPasswordHash() { return passwordHash; }
-
     public UUID getId() { return user.getId(); }
-    public String getUsername() { return user.getUsername(); }
-    public String getEmail() { return user.getEmail(); }
-    public String getFullName() { return user.getFullName(); }
-    public String getPhoneNumber() { return user.getPhoneNumber(); }
+    public String getUsername() { return user.getUsername().value(); }
+    public String getEmail() { return user.getEmail().value(); }
+    public String getFullName() { return user.getSurname().value(); }
+    public String getPhoneNumber() { return user.getPhoneNumber().value(); }
     public Role getRole() { return user.getRole(); }
 }

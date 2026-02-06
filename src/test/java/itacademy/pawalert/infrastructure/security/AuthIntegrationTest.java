@@ -37,7 +37,7 @@ class AuthIntegrationTest {
         // 1. Registrar usuario primero
         Map<String, Object> registerRequest = Map.of(
                 "username", "testuser",
-                "fullName", "Test User",
+                "surname", "Test User",
                 "email", "test@example.com",
                 "phoneNumber", "123456789",
                 "password", "password123"
