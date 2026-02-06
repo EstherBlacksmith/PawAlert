@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class AlertRepositoryAdapter implements AlertRepositoryPort {
@@ -26,27 +27,27 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
     }
 
     @Override
-    public Optional<Alert> findById(String alertId) {
-        return alertRepository.findById(alertId)
+    public Optional<Alert> findById(UUID alertId) {
+        return alertRepository.findById(alertId.toString())
                 .map(AlertEntity::toDomain);
     }
 
     @Override
-    public List<Alert> findAllByPetId(String petId) {
-        return alertRepository.findAllByPetId(petId)
+    public List<Alert> findAllByPetId(UUID petId) {
+        return alertRepository.findAllByPetId(petId.toString())
                 .stream()
                 .map(AlertEntity::toDomain)
                 .toList();
     }
 
     @Override
-    public boolean existsById(String alertId) {
-        return alertRepository.existsById(alertId);
+    public boolean existsById(UUID alertId) {
+        return alertRepository.existsById(alertId.toString());
     }
 
     @Override
-    public void deleteById(String alertId) {
-        alertRepository.deleteById(alertId);
+    public void deleteById(UUID alertId) {
+        alertRepository.deleteById(alertId.toString());
     }
 
 }

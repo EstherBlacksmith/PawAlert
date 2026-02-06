@@ -1,3 +1,4 @@
+
 package itacademy.pawalert.infrastructure.rest.alert.mapper;
 
 import itacademy.pawalert.application.port.inbound.AlertWithContactDTO;
@@ -15,7 +16,7 @@ public class AlertMapper {
         return AlertDTO.builder()
                 .id(alert.getId().toString())
                 .petId(alert.getPetId().toString())
-                .userId(alert.getUserID().value())
+                .userId(alert.getUserId().toString())
                 .title(alert.getTitle().getValue())
                 .description(alert.getDescription().getValue())
                 .status(alert.currentStatus().getStatusName().name())
@@ -25,7 +26,7 @@ public class AlertMapper {
     public Alert toDomain(AlertDTO alertDTO, StatusAlert status) {
         Title title = new Title(alertDTO.getTitle());
         Description description = new Description(alertDTO.getDescription());
-        UserId userId = new UserId(alertDTO.getUserId());
+        UUID userId = UUID.fromString(alertDTO.getUserId());
 
         return new Alert(
                 UUID.fromString(alertDTO.getId()),
@@ -38,14 +39,14 @@ public class AlertMapper {
 
     public AlertWithContactDTO toWithContact(Alert alert, User creator) {
         return new AlertWithContactDTO(
-                alert.getId().toString(),
-                alert.getPetId().toString(),
-                alert.getUserID().value(),
-                alert.getTitle().getValue(),
-                alert.getDescription().getValue(),
-                alert.currentStatus().getStatusName().name(),
+                alert.getId(),
+                alert.getPetId(),
+                alert.getUserId(),
+                alert.getTitle(),
+                alert.getDescription(),
+                alert.currentStatus().getStatusName(),
                 creator.getPhoneNumber(),
-                creator.getFullName()
+                creator.getSurname()
         );
     }
 }

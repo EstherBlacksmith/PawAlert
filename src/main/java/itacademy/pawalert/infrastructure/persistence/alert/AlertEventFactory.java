@@ -2,23 +2,25 @@ package itacademy.pawalert.infrastructure.persistence.alert;
 
 import itacademy.pawalert.domain.alert.model.*;
 
+import java.util.UUID;
+
 public class AlertEventFactory {
 
     // Factory method for status changes
     public static AlertEvent createStatusChangedEvent(
-            Alert alert, StatusNames previousStatus, StatusNames newStatus, UserId userId) {
+            Alert alert, StatusNames previousStatus, StatusNames newStatus, UUID userId) {
         return AlertEvent.createStatusEvent(previousStatus, newStatus, userId);
     }
 
     // Factory method for title changes
     public static AlertEvent createTitleChangedEvent(
-            Alert alert, String oldTitle, String newTitle, UserId userId) {
+            Alert alert, Title oldTitle, Title newTitle, UUID userId) {
         return AlertEvent.createTitleEvent(oldTitle, newTitle, userId);
     }
 
     // Factory method for description changes
     public static AlertEvent createDescriptionChangedEvent(
-            Alert alert, String oldDescription, String newDescription, UserId userId) {
+            Alert alert, Description oldDescription, Description newDescription, UUID userId) {
         return AlertEvent.createDescriptionEvent(oldDescription, newDescription, userId);
     }
 }

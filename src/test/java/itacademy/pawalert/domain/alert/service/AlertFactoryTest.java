@@ -15,14 +15,14 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class AlertFactoryTest {
 
     private UUID petId;
-    private UserId userId;
+    private UUID userId;
     private Title title;
     private Description description;
 
     @BeforeEach
     void setUp() {
         petId = UUID.randomUUID();
-        userId = new UserId(UUID.randomUUID().toString());
+        userId = UUID.randomUUID();
         title = new Title("Lost Dog");
         description = new Description("Golden Retriever, friendly");
     }
@@ -60,7 +60,7 @@ class AlertFactoryTest {
 
             // Then
             assertEquals(petId, alert.getPetId());
-            assertEquals(userId, alert.getUserID());
+            assertEquals(userId, alert.getUserId());
             assertEquals(title, alert.getTitle());
             assertEquals(description, alert.getDescription());
         }
@@ -96,7 +96,7 @@ class AlertFactoryTest {
             // Then
             assertEquals(alert.getId(), seenAlert.getId());
             assertEquals(alert.getPetId(), seenAlert.getPetId());
-            assertEquals(alert.getUserID(), seenAlert.getUserID());
+            assertEquals(alert.getUserId(), seenAlert.getUserId());
             assertEquals(alert.getTitle(), seenAlert.getTitle());
             assertEquals(alert.getDescription(), seenAlert.getDescription());
         }

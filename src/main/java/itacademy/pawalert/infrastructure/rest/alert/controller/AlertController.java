@@ -3,16 +3,20 @@ package itacademy.pawalert.infrastructure.rest.alert.controller;
 import itacademy.pawalert.application.port.inbound.*;
 import itacademy.pawalert.application.service.AlertService;
 import itacademy.pawalert.domain.alert.model.Alert;
+import itacademy.pawalert.domain.alert.model.Description;
+import itacademy.pawalert.domain.alert.model.Title;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
 import itacademy.pawalert.infrastructure.rest.alert.dto.DescriptionUpdateRequest;
 import itacademy.pawalert.infrastructure.rest.alert.dto.StatusChangeRequest;
 import itacademy.pawalert.infrastructure.rest.alert.dto.TitleUpdateRequest;
 import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/alerts")
@@ -34,11 +38,11 @@ public class AlertController {
     }
 
     @PostMapping
-    public ResponseEntity<AlertDTO> createAlert(@RequestBody AlertDTO alertDTO) {
-        Alert created = createAlertUseCase.createOpenedAlert(alertDTO.getPetId(),
-                alertDTO.getTitle(),
-                alertDTO.getDescription(),
-                alertDTO.getUserId()
+    public ResponseEntity<AlertDTO> createAlert(@Valid @RequestBody AlertDTO alertDTO) {
+        Alert created = createAlertUseCase.createOpenedAlert(UUID.fromString(alertDTO.getPetId()),
+                Title.of(alertDTO.getTitle()),
+               Description.of( alertDTO.getDescription()),
+                UUID.fromString(alertDTO.getUserId())
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -47,25 +51,25 @@ public class AlertController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AlertDTO> getAlert(@PathVariable String id) {
-        Alert alert = getAlertUseCase.getAlertById(id);
+        Alert alert = getAlertUseCase.getAlertById(UUID.fromString(id));
 
         return ResponseEntity.ok(alertMapper.toDTO(alert));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAlert(@PathVariable String id) {
-         deleteAlertUseCase.deleteAlertById(id);
+         deleteAlertUseCase.deleteAlertById(UUID.fromString(id));
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<AlertDTO> changeStatus(@PathVariable String id,
-                                                 @RequestBody StatusChangeRequest request) {
+                                                 @Valid @RequestBody StatusChangeRequest request) {
 
         Alert updated = updateAlertStatusUseCase.changeStatus(
-                id,
+                UUID.fromString(id),
                 request.getNewStatus(),
-                request.getUserId()
+                UUID.fromString(request.getUserId())
         );
 
         return ResponseEntity.ok(alertMapper.toDTO(updated));
@@ -74,10 +78,9 @@ public class AlertController {
     @PutMapping("/{alertId}/title")
     public ResponseEntity<AlertDTO> updateTitle(
             @PathVariable String alertId,
-            @RequestBody TitleUpdateRequest titleUpdateRequest) {
-        Alert updated = updateAlertUseCase.updateTitle(alertId,
-                String.valueOf(titleUpdateRequest.userId().value()
-                ), String.valueOf(titleUpdateRequest.title().getValue()));
+            @Valid @RequestBody TitleUpdateRequest titleUpdateRequest) {
+        Alert updated = updateAlertUseCase.updateTitle(UUID.fromString(alertId),
+                UUID.fromString(titleUpdateRequest.userId().toString()), titleUpdateRequest.title());
 
         return ResponseEntity.ok(alertMapper.toDTO(updated));
     }
@@ -85,10 +88,10 @@ public class AlertController {
     @PutMapping("/{alertId}/description")
     public ResponseEntity<AlertDTO> updateDescription(
             @PathVariable String alertId,
-            @RequestBody DescriptionUpdateRequest descriptionUpdateRequest) {
-        Alert updated = updateAlertUseCase.updateDescription(alertId,
-                String.valueOf(descriptionUpdateRequest.userId().value()
-                ), String.valueOf(descriptionUpdateRequest.description()));
+            @Valid @RequestBody DescriptionUpdateRequest descriptionUpdateRequest) {
+        Alert updated = updateAlertUseCase.updateDescription(UUID.fromString(alertId),
+                descriptionUpdateRequest.userId(),
+                descriptionUpdateRequest.description());
 
         return ResponseEntity.ok(alertMapper.toDTO(updated));
     }

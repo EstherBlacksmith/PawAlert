@@ -12,15 +12,15 @@ public class Alert {
     @Getter
     private final UUID petId;
     @Getter
-    private final UserId userID;
+    private final UUID userId;
     @Getter
     private final Title title;
     @Getter
     private final Description description;
     private final StatusAlert statusAlert;
 
-    public Alert(UUID petId, UserId userID, Title title, Description description) {
-        this.userID = userID;
+    public Alert(UUID petId, UUID userId, Title title, Description description) {
+        this.userId = userId;
         this.id = UUID.randomUUID();
         this.petId = petId;
         this.title = title;
@@ -29,14 +29,14 @@ public class Alert {
 
     }
 
-    public Alert(UUID id, UUID petId, UserId userID, Title title, Description description) {
-        this(id, petId, userID, title, description, new OpenedStateAlert());
+    public Alert(UUID id, UUID petId, UUID userId, Title title, Description description) {
+        this(id, petId, userId, title, description, new OpenedStateAlert());
     }
 
-    public Alert(UUID id, UUID petId, UserId userID, Title title, Description description, StatusAlert status) {
+    public Alert(UUID id, UUID petId, UUID userId, Title title, Description description, StatusAlert status) {
         this.id = id;
         this.petId = petId;
-        this.userID = userID;
+        this.userId = userId;
         this.title = title;
         this.description = description;
         this.statusAlert = status;
@@ -46,7 +46,7 @@ public class Alert {
         return new AlertEntity(
                 this.id.toString(),
                 this.petId.toString(),
-                this.userID.value(),
+                this.userId.toString(),
                 this.title.getValue(),
                 this.description.getValue(),
                 this.statusAlert.getStatusName()
@@ -81,7 +81,7 @@ public class Alert {
             throw AlertModificationNotAllowedException.cannotModifyTitle(id.toString());
         }
 
-        return new Alert(this.id, this.petId, this.userID, newTitle, this.description, this.statusAlert);
+        return new Alert(this.id, this.petId, this.userId, newTitle, this.description, this.statusAlert);
     }
 
     public Alert updateDescription(Description newDescription) {
@@ -91,7 +91,8 @@ public class Alert {
             throw AlertModificationNotAllowedException.cannotModifyDescription(id.toString());
         }
 
-        return new Alert(this.id, this.petId, this.userID, this.title, newDescription, this.statusAlert);
+        return new Alert(this.id, this.petId, this.userId, this.title, newDescription, this.statusAlert);
     }
+
 
 }
