@@ -10,4 +10,8 @@ public record PetDescription(@NotBlank(message = "Description can not be empty")
     public String value() {
         return description;
     }
+    public static PetDescription of(String description) {
+        return new PetDescription(description);
+    }
+
 }

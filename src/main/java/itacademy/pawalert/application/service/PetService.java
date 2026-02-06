@@ -1,7 +1,6 @@
 package itacademy.pawalert.application.service;
 
 
-import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.application.port.inbound.CreatePetUseCase;
 import itacademy.pawalert.application.port.inbound.DeletePetUseCase;
@@ -36,33 +35,23 @@ public class PetService implements
     }
 
     @Override
-    public Pet createPet(String userId, String petId, String chipNumber, String officialPetName, String workingPetName,
-                         String species, String breed, String size, String color, String gender, String petDescription,
-                         String petImage) {
-        PetName newOfficialPetName = new PetName(officialPetName);
-        PetName newWorkingPetName = new PetName(workingPetName);
-        ChipNumber newChipNumber = new ChipNumber(chipNumber);
-        Breed newBreed = new Breed(breed);
-        Color newColor = new Color(color);
-        Gender newGender = Gender.valueOf(gender.toUpperCase());
-        PetDescription newPetDescription = new PetDescription(petDescription);
-        PetImage newPetImage = new PetImage(petImage);
-        Species newSpecies = Species.valueOf(species.toUpperCase());
-        Size newSize = Size.valueOf(size.toUpperCase());
+    public Pet createPet(UUID userId, UUID petId, ChipNumber chipNumber, PetName officialPetName, PetName workingPetName,
+                         Species species, Breed breed, Size size, Color color, Gender gender, PetDescription petDescription,
+                         PetImage petImage) {
 
         Pet pet = Pet.builder()
-                .userId( UUID.fromString(userId))
-                .petId( UUID.fromString(petId))
-                .chipNumber(newChipNumber)
-                .officialPetName(newOfficialPetName)
-                .workingPetName(newWorkingPetName)
-                .species(newSpecies)
-                .breed( newBreed)
-                .size(newSize)
-                .color(newColor)
-                .gender(newGender)
-                .petDescription(newPetDescription)
-                .petImage(newPetImage)
+                .userId(userId)
+                .petId( petId)
+                .chipNumber(chipNumber)
+                .officialPetName(officialPetName)
+                .workingPetName(workingPetName)
+                .species(species)
+                .breed( breed)
+                .size(size)
+                .color(color)
+                .gender(gender)
+                .petDescription(petDescription)
+                .petImage(petImage)
                 .build();
 
         PetEntity entity = pet.toEntity();
@@ -73,7 +62,7 @@ public class PetService implements
     }
 
     @Override
-    public void deletePetdById(String petId) {
+    public void deletePetdById(UUID petId) {
         if (!petRepositoryPort.existsById(petId)) {
             throw new PetNotFoundException("Pet not found: " + petId);
         }
@@ -81,7 +70,7 @@ public class PetService implements
     }
 
     @Override
-    public Pet updatePet(String petId, String userId, UpdatePetRequest request) {
+    public Pet updatePet(UUID petId, UUID userId, UpdatePetRequest request) {
         Pet existing = petRepositoryPort.findById(petId).orElseThrow(()->new PetNotFoundException("Pet not found"));
 
         Role userRole = getUserRole(userId);
@@ -121,20 +110,21 @@ public class PetService implements
         return petRepositoryPort.save(updatedPet.toEntity()).toDomain();
     }
 
-    private void checkOwnership(Pet existingPet, String userId, Role userRole) {
-        boolean isOwner = existingPet.getUserId().toString().equals(userId);
+    private void checkOwnership(Pet existingPet, UUID userId, Role userRole) {
+        boolean isOwner = existingPet.getUserId().equals(userId);
         boolean isAdmin = userRole == Role.ADMIN;
 
         if (!isOwner && !isAdmin) {
             throw new UnauthorizedException("Only the owner or admin can modify the pet data");
         }
     }
-    private Role getUserRole(String userId) {
+
+    private Role getUserRole(UUID userId) {
         return  userRepositoryPort.getUserRol(userId);
     }
 
     @Override
-    public Pet getPetdById(String petId) {
+    public Pet getPetdById(UUID petId) {
         return petRepositoryPort.findById(petId).orElseThrow(()->new PetNotFoundException("Pet not found"));
     }
 }

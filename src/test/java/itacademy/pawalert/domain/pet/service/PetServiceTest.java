@@ -1,9 +1,11 @@
 package itacademy.pawalert.domain.pet.service;
 
 import itacademy.pawalert.application.exception.UnauthorizedException;
+import itacademy.pawalert.application.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.application.service.PetService;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.pet.model.*;
+import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import itacademy.pawalert.application.port.outbound.PetRepositoryPort;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
@@ -30,27 +32,30 @@ class PetServiceTest {
     @Mock
     private PetRepositoryPort petRepositoryPort;
 
+    @Mock
+    private UserRepositoryPort userRepositoryPort;
+
     @InjectMocks
     private PetService petService;
 
-    private String petId;
-    private String userId;
+    private UUID petId;
+    private UUID userId;
     private Pet testPet;
     private PetEntity testPetEntity;
 
     @BeforeEach
     void setUp() {
-        petId = UUID.randomUUID().toString();
-        userId = UUID.randomUUID().toString();
+        petId = UUID.randomUUID();
+        userId = UUID.randomUUID();
 
         testPet = createTestPet(petId, userId);
         testPetEntity = testPet.toEntity();
     }
 
-    private Pet createTestPet(String petId, String userId) {
+    private Pet createTestPet(UUID petId, UUID userId) {
         return Pet.builder()
-                .userId(UUID.fromString(userId))
-                .petId(UUID.fromString(petId))
+                .userId(userId)
+                .petId(petId)
                 .chipNumber(new ChipNumber("123456789012345"))
                 .officialPetName(new PetName("Max"))
                 .workingPetName(new PetName("Buddy"))
@@ -84,6 +89,7 @@ class PetServiceTest {
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
             when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -105,6 +111,7 @@ class PetServiceTest {
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
             when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -127,6 +134,7 @@ class PetServiceTest {
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
             when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -150,7 +158,7 @@ class PetServiceTest {
         @DisplayName("Should throw PetNotFoundException when pet does not exist")
         void updatePet_whenPetNotFound_throwsPetNotFoundException() {
             // Given
-            String nonExistentPetId = "non-existent-id";
+            UUID nonExistentPetId = UUID.fromString("12345678-1234-1234-1234-123456789012");
             UpdatePetRequest request = new UpdatePetRequest(
                     null, "NewName", null, null, null,
                     null, null, null, null, null
@@ -169,13 +177,14 @@ class PetServiceTest {
         @DisplayName("Should throw UnauthorizedException when user is not the owner")
         void updatePet_whenNotOwner_throwsUnauthorizedException() {
             // Given
-            String differentUserId = UUID.randomUUID().toString();
+            UUID differentUserId = UUID.randomUUID();
             UpdatePetRequest request = new UpdatePetRequest(
                     null, "NewName", null, null, null,
                     null, null, null, null, null
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+            when(userRepositoryPort.getUserRol(differentUserId)).thenReturn(Role.USER);
 
             // When/Then
             assertThrows(UnauthorizedException.class,
@@ -205,6 +214,7 @@ class PetServiceTest {
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
             when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -225,6 +235,7 @@ class PetServiceTest {
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
             when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -244,6 +255,7 @@ class PetServiceTest {
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
             when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -263,6 +275,7 @@ class PetServiceTest {
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
             when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -283,6 +296,7 @@ class PetServiceTest {
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
             when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -303,6 +317,7 @@ class PetServiceTest {
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
             when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -326,6 +341,7 @@ class PetServiceTest {
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
             when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
@@ -363,7 +379,7 @@ class PetServiceTest {
 
             // Then
             assertNotNull(result);
-            assertEquals(petId, result.getPetId().toString());
+            assertEquals(petId.toString(), result.getPetId().toString());
             verify(petRepositoryPort).findById(petId);
         }
 
@@ -371,11 +387,11 @@ class PetServiceTest {
         @DisplayName("Should throw PetNotFoundException when not found")
         void findById_whenNotFound_throwsException() {
             // Given
-            when(petRepositoryPort.findById("non-existent")).thenReturn(Optional.empty());
+            when(petRepositoryPort.findById(UUID.fromString("12345678-1234-1234-1234-123456789012"))).thenReturn(Optional.empty());
 
             // When/Then
             assertThrows(PetNotFoundException.class,
-                    () -> petService.getPetdById("non-existent"));
+                    () -> petService.getPetdById(UUID.fromString("12345678-1234-1234-1234-123456789012")));
         }
     }
 }
