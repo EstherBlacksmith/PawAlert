@@ -4,6 +4,7 @@ import itacademy.pawalert.application.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.domain.alert.model.AlertEvent;
 
 import java.util.List;
+import java.util.UUID;
 
 public class AlertEventRepositoryAdapter implements AlertEventRepositoryPort {
     private final AlertEventRepository eventRepository;
@@ -19,9 +20,10 @@ public class AlertEventRepositoryAdapter implements AlertEventRepositoryPort {
         return saved.toDomain();
     }
 
+
     @Override
-    public List<AlertEvent> findByAlertIdOrderByChangedAtDesc(String alertId) {
-        return eventRepository.findByAlertIdOrderByChangedAtDesc(alertId)
+    public List<AlertEvent> findByAlertIdOrderByChangedAtDesc(UUID alertId) {
+        return eventRepository.findByAlertIdOrderByChangedAtDesc(String.valueOf(alertId))
                 .stream()
                 .map(AlertEventEntity::toDomain)
                 .toList();

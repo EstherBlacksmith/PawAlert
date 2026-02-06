@@ -3,21 +3,21 @@ package itacademy.pawalert.application.service;
 
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
+import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
 import itacademy.pawalert.application.port.inbound.AlertWithContactDTO;
 import itacademy.pawalert.application.port.inbound.GetUserUseCase;
 import itacademy.pawalert.application.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.application.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
-import itacademy.pawalert.domain.alert.model.Alert;
-import itacademy.pawalert.domain.alert.model.AlertEvent;
-import itacademy.pawalert.domain.alert.model.StatusNames;
-import itacademy.pawalert.domain.alert.model.UserId;
+import itacademy.pawalert.domain.alert.model.*;
+import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
+import itacademy.pawalert.domain.user.model.Email;
+import itacademy.pawalert.domain.user.model.PhoneNumber;
+import itacademy.pawalert.domain.user.model.Surname;
+import itacademy.pawalert.domain.user.model.Username;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventEntity;
-import itacademy.pawalert.infrastructure.persistence.alert.AlertEventRepository;
-import itacademy.pawalert.infrastructure.persistence.alert.AlertRepository;
-import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +48,6 @@ class AlertServiceTest {
     @Mock
     private AlertEventRepositoryPort eventRepository;
 
-
     @Mock
     private GetUserUseCase userUseCase;
 
@@ -62,8 +61,8 @@ class AlertServiceTest {
     // @BeforeEach - Using TestAlertFactory
     // ═══════════════════════════════════════════════════════════════════════
 
-    private String alertId;
-    private UserId userId;
+    private UUID  alertId;
+    private UUID userId;
     private UUID petId;
     private Alert testAlert;
 
@@ -71,14 +70,13 @@ class AlertServiceTest {
     void setUp() {
         // Initialize IDs
         petId = UUID.randomUUID();
-        alertId = UUID.randomUUID().toString();
-        userId = new UserId(UUID.randomUUID().toString());
+        alertId = UUID.randomUUID();
+        userId = UUID.randomUUID();
         testAlert = TestAlertFactory.createOpenedAlert(
-                UUID.fromString(alertId),
+                alertId,
                 petId,
                 userId
         );
-
 
         // Configure shared mocks
         lenient().when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
@@ -89,12 +87,12 @@ class AlertServiceTest {
     @DisplayName("Should throw when changing status of non-existent alert")
     void shouldThrowWhenAlertNotFound() {
         // Given
-        String nonExistentId = "non-existent-id";
+        UUID nonExistentId = UUID.fromString("12345678-1234-1234-1234-123456789012");
         when(alertRepository.findById(nonExistentId)).thenReturn(Optional.empty());
 
         // When/Then
         assertThrows(AlertNotFoundException.class,
-                () -> alertService.changeStatus(nonExistentId, StatusNames.SEEN, userId.toString()));
+                () -> alertService.changeStatus(nonExistentId, StatusNames.SEEN, userId));
     }
 
     @Test
@@ -103,13 +101,13 @@ class AlertServiceTest {
 
         // Given
         Alert closedAlert = TestAlertFactory.createClosedAlert(
-                UUID.fromString(alertId), petId, userId
+               alertId, petId, userId
         );
         when(alertRepository.findById(alertId)).thenReturn(Optional.of(closedAlert));
 
         // When/Then
         assertThrows(InvalidAlertStatusChange.class,
-                () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId.toString()));
+                () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId));
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -119,11 +117,11 @@ class AlertServiceTest {
     @Test
     void updateTitle_WhenCreator_ShouldUpdateTitle() {
         // Given
-        String alertId = UUID.randomUUID().toString();
-        String creatorId = "user-123";
-        String newTitle = "Dog found in the park";
+        UUID alertId = UUID.randomUUID();
+        UUID creatorId = UUID.fromString("12345678-1234-1234-1234-123456789012");
+        Title newTitle = Title.of("Dog found in the park");
 
-        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Original Title", "Description");
+        Alert alert = TestAlertFactory.createModificableAlert(alertId.toString(), creatorId.toString(), "Original Title", "Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
         when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -131,7 +129,7 @@ class AlertServiceTest {
         Alert result = alertService.updateTitle(alertId, creatorId, newTitle);
 
         // Then
-        assertEquals(newTitle, result.getTitle().getValue());
+        assertEquals(newTitle.getValue(), result.getTitle().getValue());
         verify(alertRepository).save(any());
     }
 
@@ -142,16 +140,17 @@ class AlertServiceTest {
     @Test
     void updateTitle_WhenNotCreator_ShouldThrowUnauthorized() {
         // Given
-        String alertId = UUID.randomUUID().toString();
-        String creatorId = "user-123";
-        String otherUserId = "user-456";
+        UUID alertId = UUID.randomUUID();
 
-        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Description");
+        UUID creatorId = UUID.fromString("12345678-1234-1234-1234-123456789012");
+        UUID otherUserId = UUID.fromString("87654321-4321-4321-4321-210987654321");
+
+        Alert alert = TestAlertFactory.createModificableAlert(String.valueOf(alertId), String.valueOf(creatorId), "Title", "Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
 
         // When/Then
         assertThrows(UnauthorizedException.class,
-                () -> alertService.updateTitle(alertId, otherUserId, "New title"));
+                () -> alertService.updateTitle(alertId, otherUserId, Title.of("New title")));
 
         verify(alertRepository, never()).save(any());
 
@@ -164,11 +163,11 @@ class AlertServiceTest {
     @Test
     void updateDescription_WhenCreator_ShouldUpdateDescription() {
         // Given
-        String alertId = UUID.randomUUID().toString();
-        String creatorId = "user-123";
-        String newDescription = "The dog is brown, has a blue collar";
+        UUID alertId = UUID.randomUUID();
+        Description newDescription = Description.of( "The dog is brown, has a blue collar");
+        UUID creatorId = UUID.fromString("12345678-1234-1234-1234-123456789012");
 
-        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Original Description");
+        Alert alert = TestAlertFactory.createModificableAlert(alertId.toString(), creatorId.toString(), "Title", "Original Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
         when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
@@ -176,7 +175,7 @@ class AlertServiceTest {
         Alert result = alertService.updateDescription(alertId, creatorId, newDescription);
 
         // Then
-        assertEquals(newDescription, result.getDescription().getValue());
+        assertEquals(newDescription.getValue(), result.getDescription().getValue());
 
         verify(alertRepository, times(1)).save(any());
     }
@@ -184,13 +183,12 @@ class AlertServiceTest {
     @Test
     void updateTitle_WhenAlertNotFound_ShouldThrowAlertNotFoundException() {
         // Given
-        String alertId = "non-existent-id";
-        String userId = "user-123";
+        UUID alertId = UUID.fromString("12345678-1234-1234-1234-123456789012");
         when(alertRepository.findById(alertId)).thenReturn(Optional.empty());
 
         // When/Then
         assertThrows(AlertNotFoundException.class,
-                () -> alertService.updateTitle(alertId, userId, "New title"));
+                () -> alertService.updateTitle(alertId, userId, Title.of("New title")));
         verify(alertRepository, never()).save(any());
     }
 
@@ -198,54 +196,51 @@ class AlertServiceTest {
     @DisplayName("Should throw exception when alert is closed and trying to update title")
     void updateTitle_WhenAlertIsClosed_ShouldThrowException() {
         // Given
-        String alertId = UUID.randomUUID().toString();
-        String creatorId = "user-123";
+        UUID alertId = UUID.randomUUID();
+        UUID creatorId = UUID.fromString("12345678-1234-1234-1234-123456789012");
+
 
         Alert closedAlert = TestAlertFactory.createClosedAlert(
-                UUID.fromString(alertId), UUID.randomUUID(), new UserId(creatorId)
+                alertId, UUID.randomUUID(), creatorId
         );
         when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(closedAlert));
 
         // When/Then
-        assertThrows(UnauthorizedException.class,
-                () -> alertService.updateTitle(alertId, creatorId, "New Title"));
-
-        verify(eventRepository, never()).save(any(AlertEvent.class));
+        assertThrows(AlertModificationNotAllowedException.class,
+                () -> alertService.updateTitle(alertId, creatorId, Title.of("New Title")));
     }
 
     @Test
     @DisplayName("Should throw exception when alert is closed and trying to update description")
     void updateDescription_WhenAlertIsClosed_ShouldThrowException() {
         // Given
-        String alertId = UUID.randomUUID().toString();
-        String creatorId = "user-123";
+        UUID alertId = UUID.randomUUID();
+        UUID creatorId = UUID.fromString("12345678-1234-1234-1234-123456789012");
 
         Alert closedAlert = TestAlertFactory.createClosedAlert(
-                UUID.fromString(alertId), UUID.randomUUID(), new UserId(creatorId)
+                alertId, UUID.randomUUID(), creatorId
         );
         when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(closedAlert));
 
         // When/Then
-        assertThrows(UnauthorizedException.class,
-                () -> alertService.updateDescription(alertId, creatorId, "New Description"));
-
-        verify(eventRepository, never()).save(any(AlertEvent.class));
+        assertThrows(AlertModificationNotAllowedException.class,
+                () -> alertService.updateDescription(alertId, creatorId, Description.of("New Description")));
     }
 
     @Test
     @DisplayName("Should NOT save event when unauthorized user tries to update title")
     void updateTitle_WhenNotCreator_ShouldNotSaveEvent() {
         // Given
-        String alertId = UUID.randomUUID().toString();
-        String creatorId = "user-123";
-        String otherUserId = "user-456";
+        UUID alertId = UUID.randomUUID();
+        UUID creatorId = UUID.fromString("12345678-1234-1234-1234-123456789012");
+        UUID otherUserId = UUID.fromString("87654321-4321-4321-4321-210987654321");
 
-        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Description");
+        Alert alert = TestAlertFactory.createModificableAlert(alertId.toString(), creatorId.toString(), "Title", "Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(alert));
 
         // When/Then
         assertThrows(UnauthorizedException.class,
-                () -> alertService.updateTitle(alertId, otherUserId, "New Title"));
+                () -> alertService.updateTitle(alertId, otherUserId, Title.of("New Title")));
 
         // Key assertion: NO event saved
         verify(eventRepository, never()).save(any(AlertEvent.class));
@@ -255,16 +250,16 @@ class AlertServiceTest {
     @DisplayName("Should NOT save event when unauthorized user tries to update description")
     void updateDescription_WhenNotCreator_ShouldNotSaveEvent() {
         // Given
-        String alertId = UUID.randomUUID().toString();
-        String creatorId = "user-123";
-        String otherUserId = "user-456";
+        UUID alertId = UUID.randomUUID();
+        UUID creatorId = UUID.fromString("12345678-1234-1234-1234-123456789012");
+        UUID otherUserId = UUID.fromString("87654321-4321-4321-4321-210987654321");
 
-        Alert alert = TestAlertFactory.createModificableAlert(alertId, creatorId, "Title", "Description");
+        Alert alert = TestAlertFactory.createModificableAlert(alertId.toString(), creatorId.toString(), "Title", "Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(alert));
 
         // When/Then
         assertThrows(UnauthorizedException.class,
-                () -> alertService.updateDescription(alertId, otherUserId, "New Description"));
+                () -> alertService.updateDescription(alertId, otherUserId, Description.of("New Description")));
 
         // Key assertion: NO event saved
         verify(eventRepository, never()).save(any(AlertEvent.class));
@@ -281,15 +276,15 @@ class AlertServiceTest {
         @DisplayName("Should create alert with OPENED status and save initial event")
         void shouldCreateAlertWithInitialEvent() {
             // Given - Use valid UUID
-            String title = "Test Alert";
-            String description = "Test description";
+            Title title = Title.of("Test Alert");
+            Description description = Description.of("Test description");
 
             when(alertRepository.save(any(Alert.class))).thenAnswer(inv -> inv.getArgument(0));
 
             when(eventRepository.save(any(AlertEvent.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
-            Alert result = alertService.createOpenedAlert(petId.toString(), title, description, userId.toString());
+            Alert result = alertService.createOpenedAlert(petId, title, description, userId);
 
             // Then
             assertNotNull(result);
@@ -305,7 +300,9 @@ class AlertServiceTest {
             when(eventRepository.save(any(AlertEvent.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
-            alertService.createOpenedAlert(petId.toString(), "Title", "Desc", userId.toString());
+            Title title = Title.of("Title");
+            Description description = Description.of("Desc");
+            alertService.createOpenedAlert(petId, title, description, userId);
 
             // Then
             verify(alertRepository, times(1)).save(any(Alert.class));
@@ -327,7 +324,7 @@ class AlertServiceTest {
 
             // Then
             assertNotNull(result);
-            assertEquals(alertId, result.getId().toString());
+            assertEquals(alertId.toString(), result.getId().toString());
             verify(alertRepository).findById(alertId);
         }
 
@@ -335,10 +332,10 @@ class AlertServiceTest {
         @DisplayName("Should throw AlertNotFoundException when not found")
         void shouldThrowWhenNotFound() {
             // Given
-            when(alertRepository.findById("non-existent")).thenReturn(Optional.empty());
+            when(alertRepository.findById(UUID.fromString("12345678-1234-1234-1234-123456789012"))).thenReturn(Optional.empty());
 
             // When/Then
-            assertThrows(AlertNotFoundException.class, () -> alertService.getAlertById("non-existent"));
+            assertThrows(AlertNotFoundException.class, () -> alertService.getAlertById(UUID.fromString("12345678-1234-1234-1234-123456789012")));
         }
     }
 
@@ -349,7 +346,7 @@ class AlertServiceTest {
         @Test
         void shouldChangeStatusFromOpenedToSeen() {
             // Given - Create entity WITH the initial event in its history
-            new AlertEntity(alertId, petId.toString(), userId.toString(), "Test", "Test", StatusNames.OPENED);
+            new AlertEntity(alertId.toString(), petId.toString(), userId.toString(), "Test", "Test", StatusNames.OPENED);
 
             AlertEventEntity initialEvent = new AlertEventEntity(
                     UUID.randomUUID().toString(),
@@ -362,7 +359,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.changeStatus(alertId, StatusNames.SEEN, userId.toString());
+            Alert result = alertService.changeStatus(alertId, StatusNames.SEEN, userId);
 
             // Then - Expect 2 saves: initial event (already saved) + change event
             verify(eventRepository, times(1)).save(any(AlertEvent.class));
@@ -373,11 +370,11 @@ class AlertServiceTest {
         @DisplayName("Should throw exception when alert not found")
         void shouldThrowWhenAlertNotFoundForChangeStatus() {
             // Given
-            when(alertRepository.findById("non-existent")).thenReturn(Optional.empty());
+            when(alertRepository.findById(UUID.fromString("12345678-1234-1234-1234-123456789012"))).thenReturn(Optional.empty());
 
             // When/Then
             assertThrows(AlertNotFoundException.class,
-                    () -> alertService.changeStatus("non-existent", StatusNames.SEEN, userId.toString()));
+                    () -> alertService.changeStatus(UUID.fromString("12345678-1234-1234-1234-123456789012"), StatusNames.SEEN, userId));
         }
     }
 
@@ -392,7 +389,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.markAsSeen(alertId, userId.toString());
+            Alert result = alertService.markAsSeen(alertId, userId);
 
             // Then
             assertEquals(StatusNames.SEEN, result.currentStatus().getStatusName());
@@ -405,7 +402,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.markAsSafe(alertId, userId.toString());
+            Alert result = alertService.markAsSafe(alertId, userId);
 
             // Then
             assertEquals(StatusNames.SAFE, result.currentStatus().getStatusName());
@@ -418,7 +415,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.markAsClose(alertId, userId.toString());
+            Alert result = alertService.markAsClosed(alertId, userId);
 
             // Then
             assertEquals(StatusNames.CLOSED, result.currentStatus().getStatusName());
@@ -434,13 +431,13 @@ class AlertServiceTest {
         void shouldReturnAlertHistory() {
             // Given
             AlertEvent event1 = AlertEvent.createStatusEvent(
-                    StatusNames.OPENED, StatusNames.SEEN, new UserId("user-2")
+                    StatusNames.OPENED, StatusNames.SEEN,UUID.fromString("12345678-1234-1234-1234-123456789012")
             );
 
             AlertEvent event2 = AlertEvent.createStatusEvent(
-                    StatusNames.SEEN, StatusNames.CLOSED, new UserId("user-1")
+                    StatusNames.SEEN, StatusNames.CLOSED,UUID.fromString("87654321-4321-4321-4321-210987654321")
             );
-            String testAlertId = "123";
+            UUID testAlertId = UUID.fromString("12345678-1234-1234-1234-123456789012");
 
             when(eventRepository.findByAlertIdOrderByChangedAtDesc(testAlertId))
                     .thenReturn(Arrays.asList(event1, event2));
@@ -469,33 +466,34 @@ class AlertServiceTest {
         @DisplayName("Should return AlertWithContactDTO with creator phone")
         void shouldReturnAlertWithCreatorPhone() {
             // Given
-            String alertId = UUID.randomUUID().toString();
-            String creatorId = UUID.randomUUID().toString();
+            UUID alertId = UUID.randomUUID();
+            UUID creatorId = UUID.randomUUID();
             UUID petId = UUID.randomUUID();
 
             Alert alert = TestAlertFactory.createOpenedAlert(
-                    UUID.fromString(alertId),
+                    alertId,
                     petId,
-                    new UserId(creatorId)
+                    creatorId
             );
 
             User creator = new User(
-                    UUID.fromString(creatorId),
-                    "john_doe",
-                    "john@example.com",
-                    "John Doe",
-                    "+34 612 345 678"
+                    creatorId,
+                    Username.of("john_doe"),
+                    Email.of("john@example.com"),
+                    Surname.of("John Doe"),
+                    PhoneNumber.of("+34612345678"),
+                    Role.USER
             );
 
             AlertWithContactDTO expectedDTO = new AlertWithContactDTO(
                     alertId,
-                    petId.toString(),
+                    petId,
                     creatorId,
-                    "Test Alert",
-                    "Test description",
-                    "OPENED",
-                    "+34 612 345 678",
-                    "John Doe"
+                    Title.of("Test Alert"),
+                    Description.of("Test description"),
+                    StatusNames.OPENED,
+                    PhoneNumber.of("+34612345678"),
+                    Surname.of("Garcia")
             );
 
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
@@ -508,8 +506,8 @@ class AlertServiceTest {
             // Then
             assertNotNull(result);
             assertEquals(alertId, result.id());
-            assertEquals("+34 612 345 678", result.creatorPhone());
-            assertEquals("John Doe", result.creatorName());
+            assertEquals("+34612345678", result.creatorPhone().value());
+            assertEquals("Garcia", result.creatorName().value());
 
             verify(alertRepository).findById(alertId);
             verify(userUseCase).getById(creatorId);
@@ -520,15 +518,15 @@ class AlertServiceTest {
         @DisplayName("Should throw AlertNotFoundException when alert does not exist")
         void shouldThrowWhenAlertNotFound() {
             // Given
-            String nonExistentId = "non-existent-id";
-            when(alertRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+            String nonExistentId = "12345678-1234-1234-1234-123456789012";
+            when(alertRepository.findById(UUID.fromString(nonExistentId))).thenReturn(Optional.empty());
 
             // When/Then
             assertThrows(AlertNotFoundException.class,
-                    () -> alertService.getAlertWithCreatorPhone(nonExistentId));
+                    () -> alertService.getAlertWithCreatorPhone(UUID.fromString(nonExistentId)));
 
             verify(userUseCase, never()).getById(any());
-            verify(alertMapper, never()).toWithContact(any(), any());
+            verifyNoInteractions(alertMapper);
         }
     }
 }

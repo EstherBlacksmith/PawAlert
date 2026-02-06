@@ -3,16 +3,17 @@ package itacademy.pawalert.application.port.outbound;
 import itacademy.pawalert.domain.alert.model.Alert;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface AlertRepositoryPort {
 
     Alert save(Alert alert);
 
-    Optional<Alert> findById(String alertId);
+    Optional<Alert> findById(UUID alertId);
 
-    List<Alert> findAllByPetId(String petId);
+    List<Alert> findAllByPetId(UUID petId);
 
-    boolean existsById(String alertId);
+    boolean existsById(UUID alertId);
 
-    void deleteById(String alertId);
+    void deleteById(UUID alertId);
 }

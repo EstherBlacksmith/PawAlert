@@ -36,22 +36,18 @@ public class AlertService implements
     }
 
     @Transactional
-    public Alert createOpenedAlert(String petId, String titleString, String descriptionString, String userId) {
-
-        Title title = new Title(titleString);
-        Description description = new Description(descriptionString);
-        UserId creatorId = new UserId(userId);
+    public Alert createOpenedAlert(UUID petId, Title title, Description description, UUID userId) {
 
         Alert alert = AlertFactory.createAlert(
-                UUID.fromString(petId),
-                new UserId(userId),
+                petId,
+                userId,
                 title,
                 description);
 
         //Persist the object
         Alert savedAlert = alertRepository.save(alert);
         AlertEvent event = AlertEventFactory.createStatusChangedEvent(
-                alert, StatusNames.OPENED, StatusNames.OPENED, creatorId
+                alert, StatusNames.OPENED, StatusNames.OPENED, userId
         );
 
         eventRepository.save(event);
@@ -60,54 +56,48 @@ public class AlertService implements
     }
 
     @Override
-    public Alert getAlertById(String alertId) {
+    public Alert getAlertById(UUID alertId) {
         return alertRepository.findById(alertId)
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
     }
 
     @Override
-    public List<Alert> getAlertsByPetId(String petId) {
+    public List<Alert> getAlertsByPetId(UUID petId) {
         return alertRepository.findAllByPetId(petId);
     }
 
     @Override
-    public List<AlertEvent> getAlertHistory(String alertId) {
+    public List<AlertEvent> getAlertHistory(UUID alertId) {
         return eventRepository.findByAlertIdOrderByChangedAtDesc(alertId);
     }
 
     @Override
-    public AlertWithContactDTO getAlertWithCreatorPhone(String alertId) {
+    public AlertWithContactDTO getAlertWithCreatorPhone(UUID alertId) {
         Alert alert = getAlertById(alertId);
-        User creator = userUseCase.getById(alert.getUserID().value());
+        User creator = userUseCase.getById(alert.getUserId());
         return alertMapper.toWithContact(alert, creator);
     }
 
-    @Override
     @Transactional
-    public Alert markAsSeen(String alertId, String userId) {
+    @Override
+    public Alert markAsSeen(UUID alertId, UUID userId) {
         return changeStatus(alertId, StatusNames.SEEN, userId);
     }
 
-    @Override
     @Transactional
-    public Alert markAsSafe(String alertId, String userId) {
+    @Override
+    public Alert markAsSafe(UUID alertId, UUID userId) {
         return changeStatus(alertId, StatusNames.SAFE, userId);
     }
 
-    @Override
     @Transactional
-    public Alert close(String alertId, String userId) {
+    public Alert markAsClosed(UUID alertId, UUID userId) {
         return changeStatus(alertId, StatusNames.CLOSED, userId);
     }
 
     @Transactional
-    public Alert markAsClose(String alertId, String userId) {
-        return changeStatus(alertId, StatusNames.CLOSED, userId);
-    }
-
     @Override
-    @Transactional
-    public Alert changeStatus(String alertId, StatusNames newStatus, String userId) {
+    public Alert changeStatus(UUID alertId, StatusNames newStatus, UUID userId) {
 
         Alert alert = getAlertById(alertId);
         StatusNames previousStatus = alert.currentStatus().getStatusName();
@@ -123,7 +113,7 @@ public class AlertService implements
 
         // Use factory
         AlertEvent  event = AlertEventFactory.createStatusChangedEvent(
-                alertCopy, previousStatus, newStatus, new UserId(userId)
+                alertCopy, previousStatus, newStatus, userId
         );
 
         eventRepository.save(event);
@@ -133,55 +123,54 @@ public class AlertService implements
 
     @Transactional
     @Override
-    public void deleteAlertById(String alertId) {
+    public void deleteAlertById(UUID alertId) {
         if (!alertRepository.existsById(alertId)) {
             throw new AlertNotFoundException("Alert not found: " + alertId);
         }
         alertRepository.deleteById(alertId);
     }
 
-    @Override
     @Transactional
-    public Alert updateTitle(String alertId, String userId, String title) {
+    @Override
+    public Alert updateTitle(UUID alertId, UUID userId, Title title) {
         Alert alert = getAlertById(alertId);
 
-        if (!alert.getUserID().value().equals(userId)) {
+        if (!alert.getUserId().equals(userId)) {
             throw new UnauthorizedException("Just authorized users can modify this alert");
         }
 
-        String oldTitle = alert.getTitle().getValue();
-        UserId editorId = new UserId(userId);
+        Title oldTitle = alert.getTitle();
+
 
         AlertEvent event = AlertEventFactory.createTitleChangedEvent(
-                alert, oldTitle, title, editorId
+                alert, oldTitle, title, userId
         );
 
         eventRepository.save(event);
 
-        Alert alertCopy = alert.updateTitle(new Title(title));
+        Alert alertCopy = alert.updateTitle(title);
         return alertRepository.save(alertCopy);
     }
 
-    @Override
     @Transactional
-    public Alert updateDescription(String alertId, String userId, String description) {
+    @Override
+    public Alert updateDescription(UUID alertId, UUID userId, Description description) {
         Alert alert = getAlertById(alertId);
 
-        if (!alert.getUserID().value().equals(userId)) {
+        if (!alert.getUserId().equals(userId)) {
             throw new UnauthorizedException("Just authorized users can modify this alert");
         }
 
-        String oldDescription = alert.getDescription().description();
-        UserId editorId = new UserId(userId);
+        Description oldDescription = alert.getDescription();
 
         AlertEvent event = AlertEventFactory.createDescriptionChangedEvent(
-                alert, oldDescription, description, editorId
+                alert, oldDescription, description, userId
         );
 
         eventRepository.save(event);
 
-        Alert alertCopy = alert.updateDescription(new Description(description));
+        Alert alertCopy = alert.updateDescription(description);
         return alertRepository.save(alertCopy);
     }
 
-}
+   }

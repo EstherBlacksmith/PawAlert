@@ -29,7 +29,7 @@ class AlertTest {
     @BeforeEach
     void setUp() {
         UUID petId = UUID.randomUUID();
-        UserId userId = fromUUID(UUID.randomUUID());
+        UUID userId = UUID.randomUUID();
         title = new Title("Test Alert");
         description = new Description("Test Description");
         alert = new Alert(petId, userId, title, description);

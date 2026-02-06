@@ -21,9 +21,10 @@ public class AlertEvent {
     @Getter
     private final ChangedAt changedAt;
     @Getter
-    private final UserId changedBy;
+    private final UUID changedBy;
 
-    public AlertEvent(UUID id, EventType eventType, StatusNames previous, StatusNames newStatus, String oldValue, String newValue, UserId userId) {
+    public AlertEvent(UUID id, EventType eventType, StatusNames previous, StatusNames newStatus,
+                      String oldValue, String newValue, UUID userId) {
         this.id = id;
         this.eventType = eventType;
         this.previousStatus = previous;
@@ -36,7 +37,7 @@ public class AlertEvent {
 
     // Private constructor - uses factory method
     private AlertEvent(EventType eventType, StatusNames previous, StatusNames newStatus, String oldValue, String newValue,
-                       ChangedAt changedAt, UserId changedBy) {
+                       ChangedAt changedAt, UUID changedBy) {
         this.eventType = eventType;
         this.oldValue = oldValue;
         this.newValue = newValue;
@@ -48,21 +49,21 @@ public class AlertEvent {
     }
 
     // Factory method for create the initial event
-    public static AlertEvent createStatusEvent(StatusNames previousStatus, StatusNames newStatus, UserId userId) {
+    public static AlertEvent createStatusEvent(StatusNames previousStatus, StatusNames newStatus, UUID userId) {
         return new AlertEvent(EventType.STATUS_CHANGED, previousStatus, newStatus,
                 null, null, ChangedAt.now(), userId);
     }
 
     // Factory method for title events
-    public static AlertEvent createTitleEvent(String oldTitle, String newTitle, UserId userId) {
+    public static AlertEvent createTitleEvent(Title oldTitle, Title newTitle, UUID userId) {
         return new AlertEvent(EventType.TITLE_CHANGED, null, null,
-                oldTitle, newTitle, ChangedAt.now(), userId);
+                oldTitle.getValue(), newTitle.getValue(), ChangedAt.now(), userId);
     }
 
     // Factory method for description events
-    public static AlertEvent createDescriptionEvent(String oldDescription, String newDescription, UserId userId) {
+    public static AlertEvent createDescriptionEvent(Description oldDescription, Description newDescription, UUID userId) {
         return new AlertEvent(EventType.DESCRIPTION_CHANGED, null, null,
-                oldDescription, newDescription, ChangedAt.now(), userId);
+                oldDescription.getValue(), newDescription.getValue(), ChangedAt.now(), userId);
     }
 
     @Override

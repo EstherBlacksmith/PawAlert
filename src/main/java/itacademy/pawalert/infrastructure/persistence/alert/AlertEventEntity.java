@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * JPA Entity for persistence AlertEvent in database.
@@ -63,7 +64,7 @@ public class AlertEventEntity {
     // Conversion Domain -> Entity
     public static AlertEventEntity fromDomain(AlertEvent event, AlertEntity alert) {
         LocalDateTime changedAt = event.getChangedAt().value();
-        String userId = event.getChangedBy().value();
+        String userId = event.getChangedBy().toString();
 
         String previousStatus = event.getPreviousStatus() != null
                 ? event.getPreviousStatus().name()
@@ -113,9 +114,9 @@ public class AlertEventEntity {
 
 
         return switch (type) {
-            case STATUS_CHANGED -> AlertEvent.createStatusEvent(previous, newStat, new UserId(changedByUserId));
-            case TITLE_CHANGED -> AlertEvent.createTitleEvent(oldValue, newValue, new UserId(changedByUserId));
-            case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(oldValue, newValue, new UserId(changedByUserId));
+            case STATUS_CHANGED -> AlertEvent.createStatusEvent(previous, newStat, UUID.fromString(changedByUserId));
+            case TITLE_CHANGED -> AlertEvent.createTitleEvent(Title.of(oldValue), Title.of(newValue), UUID.fromString(changedByUserId));
+            case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(Description.of(oldValue),Description.of( newValue), UUID.fromString(changedByUserId));
         };
     }
 
