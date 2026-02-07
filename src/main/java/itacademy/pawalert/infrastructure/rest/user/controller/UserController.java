@@ -59,13 +59,13 @@ public class UserController {
                 ));
     }
 
-    @PutMapping("/password")
+    @PutMapping("/{userId}/password")
     public ResponseEntity<Map<String, String>> changePassword(
-            @RequestParam String email,
+            @PathVariable String userId,
             @Valid @RequestBody ChangePasswordRequest request) {
-        Email convertedEmail = Email.of(email);
+        UUID convertedUserId = UUID.fromString(userId);
 
-        updatePasswordUseCase.changePassword(convertedEmail,
+        updatePasswordUseCase.changePassword(convertedUserId,
                 Password.fromPlainText(request.currentPassword()),
                 request.newPassword());
 
