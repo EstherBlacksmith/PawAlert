@@ -18,7 +18,8 @@ public class UserService implements
         CreateUserUseCase,
         GetUserUseCase,
         DeleteUserUseCase,
-        UpdateUserUseCase {
+        UpdateUserUseCase,
+        UpdatePasswordUseCase {
 
 
     private final UserRepositoryPort userRepositoryPort;

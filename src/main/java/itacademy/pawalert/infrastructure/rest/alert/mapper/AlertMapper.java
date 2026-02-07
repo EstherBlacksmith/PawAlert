@@ -7,10 +7,12 @@ import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
 import itacademy.pawalert.domain.user.User;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
 public class AlertMapper {
+    public static final AlertMapper INSTANCE = new AlertMapper();
 
     public AlertDTO toDTO(Alert alert) {
         return AlertDTO.builder()
@@ -48,5 +50,10 @@ public class AlertMapper {
                 creator.getPhoneNumber(),
                 creator.getSurname()
         );
+    }
+    public List<AlertDTO> toDTOList(List<Alert> alerts) {
+        return alerts.stream()
+                .map(this::toDTO)
+                .toList();
     }
 }

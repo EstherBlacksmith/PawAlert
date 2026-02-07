@@ -16,11 +16,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<UserEntity, String> {
-    Optional<UserEntity> findByUsername(Username username);
-    Optional<UserEntity> findByEmail(Email email);
-    boolean existsBySurname(Surname surname);
-    boolean existsByEmail(Email email);
-    void delete(Optional<UserEntity> user);
+
+    @Query("SELECT u FROM UserEntity u WHERE u.username = :#{#username.value}")
+    Optional<UserEntity> findByUsername(@Param("username") Username username);
+
+    @Query("SELECT u FROM UserEntity u WHERE u.email = :#{#email.value}")
+    Optional<UserEntity> findByEmail(@Param("email") Email email);
+
+    @Query("SELECT COUNT(u) > 0 FROM UserEntity u WHERE u.surname = :#{#surname.value}")
+    boolean existsBySurname(@Param("surname") Surname surname);
+
+    @Query("SELECT COUNT(u) > 0 FROM UserEntity u WHERE u.email = :#{#email.value}")
+    boolean existsByEmail(@Param("email") Email email);
 
     Role findRoleById(UUID userId);
 
@@ -31,19 +38,19 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
 
     @Modifying
     @Transactional
-    @Query("UPDATE UserEntity u SET u.phonenumber = :phoneNumber WHERE u.id = :userId")
-    User updatePhonenumber(@Param(value ="userId") UUID userId, @Param(value ="phoneNumber") PhoneNumber phoneNumber);
+    @Query("UPDATE UserEntity u SET u.phoneNumber = :phoneNumber WHERE u.id = :userId")
+    void updatePhoneNumber(@Param(value ="userId") UUID userId, @Param("phoneNumber") String phoneNumber);
 
     @Modifying
     @Transactional
     @Query("UPDATE UserEntity u SET u.surname = :surname WHERE u.id = :userId")
-    User updateSurname(@Param(value = "userId") UUID userId, @Param(value ="surname") Surname surname);
-
+    void updateSurname(@Param(value = "userId") UUID userId, @Param("surname") String surname);
 
     @Modifying
     @Transactional
-    @Query("UPDATE UserEntity u SET u.name = :name WHERE u.id = :userId")
-    User updateName(@Param(value = "userId") UUID userId, @Param(value ="name") Username name);
+    @Query("UPDATE UserEntity u SET u.username = :username WHERE u.id = :userId")
+    void updateUsername(@Param(value = "userId") UUID userId, @Param("username") String username);
 
-    Optional<UserEntity> findBySurname(Surname surname);
+    @Query("SELECT u FROM UserEntity u WHERE u.surname = :surname")
+    Optional<UserEntity> findBySurname(@Param("surname") String surname);
 }

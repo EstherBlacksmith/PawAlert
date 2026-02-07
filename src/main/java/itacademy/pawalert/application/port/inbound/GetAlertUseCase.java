@@ -2,6 +2,7 @@ package itacademy.pawalert.application.port.inbound;
 
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertEvent;
+import itacademy.pawalert.domain.pet.model.PetName;
 
 import java.util.List;
 import java.util.UUID;
