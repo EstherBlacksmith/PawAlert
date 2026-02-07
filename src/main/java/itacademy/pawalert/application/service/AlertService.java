@@ -7,10 +7,12 @@ import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.alert.service.AlertFactory;
 import itacademy.pawalert.application.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.application.port.outbound.AlertEventRepositoryPort;
+import itacademy.pawalert.domain.alert.specification.AlertSpecifications;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventFactory;
 import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
 import jakarta.transaction.Transactional;
 import itacademy.pawalert.domain.user.User;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +36,15 @@ public class AlertService implements
         this.userUseCase = userUseCase;
         this.alertMapper = alertMapper;
     }
+
+
+    public List<Alert> findOpenAlertsWithTitle(String title) {
+        Specification<Alert> spec = AlertSpecifications.withStatus(StatusNames.OPENED)
+                .and(AlertSpecifications.titleContains(title));
+
+        return alertRepository.findAll(spec);
+    }
+
 
     @Transactional
     public Alert createOpenedAlert(UUID petId, Title title, Description description, UUID userId) {
