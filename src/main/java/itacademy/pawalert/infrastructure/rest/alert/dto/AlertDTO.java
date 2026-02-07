@@ -16,5 +16,6 @@ public class AlertDTO {
     private String title;
     private String description;
     private String status;
-
+    private Double latitude;
+    private Double longitude;
 }

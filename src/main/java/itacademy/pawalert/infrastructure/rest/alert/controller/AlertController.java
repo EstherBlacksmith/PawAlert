@@ -2,10 +2,7 @@ package itacademy.pawalert.infrastructure.rest.alert.controller;
 
 import itacademy.pawalert.application.port.inbound.*;
 import itacademy.pawalert.application.service.AlertService;
-import itacademy.pawalert.domain.alert.model.Alert;
-import itacademy.pawalert.domain.alert.model.Description;
-import itacademy.pawalert.domain.alert.model.StatusNames;
-import itacademy.pawalert.domain.alert.model.Title;
+import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.pet.model.PetName;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
 import itacademy.pawalert.infrastructure.rest.alert.dto.DescriptionUpdateRequest;
@@ -46,10 +43,13 @@ public class AlertController {
 
     @PostMapping
     public ResponseEntity<AlertDTO> createAlert(@Valid @RequestBody AlertDTO alertDTO) {
+        GeographicLocation location = GeographicLocation.of(   alertDTO.getLatitude(),  alertDTO.getLongitude());
+
         Alert created = createAlertUseCase.createOpenedAlert(UUID.fromString(alertDTO.getPetId()),
                 Title.of(alertDTO.getTitle()),
-               Description.of( alertDTO.getDescription()),
-                UUID.fromString(alertDTO.getUserId())
+                Description.of( alertDTO.getDescription()),
+                UUID.fromString(alertDTO.getUserId()),
+                location
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -76,7 +76,8 @@ public class AlertController {
         Alert updated = updateAlertStatusUseCase.changeStatus(
                 UUID.fromString(id),
                 request.getNewStatus(),
-                UUID.fromString(request.getUserId())
+                UUID.fromString(request.getUserId()),
+                request.getLocation()
         );
 
         return ResponseEntity.ok(alertMapper.toDTO(updated));
