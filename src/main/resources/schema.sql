@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS alerts (
     id VARCHAR(255) PRIMARY KEY,
     pet_id VARCHAR(255) NOT NULL,
+    user_id VARCHAR(255) NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
     status VARCHAR(50) NOT NULL,
@@ -8,12 +9,17 @@ CREATE TABLE IF NOT EXISTS alerts (
     );
 
 CREATE TABLE IF NOT EXISTS alert_events (
-     id VARCHAR(255) PRIMARY KEY,
+    id VARCHAR(255) PRIMARY KEY,
     alert_id VARCHAR(255) NOT NULL,
+    event_type VARCHAR(50) NOT NULL,
+    old_value TEXT,
+    new_value TEXT,
     previous_status VARCHAR(50),
     new_status VARCHAR(50) NOT NULL,
     changed_at TIMESTAMP NOT NULL,
     changed_by_user_id VARCHAR(255),
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION
     FOREIGN KEY (alert_id) REFERENCES alerts (id)
     );
 
@@ -42,3 +48,9 @@ CREATE TABLE IF NOT EXISTS users (
     phone_number VARCHAR(50),
     created_at TIMESTAMP NOT NULL
     );
+
+CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);
+CREATE INDEX IF NOT EXISTS idx_alerts_pet ON alerts(pet_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_user ON alerts(user_id);
+
+CREATE INDEX IF NOT EXISTS idx_alert_events_location ON alert_events(latitude, longitude);

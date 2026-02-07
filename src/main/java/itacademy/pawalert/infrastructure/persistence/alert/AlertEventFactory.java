@@ -15,15 +15,15 @@ public class AlertEventFactory {
 
     // Factory method for title changes
     public static AlertEvent createTitleChangedEvent(
-            Alert alert, Title oldTitle, Title newTitle, UUID userId,GeographicLocation location) {
+            Alert alert, Title oldTitle, Title newTitle, UUID userId) {
 
-        return AlertEvent.createTitleEvent(oldTitle, newTitle, userId,location);
+        return AlertEvent.createTitleEvent(oldTitle, newTitle, userId);
     }
 
     // Factory method for description changes
     public static AlertEvent createDescriptionChangedEvent(
-            Alert alert, Description oldDescription, Description newDescription, UUID userId,GeographicLocation location) {
+            Alert alert, Description oldDescription, Description newDescription, UUID userId) {
 
-        return AlertEvent.createDescriptionEvent(oldDescription, newDescription, userId,location);
+        return AlertEvent.createDescriptionEvent(oldDescription, newDescription, userId);
     }
 }

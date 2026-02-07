@@ -65,6 +65,7 @@ class AlertServiceTest {
     private UUID userId;
     private UUID petId;
     private Alert testAlert;
+    private GeographicLocation location = GeographicLocation.of(40.4168, -3.7025);;
 
     @BeforeEach
     void setUp() {
@@ -81,6 +82,7 @@ class AlertServiceTest {
         // Configure shared mocks
         lenient().when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         lenient().when(eventRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        location = GeographicLocation.of(40.4168, -3.7025);
     }
 
     @Test
@@ -92,7 +94,7 @@ class AlertServiceTest {
 
         // When/Then
         assertThrows(AlertNotFoundException.class,
-                () -> alertService.changeStatus(nonExistentId, StatusNames.SEEN, userId));
+                () -> alertService.changeStatus(nonExistentId, StatusNames.SEEN, userId,location));
     }
 
     @Test
@@ -107,7 +109,7 @@ class AlertServiceTest {
 
         // When/Then
         assertThrows(InvalidAlertStatusChange.class,
-                () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId));
+                () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId,location));
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -284,7 +286,7 @@ class AlertServiceTest {
             when(eventRepository.save(any(AlertEvent.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
-            Alert result = alertService.createOpenedAlert(petId, title, description, userId);
+            Alert result = alertService.createOpenedAlert(petId, title, description, userId,location);
 
             // Then
             assertNotNull(result);
@@ -302,7 +304,7 @@ class AlertServiceTest {
             // When
             Title title = Title.of("Title");
             Description description = Description.of("Desc");
-            alertService.createOpenedAlert(petId, title, description, userId);
+            alertService.createOpenedAlert(petId, title, description, userId,location);
 
             // Then
             verify(alertRepository, times(1)).save(any(Alert.class));
@@ -353,13 +355,14 @@ class AlertServiceTest {
                     null,
                     "OPENED",
                     LocalDateTime.now(),
-                    "user-1"
+                    "user-1",
+                    location
             );
 
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.changeStatus(alertId, StatusNames.SEEN, userId);
+            Alert result = alertService.changeStatus(alertId, StatusNames.SEEN, userId,location);
 
             // Then - Expect 2 saves: initial event (already saved) + change event
             verify(eventRepository, times(1)).save(any(AlertEvent.class));
@@ -374,7 +377,7 @@ class AlertServiceTest {
 
             // When/Then
             assertThrows(AlertNotFoundException.class,
-                    () -> alertService.changeStatus(UUID.fromString("12345678-1234-1234-1234-123456789012"), StatusNames.SEEN, userId));
+                    () -> alertService.changeStatus(UUID.fromString("12345678-1234-1234-1234-123456789012"), StatusNames.SEEN, userId,location));
         }
     }
 
@@ -389,7 +392,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.markAsSeen(alertId, userId);
+            Alert result = alertService.markAsSeen(alertId, userId,location);
 
             // Then
             assertEquals(StatusNames.SEEN, result.currentStatus().getStatusName());
@@ -402,7 +405,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.markAsSafe(alertId, userId);
+            Alert result = alertService.markAsSafe(alertId, userId,location);
 
             // Then
             assertEquals(StatusNames.SAFE, result.currentStatus().getStatusName());
@@ -415,7 +418,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.markAsClosed(alertId, userId);
+            Alert result = alertService.markAsClosed(alertId, userId,location);
 
             // Then
             assertEquals(StatusNames.CLOSED, result.currentStatus().getStatusName());
@@ -431,11 +434,11 @@ class AlertServiceTest {
         void shouldReturnAlertHistory() {
             // Given
             AlertEvent event1 = AlertEvent.createStatusEvent(
-                    StatusNames.OPENED, StatusNames.SEEN,UUID.fromString("12345678-1234-1234-1234-123456789012")
+                    StatusNames.OPENED, StatusNames.SEEN,UUID.fromString("12345678-1234-1234-1234-123456789012"),location
             );
 
             AlertEvent event2 = AlertEvent.createStatusEvent(
-                    StatusNames.SEEN, StatusNames.CLOSED,UUID.fromString("87654321-4321-4321-4321-210987654321")
+                    StatusNames.SEEN, StatusNames.CLOSED,UUID.fromString("87654321-4321-4321-4321-210987654321"),location
             );
             UUID testAlertId = UUID.fromString("12345678-1234-1234-1234-123456789012");
 

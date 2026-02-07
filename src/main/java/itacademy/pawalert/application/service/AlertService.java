@@ -32,7 +32,8 @@ public class AlertService implements
     private final GetUserUseCase userUseCase;
     private final AlertMapper alertMapper;
 
-    public AlertService(AlertRepositoryPort alertRepository, AlertEventRepositoryPort eventRepository, GetUserUseCase userUseCase, AlertMapper alertMapper){
+    public AlertService(AlertRepositoryPort alertRepository, AlertEventRepositoryPort eventRepository,
+                        GetUserUseCase userUseCase, AlertMapper alertMapper){
         this.alertRepository = alertRepository;
         this.eventRepository = eventRepository;
         this.userUseCase = userUseCase;
@@ -93,19 +94,19 @@ public class AlertService implements
 
     @Transactional
     @Override
-    public Alert markAsSeen(UUID alertId, UUID userId) {
-        return changeStatus(alertId, StatusNames.SEEN, userId);
+    public Alert markAsSeen(UUID alertId, UUID userId,GeographicLocation location) {
+        return changeStatus(alertId, StatusNames.SEEN, userId,location);
     }
 
     @Transactional
     @Override
-    public Alert markAsSafe(UUID alertId, UUID userId) {
-        return changeStatus(alertId, StatusNames.SAFE, userId);
+    public Alert markAsSafe(UUID alertId, UUID userId, GeographicLocation location) {
+        return changeStatus(alertId, StatusNames.SAFE, userId,location);
     }
 
     @Transactional
-    public Alert markAsClosed(UUID alertId, UUID userId) {
-        return changeStatus(alertId, StatusNames.CLOSED, userId);
+    public Alert markAsClosed(UUID alertId, UUID userId, GeographicLocation location) {
+        return changeStatus(alertId, StatusNames.CLOSED, userId,location);
     }
 
     @Transactional
@@ -160,7 +161,7 @@ public class AlertService implements
                 .orElse(null);
 
         AlertEvent event = AlertEventFactory.createTitleChangedEvent(
-                alert, oldTitle, title, userId,lastLocation
+                alert, oldTitle, title, userId
         );
 
         eventRepository.save(event);
@@ -186,7 +187,7 @@ public class AlertService implements
                 .orElse(null);
 
         AlertEvent event = AlertEventFactory.createDescriptionChangedEvent(
-                alert, oldDescription, description, userId,lastLocation
+                alert, oldDescription, description, userId
         );
 
         eventRepository.save(event);
