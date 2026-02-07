@@ -1,12 +1,15 @@
 package itacademy.pawalert.infrastructure.persistence.alert;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import itacademy.pawalert.application.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.domain.alert.model.AlertEvent;
 
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class AlertEventRepositoryAdapter implements AlertEventRepositoryPort {
@@ -26,9 +29,16 @@ public class AlertEventRepositoryAdapter implements AlertEventRepositoryPort {
 
     @Override
     public List<AlertEvent> findByAlertIdOrderByChangedAtDesc(UUID alertId) {
-        return eventRepository.findByAlertIdOrderByChangedAtDesc(String.valueOf(alertId))
+        return eventRepository.findByAlertIdOrderByChangedAtDesc(alertId.toString())
                 .stream()
                 .map(AlertEventEntity::toDomain)
-                .toList();
+                .collect(Collectors.toList());
     }
+
+    @Override
+    public Optional<AlertEvent> findLatestByAlertId(UUID alertId) {
+        return eventRepository.findFirstByAlertIdOrderByChangedAtDesc(alertId.toString())
+                .map(AlertEventEntity::toDomain);
+    }
+
 }
