@@ -4,6 +4,7 @@ import itacademy.pawalert.application.port.inbound.*;
 import itacademy.pawalert.application.service.AlertService;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.Description;
+import itacademy.pawalert.domain.alert.model.StatusNames;
 import itacademy.pawalert.domain.alert.model.Title;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
 import itacademy.pawalert.infrastructure.rest.alert.dto.DescriptionUpdateRequest;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -96,4 +98,22 @@ public class AlertController {
         return ResponseEntity.ok(alertMapper.toDTO(updated));
     }
 
+
+    @GetMapping("/search")
+    public ResponseEntity<List<AlertDTO>> searchAlerts(
+            @RequestParam(required = false) StatusNames status,
+            @RequestParam(required = false) String petName,
+            @RequestParam(required = false) String species
+    ) {
+        List<Alert> alerts = alertService.searchAlerts(status, petName, species);
+        return ResponseEntity.ok(AlertMapper.INSTANCE.toDTOList(alerts));
+    }
+
+    @GetMapping("/pet/{petName}")
+    public ResponseEntity<List<AlertDTO>> getAlertsByPetName(
+            @PathVariable String petName
+    ) {
+        List<Alert> alerts = alertService.findAlertsByPetName(petName);
+        return ResponseEntity.ok(AlertMapper.INSTANCE.toDTOList(alerts));
+    }
 }

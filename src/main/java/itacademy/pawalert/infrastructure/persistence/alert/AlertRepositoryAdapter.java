@@ -2,6 +2,7 @@ package itacademy.pawalert.infrastructure.persistence.alert;
 
 import itacademy.pawalert.application.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -48,6 +49,19 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
     @Override
     public void deleteById(UUID alertId) {
         alertRepository.deleteById(alertId.toString());
+    }
+
+    @Override
+    public List<Alert> findAll() {
+        return alertRepository.findAll()
+                .stream()
+                .map(AlertEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Alert> findAll(Specification<Alert> spec) {
+        return alertRepository.findAll(spec);
     }
 
 }
