@@ -73,28 +73,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(LocationException.class)
     public ResponseEntity<ErrorResponse> handleLocationException(LocationException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse("LOCATION_ERROR", ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "Location error", ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidLatitudeException.class)
     public ResponseEntity<ErrorResponse> handleInvalidLatitude(InvalidLatitudeException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(
-                        "INVALID_LATITUDE",
-                        ex.getMessage(),
-                        Map.of("latitude", ex.getLatitude()).toString()
-                ));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "Latitud error", ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidLongitudeException.class)
     public ResponseEntity<ErrorResponse> handleInvalidLongitude(InvalidLongitudeException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(
-                        "INVALID_LONGITUDE",
-                        ex.getMessage(),
-                        Map.of("longitude", ex.getLongitude())
-                ));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "Longitude error", ex.getMessage()));
     }
 
 }
