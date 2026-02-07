@@ -3,14 +3,15 @@ package itacademy.pawalert.infrastructure.exception;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.application.service.UserNotFoundException;
-import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
-import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
+import itacademy.pawalert.domain.alert.exception.*;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.infrastructure.rest.alert.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -69,4 +70,31 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(404, "User not found", ex.getMessage()));
     }
+
+    @ExceptionHandler(LocationException.class)
+    public ResponseEntity<ErrorResponse> handleLocationException(LocationException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse("LOCATION_ERROR", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidLatitudeException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidLatitude(InvalidLatitudeException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(
+                        "INVALID_LATITUDE",
+                        ex.getMessage(),
+                        Map.of("latitude", ex.getLatitude()).toString()
+                ));
+    }
+
+    @ExceptionHandler(InvalidLongitudeException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidLongitude(InvalidLongitudeException ex) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(
+                        "INVALID_LONGITUDE",
+                        ex.getMessage(),
+                        Map.of("longitude", ex.getLongitude())
+                ));
+    }
+
 }
