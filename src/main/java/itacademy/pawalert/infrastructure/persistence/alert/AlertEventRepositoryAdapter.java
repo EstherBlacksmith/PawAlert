@@ -3,9 +3,12 @@ package itacademy.pawalert.infrastructure.persistence.alert;
 import itacademy.pawalert.application.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.domain.alert.model.AlertEvent;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class AlertEventRepositoryAdapter implements AlertEventRepositoryPort {
     private final AlertEventRepository eventRepository;
 

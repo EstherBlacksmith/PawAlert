@@ -29,6 +29,9 @@ public interface UserRepositoryPort {
     void updatePasswordHash(UUID userId, String newHash);
     User updatePhoneNumber(UUID userId, PhoneNumber phoneNumber);
     User updateSurname(UUID userId, Surname surname);
+
+    User updateUsername(UUID userId, Username username);
+
     boolean existsBySurname(Surname surname);
     String getPasswordHashById(UUID userId);
 }

@@ -6,6 +6,7 @@ import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.Description;
 import itacademy.pawalert.domain.alert.model.StatusNames;
 import itacademy.pawalert.domain.alert.model.Title;
+import itacademy.pawalert.domain.pet.model.PetName;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
 import itacademy.pawalert.infrastructure.rest.alert.dto.DescriptionUpdateRequest;
 import itacademy.pawalert.infrastructure.rest.alert.dto.StatusChangeRequest;
@@ -29,14 +30,18 @@ public class AlertController {
     private final UpdateAlertUseCase updateAlertUseCase;
     private final DeleteAlertUseCase deleteAlertUseCase;
     private final AlertMapper alertMapper;
+    private final SearchAlertsUseCase searchAlertsUseCase;
 
-    public AlertController(AlertMapper alertMapper, AlertService alertService, CreateAlertUseCase createAlertUseCase, GetAlertUseCase getAlertUseCase, UpdateAlertStatusUseCase updateAlertStatusUseCase, UpdateAlertUseCase updateAlertUseCase, DeleteAlertUseCase deleteAlertUseCase) {
+    public AlertController(AlertMapper alertMapper, CreateAlertUseCase createAlertUseCase, GetAlertUseCase getAlertUseCase,
+                           UpdateAlertStatusUseCase updateAlertStatusUseCase, UpdateAlertUseCase updateAlertUseCase,
+                           DeleteAlertUseCase deleteAlertUseCase, SearchAlertsUseCase searchAlerts) {
         this.createAlertUseCase = createAlertUseCase;
         this.getAlertUseCase = getAlertUseCase;
         this.updateAlertStatusUseCase = updateAlertStatusUseCase;
         this.updateAlertUseCase = updateAlertUseCase;
         this.alertMapper = alertMapper;
         this.deleteAlertUseCase = deleteAlertUseCase;
+        this.searchAlertsUseCase = searchAlerts;
     }
 
     @PostMapping
@@ -105,15 +110,14 @@ public class AlertController {
             @RequestParam(required = false) String petName,
             @RequestParam(required = false) String species
     ) {
-        List<Alert> alerts = alertService.searchAlerts(status, petName, species);
-        return ResponseEntity.ok(AlertMapper.INSTANCE.toDTOList(alerts));
+        List<Alert> alerts = searchAlertsUseCase.search(status, petName, species);
+        return ResponseEntity.ok(alertMapper.INSTANCE.toDTOList(alerts));
     }
 
-    @GetMapping("/pet/{petName}")
-    public ResponseEntity<List<AlertDTO>> getAlertsByPetName(
-            @PathVariable String petName
-    ) {
-        List<Alert> alerts = alertService.findAlertsByPetName(petName);
-        return ResponseEntity.ok(AlertMapper.INSTANCE.toDTOList(alerts));
+    @GetMapping
+    public ResponseEntity<List<AlertDTO>> getAllAlerts() {
+        List<Alert> alerts = searchAlertsUseCase.search(null, null, null);
+        return ResponseEntity.ok(alertMapper.INSTANCE.toDTOList(alerts));
     }
+
 }

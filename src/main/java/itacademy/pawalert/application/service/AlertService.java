@@ -24,7 +24,8 @@ public class AlertService implements
         GetAlertUseCase,
         UpdateAlertStatusUseCase,
         UpdateAlertUseCase,
-SearchAlertsUseCase{
+        DeleteAlertUseCase,
+        SearchAlertsUseCase{
 
     private final AlertRepositoryPort alertRepository;
     private final AlertEventRepositoryPort eventRepository;
@@ -187,24 +188,31 @@ SearchAlertsUseCase{
 
     @Override
     public List<Alert> search(StatusNames status, String petName, String species) {
-        Specification<Alert> spec = Specification.where(null);
+        Specification<Alert> spec = null;
 
         //By status
         if (status != null) {
-            spec = spec.and(AlertSpecifications.withStatus(status));
+            spec = (spec == null) ? AlertSpecifications.withStatus(status) : spec.and(AlertSpecifications.withStatus(status));
         }
 
         // By pet name
         if (petName != null && !petName.isBlank()) {
-            spec = spec.and(AlertSpecifications.petNameContains(petName));
+            Specification<Alert> petSpec = AlertSpecifications.petNameContains(petName);
+            spec = (spec == null) ? petSpec : spec.and(petSpec);
         }
 
         // By specie
         if (species != null && !species.isBlank()) {
-            spec = spec.and(AlertSpecifications.withPetSpecies(species));
+            Specification<Alert> speciesSpec = AlertSpecifications.withPetSpecies(species);
+            spec = (spec == null) ? speciesSpec : spec.and(speciesSpec);
         }
 
         // Specification to Repository
+        if (spec == null) {
+            // Si no hay filtros, devolver lista vacía
+            return List.of();
+        }
         return alertRepository.findAll(spec);
     }
+
 }

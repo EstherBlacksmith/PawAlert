@@ -36,12 +36,13 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public Optional<User> findByUsername(Username username) {
-        return Optional.empty();
+        return jpaUserRepository.findByUsername(username)
+                .map(UserEntity::toDomain);
     }
 
     @Override
     public Optional<User> findBySurname(Surname surname) {
-        return jpaUserRepository.findBySurname(surname)
+        return jpaUserRepository.findBySurname(surname.value())
                 .map(UserEntity::toDomain);
     }
 
@@ -154,13 +155,27 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public User updatePhoneNumber(UUID userId, PhoneNumber phoneNumber) {
-        return jpaUserRepository.updatePhonenumber(userId,phoneNumber);
+        jpaUserRepository.updatePhoneNumber(userId, phoneNumber.value());
+        return jpaUserRepository.findById(userId.toString())
+                .map(UserEntity::toDomain)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
     }
 
 
     @Override
     public User updateSurname(UUID userId, Surname surname) {
-        return jpaUserRepository.updateSurname(userId,surname);
+        jpaUserRepository.updateSurname(userId, surname.value());
+        return jpaUserRepository.findById(userId.toString())
+                .map(UserEntity::toDomain)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+    }
+
+    @Override
+    public User updateUsername(UUID userId, Username username) {
+        jpaUserRepository.updateUsername(userId, username.value());
+        return jpaUserRepository.findById(userId.toString())
+                .map(UserEntity::toDomain)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
     }
 
     @Override
