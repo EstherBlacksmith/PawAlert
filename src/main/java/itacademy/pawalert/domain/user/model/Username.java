@@ -4,7 +4,7 @@ package itacademy.pawalert.domain.user.model;
 public record Username(String value) {
 
     private static final java.util.regex.Pattern USERNAME_PATTERN =
-            java.util.regex.Pattern.compile("^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñÇç'\\-\\s]+$");
+            java.util.regex.Pattern.compile("^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñÇç_'\\-\\s]+$");
 
     public Username {
         if (value == null || value.isBlank()) {
