@@ -1,5 +1,6 @@
 package itacademy.pawalert.domain.alert.model;
-
+import itacademy.pawalert.domain.alert.exception.InvalidLatitudeException;
+import itacademy.pawalert.domain.alert.exception.InvalidLongitudeException;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public record GeographicLocation(
@@ -20,21 +21,15 @@ public record GeographicLocation(
         validateLongitude(longitude);
     }
 
-    private static void validateLatitude(double lat) {
-        if (lat < MIN_LATITUDE || lat > MAX_LATITUDE) {
-            throw new IllegalArgumentException(
-                    String.format("Latitude must be between %.1f and %.1f, but was %.4f",
-                            MIN_LATITUDE, MAX_LATITUDE, lat)
-            );
+    private static void validateLatitude(double latitude) {
+        if (latitude < MIN_LATITUDE || latitude > MAX_LATITUDE) {
+            throw new InvalidLatitudeException(String.format("Latitude %.4f is invalid. Must be between -90.0 and 90.0", latitude));
+
         }
     }
-
-    private static void validateLongitude(double lon) {
-        if (lon < MIN_LONGITUDE || lon > MAX_LONGITUDE) {
-            throw new IllegalArgumentException(
-                    String.format("Longitude must be between %.1f and %.1f, but was %.4f",
-                            MIN_LONGITUDE, MAX_LONGITUDE, lon)
-            );
+    private static void validateLongitude(double longitude) {
+        if (longitude < MIN_LONGITUDE || longitude > MAX_LONGITUDE) {
+            throw new InvalidLongitudeException(String.format("Longitude %.4f is invalid. Must be between -180.0 and 180.0", longitude));
         }
     }
 
