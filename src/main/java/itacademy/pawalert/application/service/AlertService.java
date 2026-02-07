@@ -49,7 +49,7 @@ public class AlertService implements
 
 
     @Transactional
-    public Alert createOpenedAlert(UUID petId, Title title, Description description, UUID userId) {
+    public Alert createOpenedAlert(UUID petId, Title title, Description description, UUID userId, GeographicLocation location) {
 
         Alert alert = AlertFactory.createAlert(
                 petId,
@@ -60,7 +60,7 @@ public class AlertService implements
         //Persist the object
         Alert savedAlert = alertRepository.save(alert);
         AlertEvent event = AlertEventFactory.createStatusChangedEvent(
-                alert, StatusNames.OPENED, StatusNames.OPENED, userId
+                alert, StatusNames.OPENED, StatusNames.OPENED, userId,location
         );
 
         eventRepository.save(event);
@@ -110,7 +110,7 @@ public class AlertService implements
 
     @Transactional
     @Override
-    public Alert changeStatus(UUID alertId, StatusNames newStatus, UUID userId) {
+    public Alert changeStatus(UUID alertId, StatusNames newStatus, UUID userId, GeographicLocation location) {
 
         Alert alert = getAlertById(alertId);
         StatusNames previousStatus = alert.currentStatus().getStatusName();
@@ -126,7 +126,7 @@ public class AlertService implements
 
         // Use factory
         AlertEvent  event = AlertEventFactory.createStatusChangedEvent(
-                alertCopy, previousStatus, newStatus, userId
+                alertCopy, previousStatus, newStatus, userId, location
         );
 
         eventRepository.save(event);
@@ -154,9 +154,13 @@ public class AlertService implements
 
         Title oldTitle = alert.getTitle();
 
+        GeographicLocation lastLocation = eventRepository
+                .findLatestByAlertId(alertId)
+                .map(AlertEvent::getLocation)
+                .orElse(null);
 
         AlertEvent event = AlertEventFactory.createTitleChangedEvent(
-                alert, oldTitle, title, userId
+                alert, oldTitle, title, userId,lastLocation
         );
 
         eventRepository.save(event);
@@ -176,8 +180,13 @@ public class AlertService implements
 
         Description oldDescription = alert.getDescription();
 
+        GeographicLocation lastLocation = eventRepository
+                .findLatestByAlertId(alertId)
+                .map(AlertEvent::getLocation)
+                .orElse(null);
+
         AlertEvent event = AlertEventFactory.createDescriptionChangedEvent(
-                alert, oldDescription, description, userId
+                alert, oldDescription, description, userId,lastLocation
         );
 
         eventRepository.save(event);
