@@ -32,6 +32,10 @@ public class AlertEventEntity {
     private LocalDateTime changedAt;
     @Column(name = "changed_by_user_id")
     private String changedByUserId;
+    @Column(name = "latitude")
+    private Double latitude;
+    @Column(name = "longitude")
+    private Double longitude;
     @ManyToOne
     @JoinColumn(name = "alert_id")
     private AlertEntity alert;
@@ -41,13 +45,16 @@ public class AlertEventEntity {
 
     //For status changes
     public AlertEventEntity(String id, String previousStatus, String newStatus,
-                            LocalDateTime changedAt, String changedByUserId) {
+                            LocalDateTime changedAt, String changedByUserId,
+                            GeographicLocation location) {
         this.id = id;
         this.eventType = "STATUS_CHANGED";
         this.previousStatus = previousStatus;
         this.newStatus = newStatus;
         this.changedAt = changedAt;
         this.changedByUserId = changedByUserId;
+        this.latitude = location.latitude();
+        this.longitude = location.longitude();
     }
 
     //For title and description events
@@ -74,7 +81,7 @@ public class AlertEventEntity {
                 : null;
         String eventType = event.getEventType().name();
 
-        // Usar el constructor correcto según el tipo de evento
+        // Using the correct constructor in base at the type of the event
         if (event.getOldValue() != null) {
             // TITLE_CHANGED o DESCRIPTION_CHANGED
             return new AlertEventEntity(
@@ -87,12 +94,15 @@ public class AlertEventEntity {
             );
         } else {
             // STATUS_CHANGED
+            assert event.getPreviousStatus() != null;
+            assert event.getNewStatus() != null;
             return new AlertEventEntity(
                     event.getId().toString(),
-                    previousStatus,
-                    newStatus,
-                    changedAt,
-                    userId
+                    event.getPreviousStatus().name(),
+                    event.getNewStatus().name(),
+                    event.getChangedAt().value(),
+                    event.getChangedBy().toString(),
+                    event.getLocation()
             );
         }
     }
@@ -112,9 +122,13 @@ public class AlertEventEntity {
                 ? StatusNames.valueOf(newStatus)
                 : null;
 
+        GeographicLocation location = null;
+        if (latitude != null && longitude != null) {
+            location = GeographicLocation.of(latitude, longitude);
+        }
 
         return switch (type) {
-            case STATUS_CHANGED -> AlertEvent.createStatusEvent(previous, newStat, UUID.fromString(changedByUserId));
+            case STATUS_CHANGED -> AlertEvent.createStatusEvent(previous, newStat, UUID.fromString(changedByUserId),location );
             case TITLE_CHANGED -> AlertEvent.createTitleEvent(Title.of(oldValue), Title.of(newValue), UUID.fromString(changedByUserId));
             case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(Description.of(oldValue),Description.of( newValue), UUID.fromString(changedByUserId));
         };

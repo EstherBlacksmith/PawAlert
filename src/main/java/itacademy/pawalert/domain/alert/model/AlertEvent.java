@@ -59,15 +59,15 @@ public class AlertEvent {
     }
 
     // Factory method for title events
-    public static AlertEvent createTitleEvent(Title oldTitle, Title newTitle, UUID userId, GeographicLocation location) {
+    public static AlertEvent createTitleEvent(Title oldTitle, Title newTitle, UUID userId) {
         return new AlertEvent(EventType.TITLE_CHANGED, null, null,
-                oldTitle.getValue(), newTitle.getValue(), ChangedAt.now(), userId, location);
+                oldTitle.getValue(), newTitle.getValue(), ChangedAt.now(), userId, null);
     }
 
     // Factory method for description events
-    public static AlertEvent createDescriptionEvent(Description oldDescription, Description newDescription, UUID userId, GeographicLocation location) {
+    public static AlertEvent createDescriptionEvent(Description oldDescription, Description newDescription, UUID userId) {
         return new AlertEvent(EventType.DESCRIPTION_CHANGED, null, null,
-                oldDescription.getValue(), newDescription.getValue(), ChangedAt.now(), userId, location);
+                oldDescription.getValue(), newDescription.getValue(), ChangedAt.now(), userId, null);
     }
 
     @Override
@@ -75,5 +75,6 @@ public class AlertEvent {
         return String.format("AlertEvent[%s: %s → %s, at=%s, by=%s]",
                 id, previousStatus, newStatus, changedAt, changedBy);
     }
+
 
 }
