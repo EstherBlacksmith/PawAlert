@@ -2,6 +2,7 @@ package itacademy.pawalert.application.port.inbound;
 
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
 import itacademy.pawalert.domain.alert.model.NotificationChannel;
+import itacademy.pawalert.domain.user.User;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,4 +16,5 @@ public interface AlertSubscriptionUseCase {
     List<AlertSubscription> getUserActiveSubscriptions(UUID userId);
     boolean isUserSubscribed(UUID alertId, UUID userId);
     AlertSubscription changeNotificationChannel(UUID alertId, UUID userId, NotificationChannel newChannel);
+    List<AlertSubscription> getActiveSubscriptionsByAlertId(UUID AlertId);
 }

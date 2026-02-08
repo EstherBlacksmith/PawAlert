@@ -1,33 +1,29 @@
 package itacademy.pawalert.infrastructure.persistence.user;
 
 import itacademy.pawalert.domain.user.Role;
-import itacademy.pawalert.domain.user.User;
-import itacademy.pawalert.domain.user.model.Email;
-import itacademy.pawalert.domain.user.model.PhoneNumber;
-import itacademy.pawalert.domain.user.model.Surname;
-import itacademy.pawalert.domain.user.model.Username;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<UserEntity, String> {
 
-    @Query("SELECT u FROM UserEntity u WHERE u.username = :#{#username.value}")
-    Optional<UserEntity> findByUsername(@Param("username") Username username);
+    @Query("SELECT u FROM UserEntity u WHERE u.username = :username")
+    Optional<UserEntity> findByUsername(@Param("username") String username);
 
-    @Query("SELECT u FROM UserEntity u WHERE u.email = :#{#email.value}")
-    Optional<UserEntity> findByEmail(@Param("email") Email email);
+    @Query("SELECT u FROM UserEntity u WHERE u.email = :email")
+    Optional<UserEntity> findByEmail(@Param("email") String email);
 
-    @Query("SELECT COUNT(u) > 0 FROM UserEntity u WHERE u.surname = :#{#surname.value}")
-    boolean existsBySurname(@Param("surname") Surname surname);
+    @Query("SELECT COUNT(u) > 0 FROM UserEntity u WHERE u.surname = :surname")
+    boolean existsBySurname(@Param("surname") String surname);
 
-    @Query("SELECT COUNT(u) > 0 FROM UserEntity u WHERE u.email = :#{#email.value}")
-    boolean existsByEmail(@Param("email") Email email);
+    @Query("SELECT COUNT(u) > 0 FROM UserEntity u WHERE u.email = :email")
+    boolean existsByEmail(@Param("email") String email);
 
     Role findRoleById(UUID userId);
 
@@ -53,4 +49,5 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
 
     @Query("SELECT u FROM UserEntity u WHERE u.surname = :surname")
     Optional<UserEntity> findBySurname(@Param("surname") String surname);
+
 }

@@ -2,6 +2,7 @@ package itacademy.pawalert.infrastructure.persistence.alert;
 
 import itacademy.pawalert.application.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -65,5 +66,10 @@ public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepo
     public void deleteAllByAlertId(UUID alertId) {
         jpaRepository.deleteAllByAlertId(alertId);
 
+    }
+
+    @Override
+    public List<String> findEmailsByAlertIdAndActiveTrue(UUID alertId) {
+        return jpaRepository.findEmailsByAlertIdAndActiveTrue(alertId);
     }
 }
