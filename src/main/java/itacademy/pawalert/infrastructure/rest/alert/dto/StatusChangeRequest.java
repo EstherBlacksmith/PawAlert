@@ -8,8 +8,8 @@ import jakarta.validation.constraints.NotNull;
 public record StatusChangeRequest(
         @NotNull(message = "New status is required") StatusNames newStatus,
         @NotNull(message = "User ID is required") UserId userId,
-        @NotNull(message = "Latitude is required for location tracking") Double latitude,
-        @NotNull(message = "Longitude is required for location tracking") Double longitude
+        Double latitude,
+        Double longitude
 ) {
     public StatusNames getNewStatus() {
         return newStatus;
@@ -20,7 +20,14 @@ public record StatusChangeRequest(
     }
 
     public GeographicLocation getLocation() {
-        return GeographicLocation.of(latitude, longitude);
+        if (latitude != null && longitude != null) {
+            return GeographicLocation.of(latitude, longitude);
+        }
+        return null; //When there is not GPS
+    }
+
+    public boolean hasGpsLocation() {
+        return latitude != null && longitude != null;
     }
 }
 
