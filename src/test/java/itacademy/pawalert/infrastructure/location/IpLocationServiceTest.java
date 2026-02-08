@@ -1,6 +1,8 @@
 package itacademy.pawalert.infrastructure.location;
 
+import itacademy.pawalert.domain.alert.exception.LocationException;
 import itacademy.pawalert.domain.alert.model.GeographicLocation;
+import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,7 +13,10 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for IpLocationService.
@@ -248,46 +253,57 @@ class IpLocationServiceTest {
     class GetLocationFromIpTests {
 
         @Test
-        @DisplayName("Should return null for private IP")
-        void shouldReturnNullForPrivateIpInGetLocationFromIp() {
-            // When
-            GeographicLocation result = ipLocationService.getLocationFromIp();
+        @DisplayName("Should throw LocationException for private IP")
+        void shouldThrowExceptionForPrivateIpInGetLocationFromIp() {
+            // Given - Set a private IP in the request
+            mockRequest.setRemoteAddr("192.168.1.100");
             
-            // Then
-            assertNull(result);
-        }
-    }
-
-    @Nested
-    @DisplayName("parseApiResponse Tests")
-    class ParseApiResponseTests {
-
-        @Test
-        @DisplayName("Should parse valid success response")
-        void shouldParseValidSuccessResponse() {
-            // Given
-            String jsonResponse = "{\"status\":\"success\",\"lat\":40.4168,\"lon\":-3.7025}";
+            // When/Then - getLocationFromIp() should throw LocationException for private IPs
+            LocationException exception = assertThrows(
+                    LocationException.class,
+                    () -> ipLocationService.getLocationFromIp()
+            );
             
-            // When
-            GeographicLocation result = ipLocationService.getLocationFromIp();
-            
-            // Then
-            // This will return null because the IP is null in test context
-            // The actual parsing logic is tested via integration
-            assertNull(result);
+            assertTrue(exception.getMessage().contains("Could not determine"));
         }
 
         @Test
-        @DisplayName("Should return null for failed API response")
-        void shouldReturnNullForFailedApiResponse() {
-            // Given
-            String jsonResponse = "{\"status\":\"fail\",\"message\":\"private range\"}";
+        @DisplayName("Should throw LocationException for localhost IP")
+        void shouldThrowExceptionForLocalhostIpInGetLocationFromIp() {
+            // Given - Set localhost IP
+            mockRequest.setRemoteAddr("127.0.0.1");
             
             // When/Then
-            // Parsing happens in getLocationFromIp which checks for null IP first
+            assertThrows(
+                    LocationException.class,
+                    () -> ipLocationService.getLocationFromIp()
+            );
+        }
+
+        @Test
+        @DisplayName("Should throw LocationException when no request context")
+        void shouldThrowExceptionWhenNoRequestContext() {
+            // Given
+            RequestContextHolder.resetRequestAttributes();
+            
+            // When/Then
+            assertThrows(
+                    LocationException.class,
+                    () -> ipLocationService.getLocationFromIp()
+            );
+        }
+
+        @Test
+        @DisplayName("Should return null for failed API response - getClientLocation()")
+        void shouldReturnNullForFailedApiResponseGetClientLocation() {
+            // Given - Set a private IP so getClientLocation() returns null early
+            mockRequest.setRemoteAddr("192.168.1.100");
+            
+            // When/Then - getClientLocation() returns null for private IPs
             assertNull(ipLocationService.getClientLocation());
         }
     }
+
 
     @Nested
     @DisplayName("Edge Cases Tests")

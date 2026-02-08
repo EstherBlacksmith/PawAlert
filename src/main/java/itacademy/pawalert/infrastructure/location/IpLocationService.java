@@ -1,5 +1,6 @@
 package itacademy.pawalert.infrastructure.location;
 
+import itacademy.pawalert.domain.alert.exception.LocationException;
 import itacademy.pawalert.domain.alert.model.GeographicLocation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
@@ -65,9 +66,8 @@ public class IpLocationService {
     public GeographicLocation getLocationFromIp() {
         String ip = getClientIp();
 
-        //We cannot get the location from local Ips
-        if (isLocalOrPrivateIp(ip)) {
-            return null;
+        if (ip == null || isLocalOrPrivateIp(ip)) {
+            throw new LocationException("Could not determine client IP address");
         }
 
         try {
@@ -84,9 +84,8 @@ public class IpLocationService {
             }
 
         } catch (Exception e) {
+            throw new LocationException("Failed to get location from IP: " + e.getMessage());
 
-            // TODO
-            return null;
         }
     }
 
@@ -94,30 +93,36 @@ public class IpLocationService {
         try {
             // Verification if the API return "success"
             if (!json.contains("\"status\":\"success\"")) {
-                return null;
+                throw new LocationException("IP geolocation API returned error");
             }
 
             // Extracting latitude
             int latIndex = json.indexOf("\"lat\":");
-            if (latIndex == -1) return null;
-            int latStart = latIndex + 6;
-            int latEnd = json.indexOf(",", latStart);
-            if (latEnd == -1) latEnd = json.indexOf("}", latStart);
-            double lat = Double.parseDouble(json.substring(latStart, latEnd).trim());
+            if (latIndex == -1) {
+                throw new LocationException("Could not parse latitude from API response");
+            }
 
-            // Extracting longitude
             int lonIndex = json.indexOf("\"lon\":");
-            if (lonIndex == -1) return null;
-            int lonStart = lonIndex + 6;
-            int lonEnd = json.indexOf(",", lonStart);
-            if (lonEnd == -1) lonEnd = json.indexOf("}", lonStart);
-            double lon = Double.parseDouble(json.substring(lonStart, lonEnd).trim());
+            if (lonIndex == -1) {
+                throw new LocationException("Could not parse longitude from API response");
+            }
+
+            double lat = extractDouble(json, latIndex);
+            double lon = extractDouble(json, lonIndex);
 
             return GeographicLocation.of(lat, lon);
 
-        } catch (Exception e) {
-            return null;
+        } catch (LocationException e) {
+            throw new LocationException("Failed to parse API response: " + e.getMessage());
         }
+    }
+
+    private double extractDouble(String json, int index) {
+
+        int start = index + 6;
+        int end = json.indexOf(",", start);
+        if (end == -1) end = json.indexOf("}", start);
+        return Double.parseDouble(json.substring(start, end).trim());
     }
 
     public GeographicLocation getClientLocation() {
