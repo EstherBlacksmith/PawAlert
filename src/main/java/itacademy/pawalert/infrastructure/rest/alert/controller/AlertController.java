@@ -5,6 +5,7 @@ import itacademy.pawalert.application.service.AlertService;
 import itacademy.pawalert.domain.alert.exception.LocationException;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.pet.model.PetName;
+import itacademy.pawalert.infrastructure.location.HybridLocationProvider;
 import itacademy.pawalert.infrastructure.location.IpLocationService;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
 import itacademy.pawalert.infrastructure.rest.alert.dto.DescriptionUpdateRequest;
@@ -35,12 +36,11 @@ public class AlertController {
     private final DeleteAlertUseCase deleteAlertUseCase;
     private final AlertMapper alertMapper;
     private final SearchAlertsUseCase searchAlertsUseCase;
-    private final IpLocationService ipLocationService;
+    private final HybridLocationProvider locationProvider;
 
     public AlertController(AlertMapper alertMapper, CreateAlertUseCase createAlertUseCase, GetAlertUseCase getAlertUseCase,
                            UpdateAlertStatusUseCase updateAlertStatusUseCase, UpdateAlertUseCase updateAlertUseCase,
-                           DeleteAlertUseCase deleteAlertUseCase, SearchAlertsUseCase searchAlerts,
-                           IpLocationService ipLocationService) {
+                           DeleteAlertUseCase deleteAlertUseCase, SearchAlertsUseCase searchAlerts, HybridLocationProvider locationProvider) {
         this.createAlertUseCase = createAlertUseCase;
         this.getAlertUseCase = getAlertUseCase;
         this.updateAlertStatusUseCase = updateAlertStatusUseCase;
@@ -48,7 +48,7 @@ public class AlertController {
         this.alertMapper = alertMapper;
         this.deleteAlertUseCase = deleteAlertUseCase;
         this.searchAlertsUseCase = searchAlerts;
-        this.ipLocationService = ipLocationService;
+        this.locationProvider = locationProvider;
     }
 
     @PostMapping
@@ -79,39 +79,14 @@ public class AlertController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Changes the status of an alert with automatic location detection.
-     * 
-     * Location Strategy (Fallback Chain):
-     * 1. Use client GPS coordinates if provided (most accurate)
-     * 2. Fallback to IP geolocation if GPS not available
-     * 3. Throw error if no location can be determined
-     * 
-     * @param id The alert ID
-     * @param request The status change request (may or may not include GPS coordinates)
-     * @return The updated alert
-     */
     @PatchMapping("/{id}/status")
     public ResponseEntity<AlertDTO> changeStatus(@PathVariable String id,
                                                  @RequestBody StatusChangeRequest request) {
+        if (request.hasGpsLocation()) {
+            locationProvider.setGpsLocation(request.getLocation());
+        }
 
-        // Step 1: Try to get location from client (GPS)
-        GeographicLocation location = request.getLocation();
-        
-        if (location == null) {
-            // Step 2: Fallback to IP geolocation
-            logger.info("No client GPS provided, attempting IP geolocation for alert: {}", id);
-            location = ipLocationService.getLocationFromRequest();
-        }
-        
-        // Step 3: If still no location, throw error
-        if (location == null) {
-            logger.warn("Could not determine location for alert status change: {}", id);
-            throw new LocationException(
-                "Location is required to change alert status. " +
-                "Please enable location services or use a device with GPS."
-            );
-        }
+        GeographicLocation location = locationProvider.getCurrentLocation();
 
         logger.debug("Using location for alert {} status change: {}", id, location);
 
