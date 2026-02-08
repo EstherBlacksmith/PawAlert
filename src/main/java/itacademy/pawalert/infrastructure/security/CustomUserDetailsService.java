@@ -1,6 +1,6 @@
 package itacademy.pawalert.infrastructure.security;
 
-import itacademy.pawalert.domain.user.model.Username;
+
 import itacademy.pawalert.infrastructure.persistence.user.UserEntity;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findByUsername(Username.of(username))
+        UserEntity userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
         // Adapt UserEntity to UserDetails

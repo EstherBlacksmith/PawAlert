@@ -2,6 +2,7 @@ package itacademy.pawalert.application.port.outbound;
 
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
 
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,4 +16,5 @@ public interface AlertSubscriptionRepositoryPort {
     boolean existsByAlertIdAndUserId(UUID alertId, UUID userId);
     void deleteById(UUID id);
     void deleteAllByAlertId(UUID alertId);
+    List<String>findEmailsByAlertIdAndActiveTrue(UUID alertId);
 }
