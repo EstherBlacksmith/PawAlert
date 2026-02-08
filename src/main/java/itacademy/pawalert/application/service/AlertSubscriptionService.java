@@ -4,6 +4,7 @@ import itacademy.pawalert.application.exception.SubscriptionAlreadyExistsExcepti
 import itacademy.pawalert.application.exception.SubscriptionNotFoundException;
 import itacademy.pawalert.application.port.inbound.AlertSubscriptionUseCase;
 import itacademy.pawalert.application.port.outbound.AlertSubscriptionRepositoryPort;
+import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
 import itacademy.pawalert.domain.alert.model.NotificationChannel;
 import org.springframework.stereotype.Service;
@@ -83,8 +84,7 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
     @Override
     public AlertSubscription changeNotificationChannel(UUID alertId, UUID userId, NotificationChannel newChannel) {
 
-            List<AlertSubscription> subscriptions =
-                    subscriptionRepository.findByUserId(userId);
+        List<AlertSubscription> subscriptions = subscriptionRepository.findByUserId(userId);
         AlertSubscription subscription = subscriptions.stream()
                 .filter(alertSubscription -> alertSubscription.getAlertId().equals(alertId))
                 .findFirst()
@@ -93,5 +93,10 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
         subscription.changeChannel(newChannel);
 
         return  subscriptionRepository.save(subscription);
+    }
+
+    @Override
+    public List<AlertSubscription> getActiveSubscriptionsByAlertId(UUID alertId) {
+        return subscriptionRepository.findByAlertIdAndActiveTrue(alertId);
     }
 }

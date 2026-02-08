@@ -36,7 +36,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public Optional<User> findByUsername(Username username) {
-        return jpaUserRepository.findByUsername(username)
+        return jpaUserRepository.findByUsername(String.valueOf(username))
                 .map(UserEntity::toDomain);
     }
 
@@ -48,13 +48,13 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public Optional<User> findByEmail(Email email) {
-        return jpaUserRepository.findByEmail(email)
+        return jpaUserRepository.findByEmail(String.valueOf(email))
                 .map(UserEntity::toDomain);
     }
 
     @Override
     public Optional<UserWithPassword> findByUsernameWithPassword(Username username) {
-        return jpaUserRepository.findByUsername(username)
+        return jpaUserRepository.findByUsername(String.valueOf(username))
                 .map(entity -> new UserWithPassword(
                         entity.toDomain(),
                         entity.getPasswordHash()
@@ -92,12 +92,12 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public boolean existsSurname(Surname surname) {
-        return jpaUserRepository.existsBySurname(surname);
+        return jpaUserRepository.existsBySurname(String.valueOf(surname));
     }
 
     @Override
     public boolean existsByEmail(Email email) {
-        return jpaUserRepository.existsByEmail(email);
+        return jpaUserRepository.existsByEmail(String.valueOf(email));
     }
 
     @Override
@@ -131,7 +131,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public String getPasswordHashByEmail(Email email) {
-        return jpaUserRepository.findByEmail(email)
+        return jpaUserRepository.findByEmail(String.valueOf(email))
                 .map(UserEntity::getPasswordHash)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
     }
@@ -180,7 +180,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public boolean existsBySurname(Surname surname) {
-         return jpaUserRepository.existsBySurname(surname);
+         return jpaUserRepository.existsBySurname(String.valueOf(surname));
     }
 
 }

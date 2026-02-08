@@ -31,15 +31,15 @@ public class AlertService implements
     private final AlertEventRepositoryPort eventRepository;
     private final GetUserUseCase userUseCase;
     private final AlertMapper alertMapper;
-
+    private final RelaunchAlertNotification notificationService;
     public AlertService(AlertRepositoryPort alertRepository, AlertEventRepositoryPort eventRepository,
-                        GetUserUseCase userUseCase, AlertMapper alertMapper){
+                        GetUserUseCase userUseCase, AlertMapper alertMapper, RelaunchAlertNotification notificationService){
         this.alertRepository = alertRepository;
         this.eventRepository = eventRepository;
         this.userUseCase = userUseCase;
         this.alertMapper = alertMapper;
+        this.notificationService = notificationService;
     }
-
 
     public List<Alert> findOpenAlertsWithTitle(String title) {
         Specification<Alert> spec = AlertSpecifications.withStatus(StatusNames.OPENED)
@@ -118,9 +118,22 @@ public class AlertService implements
 
         Alert alertCopy ;
         switch (newStatus) {
-            case SEEN -> alertCopy = alert.seen();
-            case SAFE -> alertCopy = alert.safe();
-            case CLOSED -> alertCopy = alert.closed();
+
+            case SEEN -> {
+                alertCopy = alert.seen();
+                notificationService.notifyStatusChange(alertId, newStatus, previousStatus);
+
+            }
+            case SAFE ->{
+                alertCopy = alert.safe();
+                notificationService.notifyStatusChange(alertId, newStatus, previousStatus);
+
+            }
+            case CLOSED -> {
+                alertCopy = alert.closed();
+                notificationService.notifyStatusChange(alertId, newStatus, previousStatus);
+
+            }
             case OPENED -> alertCopy = alert.open();
             default -> throw new IllegalArgumentException("Invalid alert state: " + newStatus);
         }

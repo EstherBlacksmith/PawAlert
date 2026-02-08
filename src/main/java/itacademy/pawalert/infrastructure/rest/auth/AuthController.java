@@ -24,11 +24,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         // Look for a user with the username
-        Username convertedUserName = Username.of(request.username());
-
-        UserWithPassword userWithPassword = userRepository.findByUsername(convertedUserName)
-                .orElseThrow(() -> new BadCredentialsException("Invalid credentials"))
-                .toDomainWithPassword();
+         UserWithPassword userWithPassword = userRepository.findByUsername((request.username()))
+            .orElseThrow(() -> new BadCredentialsException("Invalid credentials"))
+            .toDomainWithPassword();
 
         // Verify the pass
         if (!passwordEncoder.matches(request.password(), userWithPassword.getPasswordHash())) {
