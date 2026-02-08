@@ -16,6 +16,7 @@ import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -62,11 +63,14 @@ public class PetService implements
     }
 
     @Override
-    public void deletePetdById(UUID petId) {
-        if (!petRepositoryPort.existsById(petId)) {
-            throw new PetNotFoundException("Pet not found: " + petId);
-        }
-        petRepositoryPort.deleteById(petId);
+    public void deletePetdById(UUID petId,UUID userId) {
+        Pet  pet = petRepositoryPort.findById(petId).orElseThrow(()->new PetNotFoundException("Pet not found"));
+
+        Role userRole = getUserRole(userId);
+
+        checkOwnership(pet, userId,userRole);
+
+        petRepositoryPort.deleteById(petId,userId);
     }
 
     @Override

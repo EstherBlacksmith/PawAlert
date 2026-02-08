@@ -25,15 +25,18 @@ public class PetController {
     private final CreatePetUseCase createPetUseCase;
     private final GetPetUseCase getPetUseCase;
     private final UpdatePetUseCase updatePetUseCase;
+    private final DeletePetUseCase deletePetUseCase;
+
     private final PetMapper petMapper;
 
     public PetController(CreatePetUseCase createPetUseCase,
                          GetPetUseCase getPetUseCase,
-                         UpdatePetUseCase updatePetUseCase,
+                         UpdatePetUseCase updatePetUseCase, DeletePetUseCase deletePetUseCase,
                          PetMapper petMapper) {
         this.createPetUseCase = createPetUseCase;
         this.getPetUseCase = getPetUseCase;
         this.updatePetUseCase = updatePetUseCase;
+        this.deletePetUseCase = deletePetUseCase;
         this.petMapper = petMapper;
 
     }
@@ -93,4 +96,13 @@ public class PetController {
         throw new UnauthorizedException("Invalid authentication principal");
     }
 
+    @DeleteMapping("/{petId}")
+    public ResponseEntity<Void> deletePet(@PathVariable String petId) {
+        String userId = getCurrentUserId();  // Obtiene el usuario autenticado
+        deletePetUseCase.deletePetdById(
+                UUID.fromString(petId),
+                UUID.fromString(userId)
+        );
+        return ResponseEntity.noContent().build();
+    }
 }
