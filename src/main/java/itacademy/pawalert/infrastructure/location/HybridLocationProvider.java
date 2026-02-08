@@ -22,7 +22,7 @@ public class HybridLocationProvider {
             return cachedGpsLocation;
         }
 
-        return ipLocationService.getClientLocation();
+        return ipLocationService.getLocationFromIp();
     }
 
     public ProviderType getProviderType() {
