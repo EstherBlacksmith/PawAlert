@@ -13,7 +13,7 @@ public record GeographicLocation(
     private static final double MAX_LATITUDE = 90.0;
     private static final double MIN_LONGITUDE = -180.0;
     private static final double MAX_LONGITUDE = 180.0;
-
+    private static final double EARTH_RADIUS_KM = 6371.0;
 
     @JsonCreator  // Jackson use this for deserialization
     public GeographicLocation {
@@ -31,6 +31,25 @@ public record GeographicLocation(
         if (longitude < MIN_LONGITUDE || longitude > MAX_LONGITUDE) {
             throw new InvalidLongitudeException(String.format("Longitude %.4f is invalid. Must be between -180.0 and 180.0", longitude));
         }
+    }
+
+    // Haversine formula
+    public double distanceTo(GeographicLocation other) {
+        double lat1Rad = Math.toRadians(this.latitude);
+        double lat2Rad = Math.toRadians(other.latitude);
+        double deltaLat = Math.toRadians(other.latitude - this.latitude);
+        double deltaLon = Math.toRadians(other.longitude - this.longitude);
+
+        double a = Math.pow(Math.sin(deltaLat / 2), 2) +
+                Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+                        Math.pow(Math.sin(deltaLon / 2), 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return EARTH_RADIUS_KM * c;
+    }
+
+    public boolean isWithinRadius(GeographicLocation center, double radiusKm) {
+        return distanceTo(center) <= radiusKm;
     }
 
     //Factory method
