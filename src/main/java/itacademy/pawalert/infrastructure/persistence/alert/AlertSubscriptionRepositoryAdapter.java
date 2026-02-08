@@ -2,12 +2,13 @@ package itacademy.pawalert.infrastructure.persistence.alert;
 
 import itacademy.pawalert.application.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
+@Repository
 public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepositoryPort {
 
 
