@@ -49,6 +49,24 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP NOT NULL
     );
 
+CREATE TABLE IF NOT EXISTS alert_subscriptions (
+   id UUID PRIMARY KEY,
+   alert_id UUID NOT NULL,
+   user_id UUID NOT NULL,
+   active BOOLEAN NOT NULL DEFAULT TRUE,
+   subscribed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   notification_channel VARCHAR(20) NOT NULL DEFAULT 'ALL',
+
+    -- Avoid duplicated subscriptions
+    CONSTRAINT uq_alert_user UNIQUE (alert_id, user_id),
+
+    -- Frequent search indexes
+    INDEX idx_alert_subscriptions_alert_id (alert_id),
+    INDEX idx_alert_subscriptions_user_id (user_id),
+    INDEX idx_alert_subscriptions_active (active)
+    );
+
+
 CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);
 CREATE INDEX IF NOT EXISTS idx_alerts_pet ON alerts(pet_id);
 CREATE INDEX IF NOT EXISTS idx_alerts_user ON alerts(user_id);
