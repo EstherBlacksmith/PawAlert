@@ -8,8 +8,8 @@ import jakarta.validation.constraints.NotNull;
 public record StatusChangeRequest(
         @NotNull(message = "New status is required") StatusNames newStatus,
         @NotNull(message = "User ID is required") UserId userId,
-        Double latitude,
-        Double longitude
+        @NotNull(message = "Latitude is required") Double latitude,
+        @NotNull(message = "Longitude is required") Double longitude
 ) {
     public StatusNames getNewStatus() {
         return newStatus;
