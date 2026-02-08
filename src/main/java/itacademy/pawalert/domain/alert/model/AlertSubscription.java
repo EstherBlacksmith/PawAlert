@@ -14,10 +14,12 @@ public class AlertSubscription {
     private NotificationChannel notificationChannel;
 
     public AlertSubscription(UUID alertId, UUID userId, NotificationChannel channel) {
-        this.id = UUID.randomUUID();;
+        this.id = UUID.randomUUID();
         this.alertId = alertId;
         this.userId = userId;
-        this.subscribedAt = LocalDateTime.now();;
+        this.active = true;
+        this.subscribedAt = LocalDateTime.now();
+        this.notificationChannel = channel;
     }
 
     public AlertSubscription(UUID id, UUID alertId, UUID userId, boolean active, LocalDateTime subscribedAt,
