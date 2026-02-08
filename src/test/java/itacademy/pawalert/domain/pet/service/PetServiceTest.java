@@ -192,6 +192,24 @@ class PetServiceTest {
 
             verify(petRepositoryPort, never()).save(any(PetEntity.class));
         }
+
+        @Test
+        @DisplayName("Should throw UnauthorizedException when user is not the owner")
+        void deletePet_whenNotOwner_throwsUnauthorizedException() {
+            // Given
+            UUID differentUserId = UUID.randomUUID();
+
+            when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
+;
+
+            when(userRepositoryPort.getUserRol(differentUserId)).thenReturn(Role.USER);
+
+            // When/Then
+            assertThrows(UnauthorizedException.class,
+                    () -> petService.deletePetdById(petId,differentUserId));
+
+            verify(petRepositoryPort, never()).deleteById(petId, differentUserId);
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════

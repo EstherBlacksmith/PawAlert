@@ -27,7 +27,7 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
     }
 
     @Override
-    public void deleteById(UUID petId) {
+    public void deleteById(UUID petId, UUID userId) {
         petRepository.deleteById(petId.toString());
     }
 

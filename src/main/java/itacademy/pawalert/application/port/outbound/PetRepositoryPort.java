@@ -12,7 +12,7 @@ public interface PetRepositoryPort {
 
     Optional<Pet> findById(UUID petId);
 
-   void deleteById(UUID petId);
+   void deleteById(UUID petId, UUID userId);
 
     boolean existsById(UUID petId);
 

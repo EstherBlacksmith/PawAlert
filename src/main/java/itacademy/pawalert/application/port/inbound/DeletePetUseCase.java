@@ -5,7 +5,7 @@ import jakarta.transaction.Transactional;
 import java.util.UUID;
 
 public interface DeletePetUseCase {
-    void deletePetdById(UUID petId);
+    void deletePetdById(UUID petId, UUID userId);
 
 }
 
