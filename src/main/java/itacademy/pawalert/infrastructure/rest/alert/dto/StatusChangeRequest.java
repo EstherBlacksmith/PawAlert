@@ -6,10 +6,10 @@ import itacademy.pawalert.domain.alert.model.UserId;
 import jakarta.validation.constraints.NotNull;
 
 public record StatusChangeRequest(
-        @NotNull StatusNames newStatus,
-        @NotNull UserId userId,
-        @NotNull Double latitude,
-        @NotNull Double longitude
+        @NotNull(message = "New status is required") StatusNames newStatus,
+        @NotNull(message = "User ID is required") UserId userId,
+        @NotNull(message = "Latitude is required for location tracking") Double latitude,
+        @NotNull(message = "Longitude is required for location tracking") Double longitude
 ) {
     public StatusNames getNewStatus() {
         return newStatus;
