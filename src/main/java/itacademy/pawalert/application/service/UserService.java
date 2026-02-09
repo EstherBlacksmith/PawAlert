@@ -160,5 +160,7 @@ public class UserService implements
     }
 
 
-
+    public PhoneNumber getPhoneNumberById(UUID id) {
+        return null;
+    }
 }

@@ -31,9 +31,9 @@ public class AlertService implements
     private final AlertEventRepositoryPort eventRepository;
     private final GetUserUseCase userUseCase;
     private final AlertMapper alertMapper;
-    private final RelaunchAlertNotification notificationService;
+    private final LaunchAlertNotification notificationService;
     public AlertService(AlertRepositoryPort alertRepository, AlertEventRepositoryPort eventRepository,
-                        GetUserUseCase userUseCase, AlertMapper alertMapper, RelaunchAlertNotification notificationService){
+                        GetUserUseCase userUseCase, AlertMapper alertMapper, LaunchAlertNotification notificationService){
         this.alertRepository = alertRepository;
         this.eventRepository = eventRepository;
         this.userUseCase = userUseCase;
@@ -194,11 +194,6 @@ public class AlertService implements
 
         Description oldDescription = alert.getDescription();
 
-        GeographicLocation lastLocation = eventRepository
-                .findLatestByAlertId(alertId)
-                .map(AlertEvent::getLocation)
-                .orElse(null);
-
         AlertEvent event = AlertEventFactory.createDescriptionChangedEvent(
                 alert, oldDescription, description, userId
         );
@@ -238,4 +233,39 @@ public class AlertService implements
         return alertRepository.findAll(spec);
     }
 
+    public UUID getCreatorById(UUID alertId) {
+        Alert alert = alertRepository.findById(alertId)
+                .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
+        return alert.getUserId();
+
+    }
+
+    public Title getTitleById(UUID alertId) {
+        Alert alert = alertRepository.findById(alertId)
+                .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
+        return  alert.getTitle();
+    }
+
+
+    public Description getDescriptionById(UUID alertId) {
+        Alert alert = alertRepository.findById(alertId)
+                .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
+        return  alert.getDescription();
+    }
+
+    public GeographicLocation getLastLocationById(UUID alertId) {
+
+       return  eventRepository
+                .findLatestByAlertId(alertId)
+                .map(AlertEvent::getLocation)
+                .orElse(null);
+
+    }
+
+    public StatusNames getLastStatusById(UUID alertId) {
+        return  eventRepository
+                .findLatestByAlertId(alertId)
+                .map(AlertEvent::getNewStatus)
+                .orElse(null);
+    }
 }

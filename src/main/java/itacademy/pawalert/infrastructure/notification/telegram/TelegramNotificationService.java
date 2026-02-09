@@ -30,7 +30,7 @@ public class TelegramNotificationService {
         this.restTemplate = new RestTemplate();
     }
 
-    public void sendMessageToUser(String chatId, String message) {
+    public void sendToUser(String chatId, String message) {
         String url = "https://api.telegram.org/bot" + botToken + "/sendMessage";
 
         Map<String, String> body = new HashMap<>();
@@ -58,54 +58,12 @@ public class TelegramNotificationService {
         }
     }
 
-    public void sendMessageToUsers(List<String> chatIds, String message) {
-        int successCount = 0;
-        int failCount = 0;
-
-        for (String chatId : chatIds) {
-            if (chatId != null && !chatId.isBlank()) {
-                sendMessageToUser(chatId, message);
-                successCount++;
-            }
-        }
-
-        LOGGER.info("📊 Telegram broadcast complete: {} sent, {} failed", successCount, failCount);
-    }
-
-    public void sendMessage(String message) {
-        if (chatId != null && !chatId.isBlank()) {
-            sendMessageToUser(chatId, message);
-        } else {
-            LOGGER.warn("⚠️ Default chatId not configured, message not sent");
-        }
-    }
-
-    public void sendAlert(String petName, String location, String status) {
-        String message = String.format(
-                "🔔 <b>Alert PawAlert</b>\n\n" +
-                        "🐕 Pet: <b>%s</b>\n" +
-                        "📍 Location: %s\n" +
-                        "📊 Status: %s\n\n" +
-                        "Help us to find %s!",
-                petName, location, status,petName
-        );
-
-        sendMessage(message);
-    }
-
-    public void sendAlertToUsers(List<String> chatIds, String petName, String location, String status) {
-        String message = String.format(
-                "🔔 <b>Alert PawAlert</b>\n\n" +
-                        "🐕 Pet: <b>%s</b>\n" +
-                        "📍 Location: %s\n" +
-                        "📊 Status: %s\n\n" +
-                        "Help us to find %s!",
-                petName, location, status, petName
-        );
-        sendMessageToUsers(chatIds, message);
-    }
 
     public void sendToAll(List<String> chatIds, String message) {
+        for (String chatId : chatIds) {
+            if (chatId != null && !chatId.isBlank()) {
+                sendToUser(chatId, message);
+            }
+        }
     }
-}
 }

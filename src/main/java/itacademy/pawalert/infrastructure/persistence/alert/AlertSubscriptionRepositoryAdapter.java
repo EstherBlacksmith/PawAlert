@@ -72,4 +72,9 @@ public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepo
     public List<String> findEmailsByAlertIdAndActiveTrue(UUID alertId) {
         return jpaRepository.findEmailsByAlertIdAndActiveTrue(alertId);
     }
+
+    @Override
+    public List<String> findTelegramChatIdsByAlertId(UUID alertId) {
+        return jpaRepository.findTelegramChatIdsByAlertId(alertId);
+    }
 }

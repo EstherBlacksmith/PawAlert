@@ -18,5 +18,12 @@ public interface AlertSubscriptionRepository  extends JpaRepository<AlertSubscri
             "WHERE s.alert_id = :alertId AND s.active = true", 
            nativeQuery = true)
     List<String> findEmailsByAlertIdAndActiveTrue(@Param("alertId") UUID alertId);
+
+
+    @Query(value = "SELECT DISTINCT u.telegramChatId FROM users u " +
+            "INNER JOIN alert_subscriptions s ON u.id::uuid = s.user_id " +
+            "WHERE s.alert_id = :alertId AND s.active = true",
+            nativeQuery = true)
+    List<String> findTelegramChatIdsByAlertId(@Param("alertId") UUID alertId);
 }
 
