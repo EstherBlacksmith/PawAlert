@@ -1,66 +1,39 @@
 package itacademy.pawalert.application.service;
 
-import itacademy.pawalert.application.port.inbound.RelaunchAlertNotification;
-import itacademy.pawalert.application.port.outbound.AlertSubscriptionRepositoryPort;
-import itacademy.pawalert.domain.alert.model.Alert;
-import itacademy.pawalert.domain.alert.model.StatusNames;
-import itacademy.pawalert.infrastructure.notification.mail.EmailServiceImpl;
-import itacademy.pawalert.infrastructure.notification.telegram.TelegramNotificationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import itacademy.pawalert.application.port.inbound.EmailNotificationUseCase;
+import itacademy.pawalert.application.port.inbound.LaunchAlertNotification;
+import itacademy.pawalert.application.port.inbound.TelegramNotificationUseCase;
+import itacademy.pawalert.domain.alert.model.*;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
-public class NotificationService implements RelaunchAlertNotification {
-    @Autowired
-    private AlertSubscriptionRepositoryPort subscriptionRepository;
+public class NotificationService implements LaunchAlertNotification {
 
-    @Autowired
-    private EmailServiceImpl emailService;
+    private final EmailNotificationUseCase emailUseCase;
+    private final TelegramNotificationUseCase telegramUseCase;
+    private final AlertService alertService;
 
-    private final TelegramNotificationService telegramService;
-
-    public NotificationService(TelegramNotificationService telegramService) {
-        this.telegramService = telegramService;
+    public NotificationService(EmailNotificationUseCase emailUseCase, TelegramNotificationUseCase telegramUseCase, AlertService alertService) {
+        this.emailUseCase = emailUseCase;
+        this.telegramUseCase = telegramUseCase;
+        this.alertService = alertService;
     }
 
     @Override
-    public Alert relaunchNotification(UUID alertId) {
-        return null;
+    public void relaunchNotification(UUID alertId) {
+       StatusNames currentStatus = alertService.getLastStatusById(alertId);
+        notifyStatusChange(alertId,currentStatus,currentStatus);
     }
 
     @Override
     public void notifyStatusChange(UUID alertId, StatusNames oldStatusNames, StatusNames newStatusNames) {
-        List<String> emails = subscriptionRepository.findEmailsByAlertIdAndActiveTrue(alertId);
-        String subject = "Alet actualized: " + newStatusNames;
-        String body = "The alert changes from " + oldStatusNames + " to " + newStatusNames;
+        emailUseCase.notifyStatusChange(alertId, oldStatusNames, newStatusNames);
+        telegramUseCase.notifyStatusChange(alertId, oldStatusNames, newStatusNames);
 
-        for (String email : emails) {
-            emailService.sendHtmlEmail(email, subject, body);
-        }
     }
 
-    private String formatAlertMessage(Alert alert) {
-        return String.format(
-                "🔔 <b>Alert PawAlert</b>\n\n" +
-                        "🐕 Pet: <b>%s</b>\n" +
-                        "📍 Location: %s\n" +
-                        "📊 Status: %s\n\n" +
-                        "Help us to find %s!",
-                alert.getPetName(),
-                alert.getLocation(),
-                alert.getStatus(),
-                alert.getPetName()
-        );
-    }
 
-    public void notifySubscribers(UUID alertId) {
-        List<String> chatIds = subscriptionRepository.findTelegramChatIdsByAlertId(alertId);
-        String message = formatAlertMessage(alertService.getById(alertId));
-
-        // Telegram service only sends, doesn't format
-        telegramService.sendToAll(chatIds, message);
-    }
 }
