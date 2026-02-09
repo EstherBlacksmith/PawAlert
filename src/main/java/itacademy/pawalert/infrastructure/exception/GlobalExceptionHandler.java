@@ -7,7 +7,9 @@ import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.application.service.UserNotFoundException;
 import itacademy.pawalert.domain.alert.exception.*;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
+import itacademy.pawalert.infrastructure.notification.mail.EmailSendException;
 import itacademy.pawalert.infrastructure.rest.alert.dto.ErrorResponse;
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -100,6 +102,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleSubscriptionNotFoundException(SubscriptionNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(404, "Subscription not found", ex.getMessage()));
+    }
+    @ExceptionHandler(EmailSendException.class)
+    public ResponseEntity<ErrorResponse> handleEmailSendException(EmailSendException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(500, "Error sending mail", ex.getMessage()));
     }
 
 }
