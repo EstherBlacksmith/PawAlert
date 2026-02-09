@@ -1,13 +1,13 @@
 package itacademy.pawalert.application.service;
 
 
+import itacademy.pawalert.application.alert.service.AlertService;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
-import itacademy.pawalert.application.port.inbound.AlertWithContactDTO;
-import itacademy.pawalert.application.port.inbound.GetUserUseCase;
-import itacademy.pawalert.application.port.outbound.AlertEventRepositoryPort;
-import itacademy.pawalert.application.port.outbound.AlertRepositoryPort;
+import itacademy.pawalert.application.user.port.inbound.GetUserUseCase;
+import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
+import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.user.Role;
@@ -18,6 +18,7 @@ import itacademy.pawalert.domain.user.model.Surname;
 import itacademy.pawalert.domain.user.model.Username;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventEntity;
+import itacademy.pawalert.infrastructure.rest.alert.dto.AlertWithContactDTO;
 import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

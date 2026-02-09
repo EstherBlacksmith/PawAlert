@@ -1,6 +1,7 @@
 package itacademy.pawalert.application.service;
 
-import itacademy.pawalert.application.port.outbound.UserRepositoryPort;
+import itacademy.pawalert.application.user.port.outbound.UserRepositoryPort;
+import itacademy.pawalert.application.user.service.UserService;
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.model.*;

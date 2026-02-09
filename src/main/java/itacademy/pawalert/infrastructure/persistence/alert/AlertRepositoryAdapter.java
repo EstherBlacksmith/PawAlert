@@ -1,6 +1,6 @@
 package itacademy.pawalert.infrastructure.persistence.alert;
 
-import itacademy.pawalert.application.port.outbound.AlertRepositoryPort;
+import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;

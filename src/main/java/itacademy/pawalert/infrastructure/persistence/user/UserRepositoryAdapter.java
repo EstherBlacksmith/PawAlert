@@ -1,7 +1,7 @@
 package itacademy.pawalert.infrastructure.persistence.user;
 
 
-import itacademy.pawalert.application.port.outbound.UserRepositoryPort;
+import itacademy.pawalert.application.user.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.UserWithPassword;

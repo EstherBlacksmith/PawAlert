@@ -1,8 +1,10 @@
 package itacademy.pawalert.infrastructure.rest.pet.controller;
 
-import itacademy.pawalert.domain.alert.model.EventType;
+import itacademy.pawalert.application.pet.port.inbound.CreatePetUseCase;
+import itacademy.pawalert.application.pet.port.inbound.DeletePetUseCase;
+import itacademy.pawalert.application.pet.port.inbound.GetPetUseCase;
+import itacademy.pawalert.application.pet.port.inbound.UpdatePetUseCase;
 import itacademy.pawalert.domain.pet.model.*;
-import itacademy.pawalert.application.port.inbound.*;
 import itacademy.pawalert.infrastructure.rest.pet.dto.PetDTO;
 
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;

@@ -1,10 +1,10 @@
 
 package itacademy.pawalert.infrastructure.rest.alert.mapper;
 
-import itacademy.pawalert.application.port.inbound.AlertWithContactDTO;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
 import itacademy.pawalert.domain.user.User;
+import itacademy.pawalert.infrastructure.rest.alert.dto.AlertWithContactDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -1,12 +1,8 @@
 package itacademy.pawalert.infrastructure.rest.alert.controller;
 
-import itacademy.pawalert.application.port.inbound.*;
-import itacademy.pawalert.application.service.AlertService;
-import itacademy.pawalert.domain.alert.exception.LocationException;
+import itacademy.pawalert.application.alert.port.inbound.*;
 import itacademy.pawalert.domain.alert.model.*;
-import itacademy.pawalert.domain.pet.model.PetName;
 import itacademy.pawalert.infrastructure.location.HybridLocationProvider;
-import itacademy.pawalert.infrastructure.location.IpLocationService;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
 import itacademy.pawalert.infrastructure.rest.alert.dto.DescriptionUpdateRequest;
 import itacademy.pawalert.infrastructure.rest.alert.dto.StatusChangeRequest;
@@ -20,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
