@@ -1,6 +1,6 @@
 package itacademy.pawalert.infrastructure.rest.mail.controller;
 
-import itacademy.pawalert.infrastructure.notification.mail.EmailServiceImpl;
+import itacademy.pawalert.infrastructure.notification.mail.EmailService;
 import itacademy.pawalert.infrastructure.rest.mail.dto.SendEmailRequest;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class MailTestController {
 
     @Autowired
-    private EmailServiceImpl emailService;
+    private EmailService emailService;
 
     /**
      * Endpoint de prueba para enviar emails.

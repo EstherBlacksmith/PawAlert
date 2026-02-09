@@ -10,6 +10,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
@@ -19,15 +20,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 @Service
-public class EmailServiceImpl {
+public class EmailService {
+    final TemplateEngine templateEngine = new TemplateEngine();
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
-
-    private final SpringTemplateEngine templateEngine;
     private final JavaMailSender mailSender;
 
-    public EmailServiceImpl(SpringTemplateEngine templateEngine, JavaMailSender mailSender) {
-        this.templateEngine = templateEngine;
+    public EmailService(JavaMailSender mailSender) {
+
         this.mailSender = mailSender;
     }
 
@@ -45,13 +45,11 @@ public class EmailServiceImpl {
             message.setText(htmlContent, true);
 
             mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-       return true;
+        return true;
     }
 
     private void sendEmailTool(String content, String email, String subject) throws MessagingException, IOException {
@@ -99,9 +97,7 @@ public class EmailServiceImpl {
             message.setText(htmlContent, true);
 
             mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+        } catch (MessagingException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
