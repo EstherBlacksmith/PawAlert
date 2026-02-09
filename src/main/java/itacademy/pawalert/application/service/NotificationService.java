@@ -5,7 +5,7 @@ import itacademy.pawalert.application.port.outbound.AlertSubscriptionRepositoryP
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.StatusNames;
 
-import itacademy.pawalert.infrastructure.notification.mail.EmailServiceImpl;
+import itacademy.pawalert.infrastructure.notification.mail.EmailService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class NotificationService implements RelaunchAlertNotification {
     private AlertSubscriptionRepositoryPort subscriptionRepository;
 
     @Autowired
-    private EmailServiceImpl emailService;
+    private EmailService emailService;
 
     @Override
     public Alert relaunchNotification(UUID alertId) {
