@@ -1,6 +1,6 @@
 package itacademy.pawalert.infrastructure.persistence.pet;
 
-import itacademy.pawalert.application.port.outbound.PetRepositoryPort;
+import itacademy.pawalert.application.pet.port.outbound.PetRepositoryPort;
 import itacademy.pawalert.domain.pet.model.Pet;
 import org.springframework.stereotype.Component;
 

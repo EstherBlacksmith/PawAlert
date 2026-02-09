@@ -1,6 +1,6 @@
 package itacademy.pawalert.infrastructure.rest.user.controller;
 
-import itacademy.pawalert.application.port.inbound.*;
+import itacademy.pawalert.application.user.port.inbound.*;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.model.*;
 import itacademy.pawalert.infrastructure.rest.user.dto.RegistrationInput;

@@ -1,6 +1,6 @@
 package itacademy.pawalert.infrastructure.persistence.alert;
 
-import itacademy.pawalert.application.port.outbound.AlertEventRepositoryPort;
+import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.domain.alert.model.AlertEvent;
 import org.springframework.stereotype.Service;
 import java.util.List;

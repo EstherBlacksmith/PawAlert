@@ -1,13 +1,13 @@
 package itacademy.pawalert.domain.pet.service;
 
 import itacademy.pawalert.application.exception.UnauthorizedException;
-import itacademy.pawalert.application.port.outbound.UserRepositoryPort;
-import itacademy.pawalert.application.service.PetService;
+import itacademy.pawalert.application.user.port.outbound.UserRepositoryPort;
+import itacademy.pawalert.application.pet.service.PetService;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.pet.model.*;
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
-import itacademy.pawalert.application.port.outbound.PetRepositoryPort;
+import itacademy.pawalert.application.pet.port.outbound.PetRepositoryPort;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

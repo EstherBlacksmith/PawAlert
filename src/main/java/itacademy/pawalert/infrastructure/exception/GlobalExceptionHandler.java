@@ -4,18 +4,15 @@ import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.SubscriptionAlreadyExistsException;
 import itacademy.pawalert.application.exception.SubscriptionNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
-import itacademy.pawalert.application.service.UserNotFoundException;
+import itacademy.pawalert.domain.user.exception.UserNotFoundException;
 import itacademy.pawalert.domain.alert.exception.*;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
-import itacademy.pawalert.infrastructure.notification.mail.EmailSendException;
+import itacademy.pawalert.domain.notification.exception.EmailSendException;
 import itacademy.pawalert.infrastructure.rest.alert.dto.ErrorResponse;
-import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

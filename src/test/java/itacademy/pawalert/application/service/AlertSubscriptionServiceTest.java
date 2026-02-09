@@ -1,8 +1,9 @@
 package itacademy.pawalert.application.service;
 
+import itacademy.pawalert.application.alert.service.AlertSubscriptionService;
 import itacademy.pawalert.application.exception.SubscriptionAlreadyExistsException;
 import itacademy.pawalert.application.exception.SubscriptionNotFoundException;
-import itacademy.pawalert.application.port.outbound.AlertSubscriptionRepositoryPort;
+import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
 import itacademy.pawalert.domain.alert.model.NotificationChannel;
 import org.junit.jupiter.api.BeforeEach;
