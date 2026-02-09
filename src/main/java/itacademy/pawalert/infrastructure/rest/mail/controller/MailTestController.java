@@ -1,6 +1,6 @@
 package itacademy.pawalert.infrastructure.rest.mail.controller;
 
-import itacademy.pawalert.infrastructure.notification.mail.EmailService;
+import itacademy.pawalert.infrastructure.notification.mail.EmailServiceImpl;
 import itacademy.pawalert.infrastructure.rest.mail.dto.SendEmailRequest;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -9,13 +9,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/mail")
 public class MailTestController {
 
     @Autowired
-    private EmailService emailService;
+    private EmailServiceImpl emailService;
 
     /**
      * Endpoint de prueba para enviar emails.
@@ -23,19 +24,12 @@ public class MailTestController {
      */
     @PostMapping("/send")
     public ResponseEntity<Map<String, String>> sendEmail(@Valid @RequestBody SendEmailRequest request) {
-        try {
-            // Usamos sendHtmlEmail que es más flexible
-            emailService.sendHtmlEmail(request.getTo(), request.getSubject(), request.getContent());
-            return ResponseEntity.ok(Map.of(
-                "status", "success",
-                "message", "Email enviado correctamente a " + request.getTo()
-            ));
-        } catch (MessagingException e) {
-            return ResponseEntity.internalServerError().body(Map.of(
-                "status", "error",
-                "message", "Error al enviar email: " + e.getMessage()
-            ));
-        }
+        // Usamos sendHtmlEmail que es más flexible
+        emailService.sendHtmlEmail(request.getTo(), request.getSubject(), request.getContent());
+        return ResponseEntity.ok(Map.of(
+            "status", "success",
+            "message", "Email enviado correctamente a " + request.getTo()
+        ));
     }
 
     /**
@@ -44,7 +38,7 @@ public class MailTestController {
     @PostMapping("/test")
     public ResponseEntity<Map<String, String>> sendTestEmail() {
         try {
-            emailService.sendEmail("Contenido de prueba");
+            emailService.sendEmail("arikhel@gmail.com","Contenido de prueba","Contenido de prueba");
             return ResponseEntity.ok(Map.of(
                 "status", "success",
                 "message", "Email de prueba enviado"
@@ -55,5 +49,47 @@ public class MailTestController {
                 "message", "Error: " + e.getMessage()
             ));
         }
+    }
+
+    @PostMapping("/alert-test")
+    public ResponseEntity<Map<String, String>> testAlertEmail() {
+        // UUID de una alerta que tenga suscriptores
+        UUID alertId = UUID.fromString("tu-alert-uuid-aqui");
+
+        emailService.sendAlertToSubscribers(
+                alertId,
+                "Max",
+                "Plaza Mayor, Madrid",
+                "Perdido"
+        );
+
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Email de alerta enviado a suscriptores"
+        ));
+    }
+    @PostMapping("/send-direct")
+    public ResponseEntity<Map<String, String>> sendDirectEmail() {
+        try {
+            emailService.sendHtmlEmail(
+                    "arikhel@gmail.com",  // ← Tu email para probar
+                    "Test PawAlert",
+                    "<h1>¡Hola!</h1><p>Este es un email de prueba.</p>"
+            );
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Email enviado"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()
+            ));
+        }
+    }
+
+    @GetMapping("/test-simple")
+    public ResponseEntity<String> testSimple() {
+        return ResponseEntity.ok("El endpoint funciona");
     }
 }
