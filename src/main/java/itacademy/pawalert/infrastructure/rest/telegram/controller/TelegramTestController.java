@@ -1,5 +1,6 @@
 package itacademy.pawalert.infrastructure.rest.telegram.controller;
 
+import itacademy.pawalert.domain.user.model.TelegramChatId;
 import itacademy.pawalert.infrastructure.notification.telegram.TelegramNotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,8 @@ public class TelegramTestController {
 
     @PostMapping("/test")
     public ResponseEntity<Map<String, String>> sendTestMessage() {
-        telegramService.sendMessage("🐕 PawAlert: ¡Hola! El bot funciona.");
+        TelegramChatId telegramChatId = TelegramChatId.of("prueba");
+        telegramService.sendToUser(telegramChatId.value(),"🐕 PawAlert: ¡Hola! El bot funciona.");
         return ResponseEntity.ok(Map.of(
                 "status", "success",
                 "message", "Mensaje enviado"
@@ -27,7 +29,8 @@ public class TelegramTestController {
 
     @PostMapping("/alert")
     public ResponseEntity<Map<String, String>> sendAlert() {
-        telegramService.sendAlert("Max", "Plaza Mayor", "Perdido");
+        TelegramChatId telegramChatId = TelegramChatId.of("prueba");
+        telegramService.sendToUser(telegramChatId.value(),"Max,Plaza Mayor,Perdido");
         return ResponseEntity.ok(Map.of(
                 "status", "success",
                 "message", "Alerta enviada"
