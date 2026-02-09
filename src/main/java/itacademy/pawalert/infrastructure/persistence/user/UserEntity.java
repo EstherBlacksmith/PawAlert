@@ -2,10 +2,7 @@ package itacademy.pawalert.infrastructure.persistence.user;
 
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.UserWithPassword;
-import itacademy.pawalert.domain.user.model.Email;
-import itacademy.pawalert.domain.user.model.PhoneNumber;
-import itacademy.pawalert.domain.user.model.Surname;
-import itacademy.pawalert.domain.user.model.Username;
+import itacademy.pawalert.domain.user.model.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import itacademy.pawalert.domain.user.User;
@@ -43,12 +40,15 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
+    @Column(name = "telegram_chat_id")
+    private String telegramChatId;
 
     // Empty Constructor for JPA
     public UserEntity() {}
 
     public UserEntity(String id, String username, String email, String passwordHash,
-                      String surname, String phoneNumber, Role role, LocalDateTime createdAt) {
+                      String surname, String phoneNumber, Role role, LocalDateTime createdAt,
+                      String telegramChatId) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -57,6 +57,7 @@ public class UserEntity {
         this.phoneNumber = phoneNumber;
         this.createdAt = createdAt;
         this.role = role;
+        this.telegramChatId = telegramChatId;
     }
 
     public User toDomain() {
@@ -66,7 +67,8 @@ public class UserEntity {
                 Email.of(this.email),
                 Surname.of(this.surname),
                 PhoneNumber.of(this.phoneNumber),
-                this.role
+                this.role,
+                TelegramChatId.of(this.telegramChatId)
         );
     }
 
@@ -78,7 +80,8 @@ public class UserEntity {
                         Email.of(this.email),
                         Surname.of(this.surname),
                         PhoneNumber.of(this.phoneNumber),
-                        this.role
+                        this.role,
+                        TelegramChatId.of(this.telegramChatId)
                 ),
                 this.passwordHash
         );

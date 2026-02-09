@@ -119,7 +119,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
                 user.getSurname().value(),
                 user.getPhoneNumber().value(),
                 user.getRole(),
-                LocalDateTime.now()
+                LocalDateTime.now(),null
         );
     }
     @Override
