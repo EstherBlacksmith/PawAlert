@@ -45,7 +45,7 @@ public class UserService implements
                 email,
                 surname,
                 phoneNumber,
-                Role.USER
+                Role.USER,null
         );
 
         String hashedPassword = passwordEncoder.encode(input.password());
@@ -126,6 +126,7 @@ public class UserService implements
                 user.getSurname(),
                 user.getPhoneNumber(),
                 user.getRole()
+                ,null
         );
         return userRepositoryPort.save(updated);
     }
@@ -139,7 +140,7 @@ public class UserService implements
                 user.getEmail(),
                 newSurname,
                 user.getPhoneNumber(),
-                user.getRole()
+                user.getRole(),null
         );
         return userRepositoryPort.save(updated);
     }
@@ -153,7 +154,7 @@ public class UserService implements
                 newEmail,  // 👈 Email actualizado
                 user.getSurname(),
                 user.getPhoneNumber(),
-                user.getRole()
+                user.getRole(),null
         );
         return userRepositoryPort.save(updated);
     }

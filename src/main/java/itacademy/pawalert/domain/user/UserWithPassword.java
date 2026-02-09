@@ -1,5 +1,6 @@
 package itacademy.pawalert.domain.user;
 
+import itacademy.pawalert.domain.user.model.TelegramChatId;
 import lombok.Getter;
 
 import java.util.UUID;
@@ -22,4 +23,5 @@ public class UserWithPassword {
     public String getFullName() { return user.getSurname().value(); }
     public String getPhoneNumber() { return user.getPhoneNumber().value(); }
     public Role getRole() { return user.getRole(); }
+    public TelegramChatId getTelegramChatId() {return user.getTelegramChatId(); }
 }
