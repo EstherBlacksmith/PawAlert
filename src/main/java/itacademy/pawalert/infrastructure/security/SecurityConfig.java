@@ -42,10 +42,11 @@ public class SecurityConfig {
 
                 // Configure authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/mail/test").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/**").hasRole("ADMIN")
                         .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/api/telegram/**").permitAll()
+                        .requestMatchers("/api/mail/**").permitAll()
+                        .requestMatchers("/api/**").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
 

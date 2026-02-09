@@ -4,9 +4,7 @@ import itacademy.pawalert.application.port.inbound.RelaunchAlertNotification;
 import itacademy.pawalert.application.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.StatusNames;
-
-import itacademy.pawalert.infrastructure.notification.mail.EmailService;
-import jakarta.mail.MessagingException;
+import itacademy.pawalert.infrastructure.notification.mail.EmailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +17,7 @@ public class NotificationService implements RelaunchAlertNotification {
     private AlertSubscriptionRepositoryPort subscriptionRepository;
 
     @Autowired
-    private EmailService emailService;
+    private EmailServiceImpl emailService;
 
     @Override
     public Alert relaunchNotification(UUID alertId) {
@@ -33,11 +31,7 @@ public class NotificationService implements RelaunchAlertNotification {
         String body = "La alerta ha cambiado de " + oldStatusNames + " a " + newStatusNames;
 
         for (String email : emails) {
-            try {
-                emailService.sendHtmlEmail(email, subject, body);
-            } catch (MessagingException e) {
-                throw new RuntimeException(e);
-            }
+            emailService.sendHtmlEmail(email, subject, body);
         }
     }
 }
