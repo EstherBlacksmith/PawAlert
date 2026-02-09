@@ -38,7 +38,7 @@ public class MailTestController {
     @PostMapping("/test")
     public ResponseEntity<Map<String, String>> sendTestEmail() {
         try {
-            emailService.sendEmail("arikhel@gmail.com","Contenido de prueba","Contenido de prueba");
+            emailService.sendToUser("arikhel@gmail.com","Contenido de prueba","Contenido de prueba");
             return ResponseEntity.ok(Map.of(
                 "status", "success",
                 "message", "Email de prueba enviado"
@@ -51,23 +51,7 @@ public class MailTestController {
         }
     }
 
-    @PostMapping("/alert-test")
-    public ResponseEntity<Map<String, String>> testAlertEmail() {
-        // UUID de una alerta que tenga suscriptores
-        UUID alertId = UUID.fromString("tu-alert-uuid-aqui");
 
-        emailService.sendAlertToSubscribers(
-                alertId,
-                "Max",
-                "Plaza Mayor, Madrid",
-                "Perdido"
-        );
-
-        return ResponseEntity.ok(Map.of(
-                "status", "success",
-                "message", "Email de alerta enviado a suscriptores"
-        ));
-    }
     @PostMapping("/send-direct")
     public ResponseEntity<Map<String, String>> sendDirectEmail() {
         try {
