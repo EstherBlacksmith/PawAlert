@@ -2,6 +2,7 @@ package itacademy.pawalert.infrastructure.persistence.alert;
 
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
+import itacademy.pawalert.domain.alert.model.StatusNames;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -62,6 +63,11 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
     @Override
     public List<Alert> findAll(Specification<Alert> spec) {
         return alertRepository.findAll(spec);
+    }
+
+    @Override
+    public StatusNames getLastStatusById(UUID alertId) {
+        return alertRepository.findLastStatusById(alertId);
     }
 
 }

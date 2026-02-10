@@ -1,12 +1,12 @@
 package itacademy.pawalert.application.notification.service;
 
-import itacademy.pawalert.application.alert.service.AlertService;
+import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.application.notification.port.inbound.EmailNotificationUseCase;
 import itacademy.pawalert.application.notification.port.inbound.LaunchAlertNotification;
 import itacademy.pawalert.application.notification.port.inbound.TelegramNotificationUseCase;
 import itacademy.pawalert.domain.alert.model.*;
-
 import org.springframework.stereotype.Service;
+
 
 import java.util.UUID;
 
@@ -15,17 +15,16 @@ public class NotificationService implements LaunchAlertNotification {
 
     private final EmailNotificationUseCase emailUseCase;
     private final TelegramNotificationUseCase telegramUseCase;
-    private final AlertService alertService;
-
-    public NotificationService(EmailNotificationUseCase emailUseCase, TelegramNotificationUseCase telegramUseCase, AlertService alertService) {
+    private final AlertRepositoryPort alertRepository;
+    public NotificationService(EmailNotificationUseCase emailUseCase, TelegramNotificationUseCase telegramUseCase, AlertRepositoryPort alertRepository) {
         this.emailUseCase = emailUseCase;
         this.telegramUseCase = telegramUseCase;
-        this.alertService = alertService;
+        this.alertRepository = alertRepository;
     }
 
     @Override
     public void relaunchNotification(UUID alertId) {
-       StatusNames currentStatus = alertService.getLastStatusById(alertId);
+       StatusNames currentStatus = alertRepository.getLastStatusById(alertId);
         notifyStatusChange(alertId,currentStatus,currentStatus);
     }
 
