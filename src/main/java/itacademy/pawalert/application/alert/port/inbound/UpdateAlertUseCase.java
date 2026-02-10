@@ -9,9 +9,6 @@ import java.util.UUID;
 
 public interface UpdateAlertUseCase {
     @Transactional
-    void deleteAlertById(UUID alertId);
-
-    @Transactional
     Alert updateTitle(UUID alertId, UUID userId, Title title);
 
     @Transactional

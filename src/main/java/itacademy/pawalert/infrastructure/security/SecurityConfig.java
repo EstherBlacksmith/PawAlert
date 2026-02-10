@@ -45,8 +45,13 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/api/telegram/**").permitAll()
                         .requestMatchers("/api/mail/**").permitAll()
-                        .requestMatchers("/api/**").hasRole("ADMIN")
+                        .requestMatchers("/localhost/**").permitAll()
+                        .requestMatchers("/api/test/**").permitAll()
+                        .requestMatchers("/dashboard.html").permitAll()
+                        .requestMatchers("/static/**").permitAll()
+                        .requestMatchers("/").permitAll()
 
+                        .requestMatchers("/api/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
 

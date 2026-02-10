@@ -15,11 +15,14 @@ import itacademy.pawalert.infrastructure.rest.alert.dto.AlertWithContactDTO;
 import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
 import jakarta.transaction.Transactional;
 import itacademy.pawalert.domain.user.User;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+
+import static itacademy.pawalert.domain.alert.model.StatusNames.OPENED;
 
 @Service
 public class AlertService implements
@@ -34,18 +37,19 @@ public class AlertService implements
     private final AlertEventRepositoryPort eventRepository;
     private final GetUserUseCase userUseCase;
     private final AlertMapper alertMapper;
-    private final LaunchAlertNotification notificationService;
+    private final ApplicationEventPublisher eventPublisher;
+
     public AlertService(AlertRepositoryPort alertRepository, AlertEventRepositoryPort eventRepository,
-                        GetUserUseCase userUseCase, AlertMapper alertMapper, LaunchAlertNotification notificationService){
+                        GetUserUseCase userUseCase, AlertMapper alertMapper, ApplicationEventPublisher eventPublisher){
         this.alertRepository = alertRepository;
         this.eventRepository = eventRepository;
         this.userUseCase = userUseCase;
         this.alertMapper = alertMapper;
-        this.notificationService = notificationService;
+        this.eventPublisher = eventPublisher;
     }
 
     public List<Alert> findOpenAlertsWithTitle(String title) {
-        Specification<Alert> spec = AlertSpecifications.withStatus(StatusNames.OPENED)
+        Specification<Alert> spec = AlertSpecifications.withStatus(OPENED)
                 .and(AlertSpecifications.titleContains(title));
 
         return alertRepository.findAll(spec);
@@ -64,11 +68,14 @@ public class AlertService implements
         //Persist the object
         Alert savedAlert = alertRepository.save(alert);
         AlertEvent event = AlertEventFactory.createStatusChangedEvent(
-                alert, StatusNames.OPENED, StatusNames.OPENED, userId,location
+                alert, OPENED, OPENED, userId,location
         );
 
         eventRepository.save(event);
 
+        eventPublisher.publishEvent(
+                new AlertStatusChangedEvent(savedAlert.getId(), null, OPENED)
+        );
         return savedAlert;
     }
 
@@ -122,24 +129,20 @@ public class AlertService implements
         Alert alertCopy ;
         switch (newStatus) {
 
-            case SEEN -> {
-                alertCopy = alert.seen();
-                notificationService.notifyStatusChange(alertId, newStatus, previousStatus);
+            case SEEN -> alertCopy = alert.seen();
 
-            }
-            case SAFE ->{
-                alertCopy = alert.safe();
-                notificationService.notifyStatusChange(alertId, newStatus, previousStatus);
+            case SAFE ->alertCopy = alert.safe();
 
-            }
-            case CLOSED -> {
-                alertCopy = alert.closed();
-                notificationService.notifyStatusChange(alertId, newStatus, previousStatus);
+            case CLOSED -> alertCopy = alert.closed();
 
-            }
             case OPENED -> alertCopy = alert.open();
+
             default -> throw new IllegalArgumentException("Invalid alert state: " + newStatus);
         }
+
+        eventPublisher.publishEvent(
+                new AlertStatusChangedEvent(alertId, previousStatus, newStatus)
+        );
 
         // Use factory
         AlertEvent  event = AlertEventFactory.createStatusChangedEvent(
