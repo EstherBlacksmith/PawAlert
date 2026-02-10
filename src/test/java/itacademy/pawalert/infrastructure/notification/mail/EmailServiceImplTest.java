@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
@@ -59,7 +58,7 @@ class EmailServiceImplTest {
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
 
         // Act
-        assertDoesNotThrow(() -> emailService.sendHtmlEmail(to, subject, htmlBody));
+        assertDoesNotThrow(() -> emailService.sendToUser(to, subject, htmlBody));
 
         // Assert
         verify(mailSender, times(1)).send(mimeMessage);

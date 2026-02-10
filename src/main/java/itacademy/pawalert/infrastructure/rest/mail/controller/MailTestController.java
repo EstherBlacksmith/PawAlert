@@ -2,14 +2,12 @@ package itacademy.pawalert.infrastructure.rest.mail.controller;
 
 import itacademy.pawalert.infrastructure.notification.mail.EmailServiceImpl;
 import itacademy.pawalert.infrastructure.rest.mail.dto.SendEmailRequest;
-import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/mail")
@@ -25,7 +23,7 @@ public class MailTestController {
     @PostMapping("/send")
     public ResponseEntity<Map<String, String>> sendEmail(@Valid @RequestBody SendEmailRequest request) {
         // Usamos sendHtmlEmail que es más flexible
-        emailService.sendHtmlEmail(request.getTo(), request.getSubject(), request.getContent());
+        emailService.sendToUser(request.getTo(), request.getSubject(), request.getContent());
         return ResponseEntity.ok(Map.of(
             "status", "success",
             "message", "Email enviado correctamente a " + request.getTo()
@@ -55,7 +53,7 @@ public class MailTestController {
     @PostMapping("/send-direct")
     public ResponseEntity<Map<String, String>> sendDirectEmail() {
         try {
-            emailService.sendHtmlEmail(
+            emailService.sendToUser(
                     "arikhel@gmail.com",  // ← Tu email para probar
                     "Test PawAlert",
                     "<h1>¡Hola!</h1><p>Este es un email de prueba.</p>"

@@ -35,7 +35,7 @@ public class EmailNotificationEventListener {
         String body = formatter.formatEmailBody(alert, pet, event.oldStatus(), event.newStatus());
 
         for (String email : emails) {
-            emailService.sendHtmlEmail(email, subject, body);
+            emailService.sendToUser(email, subject, body);
         }
     }
 }
