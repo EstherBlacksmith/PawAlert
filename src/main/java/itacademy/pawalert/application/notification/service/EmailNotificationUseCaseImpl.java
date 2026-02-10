@@ -43,7 +43,7 @@ public class EmailNotificationUseCaseImpl implements EmailNotificationUseCase {
         String body = formatter.formatStatusChangeMessage(alert, pet, oldStatus, newStatus);
 
         for (String email : emails) {
-            emailService.sendHtmlEmail(email, subject, body);
+            emailService.sendToUser(email, subject, body);
         }
     }
 }

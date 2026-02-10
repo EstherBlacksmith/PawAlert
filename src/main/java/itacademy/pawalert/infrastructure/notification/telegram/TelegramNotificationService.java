@@ -48,14 +48,6 @@ public class TelegramNotificationService {
         LOGGER.info("Enviando mensaje a Telegram: {}", message);
         LOGGER.info("URL: {}", url);
         LOGGER.info("Chat ID: {}", chatId);
-
-        try {
-            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-            LOGGER.info("✅ Telegram message sent to {}: {} - {}", chatId, response.getStatusCode(), response.getBody());
-        } catch (Exception e) {
-            LOGGER.error("❌ Error sending Telegram to {}: {}", chatId, e.getMessage());
-            throw e;
-        }
     }
 
 

@@ -1,8 +1,6 @@
 package itacademy.pawalert.infrastructure.notification.mail;
 
-import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertSubscriptionRepository;
-import itacademy.pawalert.infrastructure.persistence.user.UserEntity;
 import itacademy.pawalert.infrastructure.persistence.user.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -49,8 +47,5 @@ public class EmailServiceImpl {
 
     }
 
-    public void sendHtmlEmail(String email, String subject, String body) {
-
-    }
 }
 
