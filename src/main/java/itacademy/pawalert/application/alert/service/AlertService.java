@@ -74,7 +74,7 @@ public class AlertService implements
         eventRepository.save(event);
 
         eventPublisher.publishEvent(
-                new AlertStatusChangedEvent(savedAlert.getId(), null, OPENED)
+                new AlertStatusChangedEvent(savedAlert.getId(), OPENED, OPENED)
         );
         return savedAlert;
     }

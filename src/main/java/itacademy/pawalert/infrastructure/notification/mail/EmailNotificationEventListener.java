@@ -25,7 +25,6 @@ public class EmailNotificationEventListener {
 
     @EventListener
     public void handleAlertStatusChanged(AlertStatusChangedEvent event) {
-        if (event.oldStatus() == null) return;
 
         Alert alert = alertRepository.findById(event.alertId())
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + event.alertId()));
