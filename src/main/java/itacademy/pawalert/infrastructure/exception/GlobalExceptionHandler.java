@@ -4,6 +4,8 @@ import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.SubscriptionAlreadyExistsException;
 import itacademy.pawalert.application.exception.SubscriptionNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
+import itacademy.pawalert.domain.image.exception.ImageUploadException;
+import itacademy.pawalert.domain.image.exception.ImageValidationException;
 import itacademy.pawalert.domain.user.exception.UserNotFoundException;
 import itacademy.pawalert.domain.alert.exception.*;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
@@ -13,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.io.IOException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -29,12 +33,6 @@ public class GlobalExceptionHandler {
             IllegalArgumentException ex) {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(400, "Bad Request", ex.getMessage()));
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(500, "Internal Server Error", ex.getMessage()));
     }
 
     @ExceptionHandler(AlertNotFoundException.class)
@@ -105,5 +103,35 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(500, "Error sending mail", ex.getMessage()));
     }
+    @ExceptionHandler(ImageUploadException.class)
+    public ResponseEntity<ErrorResponse> handleImageUploadException(ImageUploadException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "Image upload exception", ex.getMessage()));
+    }
+    @ExceptionHandler(ImageValidationException.class)
+    public ResponseEntity<ErrorResponse> handleImageValidationException(ImageValidationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "Image upload exception", ex.getMessage()));
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ErrorResponse> handleIOException(IOException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(500,"ERROR_IO", "Image upload exception: " + ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(500, "Internal Server Error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(500, "Error", ex.getMessage()));
+    }
 
 }
+
+
