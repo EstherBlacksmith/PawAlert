@@ -25,14 +25,13 @@ public class TelegramNotificationEventListener {
 
     @EventListener
     public void handleAlertStatusChanged(AlertStatusChangedEvent event) {
-        if (event.oldStatus() == null) return;
 
         Alert alert = alertRepository.findById(event.alertId())
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + event.alertId()));
         Pet pet = petService.getPetdById(alert.getPetId());
 
         List<String> telegramChatIds = subscriptionRepository.findTelegramChatIdsByAlertId(event.alertId());
-         String message = formatter.formatStatusChangeMessage(alert,pet, event.oldStatus(), event.newStatus());
+        String message = formatter.formatStatusChangeMessage(alert,pet, event.oldStatus(), event.newStatus());
 
         for (String chatId : telegramChatIds) {
             telegramNotificationService.sendToUser(chatId,message);
