@@ -42,18 +42,19 @@ public class SecurityConfig {
 
                 // Configure authorization rules
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
                         .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/api/telegram/**").permitAll()
-                        .requestMatchers("/api/mail/**").permitAll()
-                        .requestMatchers("/localhost/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
-                        .requestMatchers("/dashboard.html").permitAll()
-                        .requestMatchers("/image-upload.html").permitAll()
-                        .requestMatchers("/static/**").permitAll()
-                        .requestMatchers("/").permitAll()
-
                         .requestMatchers("/api/images/**").permitAll()
-                        .requestMatchers("/api/**").hasRole("ADMIN")
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/users/register").permitAll()
+                        // Static resources
+                        .requestMatchers("/static/**").permitAll()
+                        .requestMatchers("/frontend/**").permitAll()
+                        .requestMatchers("/dashboard.html").permitAll()
+                        .requestMatchers("/image-classifier.html").permitAll()
+                        .requestMatchers("/").permitAll()
+                        // All other requests require authentication
                         .anyRequest().authenticated()
                 )
 
