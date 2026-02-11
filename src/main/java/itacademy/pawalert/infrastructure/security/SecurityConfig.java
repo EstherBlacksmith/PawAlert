@@ -48,9 +48,11 @@ public class SecurityConfig {
                         .requestMatchers("/localhost/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/dashboard.html").permitAll()
+                        .requestMatchers("/image-upload.html").permitAll()
                         .requestMatchers("/static/**").permitAll()
                         .requestMatchers("/").permitAll()
 
+                        .requestMatchers("/api/images/**").permitAll()
                         .requestMatchers("/api/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
