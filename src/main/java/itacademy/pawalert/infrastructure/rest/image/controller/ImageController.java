@@ -33,6 +33,6 @@ public class ImageController {
                                          @RequestParam String folder) {
         String url = uploadService.upload(file, folder);
 
-        return ResponseEntity.ok(url);
+         return ResponseEntity.ok(url);
     }
 }
