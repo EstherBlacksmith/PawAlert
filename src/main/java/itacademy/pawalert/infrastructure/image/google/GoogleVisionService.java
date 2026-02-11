@@ -4,6 +4,7 @@ import com.google.cloud.vision.v1.*;
 import com.google.protobuf.ByteString;
 import itacademy.pawalert.domain.image.model.ContentSafetyStatus;
 import itacademy.pawalert.domain.image.model.ImageValidationResult;
+import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 
@@ -104,5 +105,12 @@ public class GoogleVisionService {
             stringBuilder.append(labels.get(i));
         }
         return  stringBuilder.toString();
+    }
+
+    @PreDestroy
+    public void close() {
+        if (imageAnnotatorClient != null) {
+            imageAnnotatorClient.close();
+        }
     }
 }
