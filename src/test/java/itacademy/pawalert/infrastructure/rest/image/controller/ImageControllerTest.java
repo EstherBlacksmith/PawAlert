@@ -4,6 +4,7 @@ import itacademy.pawalert.application.image.service.ImageUploadService;
 import itacademy.pawalert.application.image.service.ImageValidationService;
 import itacademy.pawalert.domain.image.model.ContentSafetyStatus;
 import itacademy.pawalert.domain.image.model.ImageValidationResult;
+import itacademy.pawalert.domain.image.port.inbound.PetImageAnalyzer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,9 +31,11 @@ class ImageControllerTest {
 
     private ImageController controller;
 
+    private PetImageAnalyzer petImageAnalyzer;
+
     @BeforeEach
     void setUp() {
-        controller = new ImageController(validationService, uploadService);
+        controller = new ImageController(validationService, uploadService,petImageAnalyzer);
     }
 
     @Test
