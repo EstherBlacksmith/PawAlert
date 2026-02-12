@@ -28,38 +28,30 @@ public record UpdatePetRequest(
     public boolean hasOfficialPetName() {
         return officialPetName != null;
     }
-
     public boolean hasWorkingPetName() {
         return workingPetName != null;
     }
     public boolean hasPetDescription() {
         return petDescription != null;
     }
-
     public boolean hasSpecies() {
         return species != null;
     }
-
     public boolean hasBreed() {
         return breed != null;
     }
-
     public boolean hasSize() {
         return size != null;
     }
-
     public boolean hasColor() {
         return color != null;
     }
-
     public boolean hasGender() {
         return gender != null;
     }
-
     public boolean hasChipNumber() {
         return chipNumber != null;
     }
-
     public boolean hasPetImage() {
         return petImage != null;
     }

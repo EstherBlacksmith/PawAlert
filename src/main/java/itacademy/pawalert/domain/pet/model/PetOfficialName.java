@@ -1,18 +1,22 @@
 package itacademy.pawalert.domain.pet.model;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
 
-public record PetName(String value) {
+public record PetOfficialName(String value) {
 
     public String value() {
         return this.value;
     }
-    public static PetName of(String petName) {
-        return new PetName(petName);
+
+    public static PetOfficialName of(String petName) {
+        return new PetOfficialName(petName);
     }
 
-
+    public static PetOfficialName ofNullable(String petName) {
+        if (petName == null || petName.isBlank()) {
+            return null;
+        }
+        return new PetOfficialName(petName);
+    }
 
     private static final java.util.regex.Pattern NAME_PATTERN =
             java.util.regex.Pattern.compile("^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñÇç'\\-\\s]+$");
@@ -20,7 +24,7 @@ public record PetName(String value) {
     private static final int MIN_LENGTH = 3;
     private static final int MAX_LENGTH = 50;
 
-    public PetName {
+    public PetOfficialName {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("The name cant be empty");
         }
@@ -35,9 +39,8 @@ public record PetName(String value) {
         }
 
         if (!NAME_PATTERN.matcher(value).matches()) {
-            throw new IllegalArgumentException("El nombre contiene caracteres inválidos");
+            throw new IllegalArgumentException("The name contains invalid characters");
         }
 
     }
-
 }
