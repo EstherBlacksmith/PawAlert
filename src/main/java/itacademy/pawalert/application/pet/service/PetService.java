@@ -12,7 +12,7 @@ import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.pet.model.*;
 
 import itacademy.pawalert.domain.user.Role;
-import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
+import itacademy.pawalert.infrastructure.rest.pet.dto.CreatePetRequest;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import org.springframework.stereotype.Service;
 
@@ -29,37 +29,36 @@ public class PetService implements
     private final PetRepositoryPort petRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
 
+
     public PetService(PetRepositoryPort petRepositoryPort, UserRepositoryPort userRepositoryPort) {
         this.petRepositoryPort = petRepositoryPort;
         this.userRepositoryPort = userRepositoryPort;
     }
 
-    @Override
-    public Pet createPet(UUID userId, UUID petId, ChipNumber chipNumber, PetName officialPetName, PetName workingPetName,
-                         Species species, Breed breed, Size size, Color color, Gender gender, PetDescription petDescription,
-                         PetImage petImage) {
 
-        Pet pet = Pet.builder()
-                .userId(userId)
-                .petId( petId)
-                .chipNumber(chipNumber)
-                .officialPetName(officialPetName)
-                .workingPetName(workingPetName)
-                .species(species)
-                .breed( breed)
-                .size(size)
-                .color(color)
-                .gender(gender)
-                .petDescription(petDescription)
-                .petImage(petImage)
-                .build();
+        @Override
+        public Pet createPet(CreatePetRequest request) {
+            UUID petId = UUID.randomUUID();
 
-        PetEntity entity = pet.toEntity();
-        PetEntity savedPet = petRepositoryPort.save(entity);
+            Pet pet = Pet.builder()
+                    .petId(petId)
+                    .userId(UUID.fromString(request.userId()))
+                    .chipNumber(new ChipNumber(request.chipNumber()))
+                    .officialPetName(PetOfficialName.of(request.officialPetName()))
+                    .workingPetName(PetWorkingName.of(request.workingPetName()))
+                    .species(Species.valueOf(request.species()))
+                    .breed(Breed.of(request.breed()))
+                    .size(Size.valueOf(request.size()))
+                    .color(Color.of(request.color()))
+                    .gender(Gender.valueOf(request.gender()))
+                    .petDescription(PetDescription.of(request.petDescription()))
+                    .petImage(PetImage.of(request.petImage()))
+                    .build();
 
-        return savedPet.toDomain();
+            return petRepositoryPort.save(pet).toDomain();
+        }
 
-    }
+
 
     @Override
     public void deletePetdById(UUID petId,UUID userId) {
@@ -85,10 +84,10 @@ public class PetService implements
                 builder.chipNumber(new ChipNumber(request.chipNumber()));
             }
             if (request.officialPetName() != null) {
-                builder.officialPetName(new PetName(request.officialPetName()));
+                builder.officialPetName(new PetOfficialName(request.officialPetName()));
             }
             if (request.workingPetName() != null) {
-                builder.workingPetName(new PetName(request.workingPetName()));
+                builder.workingPetName(new PetWorkingName(request.workingPetName()));
             }
             if (request.species() != null) {
                 builder.species(Species.fromString(request.species()));
@@ -110,7 +109,7 @@ public class PetService implements
             }
         });
 
-        return petRepositoryPort.save(updatedPet.toEntity()).toDomain();
+        return petRepositoryPort.save(updatedPet).toDomain();
     }
 
     private void checkOwnership(Pet existingPet, UUID userId, Role userRole) {

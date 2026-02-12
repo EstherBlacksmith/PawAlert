@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PetDTO {
-
     private String userId;
     private String petId;
     private String chipNumber;

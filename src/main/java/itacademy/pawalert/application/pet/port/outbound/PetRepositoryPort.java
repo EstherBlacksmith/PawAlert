@@ -8,7 +8,7 @@ import java.util.UUID;
 
 
 public interface PetRepositoryPort {
-    PetEntity save(PetEntity entity);
+    PetEntity save(Pet pet);
 
     Optional<Pet> findById(UUID petId);
 

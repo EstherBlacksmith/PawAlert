@@ -1,7 +1,5 @@
 package itacademy.pawalert.domain.pet.model;
 
-import itacademy.pawalert.domain.alert.model.UserId;
-
 import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import lombok.Getter;
@@ -14,8 +12,8 @@ public class Pet {
     private final UUID userId;
     private final UUID petId;
     private final ChipNumber chipNumber;
-    private final PetName officialPetName;
-    private final PetName workingPetName;
+    private final PetOfficialName officialPetName;
+    private final PetWorkingName workingPetName;
     private final Species species;
     private final Breed breed;
     private final Size size;
@@ -24,7 +22,7 @@ public class Pet {
     private final PetDescription petDescription;
     private final PetImage petImage;
 
-    public Pet(UUID userId, UUID petId, ChipNumber chipNumber, PetName officialPetName, PetName workingPetName,
+    public Pet(UUID userId, UUID petId, ChipNumber chipNumber, PetOfficialName officialPetName, PetWorkingName workingPetName,
                Species species, Breed breed, Size size, Color color, Gender gender, PetDescription petDescription, PetImage petImage) {
         this.userId = userId;
         this.petId = petId;
@@ -103,8 +101,8 @@ public class Pet {
         private UUID userId;
         private UUID petId;
         private ChipNumber chipNumber;
-        private PetName officialPetName;
-        private PetName workingPetName;
+        private PetOfficialName officialPetName;
+        private PetWorkingName workingPetName;
         private Species species;
         private Breed breed;
         private Size size;
@@ -128,12 +126,12 @@ public class Pet {
             return this;
         }
 
-        public PetBuilder officialPetName(PetName officialPetName) {
+        public PetBuilder officialPetName(PetOfficialName officialPetName) {
             this.officialPetName = officialPetName;
             return this;
         }
 
-        public PetBuilder workingPetName(PetName workingPetName) {
+        public PetBuilder workingPetName(PetWorkingName workingPetName) {
             this.workingPetName = workingPetName;
             return this;
         }
@@ -184,8 +182,8 @@ public class Pet {
                 .userId(this.userId)
                 .petId(this.petId)
                 .chipNumber(request.hasChipNumber() ? new ChipNumber(request.chipNumber()) : this.chipNumber)
-                .officialPetName(request.hasOfficialPetName() ? new PetName(request.officialPetName()) : this.officialPetName)
-                .workingPetName(request.hasWorkingPetName() ? new PetName(request.workingPetName()) : this.workingPetName)
+                .officialPetName(request.hasOfficialPetName() ? new PetOfficialName(request.officialPetName()) : this.officialPetName)
+                .workingPetName(request.hasWorkingPetName() ? new PetWorkingName(request.workingPetName()) : this.workingPetName)
                 .species(request.hasSpecies() ? Species.fromString(request.species()) : this.species)
                 .breed(request.hasBreed() ? new Breed(request.breed()) : this.breed)
                 .size(request.hasSize() ? Size.fromString(request.size()) : this.size)

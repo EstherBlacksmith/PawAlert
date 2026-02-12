@@ -15,9 +15,10 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
     public PetRepositoryAdapter(PetRepository petRepository) {
         this.petRepository = petRepository;
     }
+
     @Override
-    public PetEntity save(PetEntity entity) {
-        return petRepository.save(entity);
+    public PetEntity save(Pet pet) {
+        return petRepository.save(pet.toEntity());
     }
 
     @Override
