@@ -57,8 +57,8 @@ class PetServiceTest {
                 .userId(userId)
                 .petId(petId)
                 .chipNumber(new ChipNumber("123456789012345"))
-                .officialPetName(new PetName("Max"))
-                .workingPetName(new PetName("Buddy"))
+                .officialPetName(new PetOfficialName("Max"))
+                .workingPetName(new PetWorkingName("Buddy"))
                 .species(Species.DOG)
                 .breed(new Breed("Golden Retriever"))
                 .size(Size.MEDIUM)
@@ -69,9 +69,15 @@ class PetServiceTest {
                 .build();
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
+    // Helper method to simulate Pet -> PetEntity -> Pet conversion
+    private Pet saveAndConvert(Pet pet) {
+        PetEntity entity = pet.toEntity();
+        return entity.toDomain();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════════
     // updatePet - Success Tests
-    // ═══════════════════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════════════════════
 
     @Nested
     @DisplayName("updatePet - Success Tests")
@@ -83,12 +89,20 @@ class PetServiceTest {
             // Given
             String newWorkingName = "NewBuddy";
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, newWorkingName,null, null,
-                    null, null, null, null, null, null
+                    null,  // officialPetName
+                    newWorkingName,  // workingPetName
+                    null,  // petDescription
+                    null,  // species
+                    null,  // breed
+                    null,  // size
+                    null,  // color
+                    null,  // gender
+                    null,  // chipNumber
+                    null   // petImage
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.save(any(Pet.class))).thenAnswer(inv -> saveAndConvert(inv.getArgument(0)));
             when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
@@ -97,7 +111,7 @@ class PetServiceTest {
             // Then
             assertNotNull(result);
             assertEquals(newWorkingName, result.getWorkingPetName().value());
-            verify(petRepositoryPort).save(any(PetEntity.class));
+            verify(petRepositoryPort).save(any(Pet.class));
         }
 
         @Test
@@ -105,21 +119,29 @@ class PetServiceTest {
         void updatePet_whenUpdatingMultipleFields_updatesAllFields() {
             // Given
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, "NewName", null, "Cat", null,
-                    "Small", "White", null, null, null
+                    "NewName",      // officialPetName
+                    null,           // workingPetName
+                    "Cat",          // petDescription
+                    null,           // species
+                    "Small",        // breed
+                    null,           // size
+                    "White",        // color
+                    null,           // gender
+                    null,           // chipNumber
+                    null            // petImage
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.save(any(Pet.class))).thenAnswer(inv -> saveAndConvert(inv.getArgument(0)));
             when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
             Pet result = petService.updatePet(petId, userId, request);
 
             // Then
-            assertEquals("NewName", result.getWorkingPetName().value());
-            assertEquals(Species.CAT, result.getSpecies());
-            assertEquals(Size.SMALL, result.getSize());
+            assertEquals("NewName", result.getOfficialPetName().value());
+            assertEquals("Cat", result.getPetDescription().value());
+            assertEquals("Small", result.getBreed().value());
             assertEquals("White", result.getColor().value());
         }
 
@@ -128,12 +150,20 @@ class PetServiceTest {
         void updatePet_whenFieldIsNull_keepsExistingValue() {
             // Given
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, null, null, null,
-                    null, "Brown", null, null, null
+                    null,  // officialPetName
+                    null,  // workingPetName
+                    null,  // petDescription
+                    null,  // species
+                    null,  // breed
+                    null,  // size
+                    "Brown",  // color
+                    null,  // gender
+                    null,  // chipNumber
+                    null   // petImage
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.save(any(Pet.class))).thenAnswer(inv -> saveAndConvert(inv.getArgument(0)));
             when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
@@ -146,9 +176,9 @@ class PetServiceTest {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════════════════════
     // updatePet - Error Tests
-    // ═══════════════════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════════════════════
 
     @Nested
     @DisplayName("updatePet - Error Tests")
@@ -160,8 +190,16 @@ class PetServiceTest {
             // Given
             UUID nonExistentPetId = UUID.fromString("12345678-1234-1234-1234-123456789012");
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, "NewName", null, null, null,
-                    null, null, null, null, null
+                    "NewName",      // officialPetName
+                    null,           // workingPetName
+                    null,           // petDescription
+                    null,           // species
+                    null,           // breed
+                    null,           // size
+                    null,           // color
+                    null,           // gender
+                    null,           // chipNumber
+                    null            // petImage
             );
 
             when(petRepositoryPort.findById(nonExistentPetId)).thenReturn(Optional.empty());
@@ -170,7 +208,7 @@ class PetServiceTest {
             assertThrows(PetNotFoundException.class,
                     () -> petService.updatePet(nonExistentPetId, userId, request));
 
-            verify(petRepositoryPort, never()).save(any(PetEntity.class));
+            verify(petRepositoryPort, never()).save(any(Pet.class));
         }
 
         @Test
@@ -179,8 +217,16 @@ class PetServiceTest {
             // Given
             UUID differentUserId = UUID.randomUUID();
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, "NewName", null, null, null,
-                    null, null, null, null, null
+                    "NewName",      // officialPetName
+                    null,           // workingPetName
+                    null,           // petDescription
+                    null,           // species
+                    null,           // breed
+                    null,           // size
+                    null,           // color
+                    null,           // gender
+                    null,           // chipNumber
+                    null            // petImage
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
@@ -190,31 +236,29 @@ class PetServiceTest {
             assertThrows(UnauthorizedException.class,
                     () -> petService.updatePet(petId, differentUserId, request));
 
-            verify(petRepositoryPort, never()).save(any(PetEntity.class));
+            verify(petRepositoryPort, never()).save(any(Pet.class));
         }
 
         @Test
-        @DisplayName("Should throw UnauthorizedException when user is not the owner")
+        @DisplayName("Should throw UnauthorizedException when user is not the owner for delete")
         void deletePet_whenNotOwner_throwsUnauthorizedException() {
             // Given
             UUID differentUserId = UUID.randomUUID();
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-;
-
             when(userRepositoryPort.getUserRol(differentUserId)).thenReturn(Role.USER);
 
             // When/Then
             assertThrows(UnauthorizedException.class,
-                    () -> petService.deletePetdById(petId,differentUserId));
+                    () -> petService.deletePetdById(petId, differentUserId));
 
             verify(petRepositoryPort, never()).deleteById(petId, differentUserId);
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════════════════════
     // updatePet - Specific Field Update Tests
-    // ═══════════════════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════════════════════
 
     @Nested
     @DisplayName("updatePet - Specific Field Tests")
@@ -226,12 +270,20 @@ class PetServiceTest {
             // Given
             String newChipNumber = "987654321098765";
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, null, null, null,
-                    null, null, null, newChipNumber, null
+                    null,  // officialPetName
+                    null,  // workingPetName
+                    null,  // petDescription
+                    null,  // species
+                    null,  // breed
+                    null,  // size
+                    null,  // color
+                    null,  // gender
+                    newChipNumber,  // chipNumber
+                    null   // petImage
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.save(any(Pet.class))).thenAnswer(inv -> saveAndConvert(inv.getArgument(0)));
             when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
@@ -247,12 +299,20 @@ class PetServiceTest {
             // Given
             String newDescription = "Updated description";
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, newDescription, null, null,
-                    null, null, null, null, null
+                    null,  // officialPetName
+                    null,  // workingPetName
+                    newDescription,  // petDescription
+                    null,  // species
+                    null,  // breed
+                    null,  // size
+                    null,  // color
+                    null,  // gender
+                    null,  // chipNumber
+                    null   // petImage
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.save(any(Pet.class))).thenAnswer(inv -> saveAndConvert(inv.getArgument(0)));
             when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
@@ -267,12 +327,20 @@ class PetServiceTest {
         void updatePet_whenGenderProvided_updatesGender() {
             // Given
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, null, null, null,
-                    null, null, "FEMALE", null, null
+                    null,  // officialPetName
+                    null,  // workingPetName
+                    null,  // petDescription
+                    null,  // species
+                    null,  // breed
+                    null,  // size
+                    null,  // color
+                    "FEMALE",  // gender
+                    null,  // chipNumber
+                    null   // petImage
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.save(any(Pet.class))).thenAnswer(inv -> saveAndConvert(inv.getArgument(0)));
             when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
@@ -287,12 +355,20 @@ class PetServiceTest {
         void updatePet_whenSizeProvided_updatesSize() {
             // Given
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, null, null, null,
-                    "LARGE", null, null, null, null
+                    null,  // officialPetName
+                    null,  // workingPetName
+                    null,  // petDescription
+                    null,  // species
+                    null,  // breed
+                    "LARGE",  // size
+                    null,  // color
+                    null,  // gender
+                    null,  // chipNumber
+                    null   // petImage
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.save(any(Pet.class))).thenAnswer(inv -> saveAndConvert(inv.getArgument(0)));
             when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
@@ -308,12 +384,20 @@ class PetServiceTest {
             // Given
             String newBreed = "Labrador";
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, null, null, newBreed,
-                    null, null, null, null, null
+                    null,  // officialPetName
+                    null,  // workingPetName
+                    null,  // petDescription
+                    null,  // species
+                    newBreed,  // breed
+                    null,  // size
+                    null,  // color
+                    null,  // gender
+                    null,  // chipNumber
+                    null   // petImage
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.save(any(Pet.class))).thenAnswer(inv -> saveAndConvert(inv.getArgument(0)));
             when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
@@ -329,12 +413,20 @@ class PetServiceTest {
             // Given
             String newOfficialName = "Maximilian";
             UpdatePetRequest request = new UpdatePetRequest(
-                    newOfficialName, null, null, null, null,
-                    null, null, null, null, null
+                    newOfficialName,  // officialPetName
+                    null,  // workingPetName
+                    null,  // petDescription
+                    null,  // species
+                    null,  // breed
+                    null,  // size
+                    null,  // color
+                    null,  // gender
+                    null,  // chipNumber
+                    null   // petImage
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.save(any(Pet.class))).thenAnswer(inv -> saveAndConvert(inv.getArgument(0)));
             when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
@@ -345,7 +437,7 @@ class PetServiceTest {
         }
 
         @Test
-        @DisplayName("Should not update other fields  when ChipNumber is provided")
+        @DisplayName("Should update only chipNumber when provided and keep other fields")
         void updatePet_whenChipNumberProvided_updatesOnlyChipNumber() {
             // Given
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
@@ -353,12 +445,20 @@ class PetServiceTest {
 
             String newChipNumber = "987654321098765";
             UpdatePetRequest request = new UpdatePetRequest(
-                    null, null, null, null, null,
-                    null, null, null, newChipNumber, null
+                    null,  // officialPetName
+                    null,  // workingPetName
+                    null,  // petDescription
+                    null,  // species
+                    null,  // breed
+                    null,  // size
+                    null,  // color
+                    null,  // gender
+                    newChipNumber,  // chipNumber
+                    null   // petImage
             );
 
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-            when(petRepositoryPort.save(any(PetEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+            when(petRepositoryPort.save(any(Pet.class))).thenAnswer(inv -> saveAndConvert(inv.getArgument(0)));
             when(userRepositoryPort.getUserRol(userId)).thenReturn(Role.USER);
 
             // When
@@ -371,16 +471,16 @@ class PetServiceTest {
             assertEquals(originalPet.getPetDescription().value(), result.getPetDescription().value());
             assertEquals(originalPet.getColor().value(), result.getColor().value());
             assertEquals(originalPet.getSize().toString(), result.getSize().toString());
-            assertEquals( originalPet.getSpecies().toString(), result.getSpecies().toString());
-            assertEquals( originalPet.getGender().toString(), result.getGender().toString());
-            assertEquals( originalPet.getOfficialPetName().value(), result.getOfficialPetName().value());
+            assertEquals(originalPet.getSpecies().toString(), result.getSpecies().toString());
+            assertEquals(originalPet.getGender().toString(), result.getGender().toString());
+            assertEquals(originalPet.getOfficialPetName().value(), result.getOfficialPetName().value());
             assertEquals(originalPet.getUserId().toString(), result.getUserId().toString());
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════════════════════
     // findById - Tests
-    // ═══════════════════════════════════════════════════════════════════════
+    // ═══════════════════════════════════════════════════════════════════════════════
 
     @Nested
     @DisplayName("findById Tests")

@@ -2,6 +2,7 @@ package itacademy.pawalert.infrastructure.rest.pet.mapper;
 
 import itacademy.pawalert.domain.pet.model.*;
 import itacademy.pawalert.infrastructure.rest.pet.dto.PetDTO;
+import itacademy.pawalert.infrastructure.rest.pet.dto.PetResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -30,8 +31,8 @@ public class PetMapper {
                 UUID.fromString(petDTO.getUserId()),
                 UUID.fromString(petDTO.getPetId()),
                 new ChipNumber(petDTO.getChipNumber()),
-                new PetName(petDTO.getOfficialPetName()),
-                new PetName(petDTO.getWorkingPetName()),
+                new PetOfficialName(petDTO.getOfficialPetName()),
+                new PetWorkingName(petDTO.getWorkingPetName()),
                 Species.valueOf(petDTO.getSpecies()),
                 new Breed(petDTO.getBreed()),
                 Size.valueOf(petDTO.getSize()),
@@ -39,6 +40,22 @@ public class PetMapper {
                 Gender.valueOf(petDTO.getGender()),
                 new PetDescription(petDTO.getPetDescription()),
                 new PetImage(petDTO.getPetImage())
+        );
+    }
+
+    public PetResponse toResponse(Pet pet) {
+        return new PetResponse(
+                pet.getPetId().toString(),
+                pet.getUserId().toString(),
+                pet.getChipNumber().value(),
+                pet.getWorkingPetName().value() ,
+                pet.getSpecies().name(),
+                pet.getBreed().breed(),
+                pet.getSize().name(),
+                pet.getColor().color(),
+                pet.getGender().name(),
+                pet.getPetDescription().description(),
+                pet.getPetImage().petImage()
         );
     }
 }
