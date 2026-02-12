@@ -5,11 +5,14 @@ import itacademy.pawalert.application.pet.port.inbound.DeletePetUseCase;
 import itacademy.pawalert.application.pet.port.inbound.GetPetUseCase;
 import itacademy.pawalert.application.pet.port.inbound.UpdatePetUseCase;
 import itacademy.pawalert.domain.pet.model.*;
+import itacademy.pawalert.infrastructure.rest.pet.dto.CreatePetRequest;
 import itacademy.pawalert.infrastructure.rest.pet.dto.PetDTO;
 
+import itacademy.pawalert.infrastructure.rest.pet.dto.PetResponse;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import itacademy.pawalert.infrastructure.rest.pet.mapper.PetMapper;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
@@ -44,23 +47,14 @@ public class PetController {
     }
 
     @PostMapping
-    public Pet createPet(@Valid @RequestBody PetDTO petDTO) {
-        return createPetUseCase.createPet(
-                UUID.fromString(petDTO.getUserId()),
-                UUID.fromString(petDTO.getPetId()),
-                ChipNumber.of(petDTO.getChipNumber()),
-                PetName.of(petDTO.getOfficialPetName()),
-                PetName.of(petDTO.getWorkingPetName()),
-                Species.valueOf( petDTO.getSpecies()),
-                Breed.of(petDTO.getBreed()),
-                Size.valueOf( petDTO.getSize()),
-                Color.of(petDTO.getColor()),
-                Gender.valueOf( petDTO.getGender()),
-                PetDescription.of(petDTO.getPetDescription()),
-                PetImage.of(petDTO.getPetImage())
-        );
+    public ResponseEntity<PetResponse> createPet(
+            @Valid @RequestBody CreatePetRequest request) {
 
+        Pet pet = createPetUseCase.createPet(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(petMapper.toResponse(pet));
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<PetDTO> getPet(@PathVariable String petId) {
