@@ -30,8 +30,8 @@ class AlertTest {
     void setUp() {
         UUID petId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
-        title = new Title("Test Alert");
-        description = new Description("Test Description");
+        title = Title.of("Test Alert");
+        description = Description.of("Test Description");
         alert = new Alert(petId, userId, title, description);
     }
 
@@ -358,7 +358,7 @@ class AlertTest {
             assertEquals(StatusNames.OPENED, alert.currentStatus().getStatusName());
 
             // When: Update description
-            Description newDescription = new Description("Updated description");
+            Description newDescription = Description.of("Updated description");
             Alert alertCopy = alert.updateDescription(newDescription);
 
             // Then: Description should be updated
@@ -372,7 +372,7 @@ class AlertTest {
             assertEquals(StatusNames.OPENED, alert.currentStatus().getStatusName());
 
             // When: Update title
-            Title newTitle = new Title("Updated title");
+            Title newTitle = Title.of("Updated title");
             Alert alertCopy = alert.updateTitle(newTitle);
 
             // Then: Title should be updated
@@ -388,7 +388,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateDescription(new Description("New description"));
+                alert.updateDescription(Description.of("New description"));
             });
         }
 
@@ -401,7 +401,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateTitle(new Title("New title"));
+                alert.updateTitle(Title.of("New title"));
             });
         }
 
@@ -414,7 +414,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateDescription(new Description("New description"));
+                alert.updateDescription(Description.of("New description"));
             });
         }
 
@@ -427,7 +427,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateTitle(new Title("New title"));
+                alert.updateTitle(Title.of("New title"));
             });
         }
 
@@ -440,7 +440,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateDescription(new Description("New description"));
+                alert.updateDescription(Description.of("New description"));
             });
         }
 
@@ -453,7 +453,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateTitle(new Title("New title"));
+                alert.updateTitle(Title.of("New title"));
             });
         }
 
@@ -466,7 +466,7 @@ class AlertTest {
             // When: Try to update description
             AlertModificationNotAllowedException exception = assertThrows(
                     AlertModificationNotAllowedException.class,
-                    () -> alert = alert.updateDescription(new Description("Test"))
+                    () -> alert = alert.updateDescription(Description.of("Test"))
             );
 
             // Then: Exception message should contain the alert ID

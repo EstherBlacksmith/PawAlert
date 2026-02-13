@@ -60,11 +60,11 @@ class PetServiceTest {
                 .officialPetName(new PetOfficialName("Max"))
                 .workingPetName(new PetWorkingName("Buddy"))
                 .species(Species.DOG)
-                .breed(new Breed("Golden Retriever"))
+                .breed(Breed.of("Golden Retriever"))
                 .size(Size.MEDIUM)
-                .color(new Color("Golden"))
+                .color(Color.of("Golden"))
                 .gender(Gender.MALE)
-                .petDescription(new PetDescription("Friendly dog"))
+                .petDescription(PetDescription.of("Friendly dog"))
                 .petImage(new PetImage("http://example.com/image.jpg"))
                 .build();
     }
