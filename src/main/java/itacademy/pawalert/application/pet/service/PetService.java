@@ -16,6 +16,7 @@ import itacademy.pawalert.infrastructure.rest.pet.dto.CreatePetRequest;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -126,8 +127,38 @@ public class PetService implements
     }
 
     @Override
-    public Pet getPetdById(UUID petId) {
+    public Pet getPetById(UUID petId) {
         return petRepositoryPort.findById(petId).orElseThrow(()->new PetNotFoundException("Pet not found"));
+    }
+
+    @Override
+    public List<Pet> getPetsByUserId(UUID userId) {
+        return petRepositoryPort.getPetsByOwnerId(userId);
+    }
+
+    @Override
+    public List<Pet> getPetsBySpecies(Species species) {
+        return petRepositoryPort.getPetsBySpecies(species);
+    }
+
+    @Override
+    public List<Pet> getPetsByBreed(Breed breed) {
+        return petRepositoryPort.getPetsByBreed(breed);
+    }
+
+    @Override
+    public List<Pet> getPetsByWorkingName(PetWorkingName name) {
+        return petRepositoryPort.getPetsByWorkingName(name);
+    }
+
+    @Override
+    public List<Pet> getPetsByOfficialName(PetOfficialName name) {
+        return petRepositoryPort.getPetsByOfficialName(name);
+    }
+
+    @Override
+    public Pet getPetByChipNumber(ChipNumber chipNumber) {
+        return petRepositoryPort.getPetByChipNumber(chipNumber);
     }
 }
 
