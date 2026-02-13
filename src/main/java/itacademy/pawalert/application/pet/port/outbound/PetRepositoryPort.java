@@ -9,8 +9,6 @@ import java.util.UUID;
 
 
 public interface PetRepositoryPort {
-    List<Pet> getPetsByOwnerId(UUID userId) ;
-    List<Pet> getPetsBySpecies(Species species);
     PetEntity save(Pet pet);
 
     Optional<Pet> findById(UUID petId);
@@ -20,11 +18,4 @@ public interface PetRepositoryPort {
     boolean existsById(UUID petId);
 
 
-    List<Pet> getPetsByBreed(Breed breed);
-
-    List<Pet> getPetsByWorkingName(PetWorkingName name);
-
-    List<Pet> getPetsByOfficialName(PetOfficialName name);
-
-    Pet getPetByChipNumber(ChipNumber chipNumber);
 }
