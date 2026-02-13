@@ -41,8 +41,8 @@ public final class TestAlertFactory {
                 id,
                 petId,
                 userId,
-                new Title("Test Alert - " + id.toString().substring(0, 8)),
-                new Description("Test alert created for testing purposes")
+                Title.of("Test Alert - " + id.toString().substring(0, 8)),
+                Description.of("Test alert created for testing purposes")
         );
     }
 
@@ -115,8 +115,8 @@ public final class TestAlertFactory {
                 UUID.fromString(alertId),
                 UUID.randomUUID(),
                 UUID.fromString( creatorId),
-                new Title(originalTitle),
-                new Description(description)
+                Title.of(originalTitle),
+                Description.of(description)
         );
 
     }
@@ -232,8 +232,8 @@ public final class TestAlertFactory {
                     id,
                     petId,
                     userId,
-                    new Title(title),
-                    new Description(description)
+                    Title.of(title),
+                    Description.of(description)
             );
 
             // Apply necessary state transitions

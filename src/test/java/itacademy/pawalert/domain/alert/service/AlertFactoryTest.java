@@ -23,8 +23,8 @@ class AlertFactoryTest {
     void setUp() {
         petId = UUID.randomUUID();
         userId = UUID.randomUUID();
-        title = new Title("Lost Dog");
-        description = new Description("Golden Retriever, friendly");
+        title = Title.of("Lost Dog");
+        description = Description.of("Golden Retriever, friendly");
     }
 
     @Nested

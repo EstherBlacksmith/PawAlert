@@ -27,8 +27,8 @@ class AlertMapperTest {
 
             Alert alert = new Alert(
                     alertId, petId, userId,
-                    new Title("Lost Dog"),
-                    new Description("Golden Retriever"),
+                    Title.of("Lost Dog"),
+                    Description.of("Golden Retriever"),
                     new OpenedStateAlert()
             );
 
@@ -56,8 +56,8 @@ class AlertMapperTest {
 
             Alert alert = new Alert(
                     alertId, petId, userId,
-                    new Title("Lost Dog"),
-                    new Description("Golden Retriever"),
+                    Title.of("Lost Dog"),
+                    Description.of("Golden Retriever"),
                     new SeenStatusAlert()
             );
 
