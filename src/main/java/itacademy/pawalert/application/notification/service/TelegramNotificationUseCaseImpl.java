@@ -40,7 +40,7 @@ public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseC
 
         Alert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
-        Pet pet = petService.getPetdById(alert.getPetId());
+        Pet pet = petService.getPetById(alert.getPetId());
         String message = formatter.formatStatusChangeMessage(alert,pet, oldStatus, newStatus);
 
         telegramService.sendToAll(chatIds, message);
