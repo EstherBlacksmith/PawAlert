@@ -28,7 +28,7 @@ public class TelegramNotificationEventListener {
 
         Alert alert = alertRepository.findById(event.alertId())
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + event.alertId()));
-        Pet pet = petService.getPetdById(alert.getPetId());
+        Pet pet = petService.getPetById(alert.getPetId());
 
         List<String> telegramChatIds = subscriptionRepository.findTelegramChatIdsByAlertId(event.alertId());
         String message = formatter.formatStatusChangeMessage(alert,pet, event.oldStatus(), event.newStatus());

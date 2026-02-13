@@ -38,7 +38,7 @@ public class EmailNotificationUseCaseImpl implements EmailNotificationUseCase {
 
         Alert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
-        Pet pet = petService.getPetdById(alert.getPetId());
+        Pet pet = petService.getPetById(alert.getPetId());
         String subject = formatter.formatEmailSubject(newStatus);
         String body = formatter.formatStatusChangeMessage(alert, pet, oldStatus, newStatus);
 
