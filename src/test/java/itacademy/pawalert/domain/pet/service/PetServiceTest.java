@@ -441,7 +441,7 @@ class PetServiceTest {
         void updatePet_whenChipNumberProvided_updatesOnlyChipNumber() {
             // Given
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
-            Pet originalPet = petService.getPetdById(petId);
+            Pet originalPet = petService.getPetById(petId);
 
             String newChipNumber = "987654321098765";
             UpdatePetRequest request = new UpdatePetRequest(
@@ -493,7 +493,7 @@ class PetServiceTest {
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
 
             // When
-            Pet result = petService.getPetdById(petId);
+            Pet result = petService.getPetById(petId);
 
             // Then
             assertNotNull(result);
@@ -509,7 +509,7 @@ class PetServiceTest {
 
             // When/Then
             assertThrows(PetNotFoundException.class,
-                    () -> petService.getPetdById(UUID.fromString("12345678-1234-1234-1234-123456789012")));
+                    () -> petService.getPetById(UUID.fromString("12345678-1234-1234-1234-123456789012")));
         }
     }
 }

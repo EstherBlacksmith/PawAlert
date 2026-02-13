@@ -60,7 +60,7 @@ public class PetController {
     public ResponseEntity<PetDTO> getPet(@PathVariable String petId) {
         UUID petIdConverted = UUID.fromString(petId);
 
-        Pet pet = getPetUseCase.getPetdById(petIdConverted);
+        Pet pet = getPetUseCase.getPetById(petIdConverted);
 
         return ResponseEntity.ok(petMapper.toDTO(pet));
     }
