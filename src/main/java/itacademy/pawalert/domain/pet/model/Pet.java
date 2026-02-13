@@ -181,16 +181,16 @@ public class Pet {
         return new Pet.PetBuilder()
                 .userId(this.userId)
                 .petId(this.petId)
-                .chipNumber(request.hasChipNumber() ? new ChipNumber(request.chipNumber()) : this.chipNumber)
-                .officialPetName(request.hasOfficialPetName() ? new PetOfficialName(request.officialPetName()) : this.officialPetName)
-                .workingPetName(request.hasWorkingPetName() ? new PetWorkingName(request.workingPetName()) : this.workingPetName)
+                .chipNumber(request.hasChipNumber() ? ChipNumber.of(request.chipNumber()) : this.chipNumber)
+                .officialPetName(request.hasOfficialPetName() ? PetOfficialName.of(request.officialPetName()) : this.officialPetName)
+                .workingPetName(request.hasWorkingPetName() ? PetWorkingName.of(request.workingPetName()) : this.workingPetName)
                 .species(request.hasSpecies() ? Species.fromString(request.species()) : this.species)
-                .breed(request.hasBreed() ? new Breed(request.breed()) : this.breed)
+                .breed(request.hasBreed() ? Breed.of(request.breed()) : this.breed)
                 .size(request.hasSize() ? Size.fromString(request.size()) : this.size)
                 .gender(request.hasGender() ? Gender.fromString(request.gender()) : this.gender)
-                .color(request.hasColor() ? new Color(request.color()) : this.color)
-                .petDescription(request.hasPetDescription() ? new PetDescription(request.petDescription()) : this.petDescription)
-                .petImage(request.hasPetImage() ? new PetImage(request.petImage()) :this.petImage)
+                .color(request.hasColor() ? Color.of(request.color()) : this.color)
+                .petDescription(request.hasPetDescription() ? PetDescription.of(request.petDescription()) : this.petDescription)
+                .petImage(request.hasPetImage() ? PetImage.of(request.petImage()) :this.petImage)
                 .build();
     }
 }

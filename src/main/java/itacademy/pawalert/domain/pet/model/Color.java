@@ -1,9 +1,13 @@
 package itacademy.pawalert.domain.pet.model;
 
-import jakarta.validation.constraints.NotBlank;
 
-public record Color(@NotBlank(message = "Color can not be empty") String color) {
+public record Color(String color) {
 
+    public Color {
+        if(color == null  || color.isBlank()) {
+            throw new IllegalArgumentException("The color cannot be empty");
+        }
+    }
     public String value() {
         return this.color;
     }
