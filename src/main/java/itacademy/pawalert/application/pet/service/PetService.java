@@ -1,18 +1,18 @@
 package itacademy.pawalert.application.pet.service;
-
+import itacademy.pawalert.application.pet.port.inbound.*;
+import itacademy.pawalert.domain.image.model.PetAnalysisResult;
+import itacademy.pawalert.domain.image.port.inbound.PetImageAnalyzer;
+import itacademy.pawalert.infrastructure.rest.pet.dto.ImageValidationResponse;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 
 import itacademy.pawalert.application.exception.UnauthorizedException;
-import itacademy.pawalert.application.pet.port.inbound.CreatePetUseCase;
-import itacademy.pawalert.application.pet.port.inbound.DeletePetUseCase;
-import itacademy.pawalert.application.pet.port.inbound.GetPetUseCase;
-import itacademy.pawalert.application.pet.port.inbound.UpdatePetUseCase;
 import itacademy.pawalert.application.pet.port.outbound.PetRepositoryPort;
 import itacademy.pawalert.application.user.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.pet.model.*;
 
 import itacademy.pawalert.domain.user.Role;
-import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import itacademy.pawalert.infrastructure.rest.pet.dto.CreatePetRequest;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import org.springframework.data.domain.Page;
@@ -21,7 +21,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-
+import itacademy.pawalert.application.pet.port.inbound.ValidateImageUseCase;
+import itacademy.pawalert.domain.image.model.PetAnalysisResult;
+import itacademy.pawalert.domain.image.port.inbound.PetImageAnalyzer;
+import itacademy.pawalert.infrastructure.rest.pet.dto.ImageValidationResponse;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,16 +35,21 @@ public class PetService implements
         CreatePetUseCase,
         DeletePetUseCase,
         GetPetUseCase,
-        UpdatePetUseCase
+        UpdatePetUseCase,
+        ValidateImageUseCase
 {
 
     private final PetRepositoryPort petRepositoryPort;
     private final UserRepositoryPort userRepositoryPort;
+    private final PetImageAnalyzer petImageAnalyzer;
 
 
-    public PetService(PetRepositoryPort petRepositoryPort, UserRepositoryPort userRepositoryPort) {
+    public PetService(PetRepositoryPort petRepositoryPort,
+                      UserRepositoryPort userRepositoryPort,
+                      PetImageAnalyzer petImageAnalyzer) {
         this.petRepositoryPort = petRepositoryPort;
         this.userRepositoryPort = userRepositoryPort;
+        this.petImageAnalyzer = petImageAnalyzer;
     }
 
 
@@ -151,5 +161,37 @@ public class PetService implements
     public Page<Pet> searchPets(Specification<Pet> spec, Pageable pageable) {
         return petRepositoryPort.findAll(spec, pageable);
     }
+
+    @Override
+    public ImageValidationResponse validateImage(MultipartFile file) {
+        try {
+            // Analyze the image
+            PetAnalysisResult result = petImageAnalyzer.analyze(file.getBytes());
+
+            // Validate the image
+            if (!result.isValidPet()) {
+                return ImageValidationResponse.invalid(result.validationMessage());
+            }
+
+            if (!result.isSafeForWork()) {
+                return ImageValidationResponse.invalid("The image is inappropriate");
+            }
+            // Show the possible values for the fields
+            return ImageValidationResponse.success(
+                    result.species(),
+                    result.speciesConfidence(),
+                    result.breed(),
+                    result.breedConfidence(),
+                    result.possibleBreeds(),
+                    result.dominantColor(),
+                    result.dominantColorHex(),
+                    result.visualLabels()
+            );
+
+        } catch (IOException e) {
+            return ImageValidationResponse.invalid("Error processing the image: " + e.getMessage());
+        }
+    }
+
 }
 

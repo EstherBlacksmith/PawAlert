@@ -1,17 +1,9 @@
 package itacademy.pawalert.infrastructure.rest.pet.controller;
 
-import itacademy.pawalert.application.pet.port.inbound.CreatePetUseCase;
-import itacademy.pawalert.application.pet.port.inbound.DeletePetUseCase;
-import itacademy.pawalert.application.pet.port.inbound.GetPetUseCase;
-import itacademy.pawalert.application.pet.port.inbound.UpdatePetUseCase;
+import itacademy.pawalert.application.pet.port.inbound.*;
 import itacademy.pawalert.domain.pet.model.*;
 import itacademy.pawalert.domain.pet.specification.PetSpecifications;
-import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
-import itacademy.pawalert.infrastructure.rest.pet.dto.CreatePetRequest;
-import itacademy.pawalert.infrastructure.rest.pet.dto.PetDTO;
-
-import itacademy.pawalert.infrastructure.rest.pet.dto.PetResponse;
-import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
+import itacademy.pawalert.infrastructure.rest.pet.dto.*;
 import itacademy.pawalert.infrastructure.rest.pet.mapper.PetMapper;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Sort;
@@ -23,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import itacademy.pawalert.infrastructure.security.UserDetailsAdapter;
 import itacademy.pawalert.application.exception.UnauthorizedException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,17 +29,20 @@ public class PetController {
     private final GetPetUseCase getPetUseCase;
     private final UpdatePetUseCase updatePetUseCase;
     private final DeletePetUseCase deletePetUseCase;
-
+    private final ValidateImageUseCase validateImageUseCase;
     private final PetMapper petMapper;
 
     public PetController(CreatePetUseCase createPetUseCase,
                          GetPetUseCase getPetUseCase,
-                         UpdatePetUseCase updatePetUseCase, DeletePetUseCase deletePetUseCase,
+                         UpdatePetUseCase updatePetUseCase,
+                         DeletePetUseCase deletePetUseCase,
+                         ValidateImageUseCase validateImageUseCase,
                          PetMapper petMapper) {
         this.createPetUseCase = createPetUseCase;
         this.getPetUseCase = getPetUseCase;
         this.updatePetUseCase = updatePetUseCase;
         this.deletePetUseCase = deletePetUseCase;
+        this.validateImageUseCase = validateImageUseCase;
         this.petMapper = petMapper;
 
     }
@@ -155,4 +151,23 @@ public class PetController {
 
         return ResponseEntity.ok(petMapper.toDTOList(pets));
     }
+
+    @PostMapping("/validate-image")
+    public ResponseEntity<ImageValidationResponse> validateImage(
+            @RequestParam("file") MultipartFile file) {
+
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(ImageValidationResponse.invalid("The user doesn't upload any image"));
+        }
+
+        ImageValidationResponse response = validateImageUseCase.validateImage(file);
+
+        if (response.valid()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
 }
