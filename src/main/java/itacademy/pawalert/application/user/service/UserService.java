@@ -99,6 +99,12 @@ public class UserService implements
     }
 
     @Override
+    public void deleteById(UUID userId) {
+        User user = getById(userId);
+        userRepositoryPort.delete(user);
+    }
+
+    @Override
     public User getByUsername(Username username) {
         return userRepositoryPort.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + username));

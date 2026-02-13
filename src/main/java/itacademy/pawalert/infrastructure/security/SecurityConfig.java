@@ -11,11 +11,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @EnableWebSecurity
 @Configuration
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer {
 
     private final JWTService jwtService;
     private final UserDetailsService userDetailsService;
@@ -23,6 +25,13 @@ public class SecurityConfig {
     public SecurityConfig(JWTService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Serve frontend files from the root frontend/ directory
+        registry.addResourceHandler("/frontend/**", "/*.html", "/*.js", "/*.css")
+                .addResourceLocations("file:frontend/");
     }
 
     @Bean
@@ -53,6 +62,12 @@ public class SecurityConfig {
                         .requestMatchers("/frontend/**").permitAll()
                         .requestMatchers("/dashboard.html").permitAll()
                         .requestMatchers("/image-classifier.html").permitAll()
+                        .requestMatchers("/register.html").permitAll()
+                        .requestMatchers("/create-pet.html").permitAll()
+                        .requestMatchers("/register-with-pet.html").permitAll()
+                        .requestMatchers("/login.html").permitAll()
+                        .requestMatchers("/api/pets/**").permitAll()
+
                         .requestMatchers("/").permitAll()
                         // All other requests require authentication
                         .anyRequest().authenticated()

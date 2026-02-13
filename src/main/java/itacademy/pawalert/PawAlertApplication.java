@@ -20,7 +20,7 @@ public class PawAlertApplication {
     public static void main(String[] args) {
         SpringApplication.run(PawAlertApplication.class, args);
         UUID userId = UUID.randomUUID();
-        Alert alert = new Alert(UUID.randomUUID(), userId, Title.of(("prueba")), Description.of("prueba desc"));
+        Alert alert = new Alert(UUID.randomUUID(), userId, Title.of("Test Alert Title"), Description.of("This is a test alert description that contains enough characters to meet the validation requirement."));
         System.out.println(alert);
         alert.seen();
         alert.seen();
