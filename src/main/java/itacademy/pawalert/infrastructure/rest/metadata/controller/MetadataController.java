@@ -1,7 +1,7 @@
 package itacademy.pawalert.infrastructure.rest.metadata.controller;
 
 import itacademy.pawalert.infrastructure.rest.metadata.dto.MetadataListDto;
-import itacademy.pawalert.infrastructure.rest.metadata.service.MetadataService;
+import itacademy.pawalert.application.metadata.service.MetadataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
