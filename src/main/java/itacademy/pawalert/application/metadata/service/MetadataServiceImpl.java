@@ -1,4 +1,4 @@
-package itacademy.pawalert.infrastructure.rest.metadata.service;
+package itacademy.pawalert.application.metadata.service;
 
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.image.model.ContentSafetyStatus;

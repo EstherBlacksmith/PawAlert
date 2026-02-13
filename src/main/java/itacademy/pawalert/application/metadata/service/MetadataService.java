@@ -1,4 +1,4 @@
-package itacademy.pawalert.infrastructure.rest.metadata.service;
+package itacademy.pawalert.application.metadata.service;
 
 import itacademy.pawalert.infrastructure.rest.metadata.dto.MetadataListDto;
 
