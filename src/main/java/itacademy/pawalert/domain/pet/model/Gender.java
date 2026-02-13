@@ -1,9 +1,12 @@
 package itacademy.pawalert.domain.pet.model;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
-public enum Gender {
-    FEMALE, MALE, UNKNOWN;
+@Getter
+public enum Gender implements  PetDisplayableEnum{
+    FEMALE("Female"), MALE("Male"), UNKNOWN("Unknown");
 
     public static Gender fromString(String value) {
         if (value == null || value.isBlank()) {
@@ -17,5 +20,16 @@ public enum Gender {
                             Arrays.toString(values())
             );
         }
+    }
+
+    private final String value;
+
+    Gender(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return value;
     }
 }

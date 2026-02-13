@@ -1,9 +1,12 @@
 package itacademy.pawalert.domain.pet.model;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
-public enum Species {
-    CAT, DOG, BUNNY, FERRET, TURTLE, BIRD;
+@Getter
+public enum Species implements  PetDisplayableEnum{
+    CAT("Cat"), DOG("Dog"), BUNNY("Bunny"), FERRET("Ferret"), TURTLE("Turtle"), BIRD("Bird");
 
     public static Species fromString(String value) {
         if (value == null || value.isBlank()) {
@@ -17,5 +20,16 @@ public enum Species {
                             Arrays.toString(values())
             );
         }
+    }
+
+    private final String value;
+
+    Species(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return value;
     }
 }
