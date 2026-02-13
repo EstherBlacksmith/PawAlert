@@ -1,11 +1,12 @@
 package itacademy.pawalert.domain.alert.model;
 
-import itacademy.pawalert.domain.pet.model.Gender;
+
+import lombok.Getter;
 
 import java.util.Arrays;
-
-public enum ClosureReason {
-    FOUNDED, FALSE_ALARM, OTHER_REASON;
+@Getter
+public enum ClosureReason implements AlertDisplayableEnum{
+    FOUNDED("Founded"), FALSE_ALARM("False alarm"), OTHER_REASON("Other reason");
 
     public static ClosureReason fromString(String value) {
         if (value == null || value.isBlank()) {
@@ -19,6 +20,17 @@ public enum ClosureReason {
                             Arrays.toString(values())
             );
         }
+    }
+
+    private final String value;
+
+    ClosureReason(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return value;
     }
 
 }

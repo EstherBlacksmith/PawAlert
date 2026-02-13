@@ -1,9 +1,12 @@
 package itacademy.pawalert.domain.pet.model;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
-public enum Size {
-    TINY, SMALL, MEDIUM, LARGE, GIANT;
+@Getter
+public enum Size  implements PetDisplayableEnum {
+    TINY("Tiny"), SMALL("Small"), MEDIUM("Medium"), LARGE("Large"), GIANT("Giant");
 
     public static Size fromString(String value) {
         if (value == null || value.isBlank()) {
@@ -17,5 +20,16 @@ public enum Size {
                             Arrays.toString(values())
             );
         }
+    }
+
+    private final String value;
+
+    Size(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return value;
     }
 }
