@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 @Configuration
 public class GoogleVisionConfig {
@@ -21,8 +22,12 @@ public class GoogleVisionConfig {
             ImageAnnotatorSettings settings = ImageAnnotatorSettings.newBuilder()
                     .setCredentialsProvider(() -> {
                         try {
-                            return com.google.auth.oauth2.GoogleCredentials.fromStream(
-                                    new java.io.FileInputStream(credentialsPath));
+                            InputStream credentialsStream = getClass().getResourceAsStream("/google-credentials.json");
+                            if (credentialsStream == null) {
+                                throw new RuntimeException("No se encontró google-credentials.json en el classpath");
+                            }
+                            return com.google.auth.oauth2.GoogleCredentials.fromStream(credentialsStream);
+
                         } catch (IOException e) {
                             throw new RuntimeException("Failed to load Google credentials", e);
                         }

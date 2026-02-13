@@ -7,6 +7,8 @@ import itacademy.pawalert.infrastructure.rest.user.dto.RegistrationInput;
 import itacademy.pawalert.infrastructure.rest.user.dto.ChangePasswordRequest;
 import itacademy.pawalert.infrastructure.rest.user.dto.UpdateUserRequest;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final CreateUserUseCase createUserUseCase;
     private final GetUserUseCase getUserUseCase;
@@ -36,8 +40,11 @@ public class UserController {
         this.updatePasswordUseCase = updatePasswordUseCase;
     }
 
+    // ========== SPECIFIC ROUTES (MUST COME FIRST) ==========
+    
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody RegistrationInput request) {
+        logger.debug("Register endpoint called with email: {}", request.email());
         Email convertedEmail = Email.of(request.email());
         Surname converteedSurname = Surname.of(request.surname());
         if (getUserUseCase.existsBySurname(converteedSurname)) {
@@ -59,10 +66,37 @@ public class UserController {
                 ));
     }
 
-    @PutMapping("/{userId}/password")
+    // Specific routes with "by-" prefix to avoid conflict with parameterized routes
+    @GetMapping("/by-username/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        logger.debug("getUserByUsername called with: {}", username);
+        User user = getUserUseCase.getBySurname(Surname.of(username));
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/by-email/{email}")
+    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+        logger.debug("getUserByEmail called with: {}", email);
+        User user = getUserUseCase.getByEmail(Email.of(email));
+        return ResponseEntity.ok(user);
+    }
+
+    // ========== PARAMETERIZED ROUTES (MUST COME LAST) ==========
+    
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> getUserById(@PathVariable String userId) {
+        logger.debug("getUserById called with: {}", userId);
+        UUID convertedUserId = UUID.fromString(userId);
+
+        User user = getUserUseCase.getById(convertedUserId);
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/{userId}/change-password")
     public ResponseEntity<Map<String, String>> changePassword(
             @PathVariable String userId,
             @Valid @RequestBody ChangePasswordRequest request) {
+        logger.debug("changePassword called for userId: {}", userId);
         UUID convertedUserId = UUID.fromString(userId);
 
         updatePasswordUseCase.changePassword(convertedUserId,
@@ -72,37 +106,11 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable String userId) {
-        UUID convertedUserId = UUID.fromString(userId);
-
-        User user = getUserUseCase.getById(convertedUserId);
-        return ResponseEntity.ok(user);
-    }
-
-    @GetMapping("/username/{username}")
-    public ResponseEntity<User> getUserBySurname(@PathVariable String surname) {
-        User user = getUserUseCase.getBySurname(Surname.of(surname));
-        return ResponseEntity.ok(user);
-    }
-
-    @GetMapping("/email/{email}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
-        User user = getUserUseCase.getByEmail(Email.of(email));
-        return ResponseEntity.ok(user);
-    }
-
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUserByEmail(@PathVariable String email) {
-        deleteUserUseCase.deleteByEmail(Email.of(email));
-        return ResponseEntity.noContent().build();
-    }
-
-    @PutMapping("/{userId}/username")
+    @PutMapping("/{userId}/change-username")
     public ResponseEntity<User> updateUsername(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest request) {
-
+        logger.debug("updateUsername called for userId: {}", userId);
         Username username = Username.of(request.newUsername());
         UUID convertedUserId = UUID.fromString(userId);
 
@@ -110,33 +118,44 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId}/surname")
+    @PutMapping("/{userId}/change-surname")
     public ResponseEntity<User> updateSurname(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        logger.debug("updateSurname called for userId: {}", userId);
         Surname surname = Surname.of(updateUserRequest.newSurname());
         UUID convertedUserId = UUID.fromString(userId);
-        User user = updateUserUseCase.updateSurname(convertedUserId,surname);
+        User user = updateUserUseCase.updateSurname(convertedUserId, surname);
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId}/phonenumber")
+    @PutMapping("/{userId}/change-phonenumber")
     public ResponseEntity<User> updatePhonenumber(@PathVariable String userId,
                                                   @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        logger.debug("updatePhonenumber called for userId: {}", userId);
         PhoneNumber newPhonenumber = PhoneNumber.of(updateUserRequest.newPhonenumber());
         UUID convertedUserId = UUID.fromString(userId);
-        User user = updateUserUseCase.updatePhonenumber(convertedUserId,newPhonenumber);
+        User user = updateUserUseCase.updatePhonenumber(convertedUserId, newPhonenumber);
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId}/email")
+    @PutMapping("/{userId}/change-email")
     public ResponseEntity<User> updateEmail(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        logger.debug("updateEmail called for userId: {}", userId);
         Email convertedEmail = Email.of(updateUserRequest.newEmail());
         UUID convertedUserId = UUID.fromString(userId);
         User user = updateUserUseCase.updateEmail(convertedUserId, convertedEmail);
         return ResponseEntity.ok(user);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUserById(@PathVariable String userId) {
+        logger.debug("deleteUserById called for userId: {}", userId);
+        UUID convertedUserId = UUID.fromString(userId);
+        deleteUserUseCase.deleteById(convertedUserId);
+        return ResponseEntity.noContent().build();
     }
 
 }
