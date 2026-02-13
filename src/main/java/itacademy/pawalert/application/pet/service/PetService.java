@@ -12,9 +12,15 @@ import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.pet.model.*;
 
 import itacademy.pawalert.domain.user.Role;
+import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import itacademy.pawalert.infrastructure.rest.pet.dto.CreatePetRequest;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -131,7 +137,19 @@ public class PetService implements
         return petRepositoryPort.findById(petId).orElseThrow(()->new PetNotFoundException("Pet not found"));
     }
 
+    @Override
+    public List<Pet> getAllPetsByUserId(UUID userId) {
+        return petRepositoryPort.findAllByUserId(userId);
+    }
 
+    @Override
+    public List<Pet> searchPets(Specification<Pet> spec, Sort sort) {
+        return petRepositoryPort.findAll(spec, sort);
+    }
 
+    @Override
+    public Page<Pet> searchPets(Specification<Pet> spec, Pageable pageable) {
+        return petRepositoryPort.findAll(spec, pageable);
+    }
 }
 
