@@ -20,7 +20,7 @@ public class PawAlertApplication {
     public static void main(String[] args) {
         SpringApplication.run(PawAlertApplication.class, args);
         UUID userId = UUID.randomUUID();
-        Alert alert = new Alert(UUID.randomUUID(), userId, new Title("prueba"), new Description("prueba desc"));
+        Alert alert = new Alert(UUID.randomUUID(), userId, Title.of(("prueba")), Description.of("prueba desc"));
         System.out.println(alert);
         alert.seen();
         alert.seen();

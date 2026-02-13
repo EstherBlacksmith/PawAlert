@@ -88,19 +88,19 @@ public class PetService implements
 
         Pet updatedPet = existing.with(builder -> {
             if (request.chipNumber() != null) {
-                builder.chipNumber(new ChipNumber(request.chipNumber()));
+                builder.chipNumber(ChipNumber.of(request.chipNumber()));
             }
             if (request.officialPetName() != null) {
-                builder.officialPetName(new PetOfficialName(request.officialPetName()));
+                builder.officialPetName(PetOfficialName.of(request.officialPetName()));
             }
             if (request.workingPetName() != null) {
-                builder.workingPetName(new PetWorkingName(request.workingPetName()));
+                builder.workingPetName(PetWorkingName.of(request.workingPetName()));
             }
             if (request.species() != null) {
                 builder.species(Species.fromString(request.species()));
             }
             if (request.breed() != null) {
-                builder.breed(new Breed(request.breed()));
+                builder.breed(Breed.of(request.breed()));
             }
             if (request.size() != null) {
                 builder.size(Size.fromString(request.size()));
@@ -109,10 +109,10 @@ public class PetService implements
                 builder.gender(Gender.fromString(request.gender()));
             }
             if (request.color() != null) {
-                builder.color(new Color(request.color()));
+                builder.color(Color.of(request.color()));
             }
             if (request.petDescription() != null) {
-                builder.petDescription(new PetDescription(request.petDescription()));
+                builder.petDescription(PetDescription.of(request.petDescription()));
             }
         });
 

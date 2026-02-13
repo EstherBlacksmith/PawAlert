@@ -56,8 +56,8 @@ public class AlertEntity {
                 UUID.fromString(this.id),
                 UUID.fromString(this.petId),
                 UUID.fromString(this.userId),
-                new Title(this.title),
-                new Description(this.description),
+                Title.of(this.title),
+                Description.of(this.description),
                 mapToStatusAlert(StatusNames.valueOf(this.status))
         );
     }

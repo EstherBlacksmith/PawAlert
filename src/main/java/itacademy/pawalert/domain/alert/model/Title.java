@@ -1,18 +1,20 @@
 package itacademy.pawalert.domain.alert.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import itacademy.pawalert.domain.user.model.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+public record Title(String title) {
+    private static final int MIN_LENGTH = 5;
+    private static final int MAX_LENGTH = 255;
 
-public record Title(@NotBlank(message = "The Title can not be empty")
-                    @Min(value = 5, message = "The title must be almost 5 characters")
-                    @Max(value = 255, message = "The title must be less than 255 characters") String title) {
-
-
-    @JsonCreator  // Jackson will use this for deserialization
     public Title {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("The Title cannot be empty");
+        }
+        if (title.length() < MIN_LENGTH) {
+            throw new IllegalArgumentException("The title must be at least " + MIN_LENGTH + " characters");
+        }
+        if (title.length() > MAX_LENGTH) {
+            throw new IllegalArgumentException("The title must be less than " + MAX_LENGTH + " characters");
+        }
+        title = title.trim();
     }
 
     public String getValue() {

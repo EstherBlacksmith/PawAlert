@@ -31,16 +31,16 @@ public class PetMapper {
         return new Pet(
                 UUID.fromString(petDTO.getUserId()),
                 UUID.fromString(petDTO.getPetId()),
-                new ChipNumber(petDTO.getChipNumber()),
-                new PetOfficialName(petDTO.getOfficialPetName()),
-                new PetWorkingName(petDTO.getWorkingPetName()),
+                ChipNumber.of(petDTO.getChipNumber()),
+                PetOfficialName.of(petDTO.getOfficialPetName()),
+                PetWorkingName.of(petDTO.getWorkingPetName()),
                 Species.valueOf(petDTO.getSpecies()),
-                new Breed(petDTO.getBreed()),
+                Breed.of(petDTO.getBreed()),
                 Size.valueOf(petDTO.getSize()),
-                new Color(petDTO.getColor()),
+                Color.of(petDTO.getColor()),
                 Gender.valueOf(petDTO.getGender()),
-                new PetDescription(petDTO.getPetDescription()),
-                new PetImage(petDTO.getPetImage())
+                PetDescription.of(petDTO.getPetDescription()),
+                PetImage.of(petDTO.getPetImage())
         );
     }
 

@@ -26,8 +26,8 @@ public class AlertMapper {
     }
 
     public Alert toDomain(AlertDTO alertDTO, StatusAlert status) {
-        Title title = new Title(alertDTO.getTitle());
-        Description description = new Description(alertDTO.getDescription());
+        Title title = Title.of(alertDTO.getTitle());
+        Description description = Description.of(alertDTO.getDescription());
         UUID userId = UUID.fromString(alertDTO.getUserId());
 
         return new Alert(
