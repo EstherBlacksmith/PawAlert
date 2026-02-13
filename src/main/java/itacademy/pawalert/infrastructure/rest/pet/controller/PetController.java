@@ -55,7 +55,24 @@ public class PetController {
     public ResponseEntity<PetResponse> createPet(
             @Valid @RequestBody CreatePetRequest request) {
 
-        Pet pet = createPetUseCase.createPet(request);
+        String userId = getCurrentUserId();
+        
+        // Create a new request with the authenticated user's ID
+        CreatePetRequest requestWithUser = new CreatePetRequest(
+                userId,
+                request.chipNumber(),
+                request.officialPetName(),
+                request.workingPetName(),
+                request.species(),
+                request.breed(),
+                request.size(),
+                request.color(),
+                request.gender(),
+                request.petDescription(),
+                request.petImage()
+        );
+        
+        Pet pet = createPetUseCase.createPet(requestWithUser);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(petMapper.toResponse(pet));
     }
