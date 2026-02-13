@@ -5,6 +5,7 @@ import itacademy.pawalert.infrastructure.rest.pet.dto.PetDTO;
 import itacademy.pawalert.infrastructure.rest.pet.dto.PetResponse;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -50,7 +51,7 @@ public class PetMapper {
                 pet.getChipNumber().value(),
                 pet.getWorkingPetName().value() ,
                 pet.getSpecies().name(),
-                pet.getBreed().breed(),
+                pet.getBreed().value(),
                 pet.getSize().name(),
                 pet.getColor().color(),
                 pet.getGender().name(),
@@ -58,4 +59,11 @@ public class PetMapper {
                 pet.getPetImage().petImage()
         );
     }
+
+    public List<PetDTO> toDTOList(List<Pet> pets) {
+        return pets.stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
 }

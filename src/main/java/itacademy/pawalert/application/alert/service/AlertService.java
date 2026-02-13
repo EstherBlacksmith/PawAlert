@@ -3,7 +3,6 @@ package itacademy.pawalert.application.alert.service;
 import itacademy.pawalert.application.alert.port.inbound.*;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
-import itacademy.pawalert.application.notification.port.inbound.LaunchAlertNotification;
 import itacademy.pawalert.application.user.port.inbound.GetUserUseCase;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.alert.service.AlertFactory;

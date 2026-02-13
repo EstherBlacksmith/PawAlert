@@ -5,6 +5,8 @@ import itacademy.pawalert.application.pet.port.inbound.DeletePetUseCase;
 import itacademy.pawalert.application.pet.port.inbound.GetPetUseCase;
 import itacademy.pawalert.application.pet.port.inbound.UpdatePetUseCase;
 import itacademy.pawalert.domain.pet.model.*;
+import itacademy.pawalert.domain.pet.specification.PetSpecifications;
+import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import itacademy.pawalert.infrastructure.rest.pet.dto.CreatePetRequest;
 import itacademy.pawalert.infrastructure.rest.pet.dto.PetDTO;
 
@@ -12,6 +14,8 @@ import itacademy.pawalert.infrastructure.rest.pet.dto.PetResponse;
 import itacademy.pawalert.infrastructure.rest.pet.dto.UpdatePetRequest;
 import itacademy.pawalert.infrastructure.rest.pet.mapper.PetMapper;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import itacademy.pawalert.infrastructure.security.UserDetailsAdapter;
 import itacademy.pawalert.application.exception.UnauthorizedException;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -100,5 +105,37 @@ public class PetController {
                 UUID.fromString(userId)
         );
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/my-pets")
+    public ResponseEntity<List<PetDTO>> getMyPets(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String breed,
+            @RequestParam(required = false) String species,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String size,
+            @RequestParam(defaultValue = "officialPetName") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDirection
+    ) {
+        String userId = getCurrentUserId();
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+
+        Specification<Pet> spec = PetSpecifications.byOwner(UUID.fromString(userId));
+
+        if (name != null && !name.isBlank()) {
+            spec = spec.and(PetSpecifications.nameContains(name));
+        }
+
+        if (breed != null && !breed.isBlank()) {
+            spec = spec.and(PetSpecifications.breedContains(breed));
+        }
+
+        if (species != null && !species.isBlank()) {
+            spec = spec.and(PetSpecifications.speciesEquals(species));
+        }
+
+        List<Pet> pets = getPetUseCase.searchPets(spec, sort);
+
+        return ResponseEntity.ok(petMapper.toDTOList(pets));
     }
 }
