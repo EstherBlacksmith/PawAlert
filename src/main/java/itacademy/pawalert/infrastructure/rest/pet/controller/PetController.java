@@ -3,6 +3,7 @@ package itacademy.pawalert.infrastructure.rest.pet.controller;
 import itacademy.pawalert.application.pet.port.inbound.*;
 import itacademy.pawalert.domain.pet.model.*;
 import itacademy.pawalert.domain.pet.specification.PetSpecifications;
+import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import itacademy.pawalert.infrastructure.rest.pet.dto.*;
 import itacademy.pawalert.infrastructure.rest.pet.mapper.PetMapper;
 import jakarta.validation.Valid;
@@ -133,7 +134,7 @@ public class PetController {
         String userId = getCurrentUserId();
         Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
 
-        Specification<Pet> spec = PetSpecifications.byOwner(UUID.fromString(userId));
+        Specification<PetEntity> spec = PetSpecifications.byOwner(UUID.fromString(userId));
 
         if (name != null && !name.isBlank()) {
             spec = spec.and(PetSpecifications.nameContains(name));

@@ -45,13 +45,17 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
     }
 
     @Override
-    public List<Pet> findAll(Specification<Pet> spec, Sort sort) {
-        return petRepository.findAll(spec, sort);
+    public List<Pet> findAll(Specification<PetEntity> spec, Sort sort) {
+        List<PetEntity> entities = petRepository.findAll(spec, sort);
+        return entities.stream()
+                .map(PetEntity::toDomain)
+                .toList();
     }
 
     @Override
-    public Page<Pet> findAll(Specification<Pet> spec, Pageable pageable) {
-        return petRepository.findAll(spec, pageable);
+    public Page<Pet> findAll(Specification<PetEntity> spec, Pageable pageable) {
+        Page<PetEntity> entityPage = petRepository.findAll(spec, pageable);
+        return entityPage.map(PetEntity::toDomain);
     }
 
     @Override

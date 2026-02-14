@@ -17,7 +17,9 @@ public interface PetRepositoryPort {
     Optional<Pet> findById(UUID petId);
     void deleteById(UUID petId, UUID userId);
     boolean existsById(UUID petId);
-    List<Pet> findAll(Specification<Pet> spec, Sort sort);
-    Page<Pet> findAll(Specification<Pet> spec, Pageable pageable);
+    List<Pet> findAll(Specification<PetEntity> spec, Sort sort);
+
+    Page<Pet> findAll(Specification<PetEntity> spec, Pageable pageable);
+
     List<Pet> findAllByUserId(UUID userId);
 }

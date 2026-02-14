@@ -10,7 +10,7 @@ public final class PetSpecifications {
 
     private PetSpecifications() {}
 
-    public static Specification<Pet> byOwner(UUID ownerId) {
+    public static Specification<PetEntity> byOwner(UUID ownerId) {
         return (root, query, cb) -> {
             if (ownerId == null) return cb.conjunction();
             return cb.equal(root.get("userId"), ownerId.toString());
@@ -18,21 +18,21 @@ public final class PetSpecifications {
     }
 
 
-    public static Specification<Pet> breedContains(String breed) {
+    public static Specification<PetEntity> breedContains(String breed) {
         return (petRoot, query, criteriaBuilder) -> {
             if (breed == null || breed.isBlank()) return criteriaBuilder.conjunction();
             return criteriaBuilder.like(criteriaBuilder.lower(petRoot.get("breed")), "%" + breed.toLowerCase() + "%");
         };
     }
 
-    public static Specification<Pet> speciesEquals(String species) {
+    public static Specification<PetEntity> speciesEquals(String species) {
         return (petRoot, query, criteriaBuilder) -> {
             if (species == null || species.isBlank()) return criteriaBuilder.conjunction();
             return criteriaBuilder.equal(criteriaBuilder.lower(petRoot.get("species")), species.toLowerCase());
         };
     }
 
-    public static Specification<Pet> nameContains(String name) {
+    public static Specification<PetEntity> nameContains(String name) {
         return (petRoot, query, criteriaBuilder) -> {
             if (name == null || name.isBlank()) return criteriaBuilder.conjunction();
 
@@ -46,28 +46,28 @@ public final class PetSpecifications {
         };
     }
 
-    public static Specification<Pet> sortByOfficialName() {
+    public static Specification<PetEntity> sortByOfficialName() {
         return (petRoot, query, criteriaBuilder) -> {
             query.orderBy(criteriaBuilder.asc(petRoot.get("officialPetName")));
             return null;
         };
     }
 
-    public static Specification<Pet> sortByWorkingName() {
+    public static Specification<PetEntity> sortByWorkingName() {
         return (petRoot, query, criteriaBuilder) -> {
             query.orderBy(criteriaBuilder.asc(petRoot.get("workingPetName")));
             return null;
         };
     }
 
-    public static Specification<Pet> genderEquals(String gender) {
+    public static Specification<PetEntity> genderEquals(String gender) {
         return (root, query, cb) -> {
             if (gender == null || gender.isBlank()) return cb.conjunction();
             return cb.equal(cb.lower(root.get("gender")), gender.toLowerCase());
         };
     }
 
-    public static Specification<Pet> sizeEquals(String size) {
+    public static Specification<PetEntity> sizeEquals(String size) {
         return (root, query, cb) -> {
             if (size == null || size.isBlank()) return cb.conjunction();
             return cb.equal(cb.lower(root.get("size")), size.toLowerCase());

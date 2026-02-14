@@ -2,6 +2,7 @@ package itacademy.pawalert.application.pet.service;
 import itacademy.pawalert.application.pet.port.inbound.*;
 import itacademy.pawalert.domain.image.model.PetAnalysisResult;
 import itacademy.pawalert.domain.image.port.inbound.PetImageAnalyzer;
+import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import itacademy.pawalert.infrastructure.rest.pet.dto.ImageValidationResponse;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -22,11 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import itacademy.pawalert.application.pet.port.inbound.ValidateImageUseCase;
-import itacademy.pawalert.domain.image.model.PetAnalysisResult;
-import itacademy.pawalert.domain.image.port.inbound.PetImageAnalyzer;
-import itacademy.pawalert.infrastructure.rest.pet.dto.ImageValidationResponse;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -153,12 +150,12 @@ public class PetService implements
     }
 
     @Override
-    public List<Pet> searchPets(Specification<Pet> spec, Sort sort) {
+    public List<Pet> searchPets(Specification<PetEntity> spec, Sort sort) {
         return petRepositoryPort.findAll(spec, sort);
     }
 
     @Override
-    public Page<Pet> searchPets(Specification<Pet> spec, Pageable pageable) {
+    public Page<Pet> searchPets(Specification<PetEntity> spec, Pageable pageable) {
         return petRepositoryPort.findAll(spec, pageable);
     }
 

@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS alert_events (
     changed_at TIMESTAMP NOT NULL,
     changed_by_user_id VARCHAR(255),
     latitude DOUBLE PRECISION,
-    longitude DOUBLE PRECISION
+    longitude DOUBLE PRECISION,
     FOREIGN KEY (alert_id) REFERENCES alerts (id)
     );
 
