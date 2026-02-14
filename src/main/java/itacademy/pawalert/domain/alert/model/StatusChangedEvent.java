@@ -9,7 +9,7 @@ public class StatusChangedEvent extends AbstractAlertEvent {
     private final StatusNames previousStatus;
     private final StatusNames newStatus;
 
-    public StatusChangedEvent(UUID alertId, UserId userId,
+    public StatusChangedEvent(UUID alertId, UUID userId,
                               StatusNames previousStatus, StatusNames newStatus) {
         super(alertId, userId);
         this.previousStatus = previousStatus;

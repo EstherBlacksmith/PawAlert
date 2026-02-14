@@ -7,6 +7,7 @@ import itacademy.pawalert.domain.alert.model.Title;
 import java.util.UUID;
 
 public interface CreateAlertUseCase {
-    Alert createOpenedAlert(UUID petId, Title title, Description description, UUID userId, GeographicLocation location);
+    Alert createOpenedAlert(UUID petId, Title title, Description description,
+                            UUID userId, GeographicLocation location);
 
 }

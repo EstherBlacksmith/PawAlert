@@ -75,7 +75,7 @@ public class PetController {
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/{petId}")
     public ResponseEntity<PetDTO> getPet(@PathVariable String petId) {
         UUID petIdConverted = UUID.fromString(petId);
 

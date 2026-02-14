@@ -49,7 +49,7 @@ public class GoogleVisionPetAnalyzer implements PetImageAnalyzer {
 
     @Override
     public PetAnalysisResult analyze(byte[] imageBytes) {
-        // Ejecutar todos los análisis en paralelo o secuencial
+        // Execute all the analysis in parallel or secuencial
         List<LabelResult> labels = imageAnalysisPort.detectLabels(imageBytes);
         String detectedText = imageAnalysisPort.detectText(imageBytes);
         ColorResult colors = imageAnalysisPort.detectColors(imageBytes);
@@ -67,8 +67,8 @@ public class GoogleVisionPetAnalyzer implements PetImageAnalyzer {
 
         return new PetAnalysisResult(
                 isValidPet,
-                isValidPet ? "Imagen válida de " + animalResult.species() :
-                        "No se detectó una mascota válida",
+                isValidPet ? "Valid image of " + animalResult.species() :
+                        "No valid pet detected",
                 animalResult.species(),
                 animalResult.confidence(),
                 breed,

@@ -8,7 +8,7 @@ public interface DomainEvent {
 
     UUID getAlertId();
 
-    UserId getUserId();
+    UUID getUserId();
 
     ChangedAt getChangedAt();
 }
