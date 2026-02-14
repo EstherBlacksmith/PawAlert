@@ -44,9 +44,9 @@ public class Alert {
 
     public AlertEntity toEntity() {
         return new AlertEntity(
-                this.id.toString(),
-                this.petId.toString(),
-                this.userId.toString(),
+                this.id,
+                this.petId,
+                this.userId,
                 this.title.getValue(),
                 this.description.getValue(),
                 this.statusAlert.getStatusName()

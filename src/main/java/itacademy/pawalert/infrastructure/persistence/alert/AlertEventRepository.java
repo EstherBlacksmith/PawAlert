@@ -1,23 +1,22 @@
 package itacademy.pawalert.infrastructure.persistence.alert;
 
-import aj.org.objectweb.asm.commons.Remapper;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface AlertEventRepository extends JpaRepository<AlertEventEntity, String> {
+public interface AlertEventRepository extends JpaRepository<AlertEventEntity, UUID> {
 
     /**
      * Looks for all the events sort by date descendant
      */
-    List<AlertEventEntity> findByAlertIdOrderByChangedAtDesc(String alertId);
+    List<AlertEventEntity> findByAlertIdOrderByChangedAtDesc(UUID alertId);
 
     /**
      * Looks for all the event in one alert.
      */
-    List<AlertEventEntity> findByAlertId(String alertId);
+    List<AlertEventEntity> findByAlertId(UUID alertId);
 
-    Optional<AlertEventEntity> findFirstByAlertIdOrderByChangedAtDesc(String string);
+    Optional<AlertEventEntity> findFirstByAlertIdOrderByChangedAtDesc(UUID alertId);
 }

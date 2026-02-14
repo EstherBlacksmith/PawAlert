@@ -25,23 +25,23 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
 
     @Override
     public PetEntity save(Pet pet) {
-        return petRepository.save(pet.toEntity());
+        return petRepository.save(PetEntity.fromDomain(pet));
     }
 
     @Override
     public Optional<Pet> findById(UUID petId) {
-        return petRepository.findById(petId.toString())
+        return petRepository.findById(petId)
                 .map(PetEntity::toDomain);
     }
 
     @Override
     public void deleteById(UUID petId, UUID userId) {
-        petRepository.deleteById(petId.toString());
+        petRepository.deleteById(petId);
     }
 
     @Override
     public boolean existsById(UUID petId) {
-        return petRepository.existsById(petId.toString());
+        return petRepository.existsById(petId);
     }
 
     @Override

@@ -16,8 +16,9 @@ import java.util.UUID;
 @Table(name = "users")
 public class UserEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    private String id;
+    private UUID id;
 
     @Column(name = "username", unique = true)
     private String username;
@@ -46,7 +47,7 @@ public class UserEntity {
     // Empty Constructor for JPA
     public UserEntity() {}
 
-    public UserEntity(String id, String username, String email, String passwordHash,
+    public UserEntity(UUID id, String username, String email, String passwordHash,
                       String surname, String phoneNumber, Role role, LocalDateTime createdAt,
                       String telegramChatId) {
         this.id = id;
@@ -62,7 +63,7 @@ public class UserEntity {
 
     public User toDomain() {
         return new User(
-                UUID.fromString(this.id),
+                this.id,
                 Username.of(this.username),
                 Email.of(this.email),
                 Surname.of(this.surname),
@@ -75,7 +76,7 @@ public class UserEntity {
     public UserWithPassword toDomainWithPassword() {
         return new UserWithPassword(
                 new User(
-                        UUID.fromString(this.id),
+                        this.id,
                         Username.of(this.username),
                         Email.of(this.email),
                         Surname.of(this.surname),

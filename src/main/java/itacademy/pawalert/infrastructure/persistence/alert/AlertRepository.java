@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import java.util.List;
 import java.util.UUID;
 
-public interface AlertRepository extends JpaRepository<AlertEntity, String>,
-        JpaSpecificationExecutor<Alert> {
+public interface AlertRepository extends JpaRepository<AlertEntity, UUID>,
+        JpaSpecificationExecutor<AlertEntity> {
     List<AlertEntity> findByStatus(String status);
-    List<AlertEntity> findAllByPetId(String petID);
+    List<AlertEntity> findAllByPetId(UUID petId);
     StatusNames findLastStatusById(UUID alertId);
 }

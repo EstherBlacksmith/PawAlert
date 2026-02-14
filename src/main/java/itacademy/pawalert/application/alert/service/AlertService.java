@@ -8,7 +8,8 @@ import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.alert.service.AlertFactory;
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
-import itacademy.pawalert.domain.alert.specification.AlertSpecifications;
+import itacademy.pawalert.infrastructure.persistence.alert.AlertSpecifications;
+import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventFactory;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertWithContactDTO;
 import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
@@ -51,7 +52,7 @@ public class AlertService implements
     }
 
     public List<Alert> findOpenAlertsWithTitle(String title) {
-        Specification<Alert> spec = AlertSpecifications.withStatus(OPENED)
+        Specification<AlertEntity> spec = AlertSpecifications.withStatus(OPENED)
                 .and(AlertSpecifications.titleContains(title));
 
         return alertRepository.findAll(spec);
@@ -219,7 +220,7 @@ public class AlertService implements
 
     @Override
     public List<Alert> search(StatusNames status, String petName, String species) {
-        Specification<Alert> spec = null;
+        Specification<AlertEntity> spec = null;
 
         //By status
         if (status != null) {
@@ -228,13 +229,13 @@ public class AlertService implements
 
         // By pet name
         if (petName != null && !petName.isBlank()) {
-            Specification<Alert> petSpec = AlertSpecifications.petNameContains(petName);
+            Specification<AlertEntity> petSpec = AlertSpecifications.petNameContains(petName);
             spec = (spec == null) ? petSpec : spec.and(petSpec);
         }
 
         // By specie
         if (species != null && !species.isBlank()) {
-            Specification<Alert> speciesSpec = AlertSpecifications.withPetSpecies(species);
+            Specification<AlertEntity> speciesSpec = AlertSpecifications.withPetSpecies(species);
             spec = (spec == null) ? speciesSpec : spec.and(speciesSpec);
         }
 

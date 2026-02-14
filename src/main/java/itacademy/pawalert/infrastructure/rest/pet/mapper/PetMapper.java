@@ -34,11 +34,11 @@ public class PetMapper {
                 ChipNumber.of(petDTO.getChipNumber()),
                 PetOfficialName.of(petDTO.getOfficialPetName()),
                 PetWorkingName.of(petDTO.getWorkingPetName()),
-                Species.valueOf(petDTO.getSpecies()),
+                Species.fromString(petDTO.getSpecies()),
                 Breed.of(petDTO.getBreed()),
-                Size.valueOf(petDTO.getSize()),
+                Size.fromString(petDTO.getSize()),
                 Color.of(petDTO.getColor()),
-                Gender.valueOf(petDTO.getGender()),
+                Gender.fromString(petDTO.getGender()),
                 PetDescription.of(petDTO.getPetDescription()),
                 PetImage.of(petDTO.getPetImage())
         );
@@ -49,6 +49,7 @@ public class PetMapper {
                 pet.getPetId().toString(),
                 pet.getUserId().toString(),
                 pet.getChipNumber().value(),
+                pet.getOfficialPetName().value(),
                 pet.getWorkingPetName().value() ,
                 pet.getSpecies().name(),
                 pet.getBreed().value(),

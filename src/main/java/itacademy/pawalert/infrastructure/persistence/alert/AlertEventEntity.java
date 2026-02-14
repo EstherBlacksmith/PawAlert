@@ -17,7 +17,8 @@ import java.util.UUID;
 public class AlertEventEntity {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @Column(name = "event_type")
     private String eventType;
     @Column(name = "old_value")
@@ -31,7 +32,7 @@ public class AlertEventEntity {
     @Column(name = "changed_at")
     private LocalDateTime changedAt;
     @Column(name = "changed_by_user_id")
-    private String changedByUserId;
+    private UUID changedByUserId;
     @Column(name = "latitude")
     private Double latitude;
     @Column(name = "longitude")
@@ -44,8 +45,8 @@ public class AlertEventEntity {
     }
 
     //For status changes
-    public AlertEventEntity(String id, String previousStatus, String newStatus,
-                            LocalDateTime changedAt, String changedByUserId,
+    public AlertEventEntity(UUID id, String previousStatus, String newStatus,
+                            LocalDateTime changedAt, UUID changedByUserId,
                             GeographicLocation location) {
         this.id = id;
         this.eventType = "STATUS_CHANGED";
@@ -58,8 +59,8 @@ public class AlertEventEntity {
     }
 
     //For title and description events
-    public AlertEventEntity(String id, String eventType, String oldValue, String newValue,
-                            LocalDateTime changedAt, String changedByUserId) {
+    public AlertEventEntity(UUID id, String eventType, String oldValue, String newValue,
+                            LocalDateTime changedAt, UUID changedByUserId) {
         this.id = id;
         this.eventType = eventType;
         this.oldValue = oldValue;
@@ -71,7 +72,7 @@ public class AlertEventEntity {
     // Conversion Domain -> Entity
     public static AlertEventEntity fromDomain(AlertEvent event, AlertEntity alert) {
         LocalDateTime changedAt = event.getChangedAt().value();
-        String userId = event.getChangedBy().toString();
+        UUID userId = event.getChangedBy();
 
         String previousStatus = event.getPreviousStatus() != null
                 ? event.getPreviousStatus().name()
@@ -81,11 +82,11 @@ public class AlertEventEntity {
                 : null;
         String eventType = event.getEventType().name();
 
-        // Using the correct constructor in base at the type of the event
+        // Using the correct constructor in base on the type of the event
         if (event.getOldValue() != null) {
-            // TITLE_CHANGED o DESCRIPTION_CHANGED
+            // TITLE_CHANGED or DESCRIPTION_CHANGED
             return new AlertEventEntity(
-                    event.getId().toString(),
+                    event.getId(),
                     eventType,
                     event.getOldValue(),
                     event.getNewValue(),
@@ -97,11 +98,11 @@ public class AlertEventEntity {
             assert event.getPreviousStatus() != null;
             assert event.getNewStatus() != null;
             return new AlertEventEntity(
-                    event.getId().toString(),
+                    event.getId(),
                     event.getPreviousStatus().name(),
                     event.getNewStatus().name(),
                     event.getChangedAt().value(),
-                    event.getChangedBy().toString(),
+                    event.getChangedBy(),
                     event.getLocation()
             );
         }
@@ -110,16 +111,16 @@ public class AlertEventEntity {
     // Conversion Entity -> Domain
     public AlertEvent toDomain() {
         // EventType from String to enum
-        EventType type = EventType.valueOf(eventType);
+        EventType type = EventType.fromString(eventType);
 
 
         StatusNames previous = previousStatus != null
-                ? StatusNames.valueOf(previousStatus)
+                ? StatusNames.fromString(previousStatus)
                 : null;
 
 
         StatusNames newStat = newStatus != null
-                ? StatusNames.valueOf(newStatus)
+                ? StatusNames.fromString(newStatus)
                 : null;
 
         GeographicLocation location = null;
@@ -128,9 +129,9 @@ public class AlertEventEntity {
         }
 
         return switch (type) {
-            case STATUS_CHANGED -> AlertEvent.createStatusEvent(previous, newStat, UUID.fromString(changedByUserId),location );
-            case TITLE_CHANGED -> AlertEvent.createTitleEvent(Title.of(oldValue), Title.of(newValue), UUID.fromString(changedByUserId));
-            case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(Description.of(oldValue),Description.of( newValue), UUID.fromString(changedByUserId));
+            case STATUS_CHANGED -> AlertEvent.createStatusEvent(previous, newStat, this.changedByUserId, location);
+            case TITLE_CHANGED -> AlertEvent.createTitleEvent(Title.of(oldValue), Title.of(newValue), this.changedByUserId);
+            case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(Description.of(oldValue), Description.of(newValue), this.changedByUserId);
         };
     }
 

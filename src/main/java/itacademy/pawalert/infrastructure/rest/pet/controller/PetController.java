@@ -86,13 +86,13 @@ public class PetController {
 
     @PatchMapping("/{petId}")
     public ResponseEntity<PetDTO> updatePet(
-            @PathVariable String petId,
+            @PathVariable UUID petId,
             @Valid @RequestBody UpdatePetRequest request) {
 
         String userId = getCurrentUserId();
         UUID UserIdConverted = UUID.fromString(userId);
-        UUID petIdConverted = UUID.fromString(petId);
-        Pet updated = updatePetUseCase.updatePet(petIdConverted, UserIdConverted, request);
+
+        Pet updated = updatePetUseCase.updatePet(petId, UserIdConverted, request);
 
         return ResponseEntity.ok(petMapper.toDTO(updated));
     }

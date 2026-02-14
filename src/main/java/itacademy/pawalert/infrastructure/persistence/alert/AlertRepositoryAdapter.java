@@ -30,13 +30,13 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
 
     @Override
     public Optional<Alert> findById(UUID alertId) {
-        return alertRepository.findById(alertId.toString())
+        return alertRepository.findById(alertId)
                 .map(AlertEntity::toDomain);
     }
 
     @Override
     public List<Alert> findAllByPetId(UUID petId) {
-        return alertRepository.findAllByPetId(petId.toString())
+        return alertRepository.findAllByPetId(petId)
                 .stream()
                 .map(AlertEntity::toDomain)
                 .toList();
@@ -44,12 +44,12 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
 
     @Override
     public boolean existsById(UUID alertId) {
-        return alertRepository.existsById(alertId.toString());
+        return alertRepository.existsById(alertId);
     }
 
     @Override
     public void deleteById(UUID alertId) {
-        alertRepository.deleteById(alertId.toString());
+        alertRepository.deleteById(alertId);
     }
 
     @Override
@@ -61,8 +61,11 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
     }
 
     @Override
-    public List<Alert> findAll(Specification<Alert> spec) {
-        return alertRepository.findAll(spec);
+    public List<Alert> findAll(Specification<AlertEntity> spec) {
+        return alertRepository.findAll(spec)
+                .stream()
+                .map(AlertEntity::toDomain)
+                .toList();
     }
 
     @Override

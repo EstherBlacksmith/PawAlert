@@ -30,7 +30,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public Optional<User> findById(UUID id) {
-        return jpaUserRepository.findById(id.toString())
+        return jpaUserRepository.findById(id)
                 .map(UserEntity::toDomain);
     }
 
@@ -63,11 +63,10 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public User save(User user) {
-        String passwordHash = jpaUserRepository.findById(user.getId().toString())
-                .map(UserEntity::getPasswordHash)
-                .orElse(null);
+        Optional<String> passwordHash = jpaUserRepository.findById(user.getId())
+                .map(UserEntity::getPasswordHash);
 
-        UserEntity entity = toEntity(user,passwordHash);
+        UserEntity entity = toEntity(user, passwordHash.orElse(null));
         UserEntity saved = jpaUserRepository.save(entity);
 
         return saved.toDomain();
@@ -87,7 +86,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public boolean existsById(UUID id) {
-        return jpaUserRepository.existsById(id.toString());
+        return jpaUserRepository.existsById(id);
     }
 
     @Override
@@ -102,7 +101,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public void delete(User user) {
-        jpaUserRepository.deleteById(user.getId().toString());
+        jpaUserRepository.deleteById(user.getId());
     }
 
     @Override
@@ -112,14 +111,15 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     private UserEntity toEntity(User user, String passwordHash) {
         return new UserEntity(
-                user.getId().toString(),
+                user.getId(),
                 user.getUsername().value(),
                 user.getEmail().value(),
                 passwordHash,
                 user.getSurname().value(),
                 user.getPhoneNumber().value(),
                 user.getRole(),
-                LocalDateTime.now(),null
+                LocalDateTime.now(),
+                user.getTelegramChatId() != null ? user.getTelegramChatId().value() : null
         );
     }
     @Override
@@ -138,25 +138,20 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public String getPasswordHashById(UUID userId) {
-        return jpaUserRepository.findById(String.valueOf(userId))
+        return jpaUserRepository.findById(userId)
                 .map(UserEntity::getPasswordHash)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
     @Override
     public void updatePasswordHash(UUID userId, String newHash) {
-        UserEntity entity = jpaUserRepository.findById(String.valueOf(userId))
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
-
-        // You need to add a setter for passwordHash in UserEntity
-        entity.setPasswordHash(newHash);
-        jpaUserRepository.save(entity);
+        jpaUserRepository.updatePasswordHashById(userId, newHash);
     }
 
     @Override
     public User updatePhoneNumber(UUID userId, PhoneNumber phoneNumber) {
         jpaUserRepository.updatePhoneNumber(userId, phoneNumber.value());
-        return jpaUserRepository.findById(userId.toString())
+        return jpaUserRepository.findById(userId)
                 .map(UserEntity::toDomain)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
     }
@@ -165,7 +160,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     @Override
     public User updateSurname(UUID userId, Surname surname) {
         jpaUserRepository.updateSurname(userId, surname.value());
-        return jpaUserRepository.findById(userId.toString())
+        return jpaUserRepository.findById(userId)
                 .map(UserEntity::toDomain)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
     }
@@ -173,7 +168,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     @Override
     public User updateUsername(UUID userId, Username username) {
         jpaUserRepository.updateUsername(userId, username.value());
-        return jpaUserRepository.findById(userId.toString())
+        return jpaUserRepository.findById(userId)
                 .map(UserEntity::toDomain)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
     }

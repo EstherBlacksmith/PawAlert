@@ -12,14 +12,15 @@ import java.util.UUID;
 @Table(name = "alerts")
 public class AlertEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    private String id;
+    private UUID id;
 
     @Column(name = "pet_id")
-    private String petId;
+    private UUID petId;
 
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @Column(name = "title")
     private String title;
@@ -40,8 +41,8 @@ public class AlertEntity {
     public AlertEntity() {
     }
 
-    // Constructor with String petId (for domain-to-entity conversion)
-    public AlertEntity(String id, String petId, String userId, String title, String description, StatusNames statusNames) {
+    // Constructor with UUID (for domain-to-entity conversion)
+    public AlertEntity(UUID id, UUID petId, UUID userId, String title, String description, StatusNames statusNames) {
         this.id = id;
         this.petId = petId;
         this.userId = userId;
@@ -53,12 +54,12 @@ public class AlertEntity {
 
     public Alert toDomain() {
         return new Alert(
-                UUID.fromString(this.id),
-                UUID.fromString(this.petId),
-                UUID.fromString(this.userId),
+                this.id,
+                this.petId,
+                this.userId,
                 Title.of(this.title),
                 Description.of(this.description),
-                mapToStatusAlert(StatusNames.valueOf(this.status))
+                mapToStatusAlert(StatusNames.fromString(this.status))
         );
     }
 

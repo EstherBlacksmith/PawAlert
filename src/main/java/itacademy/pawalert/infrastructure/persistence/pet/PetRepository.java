@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PetRepository  extends
-        JpaRepository<PetEntity, String>,
-        JpaSpecificationExecutor<PetEntity>{
+        JpaRepository<PetEntity, UUID>,
+        JpaSpecificationExecutor<PetEntity> {
 
     List<PetEntity> getPetsByUserId(UUID userID);
     List<PetEntity> findBySpecies(Species species);

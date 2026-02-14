@@ -12,10 +12,11 @@ import java.util.UUID;
 @Table(name = "pets")
 public class PetEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    private String id;
+    private UUID id;
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
     @Column(name = "pet_chip_number")
     private String chipNumber;
     @Column(name = "pet_offical_name")
@@ -42,7 +43,7 @@ public class PetEntity {
     public PetEntity() {
     }
 
-    public PetEntity(String id, String userId, String chipNumber,
+    public PetEntity(UUID id, UUID userId, String chipNumber,
                      String officialPetName, String workingPetName, String species,
                      String breed, String size, String color, String gender, String petDescription,
                      String petImage) {
@@ -64,18 +65,36 @@ public class PetEntity {
 
     public Pet toDomain() {
         return new Pet(
-                UUID.fromString(this.userId),
-                UUID.fromString(this.id),
+                this.userId,
+                this.id,
                 new ChipNumber (this.chipNumber),
                 new PetOfficialName(this.officialPetName),
                 new PetWorkingName(this.workingPetName),
-                Species.valueOf(this.species),
+                Species.fromString(this.species),
                 new Breed (this.breed),
-                Size.valueOf(this.size),
+                Size.fromString(this.size),
                 new Color (this.color),
-                Gender.valueOf(this.gender),
+                Gender.fromString(this.gender),
                 new PetDescription (this.petDescription),
                 new PetImage (this.petImage)
+        );
+    }
+
+    // Domain -> Entity conversion (for saving)
+    public static PetEntity fromDomain(Pet pet) {
+        return new PetEntity(
+                pet.getPetId(),
+                pet.getUserId(),
+                pet.getChipNumber().value(),
+                pet.getOfficialPetName().value(),
+                pet.getWorkingPetName().value(),
+                pet.getSpecies().toString(),
+                pet.getBreed().value(),
+                pet.getSize().toString(),
+                pet.getColor().value(),
+                pet.getGender().toString(),
+                pet.getPetDescription().value(),
+                pet.getPetImage().value()
         );
     }
 }

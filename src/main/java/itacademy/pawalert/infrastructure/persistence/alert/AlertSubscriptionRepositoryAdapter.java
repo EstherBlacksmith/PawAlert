@@ -33,7 +33,7 @@ public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepo
 
     @Override
     public List<AlertSubscription> findByAlertIdAndActiveTrue(UUID alertId) {
-        return jpaRepository.findByUserIdAndActiveTrue(alertId).stream()
+        return jpaRepository.findByAlertIdAndActiveTrue(alertId).stream()
                 .map(AlertSubscriptionEntity::toDomain)
                 .toList();
     }
