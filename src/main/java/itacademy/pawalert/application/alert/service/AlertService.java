@@ -17,6 +17,7 @@ import itacademy.pawalert.domain.user.User;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import itacademy.pawalert.infrastructure.location.HybridLocationProvider;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,14 +38,16 @@ public class AlertService implements
     private final GetUserUseCase userUseCase;
     private final AlertMapper alertMapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final HybridLocationProvider locationProvider;
 
     public AlertService(AlertRepositoryPort alertRepository, AlertEventRepositoryPort eventRepository,
-                        GetUserUseCase userUseCase, AlertMapper alertMapper, ApplicationEventPublisher eventPublisher){
+                        GetUserUseCase userUseCase, AlertMapper alertMapper, ApplicationEventPublisher eventPublisher, HybridLocationProvider locationProvider){
         this.alertRepository = alertRepository;
         this.eventRepository = eventRepository;
         this.userUseCase = userUseCase;
         this.alertMapper = alertMapper;
         this.eventPublisher = eventPublisher;
+        this.locationProvider = locationProvider;
     }
 
     public List<Alert> findOpenAlertsWithTitle(String title) {
@@ -122,6 +125,11 @@ public class AlertService implements
     @Override
     public Alert changeStatus(UUID alertId, StatusNames newStatus, UUID userId, GeographicLocation location) {
 
+        if (location != null) {
+            locationProvider.setGpsLocation(location);
+        }
+        GeographicLocation finalLocation = locationProvider.getCurrentLocation();
+
         Alert alert = getAlertById(alertId);
         StatusNames previousStatus = alert.currentStatus().getStatusName();
 
@@ -145,7 +153,7 @@ public class AlertService implements
 
         // Use factory
         AlertEvent  event = AlertEventFactory.createStatusChangedEvent(
-                alertCopy, previousStatus, newStatus, userId, location
+                alertCopy, previousStatus, newStatus, userId, finalLocation
         );
 
         eventRepository.save(event);

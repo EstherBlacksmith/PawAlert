@@ -31,11 +31,10 @@ public class AlertController {
     private final DeleteAlertUseCase deleteAlertUseCase;
     private final AlertMapper alertMapper;
     private final SearchAlertsUseCase searchAlertsUseCase;
-    private final HybridLocationProvider locationProvider;
 
     public AlertController(AlertMapper alertMapper, CreateAlertUseCase createAlertUseCase, GetAlertUseCase getAlertUseCase,
                            UpdateAlertStatusUseCase updateAlertStatusUseCase, UpdateAlertUseCase updateAlertUseCase,
-                           DeleteAlertUseCase deleteAlertUseCase, SearchAlertsUseCase searchAlerts, HybridLocationProvider locationProvider) {
+                           DeleteAlertUseCase deleteAlertUseCase, SearchAlertsUseCase searchAlerts) {
         this.createAlertUseCase = createAlertUseCase;
         this.getAlertUseCase = getAlertUseCase;
         this.updateAlertStatusUseCase = updateAlertStatusUseCase;
@@ -43,7 +42,6 @@ public class AlertController {
         this.alertMapper = alertMapper;
         this.deleteAlertUseCase = deleteAlertUseCase;
         this.searchAlertsUseCase = searchAlerts;
-        this.locationProvider = locationProvider;
     }
 
     @PostMapping
@@ -77,11 +75,10 @@ public class AlertController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<AlertDTO> changeStatus(@PathVariable String id,
                                                  @RequestBody StatusChangeRequest request) {
+        GeographicLocation location = null;
         if (request.hasGpsLocation()) {
-            locationProvider.setGpsLocation(request.getLocation());
+            location = GeographicLocation.of(request.getLatitude(), request.getLongitude());
         }
-
-        GeographicLocation location = locationProvider.getCurrentLocation();
 
         logger.debug("Using location for alert {} status change: {}", id, location);
 

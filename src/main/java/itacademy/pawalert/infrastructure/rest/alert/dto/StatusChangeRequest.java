@@ -9,8 +9,8 @@ import java.util.UUID;
 public record StatusChangeRequest(
         @NotNull(message = "New status is required") StatusNames newStatus,
         @NotNull(message = "User ID is required") UUID userId,
-        @NotNull(message = "Latitude is required") Double latitude,
-        @NotNull(message = "Longitude is required") Double longitude
+        Double latitude,
+        Double longitude
 ) {
     public StatusNames getNewStatus() {
         return newStatus;
@@ -29,6 +29,14 @@ public record StatusChangeRequest(
 
     public boolean hasGpsLocation() {
         return latitude != null && longitude != null;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
     }
 }
 
