@@ -1,6 +1,7 @@
 
 package itacademy.pawalert.infrastructure.rest.alert.mapper;
 
+import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
 import itacademy.pawalert.domain.user.User;
@@ -12,9 +13,19 @@ import java.util.UUID;
 
 @Component
 public class AlertMapper {
-    public static final AlertMapper INSTANCE = new AlertMapper();
+    
+    private final AlertEventRepositoryPort eventRepository;
+
+    public AlertMapper(AlertEventRepositoryPort eventRepository) {
+        this.eventRepository = eventRepository;
+    }
 
     public AlertDTO toDTO(Alert alert) {
+        GeographicLocation location = eventRepository
+                .findLatestByAlertId(alert.getId())
+                .map(AlertEvent::getLocation)
+                .orElse(null);
+
         return AlertDTO.builder()
                 .id(alert.getId().toString())
                 .petId(alert.getPetId().toString())
@@ -22,6 +33,8 @@ public class AlertMapper {
                 .title(alert.getTitle().getValue())
                 .description(alert.getDescription().getValue())
                 .status(alert.currentStatus().getStatusName().name())
+                .latitude(location != null ? location.latitude() : null)
+                .longitude(location != null ? location.longitude() : null)
                 .build();
     }
 

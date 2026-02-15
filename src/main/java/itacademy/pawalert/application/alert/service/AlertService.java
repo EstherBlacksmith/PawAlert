@@ -67,7 +67,7 @@ public class AlertService implements
         //Persist the object
         Alert savedAlert = alertRepository.save(alert);
         AlertEvent event = AlertEventFactory.createStatusChangedEvent(
-                alert, OPENED, OPENED, userId,location
+                savedAlert, OPENED, OPENED, userId, location
         );
 
         eventRepository.save(event);

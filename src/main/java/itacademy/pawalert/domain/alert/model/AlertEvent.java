@@ -9,6 +9,8 @@ public class AlertEvent {
     @Getter
     private final UUID id;
     @Getter
+    private final UUID alertId;
+    @Getter
     private final EventType eventType;
     @Getter
     private final StatusNames previousStatus;
@@ -28,6 +30,7 @@ public class AlertEvent {
     public AlertEvent(UUID id, EventType eventType, StatusNames previous, StatusNames newStatus,
                       String oldValue, String newValue, UUID userId, GeographicLocation location) {
         this.id = id;
+        this.alertId = null;
         this.eventType = eventType;
         this.previousStatus = previous;
         this.newStatus = newStatus;
@@ -39,8 +42,9 @@ public class AlertEvent {
     }
 
     // Private constructor - uses factory method
-    private AlertEvent(EventType eventType, StatusNames previous, StatusNames newStatus, String oldValue, String newValue,
+    private AlertEvent(UUID alertId, EventType eventType, StatusNames previous, StatusNames newStatus, String oldValue, String newValue,
                        ChangedAt changedAt, UUID changedBy, GeographicLocation location) {
+        this.alertId = alertId;
         this.eventType = eventType;
         this.oldValue = oldValue;
         this.newValue = newValue;
@@ -53,20 +57,20 @@ public class AlertEvent {
     }
 
     // Factory method for create the initial event
-    public static AlertEvent createStatusEvent(StatusNames previousStatus, StatusNames newStatus, UUID userId, GeographicLocation location) {
-        return new AlertEvent(EventType.STATUS_CHANGED, previousStatus, newStatus,
+    public static AlertEvent createStatusEvent(UUID alertId, StatusNames previousStatus, StatusNames newStatus, UUID userId, GeographicLocation location) {
+        return new AlertEvent(alertId, EventType.STATUS_CHANGED, previousStatus, newStatus,
                 null, null, ChangedAt.now(), userId, location);
     }
 
     // Factory method for title events
-    public static AlertEvent createTitleEvent(Title oldTitle, Title newTitle, UUID userId) {
-        return new AlertEvent(EventType.TITLE_CHANGED, null, null,
+    public static AlertEvent createTitleEvent(UUID alertId, Title oldTitle, Title newTitle, UUID userId) {
+        return new AlertEvent(alertId, EventType.TITLE_CHANGED, null, null,
                 oldTitle.getValue(), newTitle.getValue(), ChangedAt.now(), userId, null);
     }
 
     // Factory method for description events
-    public static AlertEvent createDescriptionEvent(Description oldDescription, Description newDescription, UUID userId) {
-        return new AlertEvent(EventType.DESCRIPTION_CHANGED, null, null,
+    public static AlertEvent createDescriptionEvent(UUID alertId, Description oldDescription, Description newDescription, UUID userId) {
+        return new AlertEvent(alertId, EventType.DESCRIPTION_CHANGED, null, null,
                 oldDescription.getValue(), newDescription.getValue(), ChangedAt.now(), userId, null);
     }
 

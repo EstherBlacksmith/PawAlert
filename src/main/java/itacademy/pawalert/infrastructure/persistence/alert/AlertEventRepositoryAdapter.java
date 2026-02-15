@@ -10,14 +10,18 @@ import java.util.UUID;
 @Service
 public class AlertEventRepositoryAdapter implements AlertEventRepositoryPort {
     private final AlertEventRepository eventRepository;
+    private final AlertRepository alertRepository;
 
-    public AlertEventRepositoryAdapter(AlertEventRepository eventRepository) {
+    public AlertEventRepositoryAdapter(AlertEventRepository eventRepository, AlertRepository alertRepository) {
         this.eventRepository = eventRepository;
+        this.alertRepository = alertRepository;
     }
 
     @Override
     public AlertEvent save(AlertEvent event) {
-        AlertEventEntity entity = AlertEventEntity.fromDomain(event, null);
+        // Get the AlertEntity reference from the event's alertId
+        AlertEntity alertEntity = alertRepository.getReferenceById(event.getAlertId().toString());
+        AlertEventEntity entity = AlertEventEntity.fromDomain(event, alertEntity);
         AlertEventEntity saved = eventRepository.save(entity);
         return saved.toDomain();
     }

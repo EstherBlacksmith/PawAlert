@@ -77,11 +77,12 @@ public class AlertController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<AlertDTO> changeStatus(@PathVariable String id,
                                                  @RequestBody StatusChangeRequest request) {
-        if (request.hasGpsLocation()) {
-            locationProvider.setGpsLocation(request.getLocation());
+        // Location is mandatory - use the location from the request directly
+        GeographicLocation location = request.getLocation();
+        
+        if (location == null) {
+            throw new IllegalArgumentException("Location is required for status changes");
         }
-
-        GeographicLocation location = locationProvider.getCurrentLocation();
 
         logger.debug("Using location for alert {} status change: {}", id, location);
 
@@ -124,13 +125,13 @@ public class AlertController {
             @RequestParam(required = false) String species
     ) {
         List<Alert> alerts = searchAlertsUseCase.search(status, petName, species);
-        return ResponseEntity.ok(alertMapper.INSTANCE.toDTOList(alerts));
+        return ResponseEntity.ok(alertMapper.toDTOList(alerts));
     }
 
     @GetMapping
     public ResponseEntity<List<AlertDTO>> getAllAlerts() {
         List<Alert> alerts = searchAlertsUseCase.search(null, null, null);
-        return ResponseEntity.ok(alertMapper.INSTANCE.toDTOList(alerts));
+        return ResponseEntity.ok(alertMapper.toDTOList(alerts));
     }
 
 }

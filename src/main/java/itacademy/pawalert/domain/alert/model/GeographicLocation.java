@@ -22,14 +22,13 @@ public record GeographicLocation(
     }
 
     private static void validateLatitude(double latitude) {
-        if (latitude < MIN_LATITUDE || latitude > MAX_LATITUDE) {
-            throw new InvalidLatitudeException(String.format("Latitude %.4f is invalid. Must be between -90.0 and 90.0", latitude));
-
+        if (Double.isNaN(latitude) || latitude < MIN_LATITUDE || latitude > MAX_LATITUDE) {
+            throw new InvalidLatitudeException("Invalid latitude: " + latitude);
         }
     }
     private static void validateLongitude(double longitude) {
-        if (longitude < MIN_LONGITUDE || longitude > MAX_LONGITUDE) {
-            throw new InvalidLongitudeException(String.format("Longitude %.4f is invalid. Must be between -180.0 and 180.0", longitude));
+        if (Double.isNaN(longitude) || longitude < MIN_LONGITUDE || longitude > MAX_LONGITUDE) {
+            throw new InvalidLongitudeException("Invalid longitude: " + longitude);
         }
     }
 
