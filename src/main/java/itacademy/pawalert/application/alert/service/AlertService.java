@@ -232,8 +232,7 @@ public class AlertService implements
 
         // Specification to Repository
         if (spec == null) {
-            // Si no hay filtros, devolver lista vacía
-            return List.of();
+            return alertRepository.findAll();  // Return all alerts instead of empty list
         }
         return alertRepository.findAll(spec);
     }
