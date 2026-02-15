@@ -208,15 +208,7 @@ public class AlertService implements
         return alertRepository.save(alertCopy);
     }
 
-    /**
-     * Checks if the current user is authorized to modify the alert.
-     * A user is authorized if they are an admin OR if they are the creator of the alert.
-     * Uses the CurrentUserProviderPort to obtain user context.
-     *
-     * @param alert The alert to be modified
-     * @return the current user's ID for use in event tracking
-     * @throws AlertAccessDeniedException if the user is not authorized
-     */
+
     private UUID checkAuthorization(Alert alert) {
         UUID currentUserId = currentUserProvider.getCurrentUserId();
         boolean isAdmin = currentUserProvider.isCurrentUserAdmin();
