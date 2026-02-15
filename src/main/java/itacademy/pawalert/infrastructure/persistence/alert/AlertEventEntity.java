@@ -81,10 +81,12 @@ public class AlertEventEntity {
                 : null;
         String eventType = event.getEventType().name();
 
+        AlertEventEntity entity;
+
         // Using the correct constructor in base at the type of the event
         if (event.getOldValue() != null) {
             // TITLE_CHANGED o DESCRIPTION_CHANGED
-            return new AlertEventEntity(
+            entity = new AlertEventEntity(
                     event.getId().toString(),
                     eventType,
                     event.getOldValue(),
@@ -96,7 +98,7 @@ public class AlertEventEntity {
             // STATUS_CHANGED
             assert event.getPreviousStatus() != null;
             assert event.getNewStatus() != null;
-            return new AlertEventEntity(
+            entity = new AlertEventEntity(
                     event.getId().toString(),
                     event.getPreviousStatus().name(),
                     event.getNewStatus().name(),
@@ -105,6 +107,10 @@ public class AlertEventEntity {
                     event.getLocation()
             );
         }
+        
+        // Set the alert relationship
+        entity.alert = alert;
+        return entity;
     }
 
     // Conversion Entity -> Domain
@@ -112,6 +118,8 @@ public class AlertEventEntity {
         // EventType from String to enum
         EventType type = EventType.valueOf(eventType);
 
+        // Get alertId from the alert relationship
+        UUID alertId = alert != null ? UUID.fromString(alert.getId()) : null;
 
         StatusNames previous = previousStatus != null
                 ? StatusNames.valueOf(previousStatus)
@@ -128,9 +136,9 @@ public class AlertEventEntity {
         }
 
         return switch (type) {
-            case STATUS_CHANGED -> AlertEvent.createStatusEvent(previous, newStat, UUID.fromString(changedByUserId),location );
-            case TITLE_CHANGED -> AlertEvent.createTitleEvent(Title.of(oldValue), Title.of(newValue), UUID.fromString(changedByUserId));
-            case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(Description.of(oldValue),Description.of( newValue), UUID.fromString(changedByUserId));
+            case STATUS_CHANGED -> AlertEvent.createStatusEvent(alertId, previous, newStat, UUID.fromString(changedByUserId), location);
+            case TITLE_CHANGED -> AlertEvent.createTitleEvent(alertId, Title.of(oldValue), Title.of(newValue), UUID.fromString(changedByUserId));
+            case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(alertId, Description.of(oldValue), Description.of(newValue), UUID.fromString(changedByUserId));
         };
     }
 
