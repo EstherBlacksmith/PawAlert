@@ -8,9 +8,10 @@ import jakarta.transaction.Transactional;
 import java.util.UUID;
 
 public interface UpdateAlertUseCase {
-    @Transactional
-    Alert updateTitle(UUID alertId, UUID userId, Title title);
 
     @Transactional
-    Alert updateDescription(UUID alertId, UUID userId, Description description);
+    Alert updateTitle(UUID alertId, Title title);
+
+    @Transactional
+    Alert updateDescription(UUID alertId, Description description);
 }

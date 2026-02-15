@@ -1,6 +1,7 @@
 package itacademy.pawalert.infrastructure.exception;
 
 import itacademy.pawalert.application.exception.AlertNotFoundException;
+import itacademy.pawalert.application.exception.ForbiddenException;
 import itacademy.pawalert.application.exception.SubscriptionAlreadyExistsException;
 import itacademy.pawalert.application.exception.SubscriptionNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
@@ -18,8 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -58,11 +58,24 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(401, "Unauthorized", ex.getMessage()));
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(403, "Forbidden", ex.getMessage()));
+    }
+
     @ExceptionHandler(AlertModificationNotAllowedException.class)
     public ResponseEntity<ErrorResponse> handleAlertModificationNotAllowedException(
             AlertModificationNotAllowedException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorResponse(401, "Unauthorized Alert modification", ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(403, "Forbidden", ex.getMessage()));
+    }
+
+    @ExceptionHandler(AlertAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAlertAccessDeniedException(
+            AlertAccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(403, "Access Denied", ex.getMessage()));
     }
 
     @ExceptionHandler(PetNotFoundException.class)
