@@ -25,7 +25,8 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     @Query("SELECT COUNT(u) > 0 FROM UserEntity u WHERE u.email = :email")
     boolean existsByEmail(@Param("email") String email);
 
-    Role findRoleById(UUID userId);
+    @Query("SELECT u.role FROM UserEntity u WHERE u.id = :userId")
+    Role findRoleById(@Param("userId") String userId);
 
     @Modifying
     @Transactional

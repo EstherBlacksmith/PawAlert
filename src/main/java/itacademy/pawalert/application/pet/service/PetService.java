@@ -106,16 +106,16 @@ public class PetService implements
             if (request.workingPetName() != null) {
                 builder.workingPetName(PetWorkingName.of(request.workingPetName()));
             }
-            if (request.species() != null) {
+            if (request.species() != null && !request.species().isBlank()) {
                 builder.species(Species.fromString(request.species()));
             }
             if (request.breed() != null) {
                 builder.breed(Breed.of(request.breed()));
             }
-            if (request.size() != null) {
+            if (request.size() != null && !request.size().isBlank()) {
                 builder.size(Size.fromString(request.size()));
             }
-            if (request.gender() != null) {
+            if (request.gender() != null && !request.gender().isBlank()) {
                 builder.gender(Gender.fromString(request.gender()));
             }
             if (request.color() != null) {
@@ -123,6 +123,9 @@ public class PetService implements
             }
             if (request.petDescription() != null) {
                 builder.petDescription(PetDescription.of(request.petDescription()));
+            }
+            if (request.petImage() != null) {
+                builder.petImage(PetImage.of(request.petImage()));
             }
         });
 
