@@ -107,7 +107,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public Role getUserRol(UUID userId) {
-        return jpaUserRepository.findRoleById(userId);
+        return jpaUserRepository.findRoleById(String.valueOf(userId));
     }
 
     private UserEntity toEntity(User user, String passwordHash) {

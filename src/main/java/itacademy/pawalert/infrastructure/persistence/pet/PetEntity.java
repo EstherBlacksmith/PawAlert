@@ -67,16 +67,16 @@ public class PetEntity {
         return new Pet(
                 UUID.fromString(this.userId),
                 UUID.fromString(this.id),
-                new ChipNumber (this.chipNumber),
+                this.chipNumber != null ? new ChipNumber(this.chipNumber) : null,
                 new PetOfficialName(this.officialPetName),
-                new PetWorkingName(this.workingPetName),
-                Species.valueOf(this.species),
-                new Breed (this.breed),
-                Size.valueOf(this.size),
-                new Color (this.color),
-                Gender.valueOf(this.gender),
-                new PetDescription (this.petDescription),
-                new PetImage (this.petImage)
+                this.workingPetName != null ? new PetWorkingName(this.workingPetName) : null,
+                Species.fromString(this.species),
+                this.breed != null ? new Breed(this.breed) : null,
+                Size.fromString(this.size),
+                this.color != null ? new Color(this.color) : null,
+                Gender.fromString(this.gender),
+                this.petDescription != null ? new PetDescription(this.petDescription) : null,
+                this.petImage != null ? new PetImage(this.petImage) : null
         );
     }
 }
