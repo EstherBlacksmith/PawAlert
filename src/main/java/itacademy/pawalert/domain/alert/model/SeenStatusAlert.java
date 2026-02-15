@@ -16,7 +16,7 @@ public class SeenStatusAlert implements StatusAlert {
 
     @Override
     public Alert closed(Alert alert) {
-        return AlertFactory.markAsClose(alert);
+        return AlertFactory.markAsClosed(alert);
     }
 
     @Override
