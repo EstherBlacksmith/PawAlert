@@ -34,7 +34,7 @@ public class PetEntity {
     private String gender;
     @Column(name = "pet_description")
     private String petDescription;
-    @Column(name = "pet_image")
+    @Column(name = "pet_image", columnDefinition = "text")
     private String petImage;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
