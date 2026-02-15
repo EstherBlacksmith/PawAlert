@@ -1,9 +1,12 @@
 package itacademy.pawalert.application.alert.service;
 
 import itacademy.pawalert.application.alert.port.inbound.*;
+import itacademy.pawalert.application.alert.port.outbound.CurrentUserProviderPort;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.application.user.port.inbound.GetUserUseCase;
+import itacademy.pawalert.domain.alert.exception.AlertAccessDeniedException;
+import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.alert.service.AlertFactory;
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
@@ -37,14 +40,17 @@ public class AlertService implements
     private final GetUserUseCase userUseCase;
     private final AlertMapper alertMapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final CurrentUserProviderPort currentUserProvider;
 
     public AlertService(AlertRepositoryPort alertRepository, AlertEventRepositoryPort eventRepository,
-                        GetUserUseCase userUseCase, AlertMapper alertMapper, ApplicationEventPublisher eventPublisher){
+                        GetUserUseCase userUseCase, AlertMapper alertMapper, ApplicationEventPublisher eventPublisher,
+                        CurrentUserProviderPort currentUserProvider){
         this.alertRepository = alertRepository;
         this.eventRepository = eventRepository;
         this.userUseCase = userUseCase;
         this.alertMapper = alertMapper;
         this.eventPublisher = eventPublisher;
+        this.currentUserProvider = currentUserProvider;
     }
 
     public List<Alert> findOpenAlertsWithTitle(String title) {
@@ -156,20 +162,16 @@ public class AlertService implements
     @Transactional
     @Override
     public void deleteAlertById(UUID alertId) {
-        if (!alertRepository.existsById(alertId)) {
-            throw new AlertNotFoundException("Alert not found: " + alertId);
-        }
+        Alert alert = getAlertById(alertId);
+        checkAuthorization(alert);
         alertRepository.deleteById(alertId);
     }
 
     @Transactional
     @Override
-    public Alert updateTitle(UUID alertId, UUID userId, Title title) {
+    public Alert updateTitle(UUID alertId, Title title) {
         Alert alert = getAlertById(alertId);
-
-        if (!alert.getUserId().equals(userId)) {
-            throw new UnauthorizedException("Just authorized users can modify this alert");
-        }
+        UUID userId = checkAuthorization(alert);
 
         Title oldTitle = alert.getTitle();
 
@@ -190,12 +192,9 @@ public class AlertService implements
 
     @Transactional
     @Override
-    public Alert updateDescription(UUID alertId, UUID userId, Description description) {
+    public Alert updateDescription(UUID alertId, Description description) {
         Alert alert = getAlertById(alertId);
-
-        if (!alert.getUserId().equals(userId)) {
-            throw new UnauthorizedException("Just authorized users can modify this alert");
-        }
+        UUID userId = checkAuthorization(alert);
 
         Description oldDescription = alert.getDescription();
 
@@ -207,6 +206,26 @@ public class AlertService implements
 
         Alert alertCopy = alert.updateDescription(description);
         return alertRepository.save(alertCopy);
+    }
+
+    /**
+     * Checks if the current user is authorized to modify the alert.
+     * A user is authorized if they are an admin OR if they are the creator of the alert.
+     * Uses the CurrentUserProviderPort to obtain user context.
+     *
+     * @param alert The alert to be modified
+     * @return the current user's ID for use in event tracking
+     * @throws AlertAccessDeniedException if the user is not authorized
+     */
+    private UUID checkAuthorization(Alert alert) {
+        UUID currentUserId = currentUserProvider.getCurrentUserId();
+        boolean isAdmin = currentUserProvider.isCurrentUserAdmin();
+        
+        boolean isCreator = alert.getUserId().equals(currentUserId);
+        if (!isAdmin && !isCreator) {
+            throw new AlertAccessDeniedException(alert.getId(), currentUserId);
+        }
+        return currentUserId;
     }
 
     @Override

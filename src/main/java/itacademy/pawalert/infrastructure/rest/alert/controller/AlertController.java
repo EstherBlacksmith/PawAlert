@@ -70,7 +70,7 @@ public class AlertController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAlert(@PathVariable String id) {
-         deleteAlertUseCase.deleteAlertById(UUID.fromString(id));
+        deleteAlertUseCase.deleteAlertById(UUID.fromString(id));
         return ResponseEntity.noContent().build();
     }
 
@@ -100,8 +100,10 @@ public class AlertController {
     public ResponseEntity<AlertDTO> updateTitle(
             @PathVariable String alertId,
             @Valid @RequestBody TitleUpdateRequest titleUpdateRequest) {
-        Alert updated = updateAlertUseCase.updateTitle(UUID.fromString(alertId),
-                UUID.fromString(titleUpdateRequest.userId().toString()), titleUpdateRequest.title());
+        Alert updated = updateAlertUseCase.updateTitle(
+                UUID.fromString(alertId),
+                titleUpdateRequest.title()
+        );
 
         return ResponseEntity.ok(alertMapper.toDTO(updated));
     }
@@ -110,9 +112,10 @@ public class AlertController {
     public ResponseEntity<AlertDTO> updateDescription(
             @PathVariable String alertId,
             @Valid @RequestBody DescriptionUpdateRequest descriptionUpdateRequest) {
-        Alert updated = updateAlertUseCase.updateDescription(UUID.fromString(alertId),
-                descriptionUpdateRequest.userId(),
-                descriptionUpdateRequest.description());
+        Alert updated = updateAlertUseCase.updateDescription(
+                UUID.fromString(alertId),
+                descriptionUpdateRequest.description()
+        );
 
         return ResponseEntity.ok(alertMapper.toDTO(updated));
     }
