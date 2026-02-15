@@ -32,9 +32,6 @@ public class AlertEntity {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "closure_reason")
-    private String closureReason;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

@@ -20,7 +20,7 @@ public class AlertFactory {
                 alert.getTitle(), alert.getDescription(), new SafeStatusAlert());
     }
 
-    public static Alert markAsClose(Alert alert) {
+    public static Alert markAsClosed(Alert alert) {
         return new Alert(alert.getId(), alert.getPetId(), alert.getUserId(),
                 alert.getTitle(), alert.getDescription(), new ClosedStatusAlert());
     }
