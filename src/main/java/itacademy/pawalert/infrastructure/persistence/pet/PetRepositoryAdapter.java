@@ -24,8 +24,9 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
 
 
     @Override
-    public PetEntity save(Pet pet) {
-        return petRepository.save(pet.toEntity());
+    public Pet save(Pet pet) {
+        PetEntity savedEntity = petRepository.save(pet.toEntity());
+        return savedEntity.toDomain();
     }
 
     @Override
@@ -45,13 +46,24 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Pet> findAll(Specification<Pet> spec, Sort sort) {
-        return petRepository.findAll(spec, sort);
+        // The specifications use string-based field names that match between Pet and PetEntity
+        // So we can safely cast the specification
+        Specification<PetEntity> entitySpec = (Specification<PetEntity>) (Specification<?>) spec;
+        return petRepository.findAll(entitySpec, sort).stream()
+                .map(PetEntity::toDomain)
+                .toList();
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Page<Pet> findAll(Specification<Pet> spec, Pageable pageable) {
-        return petRepository.findAll(spec, pageable);
+        // The specifications use string-based field names that match between Pet and PetEntity
+        // So we can safely cast the specification
+        Specification<PetEntity> entitySpec = (Specification<PetEntity>) (Specification<?>) spec;
+        return petRepository.findAll(entitySpec, pageable)
+                .map(PetEntity::toDomain);
     }
 
     @Override

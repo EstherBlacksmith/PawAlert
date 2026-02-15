@@ -72,7 +72,7 @@ public class PetService implements
                     .petImage(PetImage.of(request.petImage()))
                     .build();
 
-            return petRepositoryPort.save(pet).toDomain();
+            return petRepositoryPort.save(pet);
         }
 
 
@@ -126,7 +126,7 @@ public class PetService implements
             }
         });
 
-        return petRepositoryPort.save(updatedPet).toDomain();
+        return petRepositoryPort.save(updatedPet);
     }
 
     private void checkOwnership(Pet existingPet, UUID userId, Role userRole) {

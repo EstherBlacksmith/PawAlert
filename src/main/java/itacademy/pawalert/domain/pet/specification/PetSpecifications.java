@@ -1,7 +1,6 @@
 package itacademy.pawalert.domain.pet.specification;
 
 import itacademy.pawalert.domain.pet.model.Pet;
-import itacademy.pawalert.infrastructure.persistence.pet.PetEntity;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.UUID;

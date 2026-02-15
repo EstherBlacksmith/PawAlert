@@ -34,7 +34,7 @@ public class EmailNotificationUseCaseImpl implements EmailNotificationUseCase {
 
     @Override
     public void notifyStatusChange(UUID alertId, StatusNames oldStatus, StatusNames newStatus) {
-        List<String> emails = subscriptionRepository.findEmailsByAlertIdAndActiveTrue(alertId);
+        List<String> emails = subscriptionRepository.findEmailsByAlertIdAndActiveTrue(alertId.toString());
 
         Alert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));

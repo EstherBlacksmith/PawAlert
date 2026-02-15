@@ -30,7 +30,7 @@ public class EmailNotificationEventListener {
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + event.alertId()));
         Pet pet = petService.getPetById(alert.getPetId());
 
-        List<String> emails = subscriptionRepository.findEmailsByAlertIdAndActiveTrue(event.alertId());
+        List<String> emails = subscriptionRepository.findEmailsByAlertIdAndActiveTrue(event.alertId().toString());
         String subject = formatter.formatEmailSubject(event.newStatus());
         String body = formatter.formatEmailBody(alert, pet, event.oldStatus(), event.newStatus());
 

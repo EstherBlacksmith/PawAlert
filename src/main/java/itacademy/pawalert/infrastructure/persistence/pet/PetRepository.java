@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface PetRepository  extends
         JpaRepository<PetEntity, String>,
-        JpaSpecificationExecutor<Pet>{
+        JpaSpecificationExecutor<PetEntity>{
 
     List<PetEntity> getPetsByUserId(UUID userID);
     List<PetEntity> findBySpecies(Species species);
