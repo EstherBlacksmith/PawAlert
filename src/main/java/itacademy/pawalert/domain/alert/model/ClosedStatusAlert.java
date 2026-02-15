@@ -2,7 +2,7 @@ package itacademy.pawalert.domain.alert.model;
 
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
 
-public record ClosedStatusAlert() implements StatusAlert {
+public class ClosedStatusAlert implements StatusAlert {
 
     @Override
     public Alert open(Alert alert) {
