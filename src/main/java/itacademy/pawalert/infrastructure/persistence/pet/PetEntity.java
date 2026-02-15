@@ -32,8 +32,9 @@ public class PetEntity {
     private String color;
     @Column(name = "pet_gender")
     private String gender;
-    @Column(name = "pet_description")
+    @Column(name = "pet_description", columnDefinition = "text")
     private String petDescription;
+    @Lob
     @Column(name = "pet_image", columnDefinition = "text")
     private String petImage;
     @Column(name = "created_at")

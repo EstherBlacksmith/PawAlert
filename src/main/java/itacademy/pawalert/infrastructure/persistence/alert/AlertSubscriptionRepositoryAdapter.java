@@ -69,12 +69,12 @@ public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepo
     }
 
     @Override
-    public List<String> findEmailsByAlertIdAndActiveTrue(UUID alertId) {
+    public List<String> findEmailsByAlertIdAndActiveTrue(String alertId) {
         return jpaRepository.findEmailsByAlertIdAndActiveTrue(alertId);
     }
 
     @Override
-    public List<String> findTelegramChatIdsByAlertId(UUID alertId) {
+    public List<String> findTelegramChatIdsByAlertId(String alertId) {
         return jpaRepository.findTelegramChatIdsByAlertId(alertId);
     }
 }

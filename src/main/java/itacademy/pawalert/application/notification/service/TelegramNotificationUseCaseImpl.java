@@ -36,7 +36,7 @@ public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseC
 
     @Override
     public void notifyStatusChange(UUID alertId, StatusNames oldStatus, StatusNames newStatus) {
-        List<String> chatIds = subscriptionRepository.findTelegramChatIdsByAlertId(alertId);
+        List<String> chatIds = subscriptionRepository.findTelegramChatIdsByAlertId(alertId.toString());
 
         Alert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));

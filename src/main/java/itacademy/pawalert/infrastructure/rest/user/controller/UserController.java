@@ -46,11 +46,6 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody RegistrationInput request) {
         logger.debug("Register endpoint called with email: {}", request.email());
         Email convertedEmail = Email.of(request.email());
-        Surname converteedSurname = Surname.of(request.surname());
-        if (getUserUseCase.existsBySurname(converteedSurname)) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Username already exists"));
-        }
 
         if (getUserUseCase.existsByEmail(convertedEmail)) {
             return ResponseEntity.badRequest()
@@ -83,7 +78,7 @@ public class UserController {
 
     // ========== PARAMETERIZED ROUTES (MUST COME LAST) ==========
     
-    @GetMapping("/{userId}")
+    @GetMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}")
     public ResponseEntity<User> getUserById(@PathVariable String userId) {
         logger.debug("getUserById called with: {}", userId);
         UUID convertedUserId = UUID.fromString(userId);
@@ -92,7 +87,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId}/change-password")
+    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/change-password")
     public ResponseEntity<Map<String, String>> changePassword(
             @PathVariable String userId,
             @Valid @RequestBody ChangePasswordRequest request) {
@@ -106,7 +101,7 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
     }
 
-    @PutMapping("/{userId}/change-username")
+    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/change-username")
     public ResponseEntity<User> updateUsername(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest request) {
@@ -118,7 +113,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId}/change-surname")
+    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/change-surname")
     public ResponseEntity<User> updateSurname(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest updateUserRequest) {
@@ -129,7 +124,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId}/change-phonenumber")
+    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/change-phonenumber")
     public ResponseEntity<User> updatePhonenumber(@PathVariable String userId,
                                                   @Valid @RequestBody UpdateUserRequest updateUserRequest) {
         logger.debug("updatePhonenumber called for userId: {}", userId);
@@ -139,7 +134,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId}/change-email")
+    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/change-email")
     public ResponseEntity<User> updateEmail(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest updateUserRequest) {
@@ -150,7 +145,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}")
     public ResponseEntity<Void> deleteUserById(@PathVariable String userId) {
         logger.debug("deleteUserById called for userId: {}", userId);
         UUID convertedUserId = UUID.fromString(userId);
