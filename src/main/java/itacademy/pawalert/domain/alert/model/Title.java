@@ -1,5 +1,8 @@
 package itacademy.pawalert.domain.alert.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public record Title(String title) {
     private static final int MIN_LENGTH = 5;
     private static final int MAX_LENGTH = 255;
@@ -17,10 +20,12 @@ public record Title(String title) {
         title = title.trim();
     }
 
+    @JsonValue
     public String getValue() {
         return title;
     }
 
+    @JsonCreator
     public static Title of(String title) {
         return new Title(title);
     }

@@ -1,5 +1,8 @@
 package itacademy.pawalert.domain.alert.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 
 public record Description( String description) {
 
@@ -20,10 +23,12 @@ public record Description( String description) {
     }
 
 
+    @JsonValue
     public String getValue() {
         return description;
     }
 
+    @JsonCreator
     public static Description of(String description) {
         return new Description(description);
     }
