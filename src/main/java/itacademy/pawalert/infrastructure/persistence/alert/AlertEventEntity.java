@@ -145,17 +145,20 @@ public class AlertEventEntity {
                 ? ClosureReason.fromString(closureReason) 
                 : null;
 
+        // Preserve the original timestamp from the database
+        ChangedAt changedAtValue = new ChangedAt(changedAt);
+        
         return switch (type) {
             case STATUS_CHANGED -> {
                 // If this is a closure event with closure reason
                 if (newStat == StatusNames.CLOSED && closureReasonEnum != null) {
-                    yield AlertEvent.createClosureEvent(alertId, previous, UUID.fromString(changedByUserId), location, closureReasonEnum);
+                    yield AlertEvent.createClosureEvent(alertId, previous, UUID.fromString(changedByUserId), location, closureReasonEnum, changedAtValue);
                 } else {
-                    yield AlertEvent.createStatusEvent(alertId, previous, newStat, UUID.fromString(changedByUserId), location);
+                    yield AlertEvent.createStatusEvent(alertId, previous, newStat, UUID.fromString(changedByUserId), location, changedAtValue);
                 }
             }
-            case TITLE_CHANGED -> AlertEvent.createTitleEvent(alertId, Title.of(oldValue), Title.of(newValue), UUID.fromString(changedByUserId));
-            case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(alertId, Description.of(oldValue), Description.of(newValue), UUID.fromString(changedByUserId));
+            case TITLE_CHANGED -> AlertEvent.createTitleEvent(alertId, Title.of(oldValue), Title.of(newValue), UUID.fromString(changedByUserId), changedAtValue);
+            case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(alertId, Description.of(oldValue), Description.of(newValue), UUID.fromString(changedByUserId), changedAtValue);
         };
     }
 

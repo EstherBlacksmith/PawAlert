@@ -1,18 +1,36 @@
 package itacademy.pawalert.infrastructure.rest.alert.mapper;
 
+import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @DisplayName("AlertMapper Tests")
+@ExtendWith(MockitoExtension.class)
 class AlertMapperTest {
+
+    @Mock
+    private AlertEventRepositoryPort eventRepository;
+
+    private AlertMapper alertMapper;
+
+    @BeforeEach
+    void setUp() {
+        alertMapper = new AlertMapper(eventRepository);
+    }
 
     @Nested
     @DisplayName("toDTO Tests")
@@ -32,7 +50,8 @@ class AlertMapperTest {
                     new OpenedStateAlert()
             );
 
-            AlertMapper alertMapper =new AlertMapper();
+            when(eventRepository.findLatestByAlertId(alertId)).thenReturn(Optional.empty());
+
             AlertDTO dto = alertMapper.toDTO(alert);
 
             assertEquals(alertId.toString(), dto.getId());

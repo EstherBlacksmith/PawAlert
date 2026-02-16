@@ -3,11 +3,11 @@ package itacademy.pawalert.application.service;
 
 import itacademy.pawalert.application.alert.service.AlertService;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
-import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
 import itacademy.pawalert.application.user.port.inbound.GetUserUseCase;
 import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
+import itacademy.pawalert.application.alert.port.outbound.CurrentUserProviderPort;
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.user.Role;
@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -54,6 +55,12 @@ class AlertServiceTest {
 
     @Mock
     private AlertMapper alertMapper;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
+    @Mock
+    private CurrentUserProviderPort currentUserProvider;
 
     @InjectMocks
     private AlertService alertService;
@@ -83,6 +90,8 @@ class AlertServiceTest {
         // Configure shared mocks
         lenient().when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         lenient().when(eventRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        lenient().when(currentUserProvider.getCurrentUserId()).thenReturn(userId);
+        lenient().when(currentUserProvider.isCurrentUserAdmin()).thenReturn(false);
         location = GeographicLocation.of(40.4168, -3.7025);
     }
 
@@ -95,7 +104,7 @@ class AlertServiceTest {
 
         // When/Then
         assertThrows(AlertNotFoundException.class,
-                () -> alertService.changeStatus(nonExistentId, StatusNames.SEEN, userId,location));
+                () -> alertService.changeStatus(nonExistentId, StatusNames.SEEN, userId, location, null));
     }
 
     @Test
@@ -110,7 +119,7 @@ class AlertServiceTest {
 
         // When/Then
         assertThrows(InvalidAlertStatusChange.class,
-                () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId,location));
+                () -> alertService.changeStatus(alertId, StatusNames.SEEN, userId, location, null));
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -127,9 +136,11 @@ class AlertServiceTest {
         Alert alert = TestAlertFactory.createModificableAlert(alertId.toString(), creatorId.toString(), "Original Title", "Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
         when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(currentUserProvider.getCurrentUserId()).thenReturn(creatorId);
+        when(currentUserProvider.isCurrentUserAdmin()).thenReturn(false);
 
         // When
-        Alert result = alertService.updateTitle(alertId, creatorId, newTitle);
+        Alert result = alertService.updateTitle(alertId, newTitle);
 
         // Then
         assertEquals(newTitle.getValue(), result.getTitle().getValue());
@@ -150,10 +161,12 @@ class AlertServiceTest {
 
         Alert alert = TestAlertFactory.createModificableAlert(String.valueOf(alertId), String.valueOf(creatorId), "Title", "Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
+        when(currentUserProvider.getCurrentUserId()).thenReturn(otherUserId);
+        when(currentUserProvider.isCurrentUserAdmin()).thenReturn(false);
 
         // When/Then
-        assertThrows(UnauthorizedException.class,
-                () -> alertService.updateTitle(alertId, otherUserId, Title.of("New title")));
+        assertThrows(itacademy.pawalert.domain.alert.exception.AlertAccessDeniedException.class,
+                () -> alertService.updateTitle(alertId, Title.of("New title")));
 
         verify(alertRepository, never()).save(any());
 
@@ -173,9 +186,11 @@ class AlertServiceTest {
         Alert alert = TestAlertFactory.createModificableAlert(alertId.toString(), creatorId.toString(), "Title", "Original Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
         when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(currentUserProvider.getCurrentUserId()).thenReturn(creatorId);
+        when(currentUserProvider.isCurrentUserAdmin()).thenReturn(false);
 
         // When
-        Alert result = alertService.updateDescription(alertId, creatorId, newDescription);
+        Alert result = alertService.updateDescription(alertId, newDescription);
 
         // Then
         assertEquals(newDescription.getValue(), result.getDescription().getValue());
@@ -191,7 +206,7 @@ class AlertServiceTest {
 
         // When/Then
         assertThrows(AlertNotFoundException.class,
-                () -> alertService.updateTitle(alertId, userId, Title.of("New title")));
+                () -> alertService.updateTitle(alertId, Title.of("New title")));
         verify(alertRepository, never()).save(any());
     }
 
@@ -207,10 +222,12 @@ class AlertServiceTest {
                 alertId, UUID.randomUUID(), creatorId
         );
         when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(closedAlert));
+        when(currentUserProvider.getCurrentUserId()).thenReturn(creatorId);
+        when(currentUserProvider.isCurrentUserAdmin()).thenReturn(false);
 
         // When/Then
         assertThrows(AlertModificationNotAllowedException.class,
-                () -> alertService.updateTitle(alertId, creatorId, Title.of("New Title")));
+                () -> alertService.updateTitle(alertId, Title.of("New Title")));
     }
 
     @Test
@@ -224,10 +241,12 @@ class AlertServiceTest {
                 alertId, UUID.randomUUID(), creatorId
         );
         when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(closedAlert));
+        when(currentUserProvider.getCurrentUserId()).thenReturn(creatorId);
+        when(currentUserProvider.isCurrentUserAdmin()).thenReturn(false);
 
         // When/Then
         assertThrows(AlertModificationNotAllowedException.class,
-                () -> alertService.updateDescription(alertId, creatorId, Description.of("New Description")));
+                () -> alertService.updateDescription(alertId, Description.of("New description with enough characters")));
     }
 
     @Test
@@ -240,10 +259,12 @@ class AlertServiceTest {
 
         Alert alert = TestAlertFactory.createModificableAlert(alertId.toString(), creatorId.toString(), "Title", "Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(alert));
+        when(currentUserProvider.getCurrentUserId()).thenReturn(otherUserId);
+        when(currentUserProvider.isCurrentUserAdmin()).thenReturn(false);
 
         // When/Then
-        assertThrows(UnauthorizedException.class,
-                () -> alertService.updateTitle(alertId, otherUserId, Title.of("New Title")));
+        assertThrows(itacademy.pawalert.domain.alert.exception.AlertAccessDeniedException.class,
+                () -> alertService.updateTitle(alertId, Title.of("New Title")));
 
         // Key assertion: NO event saved
         verify(eventRepository, never()).save(any(AlertEvent.class));
@@ -259,10 +280,12 @@ class AlertServiceTest {
 
         Alert alert = TestAlertFactory.createModificableAlert(alertId.toString(), creatorId.toString(), "Title", "Description");
         when(alertRepository.findById(alertId)).thenReturn(Optional.ofNullable(alert));
+        when(currentUserProvider.getCurrentUserId()).thenReturn(otherUserId);
+        when(currentUserProvider.isCurrentUserAdmin()).thenReturn(false);
 
         // When/Then
-        assertThrows(UnauthorizedException.class,
-                () -> alertService.updateDescription(alertId, otherUserId, Description.of("New Description")));
+        assertThrows(itacademy.pawalert.domain.alert.exception.AlertAccessDeniedException.class,
+                () -> alertService.updateDescription(alertId, Description.of("New description with enough characters")));
 
         // Key assertion: NO event saved
         verify(eventRepository, never()).save(any(AlertEvent.class));
@@ -280,14 +303,14 @@ class AlertServiceTest {
         void shouldCreateAlertWithInitialEvent() {
             // Given - Use valid UUID
             Title title = Title.of("Test Alert");
-            Description description = Description.of("Test description");
+            Description description = Description.of("Test description with enough characters");
 
             when(alertRepository.save(any(Alert.class))).thenAnswer(inv -> inv.getArgument(0));
 
             when(eventRepository.save(any(AlertEvent.class))).thenAnswer(inv -> inv.getArgument(0));
 
             // When
-            Alert result = alertService.createOpenedAlert(petId, title, description, userId,location);
+            Alert result = alertService.createOpenedAlert(petId, title, description, userId, location);
 
             // Then
             assertNotNull(result);
@@ -304,8 +327,8 @@ class AlertServiceTest {
 
             // When
             Title title = Title.of("Title");
-            Description description = Description.of("Desc");
-            alertService.createOpenedAlert(petId, title, description, userId,location);
+            Description description = Description.of("Description with enough characters");
+            alertService.createOpenedAlert(petId, title, description, userId, location);
 
             // Then
             verify(alertRepository, times(1)).save(any(Alert.class));
@@ -357,13 +380,14 @@ class AlertServiceTest {
                     "OPENED",
                     LocalDateTime.now(),
                     "user-1",
-                    location
+                    location,
+                    (String) null
             );
 
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.changeStatus(alertId, StatusNames.SEEN, userId,location);
+            Alert result = alertService.changeStatus(alertId, StatusNames.SEEN, userId, location, null);
 
             // Then - Expect 2 saves: initial event (already saved) + change event
             verify(eventRepository, times(1)).save(any(AlertEvent.class));
@@ -378,7 +402,7 @@ class AlertServiceTest {
 
             // When/Then
             assertThrows(AlertNotFoundException.class,
-                    () -> alertService.changeStatus(UUID.fromString("12345678-1234-1234-1234-123456789012"), StatusNames.SEEN, userId,location));
+                    () -> alertService.changeStatus(UUID.fromString("12345678-1234-1234-1234-123456789012"), StatusNames.SEEN, userId, location, null));
         }
     }
 
@@ -393,7 +417,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.markAsSeen(alertId, userId,location);
+            Alert result = alertService.markAsSeen(alertId, userId, location);
 
             // Then
             assertEquals(StatusNames.SEEN, result.currentStatus().getStatusName());
@@ -406,7 +430,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.markAsSafe(alertId, userId,location);
+            Alert result = alertService.markAsSafe(alertId, userId, location);
 
             // Then
             assertEquals(StatusNames.SAFE, result.currentStatus().getStatusName());
@@ -419,7 +443,7 @@ class AlertServiceTest {
             when(alertRepository.findById(alertId)).thenReturn(Optional.of(testAlert));
 
             // When
-            Alert result = alertService.markAsClosed(alertId, userId,location);
+            Alert result = alertService.markAsClosed(alertId, userId, location, ClosureReason.FOUNDED);
 
             // Then
             assertEquals(StatusNames.CLOSED, result.currentStatus().getStatusName());
@@ -434,12 +458,13 @@ class AlertServiceTest {
         @DisplayName("Should return alert history")
         void shouldReturnAlertHistory() {
             // Given
+            UUID alertId1 = UUID.randomUUID();
             AlertEvent event1 = AlertEvent.createStatusEvent(
-                    StatusNames.OPENED, StatusNames.SEEN,UUID.fromString("12345678-1234-1234-1234-123456789012"),location
+                    alertId1, StatusNames.OPENED, StatusNames.SEEN, UUID.fromString("12345678-1234-1234-1234-123456789012"), location, ChangedAt.now()
             );
 
             AlertEvent event2 = AlertEvent.createStatusEvent(
-                    StatusNames.SEEN, StatusNames.CLOSED,UUID.fromString("87654321-4321-4321-4321-210987654321"),location
+                    alertId1, StatusNames.SEEN, StatusNames.CLOSED, UUID.fromString("87654321-4321-4321-4321-210987654321"), location, ChangedAt.now()
             );
             UUID testAlertId = UUID.fromString("12345678-1234-1234-1234-123456789012");
 
@@ -494,7 +519,7 @@ class AlertServiceTest {
                     petId,
                     creatorId,
                     Title.of("Test Alert"),
-                    Description.of("Test description"),
+                    Description.of("Test description with enough characters"),
                     StatusNames.OPENED,
                     PhoneNumber.of("+34612345678"),
                     Surname.of("Garcia")
