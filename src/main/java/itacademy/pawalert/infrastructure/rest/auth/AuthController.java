@@ -2,7 +2,6 @@ package itacademy.pawalert.infrastructure.rest.auth;
 
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.UserWithPassword;
-import itacademy.pawalert.domain.user.model.Username;
 import itacademy.pawalert.infrastructure.persistence.user.UserRepository;
 import itacademy.pawalert.infrastructure.security.JWTService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        // Look for a user with the username
+        // Look for a user with the email
          UserWithPassword userWithPassword = userRepository.findByEmail((request.email()))
             .orElseThrow(() -> new BadCredentialsException("Invalid credentials"))
             .toDomainWithPassword();
