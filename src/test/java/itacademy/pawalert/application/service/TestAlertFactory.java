@@ -5,18 +5,7 @@ import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 
 import java.util.UUID;
 
-/**
- * Factory to create Alert instances specifically for testing.
- * <p>
- * This factory provides convenient methods to create Alerts with
- * different states (OPENED, SEEN, SAFE, CLOSED) respecting the
- * valid state transitions of the domain.
- * <p>
- * Applied principles:
- * - Factory Method: Static methods for creation
- * - Builder Pattern: Fluent API for maximum flexibility
- * - DDD: Respects invariants and state transitions
- */
+
 public final class TestAlertFactory {
 
     // Private constructor to prevent instantiation
@@ -116,7 +105,7 @@ public final class TestAlertFactory {
                 UUID.randomUUID(),
                 UUID.fromString( creatorId),
                 Title.of(originalTitle),
-                Description.of(description)
+                Description.of(description + " - additional text to meet minimum length requirement")
         );
 
     }

@@ -60,29 +60,29 @@ public class AlertEvent {
         this.closureReason = closureReason;
     }
 
-    // Factory method for create the initial event
-    public static AlertEvent createStatusEvent(UUID alertId, StatusNames previousStatus, StatusNames newStatus, UUID userId, GeographicLocation location) {
+    // Factory method for status events with specific timestamp
+    public static AlertEvent createStatusEvent(UUID alertId, StatusNames previousStatus, StatusNames newStatus, UUID userId, GeographicLocation location, ChangedAt changedAt) {
         return new AlertEvent(alertId, EventType.STATUS_CHANGED, previousStatus, newStatus,
-                null, null, ChangedAt.now(), userId, location, null);
+                null, null, changedAt, userId, location, null);
     }
 
-    // Factory method for closure events - includes closure reason
+    // Factory method for closure events with specific timestamp
     public static AlertEvent createClosureEvent(UUID alertId, StatusNames previousStatus, UUID userId, 
-                                                GeographicLocation location, ClosureReason closureReason) {
+                                                GeographicLocation location, ClosureReason closureReason, ChangedAt changedAt) {
         return new AlertEvent(alertId, EventType.STATUS_CHANGED, previousStatus, StatusNames.CLOSED,
-                null, null, ChangedAt.now(), userId, location, closureReason);
+                null, null, changedAt, userId, location, closureReason);
     }
 
-    // Factory method for title events
-    public static AlertEvent createTitleEvent(UUID alertId, Title oldTitle, Title newTitle, UUID userId) {
+    // Factory method for title events with specific timestamp
+    public static AlertEvent createTitleEvent(UUID alertId, Title oldTitle, Title newTitle, UUID userId, ChangedAt changedAt) {
         return new AlertEvent(alertId, EventType.TITLE_CHANGED, null, null,
-                oldTitle.getValue(), newTitle.getValue(), ChangedAt.now(), userId, null, null);
+                oldTitle.getValue(), newTitle.getValue(), changedAt, userId, null, null);
     }
 
-    // Factory method for description events
-    public static AlertEvent createDescriptionEvent(UUID alertId, Description oldDescription, Description newDescription, UUID userId) {
+    // Factory method for description events with specific timestamp
+    public static AlertEvent createDescriptionEvent(UUID alertId, Description oldDescription, Description newDescription, UUID userId, ChangedAt changedAt) {
         return new AlertEvent(alertId, EventType.DESCRIPTION_CHANGED, null, null,
-                oldDescription.getValue(), newDescription.getValue(), ChangedAt.now(), userId, null, null);
+                oldDescription.getValue(), newDescription.getValue(), changedAt, userId, null, null);
     }
 
     @Override

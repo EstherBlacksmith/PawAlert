@@ -25,8 +25,9 @@ class AlertEventTest {
         @DisplayName("Should create status change event with fromStatus and toStatus")
         void shouldCreateStatusChangeEvent() {
             UUID userId = UUID.randomUUID();
+            UUID alertId = UUID.randomUUID();
             AlertEvent event = AlertEvent.createStatusEvent(
-                    StatusNames.OPENED, StatusNames.SEEN, userId,location);
+                    alertId, StatusNames.OPENED, StatusNames.SEEN, userId, location, ChangedAt.now());
 
             assertEquals(StatusNames.OPENED, event.getPreviousStatus());
             assertEquals(StatusNames.SEEN, event.getNewStatus());
@@ -38,8 +39,9 @@ class AlertEventTest {
         @DisplayName("Should create event with null previous status for OPENED")
         void shouldCreateEventWithNullPreviousStatusForOpened() {
             UUID userId = UUID.randomUUID();
+            UUID alertId = UUID.randomUUID();
             AlertEvent event = AlertEvent.createStatusEvent(
-                    null, StatusNames.OPENED, userId,location);
+                    alertId, null, StatusNames.OPENED, userId, location, ChangedAt.now());
 
             assertNull(event.getPreviousStatus());
             assertEquals(StatusNames.OPENED, event.getNewStatus());
@@ -53,8 +55,9 @@ class AlertEventTest {
         @Test
         @DisplayName("Status change event should have STATUS_CHANGED type")
         void statusChangeEventShouldHaveCorrectType() {
+            UUID alertId = UUID.randomUUID();
             AlertEvent event = AlertEvent.createStatusEvent(
-                    StatusNames.OPENED, StatusNames.SEEN, UUID.randomUUID(),location);
+                    alertId, StatusNames.OPENED, StatusNames.SEEN, UUID.randomUUID(), location, ChangedAt.now());
 
             assertEquals(EventType.STATUS_CHANGED, event.getEventType());
         }

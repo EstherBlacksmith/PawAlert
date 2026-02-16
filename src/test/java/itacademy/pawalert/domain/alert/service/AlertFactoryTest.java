@@ -136,8 +136,8 @@ class AlertFactoryTest {
     }
 
     @Nested
-    @DisplayName("markAsClose Tests")
-    class MarkAsCloseTests {
+    @DisplayName("markAsClosed Tests")
+    class MarkAsClosedTests {
 
         @Test
         @DisplayName("Should transition from OPENED to CLOSED directly")
@@ -146,7 +146,7 @@ class AlertFactoryTest {
             Alert alert = AlertFactory.createAlert(petId, userId, title, description);
 
             // When
-            Alert closedAlert = AlertFactory.markAsClose(alert);
+            Alert closedAlert = AlertFactory.markAsClosed(alert);
 
             // Then
             assertEquals(StatusNames.CLOSED, closedAlert.currentStatus().getStatusName());
@@ -160,7 +160,7 @@ class AlertFactoryTest {
             Alert seenAlert = AlertFactory.markAsSeen(alert);
 
             // When
-            Alert closedAlert = AlertFactory.markAsClose(seenAlert);
+            Alert closedAlert = AlertFactory.markAsClosed(seenAlert);
 
             // Then
             assertEquals(StatusNames.CLOSED, closedAlert.currentStatus().getStatusName());
@@ -174,7 +174,7 @@ class AlertFactoryTest {
             Alert safeAlert = AlertFactory.markAsSafe(alert);
 
             // When
-            Alert closedAlert = AlertFactory.markAsClose(safeAlert);
+            Alert closedAlert = AlertFactory.markAsClosed(safeAlert);
 
             // Then
             assertEquals(StatusNames.CLOSED, closedAlert.currentStatus().getStatusName());
@@ -200,7 +200,7 @@ class AlertFactoryTest {
             assertEquals(StatusNames.SAFE, safeAlert.currentStatus().getStatusName());
 
             // When & Then: SAFE → CLOSED
-            Alert closedAlert = AlertFactory.markAsClose(safeAlert);
+            Alert closedAlert = AlertFactory.markAsClosed(safeAlert);
             assertEquals(StatusNames.CLOSED, closedAlert.currentStatus().getStatusName());
 
             // Verify ID is preserved throughout
