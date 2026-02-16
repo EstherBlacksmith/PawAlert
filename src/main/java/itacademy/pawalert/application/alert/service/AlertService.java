@@ -109,34 +109,52 @@ public class AlertService implements
 
     @Transactional
     @Override
-    public Alert markAsSeen(UUID alertId, UUID userId,GeographicLocation location) {
-        return changeStatus(alertId, StatusNames.SEEN, userId,location);
+    public Alert markAsSeen(UUID alertId, UUID userId, GeographicLocation location) {
+        return changeStatus(alertId, StatusNames.SEEN, userId, location, null);
+    }
+
+    @Transactional
+    @Override
+    public Alert markAsClosed(UUID alertId, UUID userId, GeographicLocation location, ClosureReason closureReason) {
+        return changeStatus(alertId, StatusNames.CLOSED, userId, location, closureReason);
     }
 
     @Transactional
     @Override
     public Alert markAsSafe(UUID alertId, UUID userId, GeographicLocation location) {
-        return changeStatus(alertId, StatusNames.SAFE, userId,location);
-    }
-
-    @Transactional
-    public Alert markAsClosed(UUID alertId, UUID userId, GeographicLocation location) {
-        return changeStatus(alertId, StatusNames.CLOSED, userId,location);
+        return changeStatus(alertId, StatusNames.SAFE, userId, location, null);
     }
 
     @Transactional
     @Override
-    public Alert changeStatus(UUID alertId, StatusNames newStatus, UUID userId, GeographicLocation location) {
+    public Alert closeAlert(UUID alertId, UUID userId, GeographicLocation location, ClosureReason closureReason) {
+        // Business rule: closing an alert always requires a reason
+        if (closureReason == null) {
+            throw new IllegalArgumentException("Closure reason is required when closing an alert");
+        }
+        
+        // Delegate to changeStatus with CLOSED status
+        return changeStatus(alertId, StatusNames.CLOSED, userId, location, closureReason);
+    }
+
+    @Transactional
+    @Override
+    public Alert changeStatus(UUID alertId, StatusNames newStatus, UUID userId, GeographicLocation location, ClosureReason closureReason) {
+
+        // Business rule: closing an alert always requires a reason
+        if (newStatus == StatusNames.CLOSED && closureReason == null) {
+            throw new IllegalArgumentException("Closure reason is required when closing an alert");
+        }
 
         Alert alert = getAlertById(alertId);
         StatusNames previousStatus = alert.currentStatus().getStatusName();
 
-        Alert alertCopy ;
+        Alert alertCopy;
         switch (newStatus) {
 
             case SEEN -> alertCopy = alert.seen();
 
-            case SAFE ->alertCopy = alert.safe();
+            case SAFE -> alertCopy = alert.safe();
 
             case CLOSED -> alertCopy = alert.closed();
 
@@ -149,10 +167,15 @@ public class AlertService implements
                 new AlertStatusChangedEvent(alertId, previousStatus, newStatus)
         );
 
-        // Use factory
-        AlertEvent  event = AlertEventFactory.createStatusChangedEvent(
-                alertCopy, previousStatus, newStatus, userId, location
-        );
+        // Use appropriate factory method based on status change type
+        AlertEvent event;
+        if (newStatus == StatusNames.CLOSED && closureReason != null) {
+            // For closure events, include the closure reason
+            event = AlertEventFactory.createClosureEvent(alertCopy, previousStatus, userId, location, closureReason);
+        } else {
+            // For other status changes
+            event = AlertEventFactory.createStatusChangedEvent(alertCopy, previousStatus, newStatus, userId, location);
+        }
 
         eventRepository.save(event);
 

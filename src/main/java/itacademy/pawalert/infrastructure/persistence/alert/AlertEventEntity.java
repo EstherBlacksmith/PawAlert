@@ -36,6 +36,8 @@ public class AlertEventEntity {
     private Double latitude;
     @Column(name = "longitude")
     private Double longitude;
+    @Column(name = "closure_reason")
+    private String closureReason;
     @ManyToOne
     @JoinColumn(name = "alert_id")
     private AlertEntity alert;
@@ -43,18 +45,19 @@ public class AlertEventEntity {
     public AlertEventEntity() {
     }
 
-    //For status changes
+    //For status changes (including closure)
     public AlertEventEntity(String id, String previousStatus, String newStatus,
                             LocalDateTime changedAt, String changedByUserId,
-                            GeographicLocation location) {
+                            GeographicLocation location, String closureReason) {
         this.id = id;
         this.eventType = "STATUS_CHANGED";
         this.previousStatus = previousStatus;
         this.newStatus = newStatus;
         this.changedAt = changedAt;
         this.changedByUserId = changedByUserId;
-        this.latitude = location.latitude();
-        this.longitude = location.longitude();
+        this.latitude = location != null ? location.latitude() : null;
+        this.longitude = location != null ? location.longitude() : null;
+        this.closureReason = closureReason;
     }
 
     //For title and description events
@@ -66,6 +69,7 @@ public class AlertEventEntity {
         this.newValue = newValue;
         this.changedAt = changedAt;
         this.changedByUserId = changedByUserId;
+        this.closureReason = null;
     }
 
     // Conversion Domain -> Entity
@@ -80,6 +84,9 @@ public class AlertEventEntity {
                 ? event.getNewStatus().name()
                 : null;
         String eventType = event.getEventType().name();
+        String closureReason = event.getClosureReason() != null 
+                ? event.getClosureReason().name() 
+                : null;
 
         AlertEventEntity entity;
 
@@ -95,16 +102,15 @@ public class AlertEventEntity {
                     userId
             );
         } else {
-            // STATUS_CHANGED
-            assert event.getPreviousStatus() != null;
-            assert event.getNewStatus() != null;
+            // STATUS_CHANGED (including closure events)
             entity = new AlertEventEntity(
                     event.getId().toString(),
-                    event.getPreviousStatus().name(),
-                    event.getNewStatus().name(),
+                    previousStatus,
+                    newStatus,
                     event.getChangedAt().value(),
                     event.getChangedBy().toString(),
-                    event.getLocation()
+                    event.getLocation(),
+                    closureReason
             );
         }
         
@@ -135,8 +141,19 @@ public class AlertEventEntity {
             location = GeographicLocation.of(latitude, longitude);
         }
 
+        ClosureReason closureReasonEnum = closureReason != null 
+                ? ClosureReason.fromString(closureReason) 
+                : null;
+
         return switch (type) {
-            case STATUS_CHANGED -> AlertEvent.createStatusEvent(alertId, previous, newStat, UUID.fromString(changedByUserId), location);
+            case STATUS_CHANGED -> {
+                // If this is a closure event with closure reason
+                if (newStat == StatusNames.CLOSED && closureReasonEnum != null) {
+                    yield AlertEvent.createClosureEvent(alertId, previous, UUID.fromString(changedByUserId), location, closureReasonEnum);
+                } else {
+                    yield AlertEvent.createStatusEvent(alertId, previous, newStat, UUID.fromString(changedByUserId), location);
+                }
+            }
             case TITLE_CHANGED -> AlertEvent.createTitleEvent(alertId, Title.of(oldValue), Title.of(newValue), UUID.fromString(changedByUserId));
             case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(alertId, Description.of(oldValue), Description.of(newValue), UUID.fromString(changedByUserId));
         };
