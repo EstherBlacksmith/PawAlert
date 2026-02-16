@@ -1,23 +1,23 @@
 package itacademy.pawalert.infrastructure.persistence.alert;
 
-import aj.org.objectweb.asm.commons.Remapper;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public interface AlertEventRepository extends JpaRepository<AlertEventEntity, String> {
 
-    /**
-     * Looks for all the events sort by date descendant
-     */
-    List<AlertEventEntity> findByAlertIdOrderByChangedAtDesc(String alertId);
+    List<AlertEventEntity> findByAlert_IdOrderByChangedAtDesc(String alertId);
 
-    /**
-     * Looks for all the event in one alert.
-     */
-    List<AlertEventEntity> findByAlertId(String alertId);
+    List<AlertEventEntity> findByAlert_Id(String alertId);
 
-    Optional<AlertEventEntity> findFirstByAlertIdOrderByChangedAtDesc(String string);
+    Optional<AlertEventEntity> findFirstByAlert_IdOrderByChangedAtDesc(String alertId);
+
+
+    @Query("SELECT e FROM AlertEventEntity e JOIN FETCH e.alert WHERE e.alert.id = :alertId ORDER BY e.changedAt DESC")
+    List<AlertEventEntity> findByAlertIdWithAlertOrderByChangedAtDesc(String alertId);
+
+    @Query("SELECT e FROM AlertEventEntity e JOIN FETCH e.alert WHERE e.alert.id = :alertId ORDER BY e.changedAt DESC LIMIT 1")
+    Optional<AlertEventEntity> findFirstByAlertIdWithAlertOrderByChangedAtDesc(String alertId);
 }
