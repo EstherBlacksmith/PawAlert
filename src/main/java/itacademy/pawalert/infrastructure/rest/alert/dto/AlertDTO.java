@@ -18,4 +18,5 @@ public class AlertDTO {
     private String status;
     private Double latitude;
     private Double longitude;
+    private String closureReason;
 }

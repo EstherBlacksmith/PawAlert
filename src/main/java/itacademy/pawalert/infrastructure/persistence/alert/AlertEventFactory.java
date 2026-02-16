@@ -13,6 +13,13 @@ public class AlertEventFactory {
         return AlertEvent.createStatusEvent(alert.getId(), previousStatus, newStatus, userId, location);
     }
 
+    // Factory method for closure events (includes closure reason)
+    public static AlertEvent createClosureEvent(
+            Alert alert, StatusNames previousStatus, UUID userId, GeographicLocation location, ClosureReason closureReason ){
+
+        return AlertEvent.createClosureEvent(alert.getId(), previousStatus, userId, location, closureReason);
+    }
+
     // Factory method for title changes
     public static AlertEvent createTitleChangedEvent(
             Alert alert, Title oldTitle, Title newTitle, UUID userId) {

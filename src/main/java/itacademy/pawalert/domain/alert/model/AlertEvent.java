@@ -26,6 +26,8 @@ public class AlertEvent {
     private final UUID changedBy;
     @Getter
     private final GeographicLocation location;
+    @Getter
+    private final ClosureReason closureReason;
 
     public AlertEvent(UUID id, EventType eventType, StatusNames previous, StatusNames newStatus,
                       String oldValue, String newValue, UUID userId, GeographicLocation location) {
@@ -39,11 +41,12 @@ public class AlertEvent {
         this.location = location;
         this.changedAt = new ChangedAt(LocalDateTime.now());
         this.changedBy = userId;
+        this.closureReason = null;
     }
 
     // Private constructor - uses factory method
     private AlertEvent(UUID alertId, EventType eventType, StatusNames previous, StatusNames newStatus, String oldValue, String newValue,
-                       ChangedAt changedAt, UUID changedBy, GeographicLocation location) {
+                       ChangedAt changedAt, UUID changedBy, GeographicLocation location, ClosureReason closureReason) {
         this.alertId = alertId;
         this.eventType = eventType;
         this.oldValue = oldValue;
@@ -54,24 +57,32 @@ public class AlertEvent {
         this.newStatus = newStatus;
         this.changedAt = changedAt;
         this.changedBy = changedBy;
+        this.closureReason = closureReason;
     }
 
     // Factory method for create the initial event
     public static AlertEvent createStatusEvent(UUID alertId, StatusNames previousStatus, StatusNames newStatus, UUID userId, GeographicLocation location) {
         return new AlertEvent(alertId, EventType.STATUS_CHANGED, previousStatus, newStatus,
-                null, null, ChangedAt.now(), userId, location);
+                null, null, ChangedAt.now(), userId, location, null);
+    }
+
+    // Factory method for closure events - includes closure reason
+    public static AlertEvent createClosureEvent(UUID alertId, StatusNames previousStatus, UUID userId, 
+                                                GeographicLocation location, ClosureReason closureReason) {
+        return new AlertEvent(alertId, EventType.STATUS_CHANGED, previousStatus, StatusNames.CLOSED,
+                null, null, ChangedAt.now(), userId, location, closureReason);
     }
 
     // Factory method for title events
     public static AlertEvent createTitleEvent(UUID alertId, Title oldTitle, Title newTitle, UUID userId) {
         return new AlertEvent(alertId, EventType.TITLE_CHANGED, null, null,
-                oldTitle.getValue(), newTitle.getValue(), ChangedAt.now(), userId, null);
+                oldTitle.getValue(), newTitle.getValue(), ChangedAt.now(), userId, null, null);
     }
 
     // Factory method for description events
     public static AlertEvent createDescriptionEvent(UUID alertId, Description oldDescription, Description newDescription, UUID userId) {
         return new AlertEvent(alertId, EventType.DESCRIPTION_CHANGED, null, null,
-                oldDescription.getValue(), newDescription.getValue(), ChangedAt.now(), userId, null);
+                oldDescription.getValue(), newDescription.getValue(), ChangedAt.now(), userId, null, null);
     }
 
     @Override
