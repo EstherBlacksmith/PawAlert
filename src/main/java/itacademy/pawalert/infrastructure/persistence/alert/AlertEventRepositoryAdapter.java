@@ -29,14 +29,14 @@ public class AlertEventRepositoryAdapter implements AlertEventRepositoryPort {
 
     @Override
     public List<AlertEvent> findByAlertIdOrderByChangedAtDesc(UUID alertId) {
-        return eventRepository.findByAlertIdOrderByChangedAtDesc(alertId.toString())
+        return eventRepository.findByAlertIdWithAlertOrderByChangedAtDesc(alertId.toString())
                 .stream()
                 .map(AlertEventEntity::toDomain).toList();
     }
 
     @Override
     public Optional<AlertEvent> findLatestByAlertId(UUID alertId) {
-        return eventRepository.findFirstByAlertIdOrderByChangedAtDesc(alertId.toString())
+        return eventRepository.findFirstByAlertIdWithAlertOrderByChangedAtDesc(alertId.toString())
                 .map(AlertEventEntity::toDomain);
     }
 
