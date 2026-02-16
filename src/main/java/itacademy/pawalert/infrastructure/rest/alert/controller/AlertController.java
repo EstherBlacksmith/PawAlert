@@ -2,11 +2,7 @@ package itacademy.pawalert.infrastructure.rest.alert.controller;
 
 import itacademy.pawalert.application.alert.port.inbound.*;
 import itacademy.pawalert.domain.alert.model.*;
-import itacademy.pawalert.infrastructure.location.HybridLocationProvider;
-import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
-import itacademy.pawalert.infrastructure.rest.alert.dto.DescriptionUpdateRequest;
-import itacademy.pawalert.infrastructure.rest.alert.dto.StatusChangeRequest;
-import itacademy.pawalert.infrastructure.rest.alert.dto.TitleUpdateRequest;
+import itacademy.pawalert.infrastructure.rest.alert.dto.*;
 import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -31,11 +27,10 @@ public class AlertController {
     private final DeleteAlertUseCase deleteAlertUseCase;
     private final AlertMapper alertMapper;
     private final SearchAlertsUseCase searchAlertsUseCase;
-    private final HybridLocationProvider locationProvider;
 
     public AlertController(AlertMapper alertMapper, CreateAlertUseCase createAlertUseCase, GetAlertUseCase getAlertUseCase,
                            UpdateAlertStatusUseCase updateAlertStatusUseCase, UpdateAlertUseCase updateAlertUseCase,
-                           DeleteAlertUseCase deleteAlertUseCase, SearchAlertsUseCase searchAlerts, HybridLocationProvider locationProvider) {
+                           DeleteAlertUseCase deleteAlertUseCase, SearchAlertsUseCase searchAlerts) {
         this.createAlertUseCase = createAlertUseCase;
         this.getAlertUseCase = getAlertUseCase;
         this.updateAlertStatusUseCase = updateAlertStatusUseCase;
@@ -43,7 +38,6 @@ public class AlertController {
         this.alertMapper = alertMapper;
         this.deleteAlertUseCase = deleteAlertUseCase;
         this.searchAlertsUseCase = searchAlerts;
-        this.locationProvider = locationProvider;
     }
 
     @PostMapping
@@ -74,9 +68,32 @@ public class AlertController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/close")
+    public ResponseEntity<AlertDTO> closeAlert(
+            @PathVariable String id,
+            @Valid @RequestBody CloseAlertRequest request) {
+        
+        GeographicLocation location = request.getLocation();
+        
+        if (location == null) {
+            throw new IllegalArgumentException("Location is required for closing an alert");
+        }
+
+        logger.debug("Closing alert {} with reason: {}", id, request.getClosureReason());
+
+        Alert updated = updateAlertStatusUseCase.closeAlert(
+                UUID.fromString(id),
+                UUID.fromString(request.getUserId()),
+                location,
+                request.getClosureReason()
+        );
+
+        return ResponseEntity.ok(alertMapper.toDTO(updated));
+    }
+
     @PatchMapping("/{id}/status")
     public ResponseEntity<AlertDTO> changeStatus(@PathVariable String id,
-                                                 @RequestBody StatusChangeRequest request) {
+                                                 @Valid @RequestBody StatusChangeRequest request) {
         // Location is mandatory - use the location from the request directly
         GeographicLocation location = request.getLocation();
         
@@ -84,13 +101,20 @@ public class AlertController {
             throw new IllegalArgumentException("Location is required for status changes");
         }
 
-        logger.debug("Using location for alert {} status change: {}", id, location);
+        // Prevent closing through this endpoint - use /close instead
+        if (request.getNewStatus() == StatusNames.CLOSED) {
+            throw new IllegalArgumentException(
+                "Use POST /api/alerts/{id}/close to close an alert with a closure reason");
+        }
+
+        logger.debug("Changing alert {} status to: {}", id, request.getNewStatus());
 
         Alert updated = updateAlertStatusUseCase.changeStatus(
                 UUID.fromString(id),
                 request.getNewStatus(),
                 UUID.fromString(request.getUserId()),
-                location
+                location,
+                null  // No closure reason for non-close transitions
         );
 
         return ResponseEntity.ok(alertMapper.toDTO(updated));
@@ -136,5 +160,12 @@ public class AlertController {
         List<Alert> alerts = searchAlertsUseCase.search(null, null, null);
         return ResponseEntity.ok(alertMapper.toDTOList(alerts));
     }
+
+    @GetMapping("/{id}/events")
+    public ResponseEntity<List<AlertEventDTO>> getAlertEvents(@PathVariable String id) {
+        List<AlertEvent> events = getAlertUseCase.getAlertHistory(UUID.fromString(id));
+        return ResponseEntity.ok(alertMapper.toEventDTOList(events));
+    }
+
 
 }
