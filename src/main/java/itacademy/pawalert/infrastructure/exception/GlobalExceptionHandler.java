@@ -154,6 +154,15 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(500, "Internal Server Error", ex.getMessage()));
     }
 
+    @ExceptionHandler(PetAlreadyHasActiveAlertException.class)
+    public ResponseEntity<ErrorResponse> handlePetAlreadyHasActiveAlert(PetAlreadyHasActiveAlertException ex) {
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                "Pet Already Has Active Alert",
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
 }
 
 

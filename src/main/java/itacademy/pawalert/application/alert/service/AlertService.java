@@ -3,10 +3,9 @@ package itacademy.pawalert.application.alert.service;
 import itacademy.pawalert.application.alert.port.inbound.*;
 import itacademy.pawalert.application.alert.port.outbound.CurrentUserProviderPort;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
-import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.application.user.port.inbound.GetUserUseCase;
 import itacademy.pawalert.domain.alert.exception.AlertAccessDeniedException;
-import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
+import itacademy.pawalert.domain.alert.exception.PetAlreadyHasActiveAlertException;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.alert.service.AlertFactory;
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
@@ -63,6 +62,10 @@ public class AlertService implements
 
     @Transactional
     public Alert createOpenedAlert(UUID petId, Title title, Description description, UUID userId, GeographicLocation location) {
+
+        if (alertRepository.existsActiveAlertByPetId(petId)) {
+            throw PetAlreadyHasActiveAlertException.forPet(petId.toString());
+        }
 
         Alert alert = AlertFactory.createAlert(
                 petId,

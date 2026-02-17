@@ -70,4 +70,9 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
         return alertRepository.findLastStatusById(alertId);
     }
 
+    @Override
+    public boolean existsActiveAlertByPetId(UUID petId) {
+        return alertRepository.existsActiveAlertByPetId(petId.toString());
+    }
+
 }
