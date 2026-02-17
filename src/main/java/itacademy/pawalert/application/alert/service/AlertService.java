@@ -21,6 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static itacademy.pawalert.domain.alert.model.StatusNames.OPENED;
@@ -309,4 +310,10 @@ public class AlertService implements
                 .map(AlertEvent::getNewStatus)
                 .orElse(null);
     }
+
+    @Override
+    public Optional<Alert> getActiveAlertByPetId(UUID petId) {
+        return alertRepository.findActiveAlertByPetId(petId);
+    }
+
 }

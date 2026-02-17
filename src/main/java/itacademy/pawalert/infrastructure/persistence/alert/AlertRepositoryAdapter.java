@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @Component
 public class AlertRepositoryAdapter implements AlertRepositoryPort {
+    
     private final AlertRepository alertRepository;
 
     public AlertRepositoryAdapter(AlertRepository alertRepository) {
@@ -72,7 +73,13 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
 
     @Override
     public boolean existsActiveAlertByPetId(UUID petId) {
-        return alertRepository.existsActiveAlertByPetId(petId.toString());
+        return alertRepository.existsByPetIdAndStatusIn(petId.toString(), StatusNames.getActiveStatusNames());
+    }
+
+    @Override
+    public Optional<Alert> findActiveAlertByPetId(UUID petId) {
+        return alertRepository.findTopByPetIdAndStatusInOrderByCreatedAtDesc(petId.toString(), StatusNames.getActiveStatusNames())
+                .map(AlertEntity::toDomain);
     }
 
 }

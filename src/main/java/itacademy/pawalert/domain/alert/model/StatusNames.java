@@ -2,6 +2,9 @@ package itacademy.pawalert.domain.alert.model;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Getter
 public enum StatusNames implements AlertDisplayableEnum {
     OPENED("Opened"), CLOSED("Closed"), SEEN("Seen"), SAFE("Safe");
@@ -15,5 +18,12 @@ public enum StatusNames implements AlertDisplayableEnum {
     @Override
     public String getDisplayName() {
         return value;
+    }
+
+    public static List<String> getActiveStatusNames() {
+        return Arrays.stream(values())
+                .filter(status -> status != CLOSED)
+                .map(StatusNames::name)
+                .toList();
     }
 }
