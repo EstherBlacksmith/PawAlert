@@ -121,8 +121,18 @@ public class AlertService implements
     @Transactional
     @Override
     public Alert markAsClosed(UUID alertId, UUID userId, GeographicLocation location, ClosureReason closureReason) {
+        // Business rule: closing an alert always requires a reason
+        if (closureReason == null) {
+            throw new IllegalArgumentException("Closure reason is required when closing an alert");
+        }
+
+        Alert alert = getAlertById(alertId);
+        checkAuthorizationOwerOrAdmin(alert);
+
         return changeStatus(alertId, StatusNames.CLOSED, userId, location, closureReason);
+
     }
+
 
     @Transactional
     @Override
@@ -137,7 +147,11 @@ public class AlertService implements
         if (closureReason == null) {
             throw new IllegalArgumentException("Closure reason is required when closing an alert");
         }
-        
+
+        // Authorization check: only owner or admin can close an alert
+        Alert alert = getAlertById(alertId);
+        checkAuthorizationOwerOrAdmin(alert);
+
         // Delegate to changeStatus with CLOSED status
         return changeStatus(alertId, StatusNames.CLOSED, userId, location, closureReason);
     }
@@ -145,11 +159,6 @@ public class AlertService implements
     @Transactional
     @Override
     public Alert changeStatus(UUID alertId, StatusNames newStatus, UUID userId, GeographicLocation location, ClosureReason closureReason) {
-
-        // Business rule: closing an alert always requires a reason
-        if (newStatus == StatusNames.CLOSED && closureReason == null) {
-            throw new IllegalArgumentException("Closure reason is required when closing an alert");
-        }
 
         Alert alert = getAlertById(alertId);
         StatusNames previousStatus = alert.currentStatus().getStatusName();
@@ -174,7 +183,7 @@ public class AlertService implements
 
         // Use appropriate factory method based on status change type
         AlertEvent event;
-        if (newStatus == StatusNames.CLOSED && closureReason != null) {
+        if (newStatus == StatusNames.CLOSED ) {
             // For closure events, include the closure reason
             event = AlertEventFactory.createClosureEvent(alertCopy, previousStatus, userId, location, closureReason);
         } else {
@@ -191,7 +200,7 @@ public class AlertService implements
     @Override
     public void deleteAlertById(UUID alertId) {
         Alert alert = getAlertById(alertId);
-        checkAuthorization(alert);
+        checkAuthorizationOwerOrAdmin(alert);
         alertRepository.deleteById(alertId);
     }
 
@@ -199,7 +208,7 @@ public class AlertService implements
     @Override
     public Alert updateTitle(UUID alertId, Title title) {
         Alert alert = getAlertById(alertId);
-        UUID userId = checkAuthorization(alert);
+        UUID userId = checkAuthorizationOwerOrAdmin(alert);
 
         Title oldTitle = alert.getTitle();
 
@@ -222,7 +231,7 @@ public class AlertService implements
     @Override
     public Alert updateDescription(UUID alertId, Description description) {
         Alert alert = getAlertById(alertId);
-        UUID userId = checkAuthorization(alert);
+        UUID userId = checkAuthorizationOwerOrAdmin(alert);
 
         Description oldDescription = alert.getDescription();
 
@@ -237,10 +246,22 @@ public class AlertService implements
     }
 
 
-    private UUID checkAuthorization(Alert alert) {
+    private UUID checkAuthorizationOwerOrAdmin(Alert alert) {
         UUID currentUserId = currentUserProvider.getCurrentUserId();
         boolean isAdmin = currentUserProvider.isCurrentUserAdmin();
         
+        boolean isCreator = alert.getUserId().equals(currentUserId);
+        if (!isAdmin && !isCreator) {
+            throw new AlertAccessDeniedException(alert.getId(), currentUserId);
+        }
+        return currentUserId;
+    }
+
+    private UUID checkAuthorizationLoggedUser(Alert alert) {
+        UUID currentUserId = currentUserProvider.getCurrentUserId();
+
+        boolean isAdmin = currentUserProvider.isCurrentUserAdmin();
+
         boolean isCreator = alert.getUserId().equals(currentUserId);
         if (!isAdmin && !isCreator) {
             throw new AlertAccessDeniedException(alert.getId(), currentUserId);

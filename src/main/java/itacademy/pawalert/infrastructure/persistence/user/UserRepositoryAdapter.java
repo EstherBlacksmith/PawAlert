@@ -183,4 +183,9 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
          return jpaUserRepository.existsBySurname(String.valueOf(surname));
     }
 
+    @Override
+    public boolean existsByRole(Role role) {
+        return jpaUserRepository.existsByRole(role);
+    }
+
 }

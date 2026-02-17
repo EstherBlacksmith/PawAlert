@@ -36,5 +36,6 @@ public interface UserRepositoryPort {
 
     boolean existsBySurname(Surname surname);
     String getPasswordHashById(UUID userId);
+    boolean existsByRole(Role role);
 
 }
