@@ -17,8 +17,9 @@ public interface AlertRepositoryPort {
     boolean existsById(UUID alertId);
     void deleteById(UUID alertId);
     List<Alert> findAll();
-    //For the Specifications
     List<Alert> findAll(Specification<Alert> spec);
     StatusNames getLastStatusById(UUID alertId);
     boolean existsActiveAlertByPetId(UUID petId);
+    Optional<Alert> findActiveAlertByPetId(UUID petId);
+
 }
