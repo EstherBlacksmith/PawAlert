@@ -3,8 +3,11 @@ package itacademy.pawalert.domain.alert.specification;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.StatusNames;
 import itacademy.pawalert.domain.pet.model.Pet;
+import itacademy.pawalert.infrastructure.persistence.alert.AlertEventEntity;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
@@ -98,6 +101,34 @@ public final class AlertSpecifications {
             if (species == null || species.isBlank()) return cb.conjunction();
             Join<Alert, Pet> petJoin = root.join("pet", JoinType.INNER);
             return cb.equal(cb.lower(petJoin.get("species")), species.toLowerCase());
+        };
+    }
+
+    // Filter by last update date
+    public static Specification<Alert> lastUpdatedAfter(LocalDateTime date) {
+        return (root, query, cb) -> {
+            if (date == null) return cb.conjunction();
+
+            // Subquery to get max changedAt from alert_events
+            Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
+            Root<AlertEventEntity> eventRoot = subquery.from(AlertEventEntity.class);
+            subquery.select(cb.greatest(eventRoot.<LocalDateTime>get("changedAt")));
+            subquery.where(cb.equal(eventRoot.get("alert").get("id"), root.get("id")));
+
+            return cb.greaterThanOrEqualTo(subquery, date);
+        };
+    }
+
+    public static Specification<Alert> lastUpdatedBefore(LocalDateTime date) {
+        return (root, query, cb) -> {
+            if (date == null) return cb.conjunction();
+
+            Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
+            Root<AlertEventEntity> eventRoot = subquery.from(AlertEventEntity.class);
+            subquery.select(cb.greatest(eventRoot.<LocalDateTime>get("changedAt")));
+            subquery.where(cb.equal(eventRoot.get("alert").get("id"), root.get("id")));
+
+            return cb.lessThanOrEqualTo(subquery, date);
         };
     }
 }

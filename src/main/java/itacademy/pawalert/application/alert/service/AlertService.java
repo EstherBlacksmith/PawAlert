@@ -20,6 +20,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -248,7 +249,13 @@ public class AlertService implements
     }
 
     @Override
-    public List<Alert> search(StatusNames status, String petName, String species) {
+    public List<Alert> search(StatusNames status,
+                              String petName,
+                              String species,
+                              LocalDateTime createdFrom,
+                              LocalDateTime createdTo,
+                              LocalDateTime updatedFrom,
+                              LocalDateTime updatedTo) {
         Specification<Alert> spec = null;
 
         //By status
@@ -272,7 +279,33 @@ public class AlertService implements
         if (spec == null) {
             return alertRepository.findAll();  // Return all alerts instead of empty list
         }
+
+        if (createdFrom != null) {
+            Specification<Alert> fromSpec = AlertSpecifications.createdAfter(createdFrom);
+            spec = (spec == null) ? fromSpec : spec.and(fromSpec);
+        }
+        if (createdTo != null) {
+            Specification<Alert> toSpec = AlertSpecifications.createdBefore(createdTo);
+            spec = (spec == null) ? toSpec : spec.and(toSpec);
+        }
+        if (updatedFrom != null) {
+            Specification<Alert> updatedFromSpec = AlertSpecifications.lastUpdatedAfter(updatedFrom);
+            spec = (spec == null) ? updatedFromSpec : spec.and(updatedFromSpec);
+        }
+        if (updatedTo != null) {
+            Specification<Alert> updatedToSpec = AlertSpecifications.lastUpdatedBefore(updatedTo);
+            spec = (spec == null) ? updatedToSpec : spec.and(updatedToSpec);
+        }
+
+        if (spec == null) {
+            return alertRepository.findAll();
+        }
         return alertRepository.findAll(spec);
+    }
+
+    @Override
+    public List<Alert> search() {
+        return alertRepository.findAll();
     }
 
     public UUID getCreatorById(UUID alertId) {
@@ -315,5 +348,6 @@ public class AlertService implements
     public Optional<Alert> getActiveAlertByPetId(UUID petId) {
         return alertRepository.findActiveAlertByPetId(petId);
     }
+
 
 }
