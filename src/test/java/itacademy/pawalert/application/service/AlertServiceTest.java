@@ -9,6 +9,7 @@ import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPo
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.application.alert.port.outbound.CurrentUserProviderPort;
 import itacademy.pawalert.domain.alert.exception.InvalidAlertStatusChange;
+import itacademy.pawalert.domain.alert.exception.PetAlreadyHasActiveAlertException;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
@@ -557,5 +558,38 @@ class AlertServiceTest {
             verify(userUseCase, never()).getById(any());
             verifyNoInteractions(alertMapper);
         }
+    }
+    @Test
+    @DisplayName("Should throw exception when pet already has an active alert")
+    void shouldThrowWhenPetAlreadyHasActiveAlert() {
+        // Given
+        when(alertRepository.existsActiveAlertByPetId(petId)).thenReturn(true);
+
+        // When/Then
+        Title title = Title.of("Dog found in the park");
+        Description description = Description.of("Dog found in the park around the river");
+        assertThrows(PetAlreadyHasActiveAlertException.class,
+                () -> alertService.createOpenedAlert(petId, title, description, userId, location));
+
+        verify(alertRepository, never()).save(any());
+        verify(eventRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should allow creating alert when pet has only closed alerts")
+    void shouldAllowCreatingAlertWhenPetHasOnlyClosedAlerts() {
+        // Given
+        when(alertRepository.existsActiveAlertByPetId(petId)).thenReturn(false);
+        when(alertRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+        when(eventRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        // When
+        Title title = Title.of("Dog found in the park");
+        Description description = Description.of("Dog found in the park around the river");
+        Alert result = alertService.createOpenedAlert(petId, title, description, userId, location);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(StatusNames.OPENED, result.currentStatus().getStatusName());
     }
 }

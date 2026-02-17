@@ -20,4 +20,5 @@ public interface AlertRepositoryPort {
     //For the Specifications
     List<Alert> findAll(Specification<Alert> spec);
     StatusNames getLastStatusById(UUID alertId);
+    boolean existsActiveAlertByPetId(UUID petId);
 }
