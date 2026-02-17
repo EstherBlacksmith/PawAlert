@@ -51,4 +51,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     @Query("SELECT u FROM UserEntity u WHERE u.surname = :surname")
     Optional<UserEntity> findBySurname(@Param("surname") String surname);
 
+    @Query("SELECT COUNT(u) > 0 FROM UserEntity u WHERE u.role = :role")
+    boolean existsByRole(@Param("role") Role role);
+
 }

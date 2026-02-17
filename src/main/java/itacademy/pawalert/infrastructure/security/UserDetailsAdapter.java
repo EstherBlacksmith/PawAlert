@@ -1,5 +1,6 @@
 package itacademy.pawalert.infrastructure.security;
 
+import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,5 +37,9 @@ public class UserDetailsAdapter implements UserDetails {
     public boolean isCredentialsNonExpired() { return true; }
     @Override
     public boolean isEnabled() { return true; }
+
+    public <Optional>Role getUserRole(){
+        return user.getRole();
+    }
 
 }

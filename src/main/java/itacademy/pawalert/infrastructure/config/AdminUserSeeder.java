@@ -19,11 +19,7 @@ import java.util.UUID;
 
 /**
  * Seeder component that creates an initial admin user from environment variables.
- * 
- * This approach provides:
- * - No hardcoded credentials in code
- * - Different credentials per environment
- * - Production-safe when using secrets management (Docker secrets, Kubernetes secrets, Vault)
+
  * 
  * Configuration properties:
  * - app.admin.username: Admin username (default: admin)
@@ -34,8 +30,7 @@ import java.util.UUID;
  * 
  * The seeder only runs when:
  * 1. The property app.admin.auto-create is set to true
- * 2. The admin password is provided (non-empty)
- * 3. No user with the same username already exists
+ * 2. No user with ADMIN role already exists
  */
 @Component
 @Slf4j
@@ -63,22 +58,23 @@ public class AdminUserSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
         log.info("Checking if admin user seeding is required...");
-        
-        // Validate password is provided
-        if (adminPassword == null || adminPassword.isBlank()) {
-            log.warn("Admin user not created: app.admin.password is not set. " +
-                     "Set the password via environment variable to enable admin seeding.");
-            return;
-        }
+
 
         try {
-            Username username = Username.of(adminUsername);
-            
-            // Check if admin already exists
-            if (userRepository.findByUsername(username).isPresent()) {
-                log.info("Admin user '{}' already exists, skipping creation", adminUsername);
+            // Check if any admin user already exists (by role)
+            if (userRepository.existsByRole(Role.ADMIN)) {
+                log.info("Admin user already exists, skipping creation");
                 return;
             }
+
+            // Validate password is provided
+            if (adminPassword == null || adminPassword.isBlank()) {
+                log.warn("Admin user not created: app.admin.password is not set. " +
+                        "Set the password via environment variable to enable admin seeding.");
+                return;
+            }
+
+            Username username = Username.of(adminUsername);
 
             // Create admin user
             User adminUser = new User(
