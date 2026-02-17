@@ -7,10 +7,13 @@ import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -150,15 +153,26 @@ public class AlertController {
     public ResponseEntity<List<AlertDTO>> searchAlerts(
             @RequestParam(required = false) StatusNames status,
             @RequestParam(required = false) String petName,
-            @RequestParam(required = false) String species
+            @RequestParam(required = false) String species,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdTo,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime updatedFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime updatedTo
     ) {
-        List<Alert> alerts = searchAlertsUseCase.search(status, petName, species);
+
+        List<Alert> alerts = searchAlertsUseCase.search(
+                status, petName, species,
+                createdFrom, createdTo,
+                updatedFrom, updatedTo
+        );
+
         return ResponseEntity.ok(alertMapper.toDTOList(alerts));
+
     }
 
     @GetMapping
     public ResponseEntity<List<AlertDTO>> getAllAlerts() {
-        List<Alert> alerts = searchAlertsUseCase.search(null, null, null);
+        List<Alert> alerts = searchAlertsUseCase.search();
         return ResponseEntity.ok(alertMapper.toDTOList(alerts));
     }
 
@@ -176,4 +190,11 @@ public class AlertController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
+    @GetMapping("/admin/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<AlertDTO>> getAllAlertsForAdmin() {
+        List<Alert> alerts = searchAlertsUseCase.search();
+        return ResponseEntity.ok(alertMapper.toDTOList(alerts));
+    }
 }
