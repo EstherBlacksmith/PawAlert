@@ -22,7 +22,6 @@ public interface UserRepositoryPort {
     Optional<User> findBySurname(Surname surname);
     Optional<User> findByEmail(Email email);
     boolean existsById(UUID id);
-    boolean existsSurname(Surname surname);
     boolean existsByEmail(Email email);
     void delete(User user);
     Role getUserRol(UUID userId);
