@@ -120,7 +120,10 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
                 user.getSurname().value(),
                 user.getPhoneNumber().value(),
                 user.getRole(),
-                LocalDateTime.now(),null
+                LocalDateTime.now(),
+                user.getTelegramChatId() != null ? user.getTelegramChatId().value() : null,
+                user.isEmailNotificationsEnabled(),
+                user.isTelegramNotificationsEnabled()
         );
     }
     @Override

@@ -178,6 +178,7 @@ public class UserController {
         User user = updateUserUseCase.updateTelegramChatId(convertedUserId, telegramChatId);
         return ResponseEntity.ok(user);
     }
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUserById(@PathVariable String userId) {
         logger.debug("deleteUserById called for userId: {}", userId);
