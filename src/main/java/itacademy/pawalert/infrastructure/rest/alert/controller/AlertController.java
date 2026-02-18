@@ -104,10 +104,6 @@ public class AlertController {
             @Valid @RequestBody CloseAlertRequest request) {
         
         GeographicLocation location = request.getLocation();
-        
-        if (location == null) {
-            throw new IllegalArgumentException("Location is required for closing an alert");
-        }
 
         logger.debug("Closing alert {} with reason: {}", id, request.getClosureReason());
 
@@ -126,12 +122,8 @@ public class AlertController {
                                                  @Valid @RequestBody StatusChangeRequest request) {
         // Location is mandatory - use the location from the request directly
         GeographicLocation location = request.getLocation();
-        
-        if (location == null) {
-            throw new IllegalArgumentException("Location is required for status changes");
-        }
 
-        // Prevent closing through this endpoint - use /close instead
+        // Prevent closing through this endpoint
         if (request.getNewStatus() == StatusNames.CLOSED) {
             throw new IllegalArgumentException(
                 "Use POST /api/alerts/{id}/close to close an alert with a closure reason");
