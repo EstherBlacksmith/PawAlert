@@ -2,6 +2,7 @@ package itacademy.pawalert.infrastructure.persistence.alert;
 
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
+import itacademy.pawalert.domain.alert.model.AlertEvent;
 import itacademy.pawalert.domain.alert.model.StatusNames;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -81,5 +82,6 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
         return alertRepository.findTopByPetIdAndStatusInOrderByCreatedAtDesc(petId.toString(), StatusNames.getActiveStatusNames())
                 .map(AlertEntity::toDomain);
     }
+
 
 }

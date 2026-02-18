@@ -44,6 +44,32 @@ public class AlertController {
         this.searchAlertsUseCase = searchAlerts;
     }
 
+    @GetMapping("/public/nearby")
+    public ResponseEntity<List<AlertDTO>> getNearbyAlerts(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam(defaultValue = "10.0") Double radiusKm) {
+
+        logger.debug("Public nearby search: lat={}, lon={}, radius={}km",
+                latitude, longitude, radiusKm);
+
+        List<Alert> alerts = searchAlertsUseCase.searchNearby(latitude, longitude, radiusKm);
+
+        return ResponseEntity.ok(alertMapper.toDTOList(alerts));
+    }
+
+    @GetMapping("/public/active")
+    public ResponseEntity<List<AlertDTO>> getActiveAlerts() {
+        List<Alert> alerts = searchAlertsUseCase.search();
+
+        // Filter out closed alerts
+        List<Alert> activeAlerts = alerts.stream()
+                .filter(a -> a.currentStatus().getStatusName() != StatusNames.CLOSED)
+                .toList();
+
+        return ResponseEntity.ok(alertMapper.toDTOList(activeAlerts));
+    }
+
     @PostMapping
     public ResponseEntity<AlertDTO> createAlert(@Valid @RequestBody AlertDTO alertDTO) {
         GeographicLocation location = GeographicLocation.of(   alertDTO.getLatitude(),  alertDTO.getLongitude());

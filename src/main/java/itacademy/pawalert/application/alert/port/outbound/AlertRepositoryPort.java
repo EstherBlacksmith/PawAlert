@@ -21,5 +21,4 @@ public interface AlertRepositoryPort {
     StatusNames getLastStatusById(UUID alertId);
     boolean existsActiveAlertByPetId(UUID petId);
     Optional<Alert> findActiveAlertByPetId(UUID petId);
-
 }
