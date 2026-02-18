@@ -25,13 +25,13 @@ public class NotificationService implements LaunchAlertNotification {
     @Override
     public void relaunchNotification(UUID alertId) {
        StatusNames currentStatus = alertRepository.getLastStatusById(alertId);
-        notifyStatusChange(alertId,currentStatus,currentStatus);
+        notifyStatusChange(alertId,alertId,currentStatus);
     }
 
     @Override
-    public void notifyStatusChange(UUID alertId, StatusNames oldStatusNames, StatusNames newStatusNames) {
-        emailUseCase.notifyStatusChange(alertId, oldStatusNames, newStatusNames);
-        telegramUseCase.notifyStatusChange(alertId, oldStatusNames, newStatusNames);
+    public void notifyStatusChange(UUID userId, UUID alertId, StatusNames newStatusNames) {
+        emailUseCase.notifyStatusChange(userId, alertId,  newStatusNames);
+        telegramUseCase.notifyStatusChange(userId, alertId,  newStatusNames);
 
     }
 

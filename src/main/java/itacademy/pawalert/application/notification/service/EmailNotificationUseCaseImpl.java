@@ -32,15 +32,17 @@ public class EmailNotificationUseCaseImpl implements EmailNotificationUseCase {
         this.petService = petService;
     }
 
+
     @Override
-    public void notifyStatusChange(UUID alertId, StatusNames oldStatus, StatusNames newStatus) {
+    public void notifyStatusChange(UUID userId, UUID alertId, StatusNames newStatus) {
         List<String> emails = subscriptionRepository.findEmailsByAlertIdAndActiveTrue(alertId.toString());
 
         Alert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
+
         Pet pet = petService.getPetById(alert.getPetId());
         String subject = formatter.formatEmailSubject(newStatus);
-        String body = formatter.formatStatusChangeMessage(alert, pet, oldStatus, newStatus);
+        String body = formatter.formatStatusChangeMessage(alert, pet, newStatus);
 
         for (String email : emails) {
             emailService.sendToUser(email, subject, body);

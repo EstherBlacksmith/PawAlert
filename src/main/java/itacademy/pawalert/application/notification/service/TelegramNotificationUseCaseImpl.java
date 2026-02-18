@@ -34,14 +34,15 @@ public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseC
         this.petService = petService;
     }
 
+
     @Override
-    public void notifyStatusChange(UUID alertId, StatusNames oldStatus, StatusNames newStatus) {
+    public void notifyStatusChange(UUID userId,UUID alertId, StatusNames newStatus) {
         List<String> chatIds = subscriptionRepository.findTelegramChatIdsByAlertId(alertId.toString());
 
         Alert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
         Pet pet = petService.getPetById(alert.getPetId());
-        String message = formatter.formatStatusChangeMessage(alert,pet, oldStatus, newStatus);
+        String message = formatter.formatStatusChangeMessage(alert,pet, newStatus);
 
         telegramService.sendToAll(chatIds, message);
     }

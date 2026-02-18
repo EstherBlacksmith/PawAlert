@@ -65,22 +65,7 @@ class AlertSubscriptionServiceTest {
         verify(subscriptionRepository).save(any(AlertSubscription.class));
     }
 
-    @Test
-    @DisplayName("subscribeToAlert - WithChannel")
-    void subscribeToAlert_WithChannel() {
-        // Given
-        when(subscriptionRepository.existsByAlertIdAndUserId(alertId, userId))
-                .thenReturn(false);
-        when(subscriptionRepository.save(any(AlertSubscription.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
-        AlertSubscription result = subscriptionService.subscribeToAlert(
-                alertId, userId, NotificationChannel.PUSH);
-
-        // Then
-        assertEquals(NotificationChannel.PUSH, result.getNotificationChannel());
-    }
 
     @Test
     @DisplayName("subscribeToAlert - AlreadyExists")
@@ -142,7 +127,7 @@ class AlertSubscriptionServiceTest {
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
-        AlertSubscription result = subscriptionService.resubscribeToAlert(alertId, userId);
+        AlertSubscription result = subscriptionService.subscribeToAlert(alertId, userId);
 
         // Then
         assertTrue(result.isActive());
@@ -215,22 +200,5 @@ class AlertSubscriptionServiceTest {
 
     // ===== TEST: CHANGE CHANEL =====
 
-    @Test
-    @DisplayName("changeNotificationChannel - Success")
-    void changeNotificationChannel_Success() {
-        // Given
-        List<AlertSubscription> subscriptions = Arrays.asList(subscription);
-        when(subscriptionRepository.findByUserId(userId))
-                .thenReturn(subscriptions);
-        when(subscriptionRepository.save(any(AlertSubscription.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        // When
-        AlertSubscription result = subscriptionService.changeNotificationChannel(
-                alertId, userId, NotificationChannel.EMAIL);
-
-        // Then
-        assertEquals(NotificationChannel.EMAIL, result.getNotificationChannel());
-    }
 }
 

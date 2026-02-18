@@ -1,11 +1,16 @@
 package itacademy.pawalert.application.alert.service;
 
+import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
+import itacademy.pawalert.application.exception.AlertNotFoundException;
+import itacademy.pawalert.application.exception.CannotSubscribeToClosedAlertException;
 import itacademy.pawalert.application.exception.SubscriptionAlreadyExistsException;
 import itacademy.pawalert.application.exception.SubscriptionNotFoundException;
 import itacademy.pawalert.application.alert.port.inbound.AlertSubscriptionUseCase;
 import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
+import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
 import itacademy.pawalert.domain.alert.model.NotificationChannel;
+import itacademy.pawalert.domain.alert.model.StatusNames;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,24 +20,32 @@ import java.util.UUID;
 public class AlertSubscriptionService implements AlertSubscriptionUseCase {
 
     private final AlertSubscriptionRepositoryPort subscriptionRepository;
+    private final AlertRepositoryPort alertRepository;
 
-    public AlertSubscriptionService(AlertSubscriptionRepositoryPort subscriptionRepository) {
+
+    public AlertSubscriptionService(AlertSubscriptionRepositoryPort subscriptionRepository,
+                                    AlertRepositoryPort alertRepository) {
         this.subscriptionRepository = subscriptionRepository;
+        this.alertRepository = alertRepository;
     }
+
 
     @Override
     public AlertSubscription subscribeToAlert(UUID alertId, UUID userId) {
-        return subscribeToAlert(alertId,userId,NotificationChannel.ALL);
-    }
+        Alert alert = alertRepository.findById(alertId)
+                .orElseThrow(() -> new AlertNotFoundException(alertId.toString()));
 
-    @Override
-    public AlertSubscription subscribeToAlert(UUID alertId, UUID userId, NotificationChannel channel) {
+        if (alert.currentStatus().getStatusName() == StatusNames.CLOSED) {
+            throw new CannotSubscribeToClosedAlertException(alertId);
+        }
+
         if (subscriptionRepository.existsByAlertIdAndUserId(alertId, userId)) {
             throw new SubscriptionAlreadyExistsException(
                     "User " + userId + " is already subscribed to alert " + alertId);
         }
 
-        AlertSubscription subscription = AlertSubscription.create(alertId, userId, channel);
+
+        AlertSubscription subscription = AlertSubscription.create(alertId, userId);
         return subscriptionRepository.save(subscription);
     }
 
@@ -50,20 +63,6 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
         subscriptionRepository.save(subscription);
     }
 
-    @Override
-    public AlertSubscription resubscribeToAlert(UUID alertId, UUID userId) {
-        List<AlertSubscription> subscriptions = subscriptionRepository.findByUserId(userId);
-        AlertSubscription subscription = subscriptions.stream()
-                .filter(alertSubscription -> alertSubscription.getAlertId().equals(alertId))
-                .findFirst()
-                .orElseThrow(() -> new SubscriptionNotFoundException(
-                        "Subscription not found for alert " + alertId + " and user " + userId));
-        subscription.reactivate();
-
-        subscriptionRepository.save(subscription);
-
-        return subscription;
-    }
 
     @Override
     public List<AlertSubscription> getUserSubscriptions(UUID userId) {
@@ -72,27 +71,14 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
 
     @Override
     public List<AlertSubscription> getUserActiveSubscriptions(UUID userId) {
-        return  subscriptionRepository.findByUserIdAndActiveTrue(userId);
+        return subscriptionRepository.findByUserIdAndActiveTrue(userId);
     }
 
     @Override
     public boolean isUserSubscribed(UUID alertId, UUID userId) {
-        return subscriptionRepository.existsByAlertIdAndUserId(alertId,userId);
+        return subscriptionRepository.existsByAlertIdAndUserId(alertId, userId);
     }
 
-    @Override
-    public AlertSubscription changeNotificationChannel(UUID alertId, UUID userId, NotificationChannel newChannel) {
-
-        List<AlertSubscription> subscriptions = subscriptionRepository.findByUserId(userId);
-        AlertSubscription subscription = subscriptions.stream()
-                .filter(alertSubscription -> alertSubscription.getAlertId().equals(alertId))
-                .findFirst()
-                .orElseThrow(() -> new SubscriptionNotFoundException(
-                        "Subscription not found for alert " + alertId + " and user " + userId));
-        subscription.changeChannel(newChannel);
-
-        return  subscriptionRepository.save(subscription);
-    }
 
     @Override
     public List<AlertSubscription> getActiveSubscriptionsByAlertId(UUID alertId) {

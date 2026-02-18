@@ -31,7 +31,7 @@ public class TelegramNotificationEventListener {
         Pet pet = petService.getPetById(alert.getPetId());
 
         List<String> telegramChatIds = subscriptionRepository.findTelegramChatIdsByAlertId(event.alertId().toString());
-        String message = formatter.formatStatusChangeMessage(alert,pet, event.oldStatus(), event.newStatus());
+        String message = formatter.formatStatusChangeMessage(alert,pet, event.newStatus());
 
         for (String chatId : telegramChatIds) {
             telegramNotificationService.sendToUser(chatId,message);
