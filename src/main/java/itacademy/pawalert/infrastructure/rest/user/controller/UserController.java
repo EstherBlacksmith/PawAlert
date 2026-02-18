@@ -78,16 +78,14 @@ public class UserController {
 
     // ========== PARAMETERIZED ROUTES (MUST COME LAST) ==========
     
-    @GetMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}")
+    @GetMapping("/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable String userId) {
-        logger.debug("getUserById called with: {}", userId);
         UUID convertedUserId = UUID.fromString(userId);
-
         User user = getUserUseCase.getById(convertedUserId);
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/change-password")
+    @PutMapping("/{userId}/change-password")
     public ResponseEntity<Map<String, String>> changePassword(
             @PathVariable String userId,
             @Valid @RequestBody ChangePasswordRequest request) {
@@ -101,7 +99,7 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
     }
 
-    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/change-username")
+    @PutMapping("/{userId}/change-username")
     public ResponseEntity<User> updateUsername(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest request) {
@@ -113,7 +111,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/change-surname")
+    @PutMapping("/{userId}/change-surname")
     public ResponseEntity<User> updateSurname(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest updateUserRequest) {
@@ -124,7 +122,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/change-phonenumber")
+    @PutMapping("/{userId}/change-phonenumber")
     public ResponseEntity<User> updatePhonenumber(@PathVariable String userId,
                                                   @Valid @RequestBody UpdateUserRequest updateUserRequest) {
         logger.debug("updatePhonenumber called for userId: {}", userId);
@@ -134,7 +132,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/change-email")
+    @PutMapping("/{userId}/change-email")
     public ResponseEntity<User> updateEmail(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest updateUserRequest) {
@@ -146,7 +144,7 @@ public class UserController {
     }
 
 
-    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/email-notifications")
+    @PutMapping("/{userId}/email-notifications")
     public ResponseEntity<User> updateEmailNotificationsEnabled(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest updateUserRequest) {
@@ -158,7 +156,7 @@ public class UserController {
     }
 
 
-    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/telegram-notifications")
+    @PutMapping("/{userId}/telegram-notifications")
     public ResponseEntity<User> updateTelegramNotificationsEnabled(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest updateUserRequest) {
@@ -170,7 +168,7 @@ public class UserController {
     }
 
 
-    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/telegram-chat-id")
+    @PutMapping("/{userId}/telegram-chat-id")
     public ResponseEntity<User> updateTelegramChatId(
             @PathVariable String userId,
             @Valid @RequestBody UpdateUserRequest updateUserRequest) {
@@ -180,7 +178,7 @@ public class UserController {
         User user = updateUserUseCase.updateTelegramChatId(convertedUserId, telegramChatId);
         return ResponseEntity.ok(user);
     }
-    @DeleteMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUserById(@PathVariable String userId) {
         logger.debug("deleteUserById called for userId: {}", userId);
         UUID convertedUserId = UUID.fromString(userId);
