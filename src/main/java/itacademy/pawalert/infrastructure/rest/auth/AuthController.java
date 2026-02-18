@@ -44,7 +44,10 @@ public class AuthController {
                 3600L,
                 user.getId().toString(),
                 user.getUsername().value(),
-                user.getEmail().value()
+                user.getEmail().value(),
+                user.getRole().toString(),
+                user.getPhoneNumber().value(),
+                user.getSurname().value()
         ));
     }
 }
