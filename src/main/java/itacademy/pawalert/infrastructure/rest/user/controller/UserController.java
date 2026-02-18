@@ -145,6 +145,41 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+
+    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/email-notifications")
+    public ResponseEntity<User> updateEmailNotificationsEnabled(
+            @PathVariable String userId,
+            @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        logger.debug("updateEmailNotificationsEnabled called for userId: {}", userId);
+        boolean enabledNotifications = updateUserRequest.emailNotificationsEnabled();
+        UUID convertedUserId = UUID.fromString(userId);
+        User user = updateUserUseCase.updateEmailNotifications(convertedUserId, enabledNotifications);
+        return ResponseEntity.ok(user);
+    }
+
+
+    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/telegram-notifications")
+    public ResponseEntity<User> updateTelegramNotificationsEnabled(
+            @PathVariable String userId,
+            @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        logger.debug("updateTelegramNotificationsEnabled called for userId: {}", userId);
+        boolean enabledNotifications = updateUserRequest.telegramNotificationsEnabled();
+        UUID convertedUserId = UUID.fromString(userId);
+        User user = updateUserUseCase.updateTelegramNotifications(convertedUserId, enabledNotifications);
+        return ResponseEntity.ok(user);
+    }
+
+
+    @PutMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}/telegram-chat-id")
+    public ResponseEntity<User> updateTelegramChatId(
+            @PathVariable String userId,
+            @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        logger.debug("updateTelegramChatId called for userId: {}", userId);
+        TelegramChatId telegramChatId = TelegramChatId.of(updateUserRequest.telegramChatId());
+        UUID convertedUserId = UUID.fromString(userId);
+        User user = updateUserUseCase.updateTelegramChatId(convertedUserId, telegramChatId);
+        return ResponseEntity.ok(user);
+    }
     @DeleteMapping("/{userId:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}}")
     public ResponseEntity<Void> deleteUserById(@PathVariable String userId) {
         logger.debug("deleteUserById called for userId: {}", userId);

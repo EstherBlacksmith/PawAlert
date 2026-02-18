@@ -13,7 +13,7 @@ public interface UpdateUserUseCase {
     User updateUsername(UUID userId, Username userName);
     User updateSurname(UUID userId, Surname fullName);
     User updateEmail(UUID userId, Email newEmail);
-
-
-
+    User updateEmailNotifications(UUID userId, boolean emailNotifications);
+    User updateTelegramNotifications(UUID userId, boolean telegramNotifications);
+    User updateTelegramChatId(UUID userId, TelegramChatId telegramChatId);
 }
