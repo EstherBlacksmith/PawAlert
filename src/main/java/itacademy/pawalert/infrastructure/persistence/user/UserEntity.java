@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
+
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -19,27 +20,33 @@ public class UserEntity {
     @Column(name = "id")
     private String id;
 
+    @Setter
     @Column(name = "username", unique = true)
     private String username;
-
-    @Column(name = "email", unique = true)
-    private String email;
 
     @Setter
     @Column(name = "password_hash")
     private String passwordHash;
 
+    @Setter
     @Column(name = "surname")
     private String surname;
 
+    @Setter
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Column(name = "email", unique = true)
+    private String email;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
+
+    @Setter
     @Column(name = "telegram_chat_id")
     private String telegramChatId;
 
