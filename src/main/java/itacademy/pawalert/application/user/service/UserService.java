@@ -118,7 +118,7 @@ public class UserService implements
 
     @Override
     public boolean existsBySurname(Surname surname) {
-        return userRepositoryPort.existsSurname(surname);
+        return userRepositoryPort.existsBySurname(surname);
     }
 
 

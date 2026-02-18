@@ -91,10 +91,9 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     }
 
     @Override
-    public boolean existsSurname(Surname surname) {
+    public boolean existsBySurname(Surname surname) {
         return jpaUserRepository.existsBySurname(String.valueOf(surname));
     }
-
     @Override
     public boolean existsByEmail(Email email) {
         return jpaUserRepository.existsByEmail(String.valueOf(email));
@@ -107,7 +106,9 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public Role getUserRol(UUID userId) {
-        return jpaUserRepository.findRoleById(String.valueOf(userId));
+        return jpaUserRepository.findById(String.valueOf(userId))
+                .map(UserEntity::getRole)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
     }
 
     private UserEntity toEntity(User user, String passwordHash) {
@@ -148,40 +149,42 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         UserEntity entity = jpaUserRepository.findById(String.valueOf(userId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
-        // You need to add a setter for passwordHash in UserEntity
         entity.setPasswordHash(newHash);
         jpaUserRepository.save(entity);
     }
 
     @Override
     public User updatePhoneNumber(UUID userId, PhoneNumber phoneNumber) {
-        jpaUserRepository.updatePhoneNumber(userId, phoneNumber.value());
-        return jpaUserRepository.findById(userId.toString())
-                .map(UserEntity::toDomain)
+        UserEntity entity = jpaUserRepository.findById(String.valueOf(userId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        entity.setPhoneNumber(phoneNumber.value());
+        UserEntity saved = jpaUserRepository.save(entity);
+        return saved.toDomain();
     }
 
 
     @Override
     public User updateSurname(UUID userId, Surname surname) {
-        jpaUserRepository.updateSurname(userId, surname.value());
-        return jpaUserRepository.findById(userId.toString())
-                .map(UserEntity::toDomain)
+        UserEntity entity = jpaUserRepository.findById(String.valueOf(userId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        entity.setSurname(surname.value());
+        UserEntity saved = jpaUserRepository.save(entity);
+        return saved.toDomain();
     }
 
     @Override
     public User updateUsername(UUID userId, Username username) {
-        jpaUserRepository.updateUsername(userId, username.value());
-        return jpaUserRepository.findById(userId.toString())
-                .map(UserEntity::toDomain)
+        UserEntity entity = jpaUserRepository.findById(String.valueOf(userId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        entity.setUsername(username.value());
+        UserEntity saved = jpaUserRepository.save(entity);
+        return saved.toDomain();
     }
 
-    @Override
-    public boolean existsBySurname(Surname surname) {
-         return jpaUserRepository.existsBySurname(String.valueOf(surname));
-    }
+
 
     @Override
     public boolean existsByRole(Role role) {
