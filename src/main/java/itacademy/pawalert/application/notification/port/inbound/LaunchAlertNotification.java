@@ -7,5 +7,5 @@ import java.util.UUID;
 public interface LaunchAlertNotification {
     void relaunchNotification(UUID alertId);
 
-    void notifyStatusChange(UUID alertID, StatusNames oldStatusNames, StatusNames newStatusNames);
+    void notifyStatusChange(UUID userId, UUID alertId, StatusNames newStatusNames);
 }

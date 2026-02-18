@@ -11,15 +11,14 @@ public class AlertNotificationFormatter {
 
     public AlertNotificationFormatter() {}
 
-    public String formatStatusChangeMessage(Alert alert, Pet pet, StatusNames oldStatus, StatusNames newStatus) {
+    public String formatStatusChangeMessage(Alert alert, Pet pet,  StatusNames newStatus) {
 
         return String.format(
                 "🔔 <b>Alert PawAlert - Status Update</b>\n\n" +
                         "🐕 Pet: <b>%s</b>\n" +
-                        "📊 Status changed: %s → %s\n\n" +
+                        "📊 New status: %s\n\n" +
                         "🔗 View details: /alerts/%s",
                 pet.getOfficialPetName(),
-                oldStatus,
                 newStatus,
                 alert.getId()
         );
@@ -30,5 +29,5 @@ public class AlertNotificationFormatter {
     }
 
     public String formatEmailBody(Alert alert, Pet pet, StatusNames oldStatus, StatusNames newStatus) {
-        return formatStatusChangeMessage(alert, pet, oldStatus, newStatus);    }
+        return formatStatusChangeMessage(alert, pet, newStatus);    }
 }

@@ -22,21 +22,16 @@ public class AlertSubscriptionEntity {
     @Column(name = "subscribed_at", nullable = false)
     private LocalDateTime subscribedAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "notification_channel", nullable = false)
-    private NotificationChannel notificationChannel;
+    // Empty constructor required by JPA/Hibernate
+    public AlertSubscriptionEntity() {
+    }
 
-    //Default constructor for JPA
-    public AlertSubscriptionEntity() {}
-
-    public AlertSubscriptionEntity(UUID id, UUID alertId, UUID userID, boolean active, LocalDateTime subscribedAt,
-                                   NotificationChannel notificationChannel) {
+    public AlertSubscriptionEntity(UUID id, UUID alertId, UUID userID, boolean active, LocalDateTime subscribedAt) {
         this.id = id;
         this.alertId = alertId;
         this.userId = userID;
         this.active = active;
         this.subscribedAt = subscribedAt;
-        this.notificationChannel = notificationChannel;
     }
 
     public static AlertSubscriptionEntity fromDomain(AlertSubscription subscription) {
@@ -45,11 +40,8 @@ public class AlertSubscriptionEntity {
                 subscription.getAlertId(),
                 subscription.getUserId(),
                 subscription.isActive(),
-                subscription.getSubscribedAt(),
-                subscription.getNotificationChannel()
+                subscription.getSubscribedAt()
         );
-
-
     }
 
     public AlertSubscription toDomain() {
@@ -58,8 +50,7 @@ public class AlertSubscriptionEntity {
                 this.alertId ,
                 this.userId,
                 this.active,
-                this.subscribedAt,
-                this.notificationChannel
+                this.subscribedAt
         );
     }
 }

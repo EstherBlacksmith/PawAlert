@@ -1,4 +1,3 @@
-// src/test/java/itacademy/pawalert/domain/alert/model/AlertSubscriptionTest.java
 package itacademy.pawalert.domain.alert.model;
 
 import org.junit.jupiter.api.DisplayName;
