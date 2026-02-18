@@ -45,7 +45,7 @@ public class UserService implements
                 email,
                 surname,
                 phoneNumber,
-                Role.USER,null
+                Role.USER
         );
 
         String hashedPassword = passwordEncoder.encode(input.password());
@@ -131,8 +131,10 @@ public class UserService implements
                 user.getEmail(),
                 user.getSurname(),
                 user.getPhoneNumber(),
-                user.getRole()
-                ,null
+                user.getRole(),
+                user.getTelegramChatId(),
+                user.isEmailNotificationsEnabled(),
+                user.isTelegramNotificationsEnabled()
         );
         return userRepositoryPort.save(updated);
     }
@@ -146,7 +148,10 @@ public class UserService implements
                 user.getEmail(),
                 newSurname,
                 user.getPhoneNumber(),
-                user.getRole(),null
+                user.getRole(),
+                user.getTelegramChatId(),
+                user.isEmailNotificationsEnabled(),
+                user.isTelegramNotificationsEnabled()
         );
         return userRepositoryPort.save(updated);
     }
@@ -160,7 +165,62 @@ public class UserService implements
                 newEmail,
                 user.getSurname(),
                 user.getPhoneNumber(),
-                user.getRole(),null
+                user.getRole(),
+                user.getTelegramChatId(),
+                user.isEmailNotificationsEnabled(),
+                user.isTelegramNotificationsEnabled()
+        );
+        return userRepositoryPort.save(updated);
+    }
+
+    @Override
+    public User updateEmailNotifications(UUID userId, boolean emailNotificationsEnabled) {
+        User user = getById(userId);
+        User updated = new User(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getSurname(),
+                user.getPhoneNumber(),
+                user.getRole(),
+                user.getTelegramChatId(),
+                emailNotificationsEnabled,
+                user.isTelegramNotificationsEnabled()
+        );
+        return userRepositoryPort.save(updated);
+    }
+
+    @Override
+    public User updateTelegramNotifications(UUID userId, boolean telegramNotificationsEnabled) {
+        User user = getById(userId);
+        User updated = new User(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getSurname(),
+                user.getPhoneNumber(),
+                user.getRole(),
+                user.getTelegramChatId(),
+                user.isEmailNotificationsEnabled(),
+                telegramNotificationsEnabled
+        );
+        return userRepositoryPort.save(updated);
+    }
+
+    @Override
+    public User updateTelegramChatId(UUID userId, TelegramChatId telegramChatId) {
+        User user = getById(userId);
+        User updated = new User(
+
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getSurname(),
+                user.getPhoneNumber(),
+                user.getRole(),
+                telegramChatId,
+                user.isEmailNotificationsEnabled(),
+                user.isTelegramNotificationsEnabled()
         );
         return userRepositoryPort.save(updated);
     }
