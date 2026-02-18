@@ -16,8 +16,8 @@ public record PhoneNumber(String value) {
             throw new IllegalArgumentException("Invalid phone number format");
         }
 
-        if (value.length() < 7 || value.length() > 15) {
-            throw new IllegalArgumentException("Phone number must have between 7 and 15 digits");
+        if (value.length() < 7 || value.length() > 20) {
+            throw new IllegalArgumentException("Phone number must have between 7 and 20 characters");
         }
     }
 

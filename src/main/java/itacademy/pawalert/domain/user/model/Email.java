@@ -1,9 +1,11 @@
 package itacademy.pawalert.domain.user.model;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.regex.Pattern;
 
 
-public record Email(String value) {
+public record Email(@JsonValue String value) {
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
     );

@@ -1,6 +1,8 @@
 package itacademy.pawalert.domain.user.model;
 
-public record Surname(String value) {
+import com.fasterxml.jackson.annotation.JsonValue;
+
+public record Surname(@JsonValue String value) {
 
     private static final java.util.regex.Pattern SURNAME_PATTERN =
             java.util.regex.Pattern.compile("^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñÇç'\\-\\s]+$");
