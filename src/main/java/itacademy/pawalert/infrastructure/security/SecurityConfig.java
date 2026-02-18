@@ -57,6 +57,10 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/api/images/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/register").permitAll()
+                        .requestMatchers("/api/pets/**").permitAll()
+                        .requestMatchers("/api/alerts/public/**").permitAll()
+                        .requestMatchers("/").permitAll()
+
                         // Static resources
                         .requestMatchers("/static/**").permitAll()
                         .requestMatchers("/frontend/**").permitAll()
@@ -66,9 +70,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/create-pet.html").permitAll()
                         .requestMatchers("/register-with-pet.html").permitAll()
                         .requestMatchers("/login.html").permitAll()
-                        .requestMatchers("/api/pets/**").permitAll()
 
-                        .requestMatchers("/").permitAll()
                         // All other requests require authentication
                         .anyRequest().authenticated()
                 )

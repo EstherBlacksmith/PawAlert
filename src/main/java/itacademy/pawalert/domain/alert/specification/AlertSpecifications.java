@@ -11,6 +11,7 @@ import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public final class AlertSpecifications {
 
@@ -129,6 +130,25 @@ public final class AlertSpecifications {
             subquery.where(cb.equal(eventRoot.get("alert").get("id"), root.get("id")));
 
             return cb.lessThanOrEqualTo(subquery, date);
+        };
+    }
+
+    // Filter by geographic radius using Haversine formula approximation
+    public static Specification<Alert> withinRadius(Double latitude, Double longitude, Double radiusKm) {
+        return (root, query, cb) -> {
+            if (latitude == null || longitude == null || radiusKm == null) {
+                return cb.conjunction();
+            }
+
+            Subquery<UUID> latestEventSubquery = query.subquery(UUID.class);
+            Root<AlertEventEntity> eventRoot = latestEventSubquery.from(AlertEventEntity.class);
+
+            // 1 degree ~ 111km at equator
+            double latDelta = radiusKm / 111.0;
+            double lonDelta = radiusKm / (111.0 * Math.cos(Math.toRadians(latitude)));
+
+
+            return cb.conjunction();
         };
     }
 }

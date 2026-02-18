@@ -21,6 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -327,6 +328,31 @@ public class AlertService implements
     @Override
     public List<Alert> search() {
         return alertRepository.findAll();
+    }
+
+    @Override
+    public List<Alert> searchNearby(Double latitude, Double longitude, Double radiusKm) {
+
+        List<Alert> activeAlerts = alertRepository.findAll();
+
+        // Filter by status (exclude CLOSED)
+        List<Alert> nonClosedAlerts = activeAlerts.stream()
+                .filter(alert -> alert.currentStatus().getStatusName() != StatusNames.CLOSED)
+                .toList();
+
+        // Get the latest location for each alert
+        GeographicLocation center = GeographicLocation.of(latitude, longitude);
+        return nonClosedAlerts.stream()
+                .filter(alert -> {
+                    // Get latest event with location using the proper event repository
+                    List<AlertEvent> events = eventRepository.findByAlertIdOrderByChangedAtDesc(alert.getId());
+                    return events.stream()
+                            .filter(alertEvent -> alertEvent.getLocation() != null)
+                            .max(Comparator.comparing(alertEvent -> alertEvent.getChangedAt().value()))
+                            .map(event -> event.getLocation().isWithinRadius(center, radiusKm))
+                            .orElse(false);
+                })
+                .toList();
     }
 
     public UUID getCreatorById(UUID alertId) {

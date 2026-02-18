@@ -18,4 +18,6 @@ public interface SearchAlertsUseCase {
     );
 
     List<Alert> search();
+    List<Alert> searchNearby(Double latitude, Double longitude, Double radiusKm);
+
 }
