@@ -50,12 +50,20 @@ public class UserEntity {
     @Column(name = "telegram_chat_id")
     private String telegramChatId;
 
+    @Setter
+    @Column(name = "email_notifications_enabled")
+    private boolean emailNotificationsEnabled;
+
+    @Setter
+    @Column(name = "telegram_notifications_enabled")
+    private boolean telegramNotificationsEnabled;
+
     // Empty Constructor for JPA
     public UserEntity() {}
 
     public UserEntity(String id, String username, String email, String passwordHash,
                       String surname, String phoneNumber, Role role, LocalDateTime createdAt,
-                      String telegramChatId) {
+                      String telegramChatId, boolean emailNotificationsEnabled, boolean telegramNotificationsEnabled) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -65,6 +73,8 @@ public class UserEntity {
         this.createdAt = createdAt;
         this.role = role;
         this.telegramChatId = telegramChatId;
+        this.emailNotificationsEnabled = emailNotificationsEnabled;
+        this.telegramNotificationsEnabled = telegramNotificationsEnabled;
     }
 
     public User toDomain() {
@@ -75,7 +85,9 @@ public class UserEntity {
                 Surname.of(this.surname),
                 PhoneNumber.of(this.phoneNumber),
                 this.role,
-                TelegramChatId.of(this.telegramChatId)
+                TelegramChatId.of(this.telegramChatId),
+                this.emailNotificationsEnabled,
+                this.telegramNotificationsEnabled
         );
     }
 
@@ -88,7 +100,9 @@ public class UserEntity {
                         Surname.of(this.surname),
                         PhoneNumber.of(this.phoneNumber),
                         this.role,
-                        TelegramChatId.of(this.telegramChatId)
+                        TelegramChatId.of(this.telegramChatId),
+                        this.emailNotificationsEnabled,
+                        this.telegramNotificationsEnabled
                 ),
                 this.passwordHash
         );

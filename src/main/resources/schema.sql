@@ -1,3 +1,24 @@
+-- PawAlert Database Schema
+-- Updated to match entity classes and improvements document
+
+-- Users table
+-- Removed: full_name (replaced by surname)
+-- Added: surname, role, telegram_chat_id, email_notifications_enabled, telegram_notifications_enabled
+CREATE TABLE IF NOT EXISTS users (
+    id VARCHAR(255) PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    surname VARCHAR(255),
+    phone_number VARCHAR(50),
+    role VARCHAR(20) DEFAULT 'USER',
+    telegram_chat_id VARCHAR(100),
+    email_notifications_enabled BOOLEAN DEFAULT FALSE,
+    telegram_notifications_enabled BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL
+);
+
+-- Alerts table
 CREATE TABLE IF NOT EXISTS alerts (
     id VARCHAR(255) PRIMARY KEY,
     pet_id VARCHAR(255) NOT NULL,
@@ -6,8 +27,9 @@ CREATE TABLE IF NOT EXISTS alerts (
     description TEXT,
     status VARCHAR(50) NOT NULL,
     created_at TIMESTAMP NOT NULL
-    );
+);
 
+-- Alert events table
 CREATE TABLE IF NOT EXISTS alert_events (
     id VARCHAR(255) PRIMARY KEY,
     alert_id VARCHAR(255) NOT NULL,
@@ -19,10 +41,11 @@ CREATE TABLE IF NOT EXISTS alert_events (
     changed_at TIMESTAMP NOT NULL,
     changed_by_user_id VARCHAR(255),
     latitude DOUBLE PRECISION,
-    longitude DOUBLE PRECISION
+    longitude DOUBLE PRECISION,
     FOREIGN KEY (alert_id) REFERENCES alerts (id)
-    );
+);
 
+-- Pets table
 CREATE TABLE IF NOT EXISTS pets (
     id VARCHAR(255) PRIMARY KEY,
     user_id VARCHAR(255) NOT NULL,
@@ -37,38 +60,27 @@ CREATE TABLE IF NOT EXISTS pets (
     pet_description TEXT,
     pet_image TEXT,
     created_at TIMESTAMP NOT NULL
-    );
+);
 
-CREATE TABLE IF NOT EXISTS users (
-    id VARCHAR(255) PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    full_name VARCHAR(255),
-    phone_number VARCHAR(50),
-    created_at TIMESTAMP NOT NULL
-    );
-
+-- Alert subscriptions table
+-- Removed: notification_channel (notifications managed via user preferences)
 CREATE TABLE IF NOT EXISTS alert_subscriptions (
    id UUID PRIMARY KEY,
-   alert_id UUID NOT NULL,
-   user_id UUID NOT NULL,
+   alert_id VARCHAR(255) NOT NULL,
+   user_id VARCHAR(255) NOT NULL,
    active BOOLEAN NOT NULL DEFAULT TRUE,
    subscribed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-   notification_channel VARCHAR(20) NOT NULL DEFAULT 'ALL',
 
-    -- Avoid duplicated subscriptions
-    CONSTRAINT uq_alert_user UNIQUE (alert_id, user_id),
+   -- Avoid duplicated subscriptions
+   CONSTRAINT uq_alert_user UNIQUE (alert_id, user_id)
+);
 
-    -- Frequent search indexes
-    INDEX idx_alert_subscriptions_alert_id (alert_id),
-    INDEX idx_alert_subscriptions_user_id (user_id),
-    INDEX idx_alert_subscriptions_active (active)
-    );
-
-
+-- Indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);
 CREATE INDEX IF NOT EXISTS idx_alerts_pet ON alerts(pet_id);
 CREATE INDEX IF NOT EXISTS idx_alerts_user ON alerts(user_id);
-
 CREATE INDEX IF NOT EXISTS idx_alert_events_location ON alert_events(latitude, longitude);
+CREATE INDEX IF NOT EXISTS idx_alert_subscriptions_alert_id ON alert_subscriptions(alert_id);
+CREATE INDEX IF NOT EXISTS idx_alert_subscriptions_user_id ON alert_subscriptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_alert_subscriptions_active ON alert_subscriptions(active);
+CREATE INDEX IF NOT EXISTS idx_users_telegram_chat_id ON users(telegram_chat_id);
