@@ -87,6 +87,10 @@ public class AlertService implements
         eventPublisher.publishEvent(
                 new AlertStatusChangedEvent(savedAlert.getId(), OPENED, OPENED)
         );
+
+        // the owner must be subscribed to his own alerts
+        eventPublisher.publishEvent(AlertCreatedEvent.of(savedAlert.getId(), userId));
+
         return savedAlert;
     }
 

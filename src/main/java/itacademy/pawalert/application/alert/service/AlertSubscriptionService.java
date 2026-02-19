@@ -12,6 +12,8 @@ import itacademy.pawalert.domain.alert.model.AlertSubscription;
 import itacademy.pawalert.domain.alert.model.StatusNames;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +33,7 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
     }
 
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public AlertSubscription subscribeToAlert(UUID alertId, UUID userId) {
         log.info("[SUBSCRIBE-SERVICE] Subscribing user {} to alert {}", userId, alertId);
@@ -80,7 +83,7 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
         return subscriptionRepository.findByUserId(userId);
     }
 
-     @Override
+    @Override
     public boolean isUserSubscribed(UUID alertId, UUID userId) {
         return subscriptionRepository.existsByAlertIdAndUserId(alertId, userId);
     }
