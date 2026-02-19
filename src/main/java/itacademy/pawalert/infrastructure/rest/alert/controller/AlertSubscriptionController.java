@@ -7,6 +7,7 @@ import itacademy.pawalert.domain.alert.model.AlertSubscription;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertSubscriptionDTO;
 import itacademy.pawalert.infrastructure.rest.alert.dto.SubscribedResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/alerts")
 @RequiredArgsConstructor
@@ -23,8 +25,17 @@ public class AlertSubscriptionController {
 
     @PostMapping("/{alertId}/subscribe")
     public ResponseEntity<AlertSubscriptionDTO> subscribe(@PathVariable UUID alertId) {
+        log.info("[SUBSCRIBE] Attempting to subscribe to alert: {}", alertId);
         UUID userId = currentUserProviderPort.getCurrentUserId();
+        log.info("[SUBSCRIBE] Current user ID: {}", userId);
+        
+        if (userId == null) {
+            log.error("[SUBSCRIBE] User ID is null - authentication may have failed");
+            throw new IllegalStateException("User not authenticated");
+        }
+        
         AlertSubscription subscription = alertSubscriptionUseCase.subscribeToAlert(alertId, userId);
+        log.info("[SUBSCRIBE] Successfully created subscription with ID: {}", subscription.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(toDTO(subscription));
     }
 

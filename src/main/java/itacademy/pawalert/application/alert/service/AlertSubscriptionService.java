@@ -11,11 +11,13 @@ import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
 import itacademy.pawalert.domain.alert.model.NotificationChannel;
 import itacademy.pawalert.domain.alert.model.StatusNames;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class AlertSubscriptionService implements AlertSubscriptionUseCase {
 
@@ -32,21 +34,32 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
 
     @Override
     public AlertSubscription subscribeToAlert(UUID alertId, UUID userId) {
+        log.info("[SUBSCRIBE-SERVICE] Subscribing user {} to alert {}", userId, alertId);
+        
         Alert alert = alertRepository.findById(alertId)
-                .orElseThrow(() -> new AlertNotFoundException(alertId.toString()));
+                .orElseThrow(() -> {
+                    log.error("[SUBSCRIBE-SERVICE] Alert not found: {}", alertId);
+                    return new AlertNotFoundException(alertId.toString());
+                });
 
+        log.info("[SUBSCRIBE-SERVICE] Found alert with status: {}", alert.currentStatus().getStatusName());
+        
         if (alert.currentStatus().getStatusName() == StatusNames.CLOSED) {
+            log.error("[SUBSCRIBE-SERVICE] Cannot subscribe to closed alert: {}", alertId);
             throw new CannotSubscribeToClosedAlertException(alertId);
         }
 
         if (subscriptionRepository.existsByAlertIdAndUserId(alertId, userId)) {
+            log.error("[SUBSCRIBE-SERVICE] User {} already subscribed to alert {}", userId, alertId);
             throw new SubscriptionAlreadyExistsException(
                     "User " + userId + " is already subscribed to alert " + alertId);
         }
 
-
+        log.info("[SUBSCRIBE-SERVICE] Creating new subscription");
         AlertSubscription subscription = AlertSubscription.create(alertId, userId);
-        return subscriptionRepository.save(subscription);
+        AlertSubscription saved = subscriptionRepository.save(subscription);
+        log.info("[SUBSCRIBE-SERVICE] Subscription saved with ID: {}", saved.getId());
+        return saved;
     }
 
     @Override
