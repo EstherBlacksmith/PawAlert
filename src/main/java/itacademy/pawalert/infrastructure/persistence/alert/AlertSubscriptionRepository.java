@@ -10,6 +10,4 @@ public interface AlertSubscriptionRepository  extends JpaRepository<AlertSubscri
     boolean existsByAlertIdAndUserId(UUID alertId, UUID userId);
     void deleteAllByAlertId(UUID alertId);
     void deleteByAlertIdAndUserId(UUID alertId, UUID userID);
-    List<String> findTelegramChatIdsByAlertId(UUID alertId);
-    List<String> findEmailsByAlertId(UUID alertId);
 }

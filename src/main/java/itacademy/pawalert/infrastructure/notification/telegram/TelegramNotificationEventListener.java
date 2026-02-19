@@ -1,9 +1,9 @@
 package itacademy.pawalert.infrastructure.notification.telegram;
 
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
-import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.application.alert.service.AlertNotificationFormatter;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
+import itacademy.pawalert.application.notification.port.outbound.NotificationRepositoryPort;
 import itacademy.pawalert.application.pet.service.PetService;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertStatusChangedEvent;
@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class TelegramNotificationEventListener {
-    private final AlertSubscriptionRepositoryPort subscriptionRepository;
+    private final NotificationRepositoryPort notificationRepository;
     private final TelegramNotificationService telegramNotificationService;
     private final AlertNotificationFormatter formatter;
     private final AlertRepositoryPort alertRepository;
@@ -30,7 +30,7 @@ public class TelegramNotificationEventListener {
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + event.alertId()));
         Pet pet = petService.getPetById(alert.getPetId());
 
-        List<String> telegramChatIds = subscriptionRepository.findTelegramChatIdsByAlertId(event.alertId());
+        List<String> telegramChatIds = notificationRepository.findSubscriberTelegramChatIdsByAlertId(event.alertId());
         String message = formatter.formatStatusChangeMessage(alert,pet, event.newStatus());
 
         for (String chatId : telegramChatIds) {
