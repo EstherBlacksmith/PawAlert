@@ -74,21 +74,25 @@ public class Alert {
         return statusAlert.closed(this);
     }
 
-    public Alert updateTitle(Title newTitle) {
+    public Alert updateTitle(Title newTitle, boolean isAdmin) {
         StatusNames currentStatus = statusAlert.getStatusName();
 
         if (currentStatus != StatusNames.OPENED) {
-            throw AlertModificationNotAllowedException.cannotModifyTitle(id.toString());
+            if (!isAdmin || currentStatus != StatusNames.CLOSED) {
+                throw AlertModificationNotAllowedException.cannotModifyTitle(id.toString());
+            }
         }
 
         return new Alert(this.id, this.petId, this.userId, newTitle, this.description, this.statusAlert);
     }
 
-    public Alert updateDescription(Description newDescription) {
+    public Alert updateDescription(Description newDescription, boolean isAdmin) {
         StatusNames currentStatus = statusAlert.getStatusName();
 
         if (currentStatus != StatusNames.OPENED) {
-            throw AlertModificationNotAllowedException.cannotModifyDescription(id.toString());
+            if (!isAdmin || currentStatus != StatusNames.CLOSED) {
+                throw AlertModificationNotAllowedException.cannotModifyDescription(id.toString());
+            }
         }
 
         return new Alert(this.id, this.petId, this.userId, this.title, newDescription, this.statusAlert);

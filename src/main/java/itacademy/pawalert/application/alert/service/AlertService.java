@@ -228,7 +228,9 @@ public class AlertService implements
 
         eventRepository.save(event);
 
-        Alert alertCopy = alert.updateTitle(title);
+        boolean isAdmin = currentUserProvider.isCurrentUserAdmin();
+        Alert alertCopy = alert.updateTitle(title, isAdmin);
+        
         return alertRepository.save(alertCopy);
     }
 
@@ -246,7 +248,8 @@ public class AlertService implements
 
         eventRepository.save(event);
 
-        Alert alertCopy = alert.updateDescription(description);
+        boolean isAdmin = currentUserProvider.isCurrentUserAdmin();
+        Alert alertCopy = alert.updateDescription(description, isAdmin);
         return alertRepository.save(alertCopy);
     }
 
