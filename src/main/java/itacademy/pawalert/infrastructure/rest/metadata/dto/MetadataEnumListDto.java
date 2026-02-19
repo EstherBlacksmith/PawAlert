@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MetadataListDto {
+public class MetadataEnumListDto {
 
     @JsonSetter(nulls = Nulls.SKIP)
     private String type;

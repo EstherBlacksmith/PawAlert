@@ -9,7 +9,7 @@ import itacademy.pawalert.domain.pet.model.Species;
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.model.UserDisplayableEnum;
 import itacademy.pawalert.infrastructure.rest.metadata.dto.MetadataDto;
-import itacademy.pawalert.infrastructure.rest.metadata.dto.MetadataListDto;
+import itacademy.pawalert.infrastructure.rest.metadata.dto.MetadataEnumListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,29 +20,29 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class MetadataServiceImpl implements MetadataService {
+public class MetadataEnumServiceImpl implements MetadataEnumService {
 
     @Override
-    public List<MetadataListDto> getMetadata() {
-        List<MetadataListDto> metadataList = new ArrayList<>();
-        metadataList.add(createMetadataListDto("ROLE", Role.values()));
-        metadataList.add(createMetadataListDto("SIZE", Size.values()));
-        metadataList.add(createMetadataListDto("GENDER", Gender.values()));
-        metadataList.add(createMetadataListDto("SPECIES", Species.values()));
-        metadataList.add(createMetadataListDto("EVENT_TYPE", EventType.values()));
-        metadataList.add(createMetadataListDto("CLOSURE_REASON", ClosureReason.values()));
-        metadataList.add(createMetadataListDto("STATUS_NAMES", StatusNames.values()));
-        metadataList.add(createMetadataListDto("NOTIFICATION_CHANNEL", NotificationChannel.values()));
-        metadataList.add(createMetadataListDto("CONTENT_SAFETY_STATUS", ContentSafetyStatus.values()));
+    public List<MetadataEnumListDto> getMetadataEnum() {
+        List<MetadataEnumListDto> metadataEnumList = new ArrayList<>();
+        metadataEnumList.add(createMetadataEnumListDto("ROLE", Role.values()));
+        metadataEnumList.add(createMetadataEnumListDto("SIZE", Size.values()));
+        metadataEnumList.add(createMetadataEnumListDto("GENDER", Gender.values()));
+        metadataEnumList.add(createMetadataEnumListDto("SPECIES", Species.values()));
+        metadataEnumList.add(createMetadataEnumListDto("EVENT_TYPE", EventType.values()));
+        metadataEnumList.add(createMetadataEnumListDto("CLOSURE_REASON", ClosureReason.values()));
+        metadataEnumList.add(createMetadataEnumListDto("STATUS_NAMES", StatusNames.values()));
+        metadataEnumList.add(createMetadataEnumListDto("NOTIFICATION_CHANNEL", NotificationChannel.values()));
+        metadataEnumList.add(createMetadataEnumListDto("CONTENT_SAFETY_STATUS", ContentSafetyStatus.values()));
 
-        return metadataList;
+        return metadataEnumList;
     }
 
-    private MetadataListDto createMetadataListDto(String type, Enum<?>[] values) {
+    private MetadataEnumListDto createMetadataEnumListDto(String type, Enum<?>[] values) {
         List<MetadataDto> metadata = Arrays.stream(values)
                 .map(value -> new MetadataDto(value.name(), formatEnumValue(value)))
                 .collect(Collectors.toList());
-        return new MetadataListDto(type, metadata);
+        return new MetadataEnumListDto(type, metadata);
     }
 
     private String formatEnumValue(Enum<?> value) {
