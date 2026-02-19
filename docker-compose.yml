@@ -11,16 +11,16 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   # Frontend React application (served with Nginx)
-  frontend:
-    build:
-      context: ./frontend-react
-      dockerfile: Dockerfile
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-    environment:
-      - VITE_API_URL=http://backend:8080
+#  frontend:
+#    build:
+#      context: ./frontend-react
+#      dockerfile: Dockerfile
+#    ports:
+#      - "80:80"
+#    depends_on:
+#      - backend
+#    environment:
+#      - VITE_API_URL=http://backend:8080
 
   # Backend Spring Boot application
   backend:
