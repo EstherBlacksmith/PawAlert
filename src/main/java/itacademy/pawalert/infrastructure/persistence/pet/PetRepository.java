@@ -11,11 +11,11 @@ public interface PetRepository  extends
         JpaRepository<PetEntity, String>,
         JpaSpecificationExecutor<PetEntity>{
 
-    List<PetEntity> getPetsByUserId(UUID userID);
-    List<PetEntity> findBySpecies(Species species);
-    List<PetEntity> findByBreed(Breed breed);
-    List<PetEntity> findByWorkingPetName(PetWorkingName name);
-    List<PetEntity> findByOfficialPetName(PetOfficialName name);
-    PetEntity findByChipNumber(ChipNumber chipNumber);
-    List<PetEntity> findByUserId(UUID userId);
+    List<PetEntity> getPetsByUserId(String userID);
+    List<PetEntity> findBySpecies(String species);
+    List<PetEntity> findByBreed(String breed);
+    List<PetEntity> findByWorkingPetName(String name);
+    List<PetEntity> findByOfficialPetName(String name);
+    PetEntity findByChipNumber(String chipNumber);
+    List<PetEntity> findByUserId(String userId);
 }

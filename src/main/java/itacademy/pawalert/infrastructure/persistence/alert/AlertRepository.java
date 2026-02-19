@@ -13,7 +13,7 @@ public interface AlertRepository extends JpaRepository<AlertEntity, String>,
         JpaSpecificationExecutor<Alert> {
     List<AlertEntity> findByStatus(String status);
     List<AlertEntity> findAllByPetId(String petID);
-    StatusNames findLastStatusById(UUID alertId);
+    StatusNames findLastStatusById(String alertId);
     boolean existsByPetIdAndStatusIn(String petId, List<String> statuses);
     Optional<AlertEntity> findTopByPetIdAndStatusInOrderByCreatedAtDesc(String petId, List<String> statuses);
 }
