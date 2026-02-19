@@ -54,14 +54,4 @@ public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepo
         jpaRepository.deleteAllByAlertId(alertId);
     }
 
-    @Override
-    public List<String> findTelegramChatIdsByAlertId(UUID  alertId) {
-        return jpaRepository.findTelegramChatIdsByAlertId(alertId);
-    }
-
-    @Override
-    public List<String> findEmailsByAlertId(UUID alertId) {
-        return jpaRepository.findEmailsByAlertId(alertId);
-    }
-
 }

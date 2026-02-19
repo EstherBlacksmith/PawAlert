@@ -1,9 +1,10 @@
 package itacademy.pawalert.infrastructure.notification.mail;
 
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
-import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
+
 import itacademy.pawalert.application.alert.service.AlertNotificationFormatter;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
+import itacademy.pawalert.application.notification.port.outbound.NotificationRepositoryPort;
 import itacademy.pawalert.application.pet.service.PetService;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertStatusChangedEvent;
@@ -17,7 +18,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class EmailNotificationEventListener {
-    private final AlertSubscriptionRepositoryPort subscriptionRepository;
+    private final NotificationRepositoryPort notificationRepository;
     private final EmailServiceImpl emailService;
     private final AlertNotificationFormatter formatter;
     private final AlertRepositoryPort alertRepository;
@@ -30,7 +31,7 @@ public class EmailNotificationEventListener {
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + event.alertId()));
         Pet pet = petService.getPetById(alert.getPetId());
 
-        List<String> emails = subscriptionRepository.findEmailsByAlertId(event.alertId());
+        List<String> emails = notificationRepository.findSubscriberEmailsByAlertId(event.alertId());
         String subject = formatter.formatEmailSubject(event.newStatus());
         String body = formatter.formatEmailBody(alert, pet, event.oldStatus(), event.newStatus());
 

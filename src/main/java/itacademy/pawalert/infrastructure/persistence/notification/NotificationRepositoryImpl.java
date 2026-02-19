@@ -20,7 +20,7 @@ public class NotificationRepositoryImpl implements NotificationRepositoryPort {
     public List<String> findSubscriberEmailsByAlertId(UUID alertId) {
         return entityManager.createQuery(
                         "SELECT DISTINCT u.email FROM UserEntity u " +
-                                "JOIN AlertSubscriptionEntity s ON s.userId = u.id " +
+                                "JOIN AlertSubscriptionEntity s ON CAST(s.userId AS string) = u.id " +
                                 "WHERE s.alertId = :alertId " +
                                 "AND u.emailNotificationsEnabled = true",
                         String.class)
@@ -32,7 +32,7 @@ public class NotificationRepositoryImpl implements NotificationRepositoryPort {
     public List<String> findSubscriberTelegramChatIdsByAlertId(UUID alertId) {
         return entityManager.createQuery(
                         "SELECT DISTINCT u.telegramChatId FROM UserEntity u " +
-                                "JOIN AlertSubscriptionEntity s ON s.userId = u.id " +
+                                "JOIN AlertSubscriptionEntity s ON CAST(s.userId AS string) = u.id " +
                                 "WHERE s.alertId = :alertId " +
                                 "AND u.telegramNotificationsEnabled = true " +
                                 "AND u.telegramChatId IS NOT NULL", String.class)
@@ -44,7 +44,7 @@ public class NotificationRepositoryImpl implements NotificationRepositoryPort {
     public List<UUID> findSubscriberUserIdsByAlertId(UUID alertId) {
         return entityManager.createQuery(
                         "SELECT DISTINCT u.id FROM UserEntity u " +
-                                "JOIN AlertSubscriptionEntity s ON s.userId = u.id " +
+                                "JOIN AlertSubscriptionEntity s ON CAST(s.userId AS string) = u.id " +
                                 "WHERE s.alertId = :alertId " +
                                 "AND (u.emailNotificationsEnabled = true OR u.telegramNotificationsEnabled = true)",
                         UUID.class)
