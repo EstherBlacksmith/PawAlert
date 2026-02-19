@@ -1,5 +1,6 @@
 package itacademy.pawalert.infrastructure.notification.mail;
 
+import itacademy.pawalert.application.notification.port.outbound.EmailServicePort;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertSubscriptionRepository;
 import itacademy.pawalert.infrastructure.persistence.user.UserRepository;
 import jakarta.mail.MessagingException;
@@ -14,7 +15,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 
 
 @Service
-public class EmailServiceImpl {
+public class EmailServiceImpl implements EmailServicePort {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
@@ -33,6 +34,7 @@ public class EmailServiceImpl {
         this.subscriptionRepository = subscriptionRepository;
     }
 
+    @Override
     public void sendToUser(String to, String subject, String htmlBody) {
        try{ MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);

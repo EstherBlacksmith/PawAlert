@@ -134,7 +134,7 @@ public class AlertController {
         Alert updated = updateAlertStatusUseCase.changeStatus(
                 UUID.fromString(id),
                 request.getNewStatus(),
-                UUID.fromString(request.getUserId()),
+                UUID.fromString(request.userId()),
                 location,
                 null  // No closure reason for non-close transitions
         );

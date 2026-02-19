@@ -1,6 +1,7 @@
 package itacademy.pawalert.infrastructure.exception;
 
 import itacademy.pawalert.application.exception.AlertNotFoundException;
+import itacademy.pawalert.application.exception.CannotSubscribeToClosedAlertException;
 import itacademy.pawalert.application.exception.ForbiddenException;
 import itacademy.pawalert.application.exception.SubscriptionAlreadyExistsException;
 import itacademy.pawalert.application.exception.SubscriptionNotFoundException;
@@ -12,6 +13,7 @@ import itacademy.pawalert.domain.alert.exception.*;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.notification.exception.EmailSendException;
 import itacademy.pawalert.infrastructure.rest.alert.dto.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.io.IOException;
 
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -28,6 +31,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse(401, "Unauthorized", "Invalid email or password"));
+    }
+    
+    @ExceptionHandler(CannotSubscribeToClosedAlertException.class)
+    public ResponseEntity<ErrorResponse> handleCannotSubscribeToClosedAlertException(CannotSubscribeToClosedAlertException ex) {
+        log.warn("[EXCEPTION] CannotSubscribeToClosedAlertException: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "Cannot subscribe to closed alert", ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidAlertStatusChange.class)

@@ -39,5 +39,4 @@ public record Email(@JsonValue String value) {
         }
     }
 
-
 }
