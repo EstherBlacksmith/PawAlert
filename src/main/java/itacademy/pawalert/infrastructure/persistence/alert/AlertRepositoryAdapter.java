@@ -69,7 +69,7 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
 
     @Override
     public StatusNames getLastStatusById(UUID alertId) {
-        return alertRepository.findLastStatusById(alertId);
+        return alertRepository.findLastStatusById(alertId.toString());
     }
 
     @Override

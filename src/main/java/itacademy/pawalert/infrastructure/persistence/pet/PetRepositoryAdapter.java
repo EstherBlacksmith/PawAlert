@@ -46,10 +46,8 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+
     public List<Pet> findAll(Specification<Pet> spec, Sort sort) {
-        // The specifications use string-based field names that match between Pet and PetEntity
-        // So we can safely cast the specification
         Specification<PetEntity> entitySpec = (Specification<PetEntity>) (Specification<?>) spec;
         return petRepository.findAll(entitySpec, sort).stream()
                 .map(PetEntity::toDomain)
@@ -57,10 +55,8 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Page<Pet> findAll(Specification<Pet> spec, Pageable pageable) {
-        // The specifications use string-based field names that match between Pet and PetEntity
-        // So we can safely cast the specification
+
         Specification<PetEntity> entitySpec = (Specification<PetEntity>) (Specification<?>) spec;
         return petRepository.findAll(entitySpec, pageable)
                 .map(PetEntity::toDomain);
@@ -68,7 +64,7 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
 
     @Override
     public List<Pet> findAllByUserId(UUID userId) {
-        return petRepository.findByUserId(userId).stream()
+        return petRepository.findByUserId(userId.toString()).stream()
                 .map(PetEntity::toDomain)
                 .toList();
     }

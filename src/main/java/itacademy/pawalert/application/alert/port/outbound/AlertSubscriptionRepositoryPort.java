@@ -16,6 +16,6 @@ public interface AlertSubscriptionRepositoryPort {
     boolean existsByAlertIdAndUserId(UUID alertId, UUID userId);
     void deleteById(UUID id);
     void deleteAllByAlertId(UUID alertId);
-    List<String>findEmailsByAlertIdAndActiveTrue(String alertId);
-    List<String> findTelegramChatIdsByAlertId(String alertId);
+    List<String>findEmailsByAlertIdAndActiveTrue(UUID  alertId);
+    List<String> findTelegramChatIdsByAlertId(UUID  alertId);
 }
