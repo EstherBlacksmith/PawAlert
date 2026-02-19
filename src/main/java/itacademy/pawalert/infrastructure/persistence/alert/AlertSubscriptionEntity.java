@@ -17,8 +17,6 @@ public class AlertSubscriptionEntity {
     private UUID alertId;
     @Column(name ="user_id", nullable = false)
     private UUID userId;
-    @Column(name ="active", nullable = false)
-    private boolean active;
     @Column(name = "subscribed_at", nullable = false)
     private LocalDateTime subscribedAt;
 
@@ -26,11 +24,10 @@ public class AlertSubscriptionEntity {
     public AlertSubscriptionEntity() {
     }
 
-    public AlertSubscriptionEntity(UUID id, UUID alertId, UUID userID, boolean active, LocalDateTime subscribedAt) {
+    public AlertSubscriptionEntity(UUID id, UUID alertId, UUID userID, LocalDateTime subscribedAt) {
         this.id = id;
         this.alertId = alertId;
         this.userId = userID;
-        this.active = active;
         this.subscribedAt = subscribedAt;
     }
 
@@ -39,7 +36,6 @@ public class AlertSubscriptionEntity {
                 subscription.getId(),
                 subscription.getAlertId(),
                 subscription.getUserId(),
-                subscription.isActive(),
                 subscription.getSubscribedAt()
         );
     }
@@ -49,7 +45,6 @@ public class AlertSubscriptionEntity {
                 this.id,
                 this.alertId ,
                 this.userId,
-                this.active,
                 this.subscribedAt
         );
     }

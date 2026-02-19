@@ -9,7 +9,6 @@ import itacademy.pawalert.application.alert.port.inbound.AlertSubscriptionUseCas
 import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
-import itacademy.pawalert.domain.alert.model.NotificationChannel;
 import itacademy.pawalert.domain.alert.model.StatusNames;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -72,8 +71,7 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
                 .orElseThrow(() -> new SubscriptionNotFoundException(
                         "Subscription not found for alert " + alertId + " and user " + userId));
 
-        subscription.cancel();
-        subscriptionRepository.save(subscription);
+        subscriptionRepository.deleteById(subscription.getId());
     }
 
 
@@ -82,19 +80,9 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
         return subscriptionRepository.findByUserId(userId);
     }
 
-    @Override
-    public List<AlertSubscription> getUserActiveSubscriptions(UUID userId) {
-        return subscriptionRepository.findByUserIdAndActiveTrue(userId);
-    }
-
-    @Override
+     @Override
     public boolean isUserSubscribed(UUID alertId, UUID userId) {
         return subscriptionRepository.existsByAlertIdAndUserId(alertId, userId);
     }
 
-
-    @Override
-    public List<AlertSubscription> getActiveSubscriptionsByAlertId(UUID alertId) {
-        return subscriptionRepository.findByAlertIdAndActiveTrue(alertId);
-    }
 }

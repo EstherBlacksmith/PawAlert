@@ -11,7 +11,5 @@ public interface AlertSubscriptionUseCase {
 
     void unsubscribeFromAlert(UUID alertId, UUID userId);
     List<AlertSubscription> getUserSubscriptions(UUID userId);
-    List<AlertSubscription> getUserActiveSubscriptions(UUID userId);
     boolean isUserSubscribed(UUID alertId, UUID userId);
-    List<AlertSubscription> getActiveSubscriptionsByAlertId(UUID AlertId);
 }

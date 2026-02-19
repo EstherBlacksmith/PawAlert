@@ -6,6 +6,5 @@ public record AlertSubscriptionDTO(
         String id,
         String alertId,
         String userId,
-        boolean active,
         LocalDateTime subscribedAt
 ) {}
