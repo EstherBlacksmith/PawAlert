@@ -1,7 +1,7 @@
 package itacademy.pawalert.infrastructure.rest.metadata.controller;
 
-import itacademy.pawalert.infrastructure.rest.metadata.dto.MetadataListDto;
-import itacademy.pawalert.application.metadata.service.MetadataService;
+import itacademy.pawalert.infrastructure.rest.metadata.dto.MetadataEnumListDto;
+import itacademy.pawalert.application.metadata.service.MetadataEnumService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = "/api/v1/metadata", produces = MediaType.APPLICATION_JSON_VALUE)
-public class MetadataController {
+public class MetadataEnumController {
 
-    private final MetadataService metadataService;
+    private final MetadataEnumService metadataEnumService;
 
     @GetMapping("/get-metadata")
-    public ResponseEntity<List<MetadataListDto>> getMetadata() {
-        List<MetadataListDto> metadata = metadataService.getMetadata();
+    public ResponseEntity<List<MetadataEnumListDto>> getMetadata() {
+        List<MetadataEnumListDto> metadata = metadataEnumService.getMetadataEnum();
         return ResponseEntity.ok(metadata);
     }
 }
