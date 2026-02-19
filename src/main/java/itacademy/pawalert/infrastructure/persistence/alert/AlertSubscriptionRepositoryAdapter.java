@@ -31,23 +31,10 @@ public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepo
         return jpaRepository.findById(id).map(AlertSubscriptionEntity::toDomain);
     }
 
-    @Override
-    public List<AlertSubscription> findByAlertIdAndActiveTrue(UUID alertId) {
-        return jpaRepository.findByAlertIdAndActiveTrue(alertId).stream()
-                .map(AlertSubscriptionEntity::toDomain)
-                .toList();
-    }
 
     @Override
     public List<AlertSubscription> findByUserId(UUID userId) {
         return jpaRepository.findByUserId(userId).stream()
-                .map(AlertSubscriptionEntity::toDomain)
-                .toList();
-    }
-
-    @Override
-    public List<AlertSubscription> findByUserIdAndActiveTrue(UUID userId) {
-        return jpaRepository.findByUserIdAndActiveTrue(userId).stream()
                 .map(AlertSubscriptionEntity::toDomain)
                 .toList();
     }
@@ -65,17 +52,16 @@ public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepo
     @Override
     public void deleteAllByAlertId(UUID alertId) {
         jpaRepository.deleteAllByAlertId(alertId);
-
-    }
-
-    @Override
-    public List<String> findEmailsByAlertIdAndActiveTrue(UUID  alertId) {
-        return jpaRepository.findEmailsByAlertIdAndActiveTrue(alertId);
     }
 
     @Override
     public List<String> findTelegramChatIdsByAlertId(UUID  alertId) {
         return jpaRepository.findTelegramChatIdsByAlertId(alertId);
+    }
+
+    @Override
+    public List<String> findEmailsByAlertId(UUID alertId) {
+        return jpaRepository.findEmailsByAlertId(alertId);
     }
 
 }

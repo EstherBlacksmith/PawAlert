@@ -1,23 +1,15 @@
 package itacademy.pawalert.infrastructure.persistence.alert;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
 public interface AlertSubscriptionRepository  extends JpaRepository<AlertSubscriptionEntity, UUID> {
-    List<AlertSubscriptionEntity> findByAlertIdAndActiveTrue(UUID alertId);
 
     List<AlertSubscriptionEntity> findByUserId(UUID userId);
-
-    List<AlertSubscriptionEntity> findByUserIdAndActiveTrue(UUID userId);
-
     boolean existsByAlertIdAndUserId(UUID alertId, UUID userId);
-
     void deleteAllByAlertId(UUID alertId);
-
-    List<String> findEmailsByAlertIdAndActiveTrue(UUID alertId);
-
+    void deleteByAlertIdAndUserId(UUID alertId, UUID userID);
     List<String> findTelegramChatIdsByAlertId(UUID alertId);
+    List<String> findEmailsByAlertId(UUID alertId);
 }

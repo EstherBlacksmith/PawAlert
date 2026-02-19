@@ -56,7 +56,7 @@ public class AlertSubscriptionController {
     @GetMapping("/subscriptions/me")
     public ResponseEntity<List<AlertSubscriptionDTO>> getMySubscriptions() {
         UUID userId = currentUserProviderPort.getCurrentUserId();
-        List<AlertSubscription> subscriptions = alertSubscriptionUseCase.getUserActiveSubscriptions(userId);
+        List<AlertSubscription> subscriptions = alertSubscriptionUseCase.getUserSubscriptions(userId);
         return ResponseEntity.ok(subscriptions.stream().map(this::toDTO).toList());
     }
 
@@ -65,7 +65,6 @@ public class AlertSubscriptionController {
                 subscription.getId().toString(),
                 subscription.getAlertId().toString(),
                 subscription.getUserId().toString(),
-                subscription.isActive(),
                 subscription.getSubscribedAt()
         );
     }
