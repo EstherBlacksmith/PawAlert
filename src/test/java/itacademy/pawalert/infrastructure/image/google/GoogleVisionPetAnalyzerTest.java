@@ -3,6 +3,7 @@ package itacademy.pawalert.infrastructure.image.google;
 import itacademy.pawalert.domain.image.model.*;
 import itacademy.pawalert.domain.image.port.inbound.PetImageAnalyzer;
 import itacademy.pawalert.domain.image.port.outbound.ImageAnalysisPort;
+import itacademy.pawalert.domain.image.service.ImageTypeClassifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,10 +22,11 @@ class GoogleVisionPetAnalyzerTest {
     private ImageAnalysisPort imageAnalysisPort;
 
     private PetImageAnalyzer petImageAnalyzer;
+    private  ImageTypeClassifier imageTypeClassifier;
 
     @BeforeEach
     void setUp() {
-        petImageAnalyzer = new GoogleVisionPetAnalyzer(imageAnalysisPort);
+        petImageAnalyzer = new GoogleVisionPetAnalyzer(imageAnalysisPort,imageTypeClassifier);
     }
 
     @Test

@@ -58,7 +58,9 @@ public final class AlertSpecifications {
 
             Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
             Root<AlertEventEntity> eventRoot = subquery.from(AlertEventEntity.class);
-            subquery.select(cb.greatest(eventRoot.get("changedAt")));
+
+            jakarta.persistence.criteria.Path<LocalDateTime> changedAtPath = eventRoot.get("changedAt");
+            subquery.select(cb.greatest(changedAtPath));
             subquery.where(cb.equal(eventRoot.get("alert").get("id"), root.get("id")));
 
             return cb.greaterThanOrEqualTo(subquery, date);
@@ -71,12 +73,15 @@ public final class AlertSpecifications {
 
             Subquery<LocalDateTime> subquery = query.subquery(LocalDateTime.class);
             Root<AlertEventEntity> eventRoot = subquery.from(AlertEventEntity.class);
-            subquery.select(cb.greatest(eventRoot.get("changedAt")));
+
+            jakarta.persistence.criteria.Path<LocalDateTime> changedAtPath = eventRoot.get("changedAt");
+            subquery.select(cb.greatest(changedAtPath));
             subquery.where(cb.equal(eventRoot.get("alert").get("id"), root.get("id")));
 
             return cb.lessThanOrEqualTo(subquery, date);
         };
     }
+
 
     public static Specification<AlertEntity> petNameContains(String petName) {
         return (root, query, cb) -> {
