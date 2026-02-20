@@ -254,7 +254,7 @@ public class GoogleVisionService {
                 .getDominantColors().getColorsList();
 
         if (colors.isEmpty()) {
-            return "Desconocido";
+            return "Unknown";
         }
 
         // Returns the most common color
@@ -268,14 +268,14 @@ public class GoogleVisionService {
         int blue = (int) (color.getBlue() * 255);
 
         // Mapeo simple de RGB a nombres de color
-        if (red > 200 && green > 200 && blue > 200) return "Blanco";
-        if (red < 50 && green < 50 && blue < 50) return "Negro";
-        if (red > green && red > blue) return "Marrón/Rojo";
-        if (green > red && green > blue) return "Verde";
-        if (blue > red && blue > green) return "Azul";
-        if (red > 150 && green > 100 && blue < 100) return "Marrón";
-        if (red > 200 && green > 150 && blue < 50) return "Naranja/Crema";
+        if (red > 200 && green > 200 && blue > 200) return "White";
+        if (red < 50 && green < 50 && blue < 50) return "Black";
+        if (red > green && red > blue) return "Brown/Red";
+        if (green > red && green > blue) return "Green";
+        if (blue > red && blue > green) return "Blue";
+        if (red > 150 && green > 100 && blue < 100) return "Brown";
+        if (red > 200 && green > 150 && blue < 50) return "Orange/Creme";
 
-        return "Otro";
+        return "Other";
     }
 }

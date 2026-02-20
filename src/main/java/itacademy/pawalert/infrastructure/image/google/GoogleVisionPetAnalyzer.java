@@ -3,6 +3,9 @@ package itacademy.pawalert.infrastructure.image.google;
 import itacademy.pawalert.domain.image.model.*;
 import itacademy.pawalert.domain.image.port.inbound.PetImageAnalyzer;
 import itacademy.pawalert.domain.image.port.outbound.ImageAnalysisPort;
+import itacademy.pawalert.domain.image.service.ImageTypeClassifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -11,7 +14,10 @@ import java.util.stream.Collectors;
 @Component
 public class GoogleVisionPetAnalyzer implements PetImageAnalyzer {
 
+    private static final Logger log = LoggerFactory.getLogger(GoogleVisionPetAnalyzer.class);
+
     private final ImageAnalysisPort imageAnalysisPort;
+    private final ImageTypeClassifier imageTypeClassifier;
 
     private static final Map<String, String> ANIMAL_KEYWORDS = Map.ofEntries(
             Map.entry("dog", "Dog"),
@@ -43,14 +49,30 @@ public class GoogleVisionPetAnalyzer implements PetImageAnalyzer {
             "british shorthair", "maine coon", "scottish fold", "sphynx"
     );
 
-    public GoogleVisionPetAnalyzer(ImageAnalysisPort imageAnalysisPort) {
+    public GoogleVisionPetAnalyzer(
+            ImageAnalysisPort imageAnalysisPort,
+            ImageTypeClassifier imageTypeClassifier) {
         this.imageAnalysisPort = imageAnalysisPort;
+        this.imageTypeClassifier = imageTypeClassifier;
     }
 
     @Override
     public PetAnalysisResult analyze(byte[] imageBytes) {
-        // Ejecutar todos los análisis en paralelo o secuencial
+        log.debug("Initializing pet image analysis");
+
         List<LabelResult> labels = imageAnalysisPort.detectLabels(imageBytes);
+
+        ImageTypeResult imageType = imageTypeClassifier.classify(labels);
+
+        if (!imageType.isPhotograph()) {
+            log.warn("Image rejected:  appears to be a {} (confidence: {})",
+                    imageType.detectedType(), imageType.confidence());
+            return PetAnalysisResult.notAPet(
+                    "Image appears to be a " + imageType.detectedType() +
+                            " rather than a real photograph. Please upload a photo of your pet."
+            );
+        }
+
         String detectedText = imageAnalysisPort.detectText(imageBytes);
         ColorResult colors = imageAnalysisPort.detectColors(imageBytes);
         SafetyResult safety = imageAnalysisPort.checkSafety(imageBytes);
@@ -65,10 +87,13 @@ public class GoogleVisionPetAnalyzer implements PetImageAnalyzer {
         double breedConfidence = breed != null ?
                 findLabelConfidence(labels, breed) : 0.0;
 
+        log.debug("Analysis completed: isValidPet={}, species={}, color={}",
+                isValidPet, animalResult.species(), colors.dominantColor());
+
         return new PetAnalysisResult(
                 isValidPet,
-                isValidPet ? "Imagen válida de " + animalResult.species() :
-                        "No se detectó una mascota válida",
+                isValidPet ? "Valid image of " + animalResult.species() :
+                        "Didn't detect a valid pet",
                 animalResult.species(),
                 animalResult.confidence(),
                 breed,
@@ -76,7 +101,7 @@ public class GoogleVisionPetAnalyzer implements PetImageAnalyzer {
                 possibleBreeds,
                 colors.dominantColor(),
                 colors.hex(),
-                List.of(), // Palette completa si la necesitas
+                List.of(),
                 detectedText,
                 detectedText != null && !detectedText.isEmpty(),
                 labels.stream().map(LabelResult::label).collect(Collectors.toList()),
@@ -121,7 +146,7 @@ public class GoogleVisionPetAnalyzer implements PetImageAnalyzer {
             return new SpeciesClassificationResult(detectedAnimal, rawLabel, maxConfidence, true);
         }
 
-        return new SpeciesClassificationResult("Desconocido", null, 0.0, false);
+        return new SpeciesClassificationResult("Unknown", null, 0.0, false);
     }
 
     private List<String> extractPossibleBreeds(List<LabelResult> labels) {

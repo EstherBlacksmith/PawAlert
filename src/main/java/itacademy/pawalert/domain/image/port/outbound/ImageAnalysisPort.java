@@ -1,6 +1,7 @@
 package itacademy.pawalert.domain.image.port.outbound;
 
 import itacademy.pawalert.domain.image.model.ColorResult;
+import itacademy.pawalert.domain.image.model.DetectedObject;
 import itacademy.pawalert.domain.image.model.LabelResult;
 import itacademy.pawalert.domain.image.model.SafetyResult;
 
@@ -11,5 +12,6 @@ public interface ImageAnalysisPort {
     String detectText(byte[] imageBytes);
     ColorResult detectColors(byte[] imageBytes);
     SafetyResult checkSafety(byte[] imageBytes);
+    List<DetectedObject> detectObjects(byte[] imageBytes);
 }
 
