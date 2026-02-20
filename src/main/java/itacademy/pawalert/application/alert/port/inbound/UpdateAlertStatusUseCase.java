@@ -22,6 +22,4 @@ public interface UpdateAlertStatusUseCase {
     @Transactional
     Alert changeStatus(UUID alertId, StatusNames newStatus, UUID userId, GeographicLocation location, ClosureReason closureReason);
 
-    @Transactional
-    Alert closeAlert(UUID alertId, UUID userId, GeographicLocation location, ClosureReason closureReason);
 }

@@ -3,6 +3,7 @@ package itacademy.pawalert.domain.alert.specification;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.StatusNames;
 import itacademy.pawalert.domain.pet.model.Pet;
+import itacademy.pawalert.infrastructure.persistence.alert.AlertEntity;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventEntity;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -17,8 +18,12 @@ public final class AlertSpecifications {
 
     private AlertSpecifications() {} // Utility class
 
+    public static Specification<AlertEntity> notDeleted() {
+        return (root, query, cb) -> cb.isNull(root.get("deletedAt"));
+    }
+
     // Filter by state
-    public static Specification<Alert> withStatus(StatusNames status) {
+    public static Specification<AlertEntity> withStatus(StatusNames status) {
         return (root, query, cb) -> {
             if (status == null) return cb.conjunction(); // Si null, no filtra
             return cb.equal(root.get("status"), status);
@@ -26,7 +31,7 @@ public final class AlertSpecifications {
     }
 
     // Filter by title, case-sensitive
-    public static Specification<Alert> titleContains(String title) {
+    public static Specification<AlertEntity> titleContains(String title) {
         return (root, query, cb) -> {
             if (title == null || title.isBlank()) return cb.conjunction();
             return cb.like(
@@ -37,7 +42,7 @@ public final class AlertSpecifications {
     }
 
     // Filter by user creator
-    public static Specification<Alert> createdBy(Long userId) {
+    public static Specification<AlertEntity> createdBy(Long userId) {
         return (root, query, cb) -> {
             if (userId == null) return cb.conjunction();
             return cb.equal(root.get("user").get("id"), userId);
@@ -45,7 +50,7 @@ public final class AlertSpecifications {
     }
 
     //Filter by date of creation after
-    public static Specification<Alert> createdAfter(LocalDateTime date) {
+    public static Specification<AlertEntity> createdAfter(LocalDateTime date) {
         return (root, query, cb) -> {
             if (date == null) return cb.conjunction();
             return cb.greaterThanOrEqualTo(root.get("createdAt"), date);
@@ -53,7 +58,7 @@ public final class AlertSpecifications {
     }
 
     //Filter by date of creation before
-    public static Specification<Alert> createdBefore(LocalDateTime date) {
+    public static Specification<AlertEntity> createdBefore(LocalDateTime date) {
         return (root, query, cb) -> {
             if (date == null) return cb.conjunction();
             return cb.lessThanOrEqualTo(root.get("createdAt"), date);
@@ -61,7 +66,7 @@ public final class AlertSpecifications {
     }
 
     //Filter by Pet name
-    public static Specification<Alert> petNameContains(String petName) {
+    public static Specification<AlertEntity> petNameContains(String petName) {
         return (root, query, cb) -> {
             if (petName == null || petName.isBlank()) {
                 return cb.conjunction(); // Si null, no filtra
@@ -80,7 +85,7 @@ public final class AlertSpecifications {
 
 
     //Filter by Pet id
-    public static Specification<Alert> withPetId(Long petId) {
+    public static Specification<AlertEntity> withPetId(Long petId) {
         return (root, query, cb) -> {
             if (petId == null) return cb.conjunction();
             return cb.equal(root.get("pet").get("id"), petId);
@@ -88,7 +93,7 @@ public final class AlertSpecifications {
     }
 
     //Filter by Breed
-    public static Specification<Alert> petBreedContains(String breed) {
+    public static Specification<AlertEntity> petBreedContains(String breed) {
         return (root, query, cb) -> {
             if (breed == null || breed.isBlank()) return cb.conjunction();
             Join<Alert, Pet> petJoin = root.join("pet", JoinType.INNER);
@@ -97,7 +102,7 @@ public final class AlertSpecifications {
     }
 
     //Filter by specie
-    public static Specification<Alert> withPetSpecies(String species) {
+    public static Specification<AlertEntity> withPetSpecies(String species) {
         return (root, query, cb) -> {
             if (species == null || species.isBlank()) return cb.conjunction();
             Join<Alert, Pet> petJoin = root.join("pet", JoinType.INNER);
@@ -106,7 +111,7 @@ public final class AlertSpecifications {
     }
 
     // Filter by last update date
-    public static Specification<Alert> lastUpdatedAfter(LocalDateTime date) {
+    public static Specification<AlertEntity> lastUpdatedAfter(LocalDateTime date) {
         return (root, query, cb) -> {
             if (date == null) return cb.conjunction();
 
@@ -120,7 +125,7 @@ public final class AlertSpecifications {
         };
     }
 
-    public static Specification<Alert> lastUpdatedBefore(LocalDateTime date) {
+    public static Specification<AlertEntity> lastUpdatedBefore(LocalDateTime date) {
         return (root, query, cb) -> {
             if (date == null) return cb.conjunction();
 
@@ -134,7 +139,7 @@ public final class AlertSpecifications {
     }
 
     // Filter by geographic radius using Haversine formula approximation
-    public static Specification<Alert> withinRadius(Double latitude, Double longitude, Double radiusKm) {
+    public static Specification<AlertEntity> withinRadius(Double latitude, Double longitude, Double radiusKm) {
         return (root, query, cb) -> {
             if (latitude == null || longitude == null || radiusKm == null) {
                 return cb.conjunction();

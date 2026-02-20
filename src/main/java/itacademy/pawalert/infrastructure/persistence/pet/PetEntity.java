@@ -39,6 +39,8 @@ public class PetEntity {
     private String petImage;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     public PetEntity() {
     }
