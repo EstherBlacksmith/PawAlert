@@ -2,7 +2,6 @@
 -- Updated to match entity classes and improvements document
 
 -- Users table
--- Removed: full_name (replaced by surname)
 -- Added: surname, role, telegram_chat_id, email_notifications_enabled, telegram_notifications_enabled
 CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(255) PRIMARY KEY,
@@ -63,12 +62,10 @@ CREATE TABLE IF NOT EXISTS pets (
 );
 
 -- Alert subscriptions table
--- Removed: notification_channel (notifications managed via user preferences)
 CREATE TABLE IF NOT EXISTS alert_subscriptions (
    id UUID PRIMARY KEY,
    alert_id VARCHAR(255) NOT NULL,
    user_id VARCHAR(255) NOT NULL,
-   active BOOLEAN NOT NULL DEFAULT TRUE,
    subscribed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
    -- Avoid duplicated subscriptions
