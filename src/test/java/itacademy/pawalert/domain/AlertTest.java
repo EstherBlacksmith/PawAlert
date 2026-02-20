@@ -31,7 +31,7 @@ class AlertTest {
         UUID petId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
         title = Title.of("Test Alert");
-        description = Description.of("Test Description");
+        description = Description.of("This is a test description with enough length");
         alert = new Alert(petId, userId, title, description);
     }
 
@@ -358,11 +358,11 @@ class AlertTest {
             assertEquals(StatusNames.OPENED, alert.currentStatus().getStatusName());
 
             // When: Update description
-            Description newDescription = Description.of("Updated description");
+            Description newDescription = Description.of("This is an updated description with enough length");
             Alert alertCopy = alert.updateDescription(newDescription, true);
 
             // Then: Description should be updated
-            assertEquals("Updated description", alertCopy.getDescription().getValue());
+            assertEquals("This is an updated description with enough length", alertCopy.getDescription().getValue());
         }
 
         @Test
@@ -388,7 +388,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateDescription(Description.of("New description"), false);
+                alert.updateDescription(Description.of("This is a new description with enough length"), false);
             });
         }
 
@@ -414,7 +414,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateDescription(Description.of("New description"),false);
+                alert.updateDescription(Description.of("This is a new description with enough length"),false);
             });
         }
 
@@ -440,7 +440,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateDescription(Description.of("New description"),false);
+                alert.updateDescription(Description.of("This is a new description with enough length"),false);
             });
         }
 
@@ -466,7 +466,7 @@ class AlertTest {
             // When: Try to update description
             AlertModificationNotAllowedException exception = assertThrows(
                     AlertModificationNotAllowedException.class,
-                    () -> alert = alert.updateDescription(Description.of("Test"),false)
+                    () -> alert = alert.updateDescription(Description.of("This is a test description with enough length"),false)
             );
 
             // Then: Exception message should contain the alert ID

@@ -3,7 +3,9 @@ package itacademy.pawalert.application.service;
 import itacademy.pawalert.application.alert.service.AlertSubscriptionService;
 import itacademy.pawalert.application.exception.SubscriptionAlreadyExistsException;
 import itacademy.pawalert.application.exception.SubscriptionNotFoundException;
+import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
+import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
 import itacademy.pawalert.domain.alert.model.NotificationChannel;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,18 +32,23 @@ class AlertSubscriptionServiceTest {
     @Mock
     private AlertSubscriptionRepositoryPort subscriptionRepository;
 
+    @Mock
+    private AlertRepositoryPort alertRepository;
+
     @InjectMocks
     private AlertSubscriptionService subscriptionService;
 
     private UUID alertId;
     private UUID userId;
     private AlertSubscription subscription;
+    private Alert alert;
 
     @BeforeEach
     void setUp() {
         alertId = UUID.randomUUID();
         userId = UUID.randomUUID();
         subscription = AlertSubscription.create(alertId, userId);
+        alert = TestAlertFactory.createTestAlert(alertId);
     }
 
     // ===== TEST: SUSCRIBIRSE =====
@@ -49,6 +57,7 @@ class AlertSubscriptionServiceTest {
     @DisplayName("subscribeToAlert -Success")
     void subscribeToAlert_Success() {
         // Given
+        when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
         when(subscriptionRepository.existsByAlertIdAndUserId(alertId, userId))
                 .thenReturn(false);
         when(subscriptionRepository.save(any(AlertSubscription.class)))
@@ -70,6 +79,7 @@ class AlertSubscriptionServiceTest {
     @DisplayName("subscribeToAlert - AlreadyExists")
     void subscribeToAlert_AlreadyExists_ThrowsException() {
         // Given
+        when(alertRepository.findById(alertId)).thenReturn(Optional.of(alert));
         when(subscriptionRepository.existsByAlertIdAndUserId(alertId, userId))
                 .thenReturn(true);
 
@@ -89,14 +99,12 @@ class AlertSubscriptionServiceTest {
         List<AlertSubscription> subscriptions = Arrays.asList(subscription);
         when(subscriptionRepository.findByUserId(userId))
                 .thenReturn(subscriptions);
-        when(subscriptionRepository.save(any(AlertSubscription.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
         subscriptionService.unsubscribeFromAlert(alertId, userId);
 
         // Then
-        verify(subscriptionRepository).save(subscription);
+        verify(subscriptionRepository).deleteById(subscription.getId());
     }
 
     @Test

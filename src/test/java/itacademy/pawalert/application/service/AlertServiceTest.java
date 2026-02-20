@@ -5,6 +5,7 @@ import itacademy.pawalert.application.alert.service.AlertService;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.domain.alert.exception.AlertModificationNotAllowedException;
 import itacademy.pawalert.application.user.port.inbound.GetUserUseCase;
+import itacademy.pawalert.application.alert.port.inbound.AlertSubscriptionUseCase;
 import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.application.alert.port.outbound.CurrentUserProviderPort;
@@ -62,6 +63,9 @@ class AlertServiceTest {
 
     @Mock
     private CurrentUserProviderPort currentUserProvider;
+
+    @Mock
+    private AlertSubscriptionUseCase alertSubscriptionUseCase;
 
     @InjectMocks
     private AlertService alertService;

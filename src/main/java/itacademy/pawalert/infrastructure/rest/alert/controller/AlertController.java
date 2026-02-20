@@ -72,14 +72,19 @@ public class AlertController {
 
     @PostMapping
     public ResponseEntity<AlertDTO> createAlert(@Valid @RequestBody AlertDTO alertDTO) {
-        GeographicLocation location = GeographicLocation.of(   alertDTO.getLatitude(),  alertDTO.getLongitude());
+        logger.info("[API-CONTROLLER] Received alert creation request: petId={}, userId={}, title={}",
+                alertDTO.getPetId(), alertDTO.getUserId(), alertDTO.getTitle());
+
+        GeographicLocation location = GeographicLocation.of(alertDTO.getLatitude(), alertDTO.getLongitude());
 
         Alert created = createAlertUseCase.createOpenedAlert(UUID.fromString(alertDTO.getPetId()),
                 Title.of(alertDTO.getTitle()),
-                Description.of( alertDTO.getDescription()),
+                Description.of(alertDTO.getDescription()),
                 UUID.fromString(alertDTO.getUserId()),
                 location
         );
+
+        logger.info("[API-CONTROLLER] Alert creation completed: alertId={}", created.getId());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(alertMapper.toDTO(created));

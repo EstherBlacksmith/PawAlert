@@ -99,6 +99,18 @@ public final class TestAlertFactory {
         return new AlertBuilder();
     }
 
+    public static Alert createTestAlert(UUID alertId) {
+        UUID petId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        return new Alert(
+                alertId,
+                petId,
+                userId,
+                Title.of("Test Alert"),
+                Description.of("This is a test description with enough length")
+        );
+    }
+
     public static Alert createModificableAlert(String alertId, String creatorId, String originalTitle, String description) {
         return new Alert(
                 UUID.fromString(alertId),

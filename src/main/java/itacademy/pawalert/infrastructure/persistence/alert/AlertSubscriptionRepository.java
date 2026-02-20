@@ -7,7 +7,7 @@ import java.util.UUID;
 public interface AlertSubscriptionRepository  extends JpaRepository<AlertSubscriptionEntity, UUID> {
 
     List<AlertSubscriptionEntity> findByUserId(UUID userId);
-    boolean existsByAlert_IdAndUserId(UUID alertId, UUID userId);
-    void deleteAllByAlert_Id(UUID alertId);
-    void deleteByAlert_IdAndUserId(UUID alertId, UUID userID);
+    boolean existsByAlertIdAndUserId(UUID alertId, UUID userId);
+    void deleteAllByAlertId(UUID alertId);
+    void deleteByAlertIdAndUserId(UUID alertId, UUID userID);
 }
