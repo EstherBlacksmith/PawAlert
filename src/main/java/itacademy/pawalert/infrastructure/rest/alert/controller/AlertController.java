@@ -107,7 +107,7 @@ public class AlertController {
 
         logger.debug("Closing alert {} with reason: {}", id, request.getClosureReason());
 
-        Alert updated = updateAlertStatusUseCase.closeAlert(
+        Alert updated = updateAlertStatusUseCase.markAsClosed(
                 UUID.fromString(id),
                 UUID.fromString(request.getUserId()),
                 location,
@@ -170,6 +170,7 @@ public class AlertController {
     @GetMapping("/search")
     public ResponseEntity<List<AlertDTO>> searchAlerts(
             @RequestParam(required = false) StatusNames status,
+            @RequestParam(required = false) String title,
             @RequestParam(required = false) String petName,
             @RequestParam(required = false) String species,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdFrom,
@@ -179,7 +180,7 @@ public class AlertController {
     ) {
 
         List<Alert> alerts = searchAlertsUseCase.search(
-                status, petName, species,
+                status, title, petName, species,
                 createdFrom, createdTo,
                 updatedFrom, updatedTo
         );

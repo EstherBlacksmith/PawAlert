@@ -1,5 +1,6 @@
 package itacademy.pawalert.application.alert.service;
 
+import itacademy.pawalert.application.alert.model.AlertSearchCriteria;
 import itacademy.pawalert.application.alert.port.inbound.*;
 import itacademy.pawalert.application.alert.port.outbound.CurrentUserProviderPort;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
@@ -10,14 +11,12 @@ import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.alert.service.AlertFactory;
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
-import itacademy.pawalert.domain.alert.specification.AlertSpecifications;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventFactory;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertWithContactDTO;
 import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
 import jakarta.transaction.Transactional;
 import itacademy.pawalert.domain.user.User;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -56,10 +55,17 @@ public class AlertService implements
     }
 
     public List<Alert> findOpenAlertsWithTitle(String title) {
-        Specification<Alert> spec = AlertSpecifications.withStatus(OPENED)
-                .and(AlertSpecifications.titleContains(title));
-
-        return alertRepository.findAll(spec);
+        AlertSearchCriteria criteria = new AlertSearchCriteria(
+                OPENED,      // status
+                title,       // title
+                null,        // petName
+                null,        // species
+                null,        // createdFrom
+                null,        // createdTo
+                null,        // updatedFrom
+                null         // updatedTo
+        );
+        return alertRepository.search(criteria);
     }
 
 
@@ -143,22 +149,6 @@ public class AlertService implements
     @Override
     public Alert markAsSafe(UUID alertId, UUID userId, GeographicLocation location) {
         return changeStatus(alertId, StatusNames.SAFE, userId, location, null);
-    }
-
-    @Transactional
-    @Override
-    public Alert closeAlert(UUID alertId, UUID userId, GeographicLocation location, ClosureReason closureReason) {
-        // Business rule: closing an alert always requires a reason
-        if (closureReason == null) {
-            throw new IllegalArgumentException("Closure reason is required when closing an alert");
-        }
-
-        // Authorization check: only owner or admin can close an alert
-        Alert alert = getAlertById(alertId);
-        checkAuthorizationOwerOrAdmin(alert);
-
-        // Delegate to changeStatus with CLOSED status
-        return changeStatus(alertId, StatusNames.CLOSED, userId, location, closureReason);
     }
 
     @Transactional
@@ -277,59 +267,23 @@ public class AlertService implements
         return currentUserId;
     }
 
+
+
     @Override
     public List<Alert> search(StatusNames status,
+                              String title,
                               String petName,
                               String species,
                               LocalDateTime createdFrom,
                               LocalDateTime createdTo,
                               LocalDateTime updatedFrom,
                               LocalDateTime updatedTo) {
-        Specification<Alert> spec = null;
 
-        //By status
-        if (status != null) {
-            spec = (spec == null) ? AlertSpecifications.withStatus(status) : spec.and(AlertSpecifications.withStatus(status));
-        }
+        AlertSearchCriteria criteria = new AlertSearchCriteria(
+                status, title, petName, species, createdFrom, createdTo, updatedFrom, updatedTo
+        );
 
-        // By pet name
-        if (petName != null && !petName.isBlank()) {
-            Specification<Alert> petSpec = AlertSpecifications.petNameContains(petName);
-            spec = (spec == null) ? petSpec : spec.and(petSpec);
-        }
-
-        // By specie
-        if (species != null && !species.isBlank()) {
-            Specification<Alert> speciesSpec = AlertSpecifications.withPetSpecies(species);
-            spec = (spec == null) ? speciesSpec : spec.and(speciesSpec);
-        }
-
-        // Specification to Repository
-        if (spec == null) {
-            return alertRepository.findAll();  // Return all alerts instead of empty list
-        }
-
-        if (createdFrom != null) {
-            Specification<Alert> fromSpec = AlertSpecifications.createdAfter(createdFrom);
-            spec = (spec == null) ? fromSpec : spec.and(fromSpec);
-        }
-        if (createdTo != null) {
-            Specification<Alert> toSpec = AlertSpecifications.createdBefore(createdTo);
-            spec = (spec == null) ? toSpec : spec.and(toSpec);
-        }
-        if (updatedFrom != null) {
-            Specification<Alert> updatedFromSpec = AlertSpecifications.lastUpdatedAfter(updatedFrom);
-            spec = (spec == null) ? updatedFromSpec : spec.and(updatedFromSpec);
-        }
-        if (updatedTo != null) {
-            Specification<Alert> updatedToSpec = AlertSpecifications.lastUpdatedBefore(updatedTo);
-            spec = (spec == null) ? updatedToSpec : spec.and(updatedToSpec);
-        }
-
-        if (spec == null) {
-            return alertRepository.findAll();
-        }
-        return alertRepository.findAll(spec);
+        return alertRepository.search(criteria);
     }
 
     @Override

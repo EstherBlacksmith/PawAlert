@@ -1,8 +1,8 @@
 package itacademy.pawalert.infrastructure.persistence.alert;
 
+import itacademy.pawalert.application.alert.model.AlertSearchCriteria;
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
-import itacademy.pawalert.domain.alert.model.AlertEvent;
 import itacademy.pawalert.domain.alert.model.StatusNames;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -30,9 +30,11 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
         return saved.toDomain();
     }
 
+
     @Override
     public Optional<Alert> findById(UUID alertId) {
         return alertRepository.findById(alertId.toString())
+                .filter(entity -> entity.getDeletedAt() == null)
                 .map(AlertEntity::toDomain);
     }
 
@@ -40,6 +42,7 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
     public List<Alert> findAllByPetId(UUID petId) {
         return alertRepository.findAllByPetId(petId.toString())
                 .stream()
+                .filter(e -> e.getDeletedAt() == null)
                 .map(AlertEntity::toDomain)
                 .toList();
     }
@@ -56,15 +59,46 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
 
     @Override
     public List<Alert> findAll() {
-        return alertRepository.findAll()
+        Specification<AlertEntity> spec = AlertSpecifications.notDeleted();
+        return alertRepository.findAll(spec)
                 .stream()
                 .map(AlertEntity::toDomain)
                 .toList();
     }
 
     @Override
-    public List<Alert> findAll(Specification<Alert> spec) {
-        return alertRepository.findAll(spec);
+    public List<Alert> search(AlertSearchCriteria criteria) {
+        Specification<AlertEntity> spec = AlertSpecifications.notDeleted();
+
+        if (criteria.status() != null) {
+            spec = spec.and(AlertSpecifications.withStatus(criteria.status()));
+        }
+        if (criteria.title() != null && !criteria.title().isBlank()) {
+            spec = spec.and(AlertSpecifications.titleContains(criteria.title()));
+        }
+        if (criteria.petName() != null && !criteria.petName().isBlank()) {
+            spec = spec.and(AlertSpecifications.petNameContains(criteria.petName()));
+        }
+        if (criteria.species() != null && !criteria.species().isBlank()) {
+            spec = spec.and(AlertSpecifications.withPetSpecies(criteria.species()));
+        }
+        if (criteria.createdFrom() != null) {
+            spec = spec.and(AlertSpecifications.createdAfter(criteria.createdFrom()));
+        }
+        if (criteria.createdTo() != null) {
+            spec = spec.and(AlertSpecifications.createdBefore(criteria.createdTo()));
+        }
+        if (criteria.updatedFrom() != null) {
+            spec = spec.and(AlertSpecifications.lastUpdatedAfter(criteria.updatedFrom()));
+        }
+        if (criteria.updatedTo() != null) {
+            spec = spec.and(AlertSpecifications.lastUpdatedBefore(criteria.updatedTo()));
+        }
+
+        return alertRepository.findAll(spec)
+                .stream()
+                .map(AlertEntity::toDomain)
+                .toList();
     }
 
     @Override
@@ -80,6 +114,7 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
     @Override
     public Optional<Alert> findActiveAlertByPetId(UUID petId) {
         return alertRepository.findTopByPetIdAndStatusInOrderByCreatedAtDesc(petId.toString(), StatusNames.getActiveStatusNames())
+                .filter(e -> e.getDeletedAt() == null)
                 .map(AlertEntity::toDomain);
     }
 

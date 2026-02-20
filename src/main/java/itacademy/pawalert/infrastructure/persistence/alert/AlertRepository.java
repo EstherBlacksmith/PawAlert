@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface AlertRepository extends JpaRepository<AlertEntity, String>,
-        JpaSpecificationExecutor<Alert> {
+        JpaSpecificationExecutor<AlertEntity> {
     List<AlertEntity> findByStatus(String status);
     List<AlertEntity> findAllByPetId(String petID);
     StatusNames findLastStatusById(String alertId);

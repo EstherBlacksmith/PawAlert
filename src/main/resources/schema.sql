@@ -77,10 +77,12 @@ CREATE TABLE IF NOT EXISTS alert_subscriptions (
 
 -- Indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_alerts_status ON alerts(status);
-CREATE INDEX IF NOT EXISTS idx_alerts_pet ON alerts(pet_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_pet_id ON alerts(pet_id);
 CREATE INDEX IF NOT EXISTS idx_alerts_user ON alerts(user_id);
 CREATE INDEX IF NOT EXISTS idx_alert_events_location ON alert_events(latitude, longitude);
 CREATE INDEX IF NOT EXISTS idx_alert_subscriptions_alert_id ON alert_subscriptions(alert_id);
 CREATE INDEX IF NOT EXISTS idx_alert_subscriptions_user_id ON alert_subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_alert_subscriptions_active ON alert_subscriptions(active);
 CREATE INDEX IF NOT EXISTS idx_users_telegram_chat_id ON users(telegram_chat_id);
+CREATE INDEX IF NOT EXISTS idx_pets_official_name ON pets(pet_offical_name);
+CREATE INDEX IF NOT EXISTS idx_pets_species ON pets(pet_species);

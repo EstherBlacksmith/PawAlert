@@ -58,6 +58,9 @@ public class UserEntity {
     @Column(name = "telegram_notifications_enabled")
     private boolean telegramNotificationsEnabled;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     // Empty Constructor for JPA
     public UserEntity() {}
 

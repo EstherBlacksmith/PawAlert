@@ -35,8 +35,14 @@ public class AlertEntity {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AlertEventEntity> events = new ArrayList<>();
+
+    @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AlertSubscriptionEntity> subscriptions = new ArrayList<>();
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     // Empty constructor required by JPA/Hibernate
     public AlertEntity() {

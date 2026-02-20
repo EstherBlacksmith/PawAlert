@@ -9,6 +9,7 @@ import java.util.List;
 public interface SearchAlertsUseCase {
     List<Alert> search(
             StatusNames status,
+            String title,
             String petName,
             String species,
             LocalDateTime createdFrom,
@@ -16,6 +17,7 @@ public interface SearchAlertsUseCase {
             LocalDateTime updatedFrom,
             LocalDateTime updatedTo
     );
+
 
     List<Alert> search();
     List<Alert> searchNearby(Double latitude, Double longitude, Double radiusKm);
