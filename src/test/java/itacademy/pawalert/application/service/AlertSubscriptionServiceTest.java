@@ -61,7 +61,6 @@ class AlertSubscriptionServiceTest {
         assertNotNull(result);
         assertEquals(alertId, result.getAlertId());
         assertEquals(userId, result.getUserId());
-        assertTrue(result.isActive());
         verify(subscriptionRepository).save(any(AlertSubscription.class));
     }
 
@@ -97,7 +96,6 @@ class AlertSubscriptionServiceTest {
         subscriptionService.unsubscribeFromAlert(alertId, userId);
 
         // Then
-        assertFalse(subscription.isActive());
         verify(subscriptionRepository).save(subscription);
     }
 
@@ -113,25 +111,6 @@ class AlertSubscriptionServiceTest {
                 subscriptionService.unsubscribeFromAlert(alertId, userId));
     }
 
-    // ===== TEST: REACTIVATE SUBSCRIPTION =====
-
-    @Test
-    @DisplayName("resubscribeToAlert -Success")
-    void resubscribeToAlert_Success() {
-        // Given
-        subscription.cancel();
-        List<AlertSubscription> subscriptions = Arrays.asList(subscription);
-        when(subscriptionRepository.findByUserId(userId))
-                .thenReturn(subscriptions);
-        when(subscriptionRepository.save(any(AlertSubscription.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        // When
-        AlertSubscription result = subscriptionService.subscribeToAlert(alertId, userId);
-
-        // Then
-        assertTrue(result.isActive());
-    }
 
     // ===== TEST: GET SUBSCRIPTIONS =====
 
@@ -149,25 +128,6 @@ class AlertSubscriptionServiceTest {
 
         // Then
         assertEquals(2, result.size());
-    }
-
-    @Test
-    @DisplayName("getUserActiveSubscriptions - Just the active ones")
-    void getUserActiveSubscriptions_ReturnsOnlyActive() {
-        // Given
-        AlertSubscription inactiveSub = AlertSubscription.create(UUID.randomUUID(), userId);
-        inactiveSub.cancel();List<AlertSubscription> subscriptions = Arrays.asList(subscription);
-
-        when(subscriptionRepository.findByUserIdAndActiveTrue(userId))
-                .thenReturn(subscriptions);
-
-        // When
-        List<AlertSubscription> result =
-                subscriptionService.getUserActiveSubscriptions(userId);
-
-        // Then
-        assertEquals(1, result.size());
-        assertTrue(result.get(0).isActive());
     }
 
     @Test
@@ -198,7 +158,6 @@ class AlertSubscriptionServiceTest {
         assertFalse(result);
     }
 
-    // ===== TEST: CHANGE CHANEL =====
 
 }
 

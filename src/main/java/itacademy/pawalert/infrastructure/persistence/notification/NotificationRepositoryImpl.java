@@ -21,10 +21,10 @@ public class NotificationRepositoryImpl implements NotificationRepositoryPort {
         return entityManager.createQuery(
                         "SELECT DISTINCT u.email FROM UserEntity u " +
                                 "JOIN AlertSubscriptionEntity s ON CAST(s.userId AS string) = u.id " +
-                                "WHERE s.alertId = :alertId " +
+                                "WHERE s.alert.id = :alertId " +
                                 "AND u.emailNotificationsEnabled = true",
                         String.class)
-                .setParameter("alertId", alertId)
+                .setParameter("alertId", alertId.toString())
                 .getResultList();
     }
 
@@ -33,10 +33,10 @@ public class NotificationRepositoryImpl implements NotificationRepositoryPort {
         return entityManager.createQuery(
                         "SELECT DISTINCT u.telegramChatId FROM UserEntity u " +
                                 "JOIN AlertSubscriptionEntity s ON CAST(s.userId AS string) = u.id " +
-                                "WHERE s.alertId = :alertId " +
+                                "WHERE s.alert.id = :alertId " +
                                 "AND u.telegramNotificationsEnabled = true " +
                                 "AND u.telegramChatId IS NOT NULL", String.class)
-                .setParameter("alertId", alertId)
+                .setParameter("alertId", alertId.toString())
                 .getResultList();
     }
 
@@ -45,10 +45,10 @@ public class NotificationRepositoryImpl implements NotificationRepositoryPort {
         return entityManager.createQuery(
                         "SELECT DISTINCT u.id FROM UserEntity u " +
                                 "JOIN AlertSubscriptionEntity s ON CAST(s.userId AS string) = u.id " +
-                                "WHERE s.alertId = :alertId " +
+                                "WHERE s.alert.id = :alertId " +
                                 "AND (u.emailNotificationsEnabled = true OR u.telegramNotificationsEnabled = true)",
                         UUID.class)
-                .setParameter("alertId", alertId)
+                .setParameter("alertId", alertId.toString())
                 .getResultList();
     }
 

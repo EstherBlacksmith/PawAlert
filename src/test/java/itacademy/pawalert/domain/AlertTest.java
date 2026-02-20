@@ -359,7 +359,7 @@ class AlertTest {
 
             // When: Update description
             Description newDescription = Description.of("Updated description");
-            Alert alertCopy = alert.updateDescription(newDescription);
+            Alert alertCopy = alert.updateDescription(newDescription, true);
 
             // Then: Description should be updated
             assertEquals("Updated description", alertCopy.getDescription().getValue());
@@ -373,7 +373,7 @@ class AlertTest {
 
             // When: Update title
             Title newTitle = Title.of("Updated title");
-            Alert alertCopy = alert.updateTitle(newTitle);
+            Alert alertCopy = alert.updateTitle(newTitle, true);
 
             // Then: Title should be updated
             assertEquals("Updated title", alertCopy.getTitle().getValue());
@@ -388,7 +388,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateDescription(Description.of("New description"));
+                alert.updateDescription(Description.of("New description"), false);
             });
         }
 
@@ -401,7 +401,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateTitle(Title.of("New title"));
+                alert.updateTitle(Title.of("New title"), false);
             });
         }
 
@@ -414,7 +414,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateDescription(Description.of("New description"));
+                alert.updateDescription(Description.of("New description"),false);
             });
         }
 
@@ -427,7 +427,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateTitle(Title.of("New title"));
+                alert.updateTitle(Title.of("New title"),false);
             });
         }
 
@@ -440,7 +440,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateDescription(Description.of("New description"));
+                alert.updateDescription(Description.of("New description"),false);
             });
         }
 
@@ -453,7 +453,7 @@ class AlertTest {
 
             // When/Then: Update should throw exception
             assertThrows(AlertModificationNotAllowedException.class, () -> {
-                alert.updateTitle(Title.of("New title"));
+                alert.updateTitle(Title.of("New title"),false);
             });
         }
 
@@ -466,7 +466,7 @@ class AlertTest {
             // When: Try to update description
             AlertModificationNotAllowedException exception = assertThrows(
                     AlertModificationNotAllowedException.class,
-                    () -> alert = alert.updateDescription(Description.of("Test"))
+                    () -> alert = alert.updateDescription(Description.of("Test"),false)
             );
 
             // Then: Exception message should contain the alert ID
