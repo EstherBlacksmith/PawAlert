@@ -11,13 +11,15 @@ import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.alert.service.AlertFactory;
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
+import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventFactory;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertWithContactDTO;
 import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import itacademy.pawalert.domain.user.User;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -27,6 +29,7 @@ import java.util.UUID;
 
 import static itacademy.pawalert.domain.alert.model.StatusNames.OPENED;
 
+@Slf4j
 @Service
 public class AlertService implements
         CreateAlertUseCase,
@@ -38,16 +41,19 @@ public class AlertService implements
 
     private final AlertRepositoryPort alertRepository;
     private final AlertEventRepositoryPort eventRepository;
+    private final AlertSubscriptionRepositoryPort subscriptionRepository;
     private final GetUserUseCase userUseCase;
     private final AlertMapper alertMapper;
     private final ApplicationEventPublisher eventPublisher;
     private final CurrentUserProviderPort currentUserProvider;
 
     public AlertService(AlertRepositoryPort alertRepository, AlertEventRepositoryPort eventRepository,
+                        AlertSubscriptionRepositoryPort subscriptionRepository,
                         GetUserUseCase userUseCase, AlertMapper alertMapper, ApplicationEventPublisher eventPublisher,
                         CurrentUserProviderPort currentUserProvider){
         this.alertRepository = alertRepository;
         this.eventRepository = eventRepository;
+        this.subscriptionRepository = subscriptionRepository;
         this.userUseCase = userUseCase;
         this.alertMapper = alertMapper;
         this.eventPublisher = eventPublisher;
@@ -71,8 +77,10 @@ public class AlertService implements
 
     @Transactional
     public Alert createOpenedAlert(UUID petId, Title title, Description description, UUID userId, GeographicLocation location) {
+        log.info("[ALERT-CREATION] Starting to create opened alert for petId={}, userId={}", petId, userId);
 
         if (alertRepository.existsActiveAlertByPetId(petId)) {
+            log.warn("[ALERT-CREATION] Pet already has active alert: petId={}", petId);
             throw PetAlreadyHasActiveAlertException.forPet(petId.toString());
         }
 
@@ -82,20 +90,23 @@ public class AlertService implements
                 title,
                 description);
 
+        log.info("[ALERT-CREATION] Alert created with temporary ID: {}", alert.getId());
+
         //Persist the object
         Alert savedAlert = alertRepository.save(alert);
+        log.info("[ALERT-CREATION] Alert saved to database with ID: {}", savedAlert.getId());
+        
         AlertEvent event = AlertEventFactory.createStatusChangedEvent(
                 savedAlert, OPENED, OPENED, userId, location
         );
 
         eventRepository.save(event);
+        log.info("[ALERT-CREATION] Alert event saved to database");
 
         eventPublisher.publishEvent(
-                new AlertStatusChangedEvent(savedAlert.getId(), OPENED, OPENED)
+                new AlertCreatedEvent(savedAlert.getId(), userId)
         );
-
-        // the owner must be subscribed to his own alerts
-        eventPublisher.publishEvent(AlertCreatedEvent.of(savedAlert.getId(), userId));
+        log.info("[ALERT-CREATION] AlertCreatedEvent published");
 
         return savedAlert;
     }
@@ -154,9 +165,12 @@ public class AlertService implements
     @Transactional
     @Override
     public Alert changeStatus(UUID alertId, StatusNames newStatus, UUID userId, GeographicLocation location, ClosureReason closureReason) {
-
+        log.info("[CHANGE-STATUS] Starting status change for alertId={}, newStatus={}, userId={}", alertId, newStatus, userId);
+        
         Alert alert = getAlertById(alertId);
         StatusNames previousStatus = alert.currentStatus().getStatusName();
+        
+        log.info("[CHANGE-STATUS] Current status: {}, changing to: {}", previousStatus, newStatus);
 
         Alert alertCopy;
         switch (newStatus) {
@@ -181,12 +195,16 @@ public class AlertService implements
         if (newStatus == StatusNames.CLOSED ) {
             // For closure events, include the closure reason
             event = AlertEventFactory.createClosureEvent(alertCopy, previousStatus, userId, location, closureReason);
+            log.info("[CHANGE-STATUS] Created CLOSURE event for alertId={}", alertId);
         } else {
             // For other status changes
             event = AlertEventFactory.createStatusChangedEvent(alertCopy, previousStatus, newStatus, userId, location);
+            log.info("[CHANGE-STATUS] Created STATUS_CHANGED event for alertId={}, previous={}, new={}", 
+                    alertId, previousStatus, newStatus);
         }
 
         eventRepository.save(event);
+        log.info("[CHANGE-STATUS] Event saved to repository for alertId={}", alertId);
 
         return alertRepository.save(alertCopy);
     }
@@ -196,6 +214,8 @@ public class AlertService implements
     public void deleteAlertById(UUID alertId) {
         Alert alert = getAlertById(alertId);
         checkAuthorizationOwerOrAdmin(alert);
+        // Delete subscriptions first (manual cascade delete due to type mismatch)
+        subscriptionRepository.deleteAllByAlertId(alertId);
         alertRepository.deleteById(alertId);
     }
 

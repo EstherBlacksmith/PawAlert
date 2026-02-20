@@ -14,18 +14,14 @@ public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepo
 
 
     private final AlertSubscriptionRepository jpaRepository;
-    private final AlertRepository alertRepository;
 
-    public AlertSubscriptionRepositoryAdapter(AlertSubscriptionRepository jpaRepository, AlertRepository alertRepository) {
+    public AlertSubscriptionRepositoryAdapter(AlertSubscriptionRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
-        this.alertRepository = alertRepository;
     }
 
     @Override
     public AlertSubscription save(AlertSubscription subscription) {
-        AlertEntity alertEntity = alertRepository.findById(subscription.getAlertId().toString())
-                .orElseThrow(() -> new IllegalArgumentException("Alert not found with id: " + subscription.getAlertId()));
-        AlertSubscriptionEntity alertSubscriptionEntity = AlertSubscriptionEntity.fromDomain(subscription, alertEntity);
+        AlertSubscriptionEntity alertSubscriptionEntity = AlertSubscriptionEntity.fromDomain(subscription);
         AlertSubscriptionEntity saved = jpaRepository.save(alertSubscriptionEntity);
         return saved.toDomain();
     }
@@ -45,7 +41,7 @@ public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepo
 
     @Override
     public boolean existsByAlertIdAndUserId(UUID alertId, UUID userId) {
-        return jpaRepository.existsByAlert_IdAndUserId(alertId,userId);
+        return jpaRepository.existsByAlertIdAndUserId(alertId,userId);
     }
 
     @Override
@@ -55,7 +51,7 @@ public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepo
 
     @Override
     public void deleteAllByAlertId(UUID alertId) {
-        jpaRepository.deleteAllByAlert_Id(alertId);
+        jpaRepository.deleteAllByAlertId(alertId);
     }
 
 }

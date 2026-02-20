@@ -122,7 +122,7 @@ class AlertCascadeDeleteIntegrationTest {
         // Create subscription using constructor
         subscription = new AlertSubscriptionEntity(
                 UUID.randomUUID(),
-                alert,
+                UUID.fromString(alert.getId()),
                 UUID.fromString(user.getId()),
                 LocalDateTime.now()
         );

@@ -17,25 +17,24 @@ public class AlertSubscriptionEntity {
     private UUID userId;
     @Column(name = "subscribed_at", nullable = false)
     private LocalDateTime subscribedAt;
-    @ManyToOne
-    @JoinColumn(name = "alert_id", nullable = false)
-    private AlertEntity alert;
+    @Column(name = "alert_id", nullable = false)
+    private UUID alertId;
 
     // Empty constructor required by JPA/Hibernate
     public AlertSubscriptionEntity() {
     }
 
-    public AlertSubscriptionEntity(UUID id, AlertEntity alert, UUID userId, LocalDateTime subscribedAt) {
+    public AlertSubscriptionEntity(UUID id, UUID alertId, UUID userId, LocalDateTime subscribedAt) {
         this.id = id;
-        this.alert = alert;
+        this.alertId = alertId;
         this.userId = userId;
         this.subscribedAt = subscribedAt;
     }
 
-    public static AlertSubscriptionEntity fromDomain(AlertSubscription subscription, AlertEntity alert) {
+    public static AlertSubscriptionEntity fromDomain(AlertSubscription subscription) {
         return new AlertSubscriptionEntity(
                 subscription.getId(),
-                alert,
+                subscription.getAlertId(),
                 subscription.getUserId(),
                 subscription.getSubscribedAt()
         );
@@ -44,7 +43,7 @@ public class AlertSubscriptionEntity {
     public AlertSubscription toDomain() {
         return new AlertSubscription(
                 this.id,
-                UUID.fromString(this.alert.getId()),
+                this.alertId,
                 this.userId,
                 this.subscribedAt
         );

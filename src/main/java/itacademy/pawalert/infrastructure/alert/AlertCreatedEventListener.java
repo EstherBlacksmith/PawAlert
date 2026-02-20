@@ -17,15 +17,17 @@ public class AlertCreatedEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleAlertCreated(AlertCreatedEvent event) {
-        log.info("[AUTO-SUBSCRIBE] Auto-subscribing creator {} to alert {}",
-                event.creatorId(), event.alertId());
+        log.info("[AUTO-SUBSCRIBE] Received AlertCreatedEvent: alertId={}, creatorId={}",
+                event.alertId(), event.creatorId());
 
         try {
+            log.info("[AUTO-SUBSCRIBE] Calling alertSubscriptionUseCase.subscribeToAlert()");
             alertSubscriptionUseCase.subscribeToAlert(event.alertId(), event.creatorId());
-            log.info("[AUTO-SUBSCRIBE] Successfully subscribed creator to alert");
+            log.info("[AUTO-SUBSCRIBE] Successfully subscribed creator {} to alert {}",
+                    event.creatorId(), event.alertId());
         } catch (Exception e) {
             log.error("[AUTO-SUBSCRIBE] Failed to subscribe creator to alert: {}",
-                    e.getMessage());
+                    e.getMessage(), e);
         }
     }
 }
