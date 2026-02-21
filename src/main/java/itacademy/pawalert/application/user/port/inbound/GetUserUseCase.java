@@ -1,5 +1,6 @@
 package itacademy.pawalert.application.user.port.inbound;
 
+import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.model.Email;
 import itacademy.pawalert.domain.user.model.Surname;
@@ -9,6 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface GetUserUseCase {
+    long countByRole(Role role);
+
     User getById(UUID userId);
 
     User getByUsername(Username username);
@@ -22,5 +25,4 @@ public interface GetUserUseCase {
     User getBySurname(Surname surname);
 
     List<User> getAllUsers();
-
 }

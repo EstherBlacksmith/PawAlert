@@ -6,6 +6,7 @@ import itacademy.pawalert.domain.image.exception.ImageUploadException;
 import itacademy.pawalert.domain.image.exception.ImageValidationException;
 import itacademy.pawalert.domain.notification.exception.EmailSendException;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
+import itacademy.pawalert.domain.user.exception.CannotModifyLastAdminException;
 import itacademy.pawalert.domain.user.exception.UserNotFoundException;
 import itacademy.pawalert.infrastructure.rest.alert.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -143,6 +144,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleImageValidationException(ImageValidationException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(400, "Image upload exception", ex.getMessage()));
+    }
+
+    @ExceptionHandler(CannotModifyLastAdminException.class)
+    public ResponseEntity<ErrorResponse> handleCannotModifyLastAdminException(
+            CannotModifyLastAdminException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "Cannot modify last admin", ex.getMessage()));
     }
 
     @ExceptionHandler(IOException.class)
