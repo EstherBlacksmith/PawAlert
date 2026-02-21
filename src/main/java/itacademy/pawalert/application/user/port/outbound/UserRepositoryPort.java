@@ -55,5 +55,5 @@ public interface UserRepositoryPort {
 
     List<User> findAll();
 
-
+    long countByRole(Role role);
 }

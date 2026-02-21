@@ -202,4 +202,9 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
                 .toList();
     }
 
+    @Override
+    public long countByRole(Role role) {
+        return jpaUserRepository.countByRole(role);
+    }
+
 }
