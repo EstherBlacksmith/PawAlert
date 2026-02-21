@@ -212,6 +212,9 @@ public class UserController {
     public ResponseEntity<User> updateUserByAdmin(
             @PathVariable String id,
             @Valid @RequestBody UpdateUserRequest request) {
+        logger.debug("updateUserByAdmin called for userId: {}", id);
+        logger.debug("Request payload: newUsername={}, newRole={}, newEmail={}, newSurname={}", 
+            request.newUsername(), request.newRole(), request.newEmail(), request.newSurname());
         UUID convertedUserId = UUID.fromString(id);
 
         // Update fields if provided
