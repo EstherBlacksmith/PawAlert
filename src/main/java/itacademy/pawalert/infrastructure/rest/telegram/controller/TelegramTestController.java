@@ -18,12 +18,14 @@ public class TelegramTestController {
     }
 
     @PostMapping("/test")
-    public ResponseEntity<Map<String, String>> sendTestMessage() {
-        TelegramChatId telegramChatId = TelegramChatId.of("prueba");
+    public ResponseEntity<Map<String, String>> sendTestMessage(
+            @RequestParam(required = false) String chatId) {
+        String targetChatId = (chatId != null && !chatId.isBlank()) ? chatId : "prueba";
+        TelegramChatId telegramChatId = TelegramChatId.of(targetChatId);
         telegramService.sendToUser(telegramChatId.value(),"🐕 PawAlert: ¡Hola! El bot funciona.");
         return ResponseEntity.ok(Map.of(
                 "status", "success",
-                "message", "Mensaje enviado"
+                "message", "Mensaje enviado a " + targetChatId
         ));
     }
 

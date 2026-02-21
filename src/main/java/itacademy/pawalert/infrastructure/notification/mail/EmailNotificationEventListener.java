@@ -36,7 +36,9 @@ public class EmailNotificationEventListener {
         log.info("[EMAIL-NOTIF] Alert found: id={}, petId={}", alert.getId(), alert.getPetId());
         
         Pet pet = petService.getPetById(alert.getPetId());
-        log.info("[EMAIL-NOTIF] Pet found: name={}", pet.getOfficialPetName());
+        log.info("[EMAIL-NOTIF] Pet found: name={}, image={}", 
+                pet.getOfficialPetName(), 
+                pet.getPetImage() != null ? pet.getPetImage().value() : "NO IMAGE");
 
         List<String> emails = notificationRepository.findSubscriberEmailsByAlertId(event.alertId());
         log.info("[EMAIL-NOTIF] Found {} subscriber emails for alert {}", emails.size(), event.alertId());
@@ -48,6 +50,8 @@ public class EmailNotificationEventListener {
         
         String subject = formatter.formatEmailSubject(event.newStatus());
         String body = formatter.formatEmailBody(alert, pet, event.oldStatus(), event.newStatus());
+        log.info("[EMAIL-NOTIF] Email body length: {}", body != null ? body.length() : 0);
+        log.info("[EMAIL-NOTIF] Pet image in body: {}", body != null && body.contains("img src") ? "YES" : "NO");
         log.info("[EMAIL-NOTIF] Sending emails to: {}", emails);
 
         for (String email : emails) {

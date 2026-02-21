@@ -9,11 +9,13 @@ import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertStatusChangedEvent;
 import itacademy.pawalert.domain.pet.model.Pet;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TelegramNotificationEventListener {
@@ -31,10 +33,25 @@ public class TelegramNotificationEventListener {
         Pet pet = petService.getPetById(alert.getPetId());
 
         List<String> telegramChatIds = notificationRepository.findSubscriberTelegramChatIdsByAlertId(event.alertId());
-        String message = formatter.formatStatusChangeMessage(alert,pet, event.newStatus());
-
+        
+        // Use new formatted message with pet image
+        String message = formatter.formatTelegramMessage(alert, pet, event.newStatus());
+        
+        // Try to send photo if available
+        String petImageUrl = pet.getPetImage() != null ? pet.getPetImage().value() : null;
+        
         for (String chatId : telegramChatIds) {
-            telegramNotificationService.sendToUser(chatId,message);
+            if (petImageUrl != null && !petImageUrl.isEmpty()) {
+                try {
+                    telegramNotificationService.sendPhotoWithCaption(chatId, petImageUrl, message);
+                } catch (Exception e) {
+                    // Fallback to text message if photo fails
+                    log.warn("Failed to send photo to Telegram, falling back to text: {}", e.getMessage());
+                    telegramNotificationService.sendToUser(chatId, message);
+                }
+            } else {
+                telegramNotificationService.sendToUser(chatId, message);
+            }
         }
     }
 }

@@ -12,10 +12,12 @@ import itacademy.pawalert.domain.pet.model.Pet;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.model.TelegramChatId;
 import itacademy.pawalert.infrastructure.notification.telegram.TelegramNotificationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseCase {
 
@@ -60,9 +62,22 @@ public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseC
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
         Pet pet = petService.getPetById(alert.getPetId());
 
-        // 5. Format and send
-        String message = formatter.formatStatusChangeMessage(alert, pet, newStatus);
+        // 5. Format and send with new format
+        String message = formatter.formatTelegramMessage(alert, pet, newStatus);
         String chatIdValue = user.getTelegramChatId().value();
-        telegramService.sendToUser(chatIdValue, message);
+        
+        // Try to send photo if available
+        String petImageUrl = pet.getPetImage() != null ? pet.getPetImage().value() : null;
+        if (petImageUrl != null && !petImageUrl.isEmpty()) {
+            try {
+                telegramService.sendPhotoWithCaption(chatIdValue, petImageUrl, message);
+                log.info("Sent photo notification to user {} for alert {}", userId, alertId);
+            } catch (Exception e) {
+                log.warn("Failed to send photo to Telegram for user {}, falling back to text: {}", userId, e.getMessage());
+                telegramService.sendToUser(chatIdValue, message);
+            }
+        } else {
+            telegramService.sendToUser(chatIdValue, message);
+        }
     }
 }

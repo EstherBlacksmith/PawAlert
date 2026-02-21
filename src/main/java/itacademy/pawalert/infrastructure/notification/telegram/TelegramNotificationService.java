@@ -34,21 +34,52 @@ public class TelegramNotificationService {
     public void sendToUser(String chatId, String message) {
         String url = "https://api.telegram.org/bot" + botToken + "/sendMessage";
 
-        Map<String, String> body = new HashMap<>();
+        Map<String, Object> body = new HashMap<>();
         body.put("chat_id", chatId);
         body.put("text", message);
         body.put("parse_mode", "HTML");
+        body.put("disable_web_page_preview", false);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
         restTemplate.postForEntity(url, request, String.class);
 
         LOGGER.info("Enviando mensaje a Telegram: {}", message);
         LOGGER.info("URL: {}", url);
         LOGGER.info("Chat ID: {}", chatId);
+    }
+    
+    public void sendPhotoWithCaption(String chatId, String photoUrl, String caption) {
+        String url = "https://api.telegram.org/bot" + botToken + "/sendPhoto";
+
+        // Check if it's a base64 image - Telegram API may have issues with large base64
+        if (photoUrl != null && photoUrl.startsWith("data:")) {
+            // For base64, we need to handle differently - try to send as file upload or skip
+            LOGGER.warn("Cannot send base64 images directly via Telegram API. Image size would be too large.");
+            throw new RuntimeException("Base64 images not supported for Telegram API");
+        }
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("chat_id", chatId);
+        body.put("photo", photoUrl);
+        body.put("caption", caption);
+        body.put("parse_mode", "HTML");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+        try {
+            restTemplate.postForEntity(url, request, String.class);
+            LOGGER.info("Enviando foto a Telegram exitosamente");
+        } catch (Exception e) {
+            LOGGER.error("Error sending photo to Telegram: {}", e.getMessage());
+            throw e;
+        }
     }
 
 
