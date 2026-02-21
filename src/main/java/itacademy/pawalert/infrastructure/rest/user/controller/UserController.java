@@ -220,6 +220,22 @@ public class UserController {
         if (request.newEmail() != null) {
             updateUserUseCase.updateEmail(convertedUserId, Email.of(request.newEmail()));
         }
+        if (request.newSurname() != null) {
+            updateUserUseCase.updateSurname(convertedUserId, Surname.of(request.newSurname()));
+        }
+        if (request.newPhonenumber() != null) {
+            updateUserUseCase.updatePhonenumber(convertedUserId, PhoneNumber.of(request.newPhonenumber()));
+        }
+        if (request.telegramChatId() != null) {
+            updateUserUseCase.updateTelegramChatId(convertedUserId, TelegramChatId.of(request.telegramChatId()));
+        }
+        if (request.emailNotificationsEnabled() != null) {
+            updateUserUseCase.updateEmailNotifications(convertedUserId, request.emailNotificationsEnabled());
+        }
+        if (request.telegramNotificationsEnabled() != null) {
+            updateUserUseCase.updateTelegramNotifications(convertedUserId, request.telegramNotificationsEnabled());
+        }
+
 
         User updatedUser = getUserUseCase.getById(convertedUserId);
         return ResponseEntity.ok(updatedUser);

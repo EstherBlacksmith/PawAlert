@@ -52,4 +52,23 @@ export const petService = {
     })
     return response.data
   },
+
+  // ========== ADMIN METHODS ==========
+
+  // Admin: Get all pets
+  getAllPets: async (): Promise<Pet[]> => {
+    const response = await api.get<Pet[]>('/pets/admin/all')
+    return response.data
+  },
+
+  // Admin: Delete pet by ID (bypasses ownership check)
+  adminDeletePet: async (petId: string): Promise<void> => {
+    await api.delete(`/pets/admin/${petId}`)
+  },
+
+  // Get pets by user ID (admin use)
+  getPetsByUserId: async (userId: string): Promise<Pet[]> => {
+    const response = await api.get<Pet[]>(`/pets/user/${userId}`)
+    return response.data
+  },
 }
