@@ -32,17 +32,17 @@ public class AlertNotificationFormatter {
     }
 
     public String formatEmailSubject(StatusNames status) {
-        return "🐾 PawAlert - Estado de Alerta Actualizado: " + getStatusDisplayName(status);
+        return "🐾 PawAlert - Alert Status Updated: " + getStatusDisplayName(status);
     }
 
     public String formatEmailBody(Alert alert, Pet pet, StatusNames oldStatus, StatusNames newStatus) {
         String petImageUrl = pet.getPetImage() != null ? pet.getPetImage().value() : null;
         String petName = pet.getOfficialPetName().value();
-        String species = pet.getSpecies() != null ? pet.getSpecies().toString() : "Mascota";
+        String species = pet.getSpecies() != null ? pet.getSpecies().toString() : "Pet";
         String breed = pet.getBreed() != null ? pet.getBreed().value() : "";
         String color = pet.getColor() != null ? pet.getColor().value() : "";
-        String description = alert.getDescription() != null ? alert.getDescription().getValue() : "Descripción no disponible";
-        String title = alert.getTitle() != null ? alert.getTitle().getValue() : "Alerta";
+        String description = alert.getDescription() != null ? alert.getDescription().getValue() : "Description not available";
+        String title = alert.getTitle() != null ? alert.getTitle().getValue() : "Alert";
         String alertId = alert.getId().toString();
         String alertUrl = frontendUrl + "/alerts/" + alertId;
         String statusDisplayNew = getStatusDisplayName(newStatus);
@@ -56,23 +56,23 @@ public class AlertNotificationFormatter {
         String petDescription = pet.getPetDescription() != null ? pet.getPetDescription().value() : "";
         
         StringBuilder details = new StringBuilder();
-        details.append("<li><strong>📋 Estado anterior:</strong> ").append(statusDisplayOld).append("</li>");
-        details.append("<li><strong>✅ Nuevo estado:</strong> <span style='color:").append(statusColor).append("'>").append(statusDisplayNew).append("</span></li>");
+        details.append("<li><strong>📋 Previous status:</strong> ").append(statusDisplayOld).append("</li>");
+        details.append("<li><strong>✅ New status:</strong> <span style='color:").append(statusColor).append("'>").append(statusDisplayNew).append("</span></li>");
         
         if (species != null && !species.isEmpty()) {
-            details.append("<li><strong>🐕 Especie:</strong> ").append(species).append("</li>");
+            details.append("<li><strong>🐕 Species:</strong> ").append(species).append("</li>");
         }
         if (breed != null && !breed.isEmpty()) {
-            details.append("<li><strong>🐩 Raza:</strong> ").append(breed).append("</li>");
+            details.append("<li><strong>🐩 Breed:</strong> ").append(breed).append("</li>");
         }
         if (color != null && !color.isEmpty()) {
             details.append("<li><strong>🎨 Color:</strong> ").append(color).append("</li>");
         }
         if (description != null && !description.isEmpty()) {
-            details.append("<li><strong>📝 Descripción:</strong> ").append(description).append("</li>");
+            details.append("<li><strong>📝 Description:</strong> ").append(description).append("</li>");
         }
         if (petDescription != null && !petDescription.isEmpty()) {
-            details.append("<li><strong>📋 Notas de la mascota:</strong> ").append(petDescription).append("</li>");
+            details.append("<li><strong>📋 Pet notes:</strong> ").append(petDescription).append("</li>");
         }
         
         // Build image HTML
@@ -103,8 +103,8 @@ public class AlertNotificationFormatter {
                 "<body>\n" +
                 "    <div class='container'>\n" +
                 "        <div class='header'>\n" +
-                "            <h1>🔔 Alerta de Mascota</h1>\n" +
-                "            <p>El estado de la alerta ha cambiado</p>\n" +
+                "            <h1>🔔 Pet Alert</h1>\n" +
+                "            <p>The alert status has changed</p>\n" +
                 "        </div>\n" +
                 "        <div class='content'>\n" +
                 "            <div class='pet-card'>\n" +
@@ -116,12 +116,12 @@ public class AlertNotificationFormatter {
                 "                " + details.toString() + "\n" +
                 "            </ul>\n" +
                 "            <div style='text-align: center;'>\n" +
-                "                <a href='" + alertUrl + "' class='button'>Ver Detalles de la Alerta</a>\n" +
+                "                <a href='" + alertUrl + "' class='button'>View Alert Details</a>\n" +
                 "            </div>\n" +
                 "        </div>\n" +
                 "        <div class='footer'>\n" +
-                "            <p>🐾 PawAlert - Ayudando a encontrar mascotas perdidas</p>\n" +
-                "            <p>Enviado el " + timestamp + "</p>\n" +
+                "            <p>🐾 PawAlert - Helping find lost pets</p>\n" +
+                "            <p>Sent on " + timestamp + "</p>\n" +
                 "        </div>\n" +
                 "    </div>\n" +
                 "</body>\n" +
@@ -136,20 +136,20 @@ public class AlertNotificationFormatter {
         // Check if it's a base64 image
         if (petImageUrl.startsWith("data:")) {
             // Use base64 directly
-            return "<img src='" + petImageUrl + "' alt='Foto de " + petName + "' style='max-width: 200px; max-height: 200px; border-radius: 12px; margin: 10px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);' />";
+            return "<img src='" + petImageUrl + "' alt='Photo of " + petName + "' style='max-width: 200px; max-height: 200px; border-radius: 12px; margin: 10px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);' />";
         }
         
         // Otherwise it's a URL (Cloudinary or other)
-        return "<img src='" + petImageUrl + "' alt='Foto de " + petName + "' style='max-width: 200px; max-height: 200px; border-radius: 12px; margin: 10px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);' />";
+        return "<img src='" + petImageUrl + "' alt='Photo of " + petName + "' style='max-width: 200px; max-height: 200px; border-radius: 12px; margin: 10px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);' />";
     }
     
     private String getStatusDisplayName(StatusNames status) {
-        if (status == null) return "Desconocido";
+        if (status == null) return "Unknown";
         return switch (status) {
-            case OPENED -> "🟢 Abierta";
-            case SEEN -> "👀 Vista";
-            case CLOSED -> "🔴 Cerrada";
-            case SAFE -> "✅ Segura";
+            case OPENED -> "🟢 Open";
+            case SEEN -> "👀 Seen";
+            case CLOSED -> "🔴 Closed";
+            case SAFE -> "✅ Safe";
             default -> status.getDisplayName();
         };
     }
@@ -168,7 +168,7 @@ public class AlertNotificationFormatter {
     public String formatTelegramMessage(Alert alert, Pet pet, StatusNames newStatus) {
         String petImageUrl = pet.getPetImage() != null ? pet.getPetImage().value() : null;
         String petName = pet.getOfficialPetName().value();
-        String species = pet.getSpecies() != null ? pet.getSpecies().toString() : "Mascota";
+        String species = pet.getSpecies() != null ? pet.getSpecies().toString() : "Pet";
         String description = alert.getDescription() != null ? alert.getDescription().getValue() : "";
         String alertId = alert.getId().toString();
         String alertUrl = frontendUrl + "/alerts/" + alertId;
@@ -179,28 +179,28 @@ public class AlertNotificationFormatter {
         boolean isBase64 = petImageUrl != null && petImageUrl.startsWith("data:");
         
         StringBuilder message = new StringBuilder();
-        message.append("🔔 <b>NUEVA ACTUALIZACIÓN DE ALERTA</b>\n\n");
+        message.append("🔔 <b>NEW ALERT UPDATE</b>\n\n");
         
         // Only add photo link if it's a URL, not base64
         if (petImageUrl != null && !petImageUrl.isEmpty() && !isBase64) {
-            message.append("📷 <a href=\"").append(petImageUrl).append("\">Ver foto de ").append(petName).append("</a>\n\n");
+            message.append("📷 <a href=\"").append(petImageUrl).append("\">View photo of ").append(petName).append("</a>\n\n");
         }
         
         message.append("🐾 <b>").append(petName).append("</b>\n");
         message.append("━━━━━━━━━━━━━━━━━━━━━━\n");
-        message.append("📋 <b>Estado:</b> ").append(statusEmoji).append(" ").append(statusDisplay).append("\n");
+        message.append("📋 <b>Status:</b> ").append(statusEmoji).append(" ").append(statusDisplay).append("\n");
         
         if (species != null && !species.isEmpty()) {
-            message.append("🐕 <b>Tipo:</b> ").append(species).append("\n");
+            message.append("🐕 <b>Type:</b> ").append(species).append("\n");
         }
         
         if (description != null && !description.isEmpty()) {
-            message.append("📝 <b>Descripción:</b> ").append(description).append("\n");
+            message.append("📝 <b>Description:</b> ").append(description).append("\n");
         }
         
         message.append("━━━━━━━━━━━━━━━━━━━━━━\n");
-        message.append("🔗 <a href=\"").append(alertUrl).append("\">Ver detalles de la alerta</a>\n\n");
-        message.append("<i>🐾 PawAlert - Ayudando a encontrar mascotas perdidas</i>");
+        message.append("🔗 <a href=\"").append(alertUrl).append("\">View alert details</a>\n\n");
+        message.append("<i>🐾 PawAlert - Helping find lost pets</i>");
         
         return message.toString();
     }
