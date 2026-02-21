@@ -162,6 +162,7 @@ export const userService = {
 
   // Admin: Update user by ID
   adminUpdateUser: async (userId: string, data: Partial<User>): Promise<User> => {
+    console.log('adminUpdateUser called with data:', data)
     const response = await api.put<Record<string, unknown>>(`/users/admin/${userId}`, {
       newUsername: data.username,
       newEmail: data.email,

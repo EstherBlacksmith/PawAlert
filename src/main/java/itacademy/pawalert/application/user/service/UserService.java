@@ -7,6 +7,8 @@ import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.exception.UserNotFoundException;
 import itacademy.pawalert.domain.user.model.*;
 import itacademy.pawalert.infrastructure.rest.user.dto.RegistrationInput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ public class UserService implements
         UpdateUserUseCase,
         UpdatePasswordUseCase {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepositoryPort userRepositoryPort;
     private final PasswordEncoder passwordEncoder;
@@ -230,10 +233,18 @@ public class UserService implements
 
     @Override
     public User updateRole(UUID userId, Role newRole) {
+        logger.info("updateRole called for userId: {} with newRole: {}", userId, newRole);
         User user = getById(userId);
+        logger.info("Current user role before update: {}", user.role());
 
         user = user.withRole(newRole);
-        return userRepositoryPort.save(user);
+        logger.info("User role after withRole: {}", user.role());
+        
+        User saved = userRepositoryPort.save(user);
+        logger.info("Saved user role: {}", saved.role());
+        
+        logger.debug("Role updated for user {} from {} to {}", userId, user.role(), newRole);
+        return saved;
     }
 
 
