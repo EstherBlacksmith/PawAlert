@@ -12,6 +12,7 @@ public interface SearchAlertsUseCase {
             String title,
             String petName,
             String species,
+            String breed,
             LocalDateTime createdFrom,
             LocalDateTime createdTo,
             LocalDateTime updatedFrom,

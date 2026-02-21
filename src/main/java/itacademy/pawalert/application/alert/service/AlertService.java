@@ -66,6 +66,7 @@ public class AlertService implements
                 title,       // title
                 null,        // petName
                 null,        // species
+                null,        // breed
                 null,        // createdFrom
                 null,        // createdTo
                 null,        // updatedFrom
@@ -294,13 +295,14 @@ public class AlertService implements
                               String title,
                               String petName,
                               String species,
+                              String breed,
                               LocalDateTime createdFrom,
                               LocalDateTime createdTo,
                               LocalDateTime updatedFrom,
                               LocalDateTime updatedTo) {
 
         AlertSearchCriteria criteria = new AlertSearchCriteria(
-                status, title, petName, species, createdFrom, createdTo, updatedFrom, updatedTo
+                status, title, petName, species, breed, createdFrom, createdTo, updatedFrom, updatedTo
         );
 
         return alertRepository.search(criteria);

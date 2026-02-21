@@ -20,7 +20,7 @@ public final class AlertSpecifications {
     public static Specification<AlertEntity> withStatus(StatusNames status) {
         return (root, query, cb) -> {
             if (status == null) return cb.conjunction();
-            return cb.equal(root.get("status"), status);
+            return cb.equal(root.get("status"), status.name());
         };
     }
 
