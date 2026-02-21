@@ -3,7 +3,7 @@ package itacademy.pawalert.domain.alert.model;
 import lombok.Getter;
 
 @Getter
-public enum NotificationChannel implements AlertDisplayableEnum{
+public enum NotificationChannel implements AlertDisplayableEnum {
     EMAIL("Email"),
     PUSH("Push"),
     SMS("Sms"),

@@ -169,7 +169,8 @@ export const userService = {
       newPhonenumber: data.phoneNumber,
       telegramChatId: data.telegramChatId,
       emailNotificationsEnabled: data.emailNotificationsEnabled,
-      telegramNotificationsEnabled: data.telegramNotificationsEnabled
+      telegramNotificationsEnabled: data.telegramNotificationsEnabled,
+      newRole: data.role
     })
     return transformUserResponse(response.data)
   },

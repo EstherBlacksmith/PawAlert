@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -14,12 +13,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Slf4j
 public class SseNotificationService {
 
-    // List of ALL connected clients - thread-safe
-    private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
-
     // Timeout: 30 minutes
     private static final long SSE_TIMEOUT = 30 * 60 * 1000L;
-
+    // List of ALL connected clients - thread-safe
+    private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
     public SseEmitter subscribe() {
         SseEmitter emitter = new SseEmitter(SSE_TIMEOUT);

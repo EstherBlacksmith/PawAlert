@@ -1,28 +1,11 @@
 package itacademy.pawalert.domain.alert.model;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
-public class AlertSubscription {
-    private final UUID id;
-    private final UUID alertId;
-    private final UUID userId;
-    private final LocalDateTime subscribedAt;
-
+public record AlertSubscription(UUID id, UUID alertId, UUID userId, LocalDateTime subscribedAt) {
     public AlertSubscription(UUID alertId, UUID userId) {
-        this.id = UUID.randomUUID();
-        this.alertId = alertId;
-        this.userId = userId;
-        this.subscribedAt = LocalDateTime.now();
-    }
-
-    public AlertSubscription(UUID id, UUID alertId, UUID userId, LocalDateTime subscribedAt) {
-        this.id = id;
-        this.alertId = alertId;
-        this.userId = userId;
-        this.subscribedAt = subscribedAt;
+        this(UUID.randomUUID(), alertId, userId, LocalDateTime.now());
     }
 
     // Factory method - sin NotificationChannel

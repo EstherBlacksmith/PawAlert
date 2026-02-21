@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "itacademy.pawalert.infrastructure.persistence")
 public class PawAlertApplication {
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(PawAlertApplication.class, args);
 
         System.out.println("Go!");

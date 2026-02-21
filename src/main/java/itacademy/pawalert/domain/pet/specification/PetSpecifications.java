@@ -7,7 +7,8 @@ import java.util.UUID;
 
 public final class PetSpecifications {
 
-    private PetSpecifications() {}
+    private PetSpecifications() {
+    }
 
     public static Specification<Pet> byOwner(UUID ownerId) {
         return (root, query, cb) -> {

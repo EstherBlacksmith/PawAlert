@@ -2,6 +2,9 @@ package itacademy.pawalert.application.alert.service;
 
 import itacademy.pawalert.application.alert.model.AlertSearchCriteria;
 import itacademy.pawalert.application.alert.port.inbound.*;
+import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
+import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
+import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.application.alert.port.outbound.CurrentUserProviderPort;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.user.port.inbound.GetUserUseCase;
@@ -9,17 +12,14 @@ import itacademy.pawalert.domain.alert.exception.AlertAccessDeniedException;
 import itacademy.pawalert.domain.alert.exception.PetAlreadyHasActiveAlertException;
 import itacademy.pawalert.domain.alert.model.*;
 import itacademy.pawalert.domain.alert.service.AlertFactory;
-import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
-import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
-import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
+import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.infrastructure.persistence.alert.AlertEventFactory;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertWithContactDTO;
 import itacademy.pawalert.infrastructure.rest.alert.mapper.AlertMapper;
-import org.springframework.transaction.annotation.Transactional;
-import itacademy.pawalert.domain.user.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -50,7 +50,7 @@ public class AlertService implements
     public AlertService(AlertRepositoryPort alertRepository, AlertEventRepositoryPort eventRepository,
                         AlertSubscriptionRepositoryPort subscriptionRepository,
                         GetUserUseCase userUseCase, AlertMapper alertMapper, ApplicationEventPublisher eventPublisher,
-                        CurrentUserProviderPort currentUserProvider){
+                        CurrentUserProviderPort currentUserProvider) {
         this.alertRepository = alertRepository;
         this.eventRepository = eventRepository;
         this.subscriptionRepository = subscriptionRepository;
@@ -96,7 +96,7 @@ public class AlertService implements
         //Persist the object
         Alert savedAlert = alertRepository.save(alert);
         log.info("[ALERT-CREATION] Alert saved to database with ID: {}", savedAlert.getId());
-        
+
         AlertEvent event = AlertEventFactory.createStatusChangedEvent(
                 savedAlert, OPENED, OPENED, userId, location
         );
@@ -167,10 +167,10 @@ public class AlertService implements
     @Override
     public Alert changeStatus(UUID alertId, StatusNames newStatus, UUID userId, GeographicLocation location, ClosureReason closureReason) {
         log.info("[CHANGE-STATUS] Starting status change for alertId={}, newStatus={}, userId={}", alertId, newStatus, userId);
-        
+
         Alert alert = getAlertById(alertId);
         StatusNames previousStatus = alert.currentStatus().getStatusName();
-        
+
         log.info("[CHANGE-STATUS] Current status: {}, changing to: {}", previousStatus, newStatus);
 
         Alert alertCopy;
@@ -193,14 +193,14 @@ public class AlertService implements
 
         // Use appropriate factory method based on status change type
         AlertEvent event;
-        if (newStatus == StatusNames.CLOSED ) {
+        if (newStatus == StatusNames.CLOSED) {
             // For closure events, include the closure reason
             event = AlertEventFactory.createClosureEvent(alertCopy, previousStatus, userId, location, closureReason);
             log.info("[CHANGE-STATUS] Created CLOSURE event for alertId={}", alertId);
         } else {
             // For other status changes
             event = AlertEventFactory.createStatusChangedEvent(alertCopy, previousStatus, newStatus, userId, location);
-            log.info("[CHANGE-STATUS] Created STATUS_CHANGED event for alertId={}, previous={}, new={}", 
+            log.info("[CHANGE-STATUS] Created STATUS_CHANGED event for alertId={}, previous={}, new={}",
                     alertId, previousStatus, newStatus);
         }
 
@@ -241,7 +241,7 @@ public class AlertService implements
 
         boolean isAdmin = currentUserProvider.isCurrentUserAdmin();
         Alert alertCopy = alert.updateTitle(title, isAdmin);
-        
+
         return alertRepository.save(alertCopy);
     }
 
@@ -268,7 +268,7 @@ public class AlertService implements
     private UUID checkAuthorizationOwerOrAdmin(Alert alert) {
         UUID currentUserId = currentUserProvider.getCurrentUserId();
         boolean isAdmin = currentUserProvider.isCurrentUserAdmin();
-        
+
         boolean isCreator = alert.getUserId().equals(currentUserId);
         if (!isAdmin && !isCreator) {
             throw new AlertAccessDeniedException(alert.getId(), currentUserId);
@@ -287,7 +287,6 @@ public class AlertService implements
         }
         return currentUserId;
     }
-
 
 
     @Override
@@ -348,19 +347,19 @@ public class AlertService implements
     public Title getTitleById(UUID alertId) {
         Alert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
-        return  alert.getTitle();
+        return alert.getTitle();
     }
 
 
     public Description getDescriptionById(UUID alertId) {
         Alert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + alertId));
-        return  alert.getDescription();
+        return alert.getDescription();
     }
 
     public GeographicLocation getLastLocationById(UUID alertId) {
 
-       return  eventRepository
+        return eventRepository
                 .findLatestByAlertId(alertId)
                 .map(AlertEvent::getLocation)
                 .orElse(null);
@@ -368,7 +367,7 @@ public class AlertService implements
     }
 
     public StatusNames getLastStatusById(UUID alertId) {
-        return  eventRepository
+        return eventRepository
                 .findLatestByAlertId(alertId)
                 .map(AlertEvent::getNewStatus)
                 .orElse(null);

@@ -8,17 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 public class GoogleVisionPetAnalyzer implements PetImageAnalyzer {
 
     private static final Logger log = LoggerFactory.getLogger(GoogleVisionPetAnalyzer.class);
-
-    private final ImageAnalysisPort imageAnalysisPort;
-    private final ImageTypeClassifier imageTypeClassifier;
-
     private static final Map<String, String> ANIMAL_KEYWORDS = Map.ofEntries(
             Map.entry("dog", "Dog"),
             Map.entry("puppy", "Dog"),
@@ -40,7 +38,6 @@ public class GoogleVisionPetAnalyzer implements PetImageAnalyzer {
             Map.entry("mouse", "Mouse"),
             Map.entry("squirrel", "Squirrel")
     );
-
     private static final Set<String> KNOWN_BREEDS = Set.of(
             "retriever", "shepherd", "bulldog", "poodle", "beagle", "boxer",
             "husky", "dachshund", "chihuahua", "corgi", "pitbull", "rottweiler",
@@ -48,6 +45,8 @@ public class GoogleVisionPetAnalyzer implements PetImageAnalyzer {
             "persian", "siamese", "mainecoon", "tabby", "ragdoll", "bengal",
             "british shorthair", "maine coon", "scottish fold", "sphynx"
     );
+    private final ImageAnalysisPort imageAnalysisPort;
+    private final ImageTypeClassifier imageTypeClassifier;
 
     public GoogleVisionPetAnalyzer(
             ImageAnalysisPort imageAnalysisPort,

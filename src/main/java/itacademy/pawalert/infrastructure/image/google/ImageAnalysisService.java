@@ -25,7 +25,7 @@ public class ImageAnalysisService {
         ImageValidationResult result = imageValidator.validate(imageBytes);
 
         if (!result.isValid()) {
-            throw new ImageValidationException("Image unsafe: " + result.safetyStatus(),ContentSafetyStatus.UNSAFE);
+            throw new ImageValidationException("Image unsafe: " + result.safetyStatus(), ContentSafetyStatus.UNSAFE);
         }
 
         // 2. Upload to Cloudinary

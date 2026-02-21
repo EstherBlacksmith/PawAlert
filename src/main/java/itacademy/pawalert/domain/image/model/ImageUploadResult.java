@@ -7,4 +7,5 @@ public record ImageUploadResult(
         String safetyStatus,
         int width,
         int height
-) {}
+) {
+}

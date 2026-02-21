@@ -1,4 +1,5 @@
 package itacademy.pawalert.application.exception;
+
 import java.util.UUID;
 
 public class CannotSubscribeToClosedAlertException extends RuntimeException {

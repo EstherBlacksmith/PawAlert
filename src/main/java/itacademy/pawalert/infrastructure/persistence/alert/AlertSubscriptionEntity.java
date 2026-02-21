@@ -1,7 +1,10 @@
 package itacademy.pawalert.infrastructure.persistence.alert;
 
-import itacademy.pawalert.domain.alert.model.*;
-import jakarta.persistence.*;
+import itacademy.pawalert.domain.alert.model.AlertSubscription;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -11,9 +14,9 @@ import java.util.UUID;
 public class AlertSubscriptionEntity {
 
     @Id
-    @Column(name ="id", nullable = false)
+    @Column(name = "id", nullable = false)
     private UUID id;
-    @Column(name ="user_id", nullable = false)
+    @Column(name = "user_id", nullable = false)
     private UUID userId;
     @Column(name = "subscribed_at", nullable = false)
     private LocalDateTime subscribedAt;
@@ -33,10 +36,10 @@ public class AlertSubscriptionEntity {
 
     public static AlertSubscriptionEntity fromDomain(AlertSubscription subscription) {
         return new AlertSubscriptionEntity(
-                subscription.getId(),
-                subscription.getAlertId(),
-                subscription.getUserId(),
-                subscription.getSubscribedAt()
+                subscription.id(),
+                subscription.alertId(),
+                subscription.userId(),
+                subscription.subscribedAt()
         );
     }
 

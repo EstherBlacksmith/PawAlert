@@ -1,7 +1,6 @@
 package itacademy.pawalert.infrastructure.rest.alert.controller;
 
 import itacademy.pawalert.application.alert.port.inbound.AlertSubscriptionUseCase;
-
 import itacademy.pawalert.application.alert.port.outbound.CurrentUserProviderPort;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertSubscriptionDTO;
@@ -28,14 +27,14 @@ public class AlertSubscriptionController {
         log.info("[SUBSCRIBE] Attempting to subscribe to alert: {}", alertId);
         UUID userId = currentUserProviderPort.getCurrentUserId();
         log.info("[SUBSCRIBE] Current user ID: {}", userId);
-        
+
         if (userId == null) {
             log.error("[SUBSCRIBE] User ID is null - authentication may have failed");
             throw new IllegalStateException("User not authenticated");
         }
-        
+
         AlertSubscription subscription = alertSubscriptionUseCase.subscribeToAlert(alertId, userId);
-        log.info("[SUBSCRIBE] Successfully created subscription with ID: {}", subscription.getId());
+        log.info("[SUBSCRIBE] Successfully created subscription with ID: {}", subscription.id());
         return ResponseEntity.status(HttpStatus.CREATED).body(toDTO(subscription));
     }
 
@@ -62,10 +61,10 @@ public class AlertSubscriptionController {
 
     private AlertSubscriptionDTO toDTO(AlertSubscription subscription) {
         return new AlertSubscriptionDTO(
-                subscription.getId().toString(),
-                subscription.getAlertId().toString(),
-                subscription.getUserId().toString(),
-                subscription.getSubscribedAt()
+                subscription.id().toString(),
+                subscription.alertId().toString(),
+                subscription.userId().toString(),
+                subscription.subscribedAt()
         );
     }
 }

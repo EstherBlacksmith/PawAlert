@@ -5,8 +5,14 @@ import lombok.Getter;
 import java.util.Arrays;
 
 @Getter
-public enum Size  implements PetDisplayableEnum {
+public enum Size implements PetDisplayableEnum {
     TINY("Tiny"), SMALL("Small"), MEDIUM("Medium"), LARGE("Large"), GIANT("Giant");
+
+    private final String value;
+
+    Size(String value) {
+        this.value = value;
+    }
 
     public static Size fromString(String value) {
         if (value == null || value.isBlank()) {
@@ -20,12 +26,6 @@ public enum Size  implements PetDisplayableEnum {
                             Arrays.toString(values())
             );
         }
-    }
-
-    private final String value;
-
-    Size(String value) {
-        this.value = value;
     }
 
     @Override

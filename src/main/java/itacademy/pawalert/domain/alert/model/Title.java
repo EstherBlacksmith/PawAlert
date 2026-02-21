@@ -20,13 +20,13 @@ public record Title(String title) {
         title = title.trim();
     }
 
-    @JsonValue
-    public String getValue() {
-        return title;
-    }
-
     @JsonCreator
     public static Title of(String title) {
         return new Title(title);
+    }
+
+    @JsonValue
+    public String getValue() {
+        return title;
     }
 }

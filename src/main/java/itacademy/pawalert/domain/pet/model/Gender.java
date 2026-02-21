@@ -5,8 +5,14 @@ import lombok.Getter;
 import java.util.Arrays;
 
 @Getter
-public enum Gender implements  PetDisplayableEnum{
+public enum Gender implements PetDisplayableEnum {
     FEMALE("Female"), MALE("Male"), UNKNOWN("Unknown");
+
+    private final String value;
+
+    Gender(String value) {
+        this.value = value;
+    }
 
     public static Gender fromString(String value) {
         if (value == null || value.isBlank()) {
@@ -20,12 +26,6 @@ public enum Gender implements  PetDisplayableEnum{
                             Arrays.toString(values())
             );
         }
-    }
-
-    private final String value;
-
-    Gender(String value) {
-        this.value = value;
     }
 
     @Override

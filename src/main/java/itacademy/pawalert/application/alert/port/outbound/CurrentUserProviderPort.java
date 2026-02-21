@@ -6,6 +6,8 @@ import java.util.UUID;
 
 public interface CurrentUserProviderPort {
     UUID getCurrentUserId();
+
     boolean isCurrentUserAdmin();
+
     Role getCurrentUserRole();
 }

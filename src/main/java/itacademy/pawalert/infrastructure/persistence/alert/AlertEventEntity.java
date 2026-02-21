@@ -84,8 +84,8 @@ public class AlertEventEntity {
                 ? event.getNewStatus().name()
                 : null;
         String eventType = event.getEventType().name();
-        String closureReason = event.getClosureReason() != null 
-                ? event.getClosureReason().name() 
+        String closureReason = event.getClosureReason() != null
+                ? event.getClosureReason().name()
                 : null;
 
         AlertEventEntity entity;
@@ -113,7 +113,7 @@ public class AlertEventEntity {
                     closureReason
             );
         }
-        
+
         // Set the alert relationship
         entity.alert = alert;
         return entity;
@@ -141,13 +141,13 @@ public class AlertEventEntity {
             location = GeographicLocation.of(latitude, longitude);
         }
 
-        ClosureReason closureReasonEnum = closureReason != null 
-                ? ClosureReason.fromString(closureReason) 
+        ClosureReason closureReasonEnum = closureReason != null
+                ? ClosureReason.fromString(closureReason)
                 : null;
 
         // Preserve the original timestamp from the database
         ChangedAt changedAtValue = new ChangedAt(changedAt);
-        
+
         return switch (type) {
             case STATUS_CHANGED -> {
                 // If this is a closure event with closure reason
@@ -157,8 +157,10 @@ public class AlertEventEntity {
                     yield AlertEvent.createStatusEvent(alertId, previous, newStat, UUID.fromString(changedByUserId), location, changedAtValue);
                 }
             }
-            case TITLE_CHANGED -> AlertEvent.createTitleEvent(alertId, Title.of(oldValue), Title.of(newValue), UUID.fromString(changedByUserId), changedAtValue);
-            case DESCRIPTION_CHANGED -> AlertEvent.createDescriptionEvent(alertId, Description.of(oldValue), Description.of(newValue), UUID.fromString(changedByUserId), changedAtValue);
+            case TITLE_CHANGED ->
+                    AlertEvent.createTitleEvent(alertId, Title.of(oldValue), Title.of(newValue), UUID.fromString(changedByUserId), changedAtValue);
+            case DESCRIPTION_CHANGED ->
+                    AlertEvent.createDescriptionEvent(alertId, Description.of(oldValue), Description.of(newValue), UUID.fromString(changedByUserId), changedAtValue);
         };
     }
 

@@ -1,4 +1,5 @@
 package itacademy.pawalert.domain.user.model;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.regex.Pattern;
@@ -7,6 +8,7 @@ import java.util.regex.Pattern;
 public record TelegramChatId(@JsonValue String value) {
     private static final Pattern TELEGRAM_ID_PATTERN =
             Pattern.compile("^-?[0-9]+$");
+
     public TelegramChatId {
         // Value can be null
         if (value != null && !value.isBlank()) {
@@ -22,6 +24,7 @@ public record TelegramChatId(@JsonValue String value) {
             }
         }
     }
+
     // Factory method
     public static TelegramChatId of(String value) {
         if (value == null || value.isBlank()) {

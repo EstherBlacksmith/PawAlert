@@ -16,6 +16,6 @@ public record AlertWithContactDTO(
         Description description,
         StatusNames status,
         PhoneNumber creatorPhone,
-        Surname creatorName  ) {
+        Surname creatorName) {
 
 }

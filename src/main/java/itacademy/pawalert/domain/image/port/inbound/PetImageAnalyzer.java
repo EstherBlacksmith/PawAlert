@@ -5,7 +5,9 @@ import itacademy.pawalert.domain.image.model.SpeciesClassificationResult;
 
 public interface PetImageAnalyzer {
     PetAnalysisResult analyze(byte[] imageBytes);
+
     boolean isPetImage(byte[] imageBytes);
+
     SpeciesClassificationResult classifyAnimal(byte[] imageBytes);
 
 }

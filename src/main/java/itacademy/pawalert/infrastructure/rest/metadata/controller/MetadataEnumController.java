@@ -1,7 +1,7 @@
 package itacademy.pawalert.infrastructure.rest.metadata.controller;
 
-import itacademy.pawalert.infrastructure.rest.metadata.dto.MetadataEnumListDto;
 import itacademy.pawalert.application.metadata.service.MetadataEnumService;
+import itacademy.pawalert.infrastructure.rest.metadata.dto.MetadataEnumListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

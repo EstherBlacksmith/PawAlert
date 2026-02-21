@@ -7,7 +7,6 @@ import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
-import itacademy.pawalert.domain.alert.model.NotificationChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,8 +67,8 @@ class AlertSubscriptionServiceTest {
 
         // Then
         assertNotNull(result);
-        assertEquals(alertId, result.getAlertId());
-        assertEquals(userId, result.getUserId());
+        assertEquals(alertId, result.alertId());
+        assertEquals(userId, result.userId());
         verify(subscriptionRepository).save(any(AlertSubscription.class));
     }
 
@@ -104,7 +103,7 @@ class AlertSubscriptionServiceTest {
         subscriptionService.unsubscribeFromAlert(alertId, userId);
 
         // Then
-        verify(subscriptionRepository).deleteById(subscription.getId());
+        verify(subscriptionRepository).deleteById(subscription.id());
     }
 
     @Test

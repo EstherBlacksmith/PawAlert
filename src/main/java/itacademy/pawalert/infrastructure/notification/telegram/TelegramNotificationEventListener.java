@@ -33,13 +33,13 @@ public class TelegramNotificationEventListener {
         Pet pet = petService.getPetById(alert.getPetId());
 
         List<String> telegramChatIds = notificationRepository.findSubscriberTelegramChatIdsByAlertId(event.alertId());
-        
+
         // Use new formatted message with pet image
         String message = formatter.formatTelegramMessage(alert, pet, event.newStatus());
-        
+
         // Try to send photo if available
         String petImageUrl = pet.getPetImage() != null ? pet.getPetImage().value() : null;
-        
+
         for (String chatId : telegramChatIds) {
             if (petImageUrl != null && !petImageUrl.isEmpty()) {
                 try {

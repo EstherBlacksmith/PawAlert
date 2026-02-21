@@ -1,6 +1,9 @@
 package itacademy.pawalert.infrastructure.rest.user.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public record RegistrationInput(
         @NotBlank(message = "Username can't be empty")
@@ -22,4 +25,5 @@ public record RegistrationInput(
         @NotBlank(message = "Phone number can't be empty")
         @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "Invalid phone number format")
         String phoneNumber
-) {}
+) {
+}

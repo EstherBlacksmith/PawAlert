@@ -1,6 +1,6 @@
 package itacademy.pawalert.application.pet.port.outbound;
 
-import itacademy.pawalert.domain.pet.model.*;
+import itacademy.pawalert.domain.pet.model.Pet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,11 +13,18 @@ import java.util.UUID;
 
 public interface PetRepositoryPort {
     Pet save(Pet pet);
+
     Optional<Pet> findById(UUID petId);
+
     void deleteById(UUID petId, UUID userId);
+
     boolean existsById(UUID petId);
+
     List<Pet> findAll(Specification<Pet> spec, Sort sort);
+
     Page<Pet> findAll(Specification<Pet> spec, Pageable pageable);
+
     List<Pet> findAllByUserId(UUID userId);
+
     List<Pet> findAll();
 }

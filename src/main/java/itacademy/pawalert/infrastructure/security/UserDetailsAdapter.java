@@ -20,26 +20,46 @@ public class UserDetailsAdapter implements UserDetails {
     public UserDetailsAdapter(User user, String password) {
         this.user = user;
         this.password = password;
-        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        this.authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.role().name()));
     }
 
     @Override
-    public String getUsername() { return user.getUsername().value(); }
-    @Override
-    public String getPassword() { return password; }
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { return authorities; }
-    @Override
-    public boolean isAccountNonExpired() { return true; }
-    @Override
-    public boolean isAccountNonLocked() { return true; }
-    @Override
-    public boolean isCredentialsNonExpired() { return true; }
-    @Override
-    public boolean isEnabled() { return true; }
+    public String getUsername() {
+        return user.username().value();
+    }
 
-    public <Optional>Role getUserRole(){
-        return user.getRole();
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public <Optional> Role getUserRole() {
+        return user.role();
     }
 
 }

@@ -1,11 +1,11 @@
 package itacademy.pawalert.infrastructure.persistence.user;
 
 import itacademy.pawalert.domain.user.Role;
+import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.UserWithPassword;
 import itacademy.pawalert.domain.user.model.*;
 import jakarta.persistence.*;
 import lombok.Getter;
-import itacademy.pawalert.domain.user.User;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -62,7 +62,8 @@ public class UserEntity {
     private LocalDateTime deletedAt;
 
     // Empty Constructor for JPA
-    public UserEntity() {}
+    public UserEntity() {
+    }
 
     public UserEntity(String id, String username, String email, String passwordHash,
                       String surname, String phoneNumber, Role role, LocalDateTime createdAt,

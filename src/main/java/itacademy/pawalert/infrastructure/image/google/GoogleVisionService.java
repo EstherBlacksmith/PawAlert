@@ -9,12 +9,9 @@ import itacademy.pawalert.domain.image.model.SpeciesClassificationResult;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-
-
-import java.util.List;
 
 @Service
 public class GoogleVisionService {
@@ -25,7 +22,7 @@ public class GoogleVisionService {
         this.imageAnnotatorClient = imageAnnotatorClient;
     }
 
-    public ImageValidationResult analyzeImage(byte[] imageBytes){
+    public ImageValidationResult analyzeImage(byte[] imageBytes) {
         //Bytes to google format
         ByteString byteString = ByteString.copyFrom(imageBytes);
         Image image = Image.newBuilder().setContent(byteString).build();
@@ -72,6 +69,7 @@ public class GoogleVisionService {
 
     /**
      * Classify image as dog or cat based on labels detected by Google Vision
+     *
      * @param imageBytes the image bytes to analyze
      * @return ImageClassificationResult with classification (dog/cat) and confidence level
      */
@@ -112,7 +110,7 @@ public class GoogleVisionService {
                 Map.entry("snake", "Snake"),
                 Map.entry("fish", "Fish"),
                 Map.entry("horse", "Horse"),
-                Map .entry("cow","Cow"),
+                Map.entry("cow", "Cow"),
                 Map.entry("sheep", "Sheep"),
                 Map.entry("goat", "Goat"),
                 Map.entry("pig", "Pig"),
@@ -157,45 +155,46 @@ public class GoogleVisionService {
             return SpeciesClassificationResult.unknown();
         }
     }
-    private ContentSafetyStatus evaluateSafeSearch(SafeSearchAnnotation safe){
-        if(isLikelyOrHigher(safe.getAdult()) ||
-                isLikelyOrHigher(safe.getViolence())){
+
+    private ContentSafetyStatus evaluateSafeSearch(SafeSearchAnnotation safe) {
+        if (isLikelyOrHigher(safe.getAdult()) ||
+                isLikelyOrHigher(safe.getViolence())) {
             return ContentSafetyStatus.UNSAFE;
         }
 
-        if(isPossibleOrHigher(safe.getAdult()) ||
-                isPossibleOrHigher(safe.getRacy())){
+        if (isPossibleOrHigher(safe.getAdult()) ||
+                isPossibleOrHigher(safe.getRacy())) {
             return ContentSafetyStatus.QUESTIONABLE;
         }
 
         return ContentSafetyStatus.SAFE;
     }
 
-    private boolean isLikelyOrHigher(Likelihood  value){
+    private boolean isLikelyOrHigher(Likelihood value) {
         return value == Likelihood.LIKELY || value == Likelihood.VERY_LIKELY;
     }
 
-    private boolean isPossibleOrHigher(Likelihood  value){
+    private boolean isPossibleOrHigher(Likelihood value) {
         return value == Likelihood.POSSIBLE ||
                 value == Likelihood.LIKELY ||
                 value == Likelihood.VERY_LIKELY;
     }
 
-    private String generateBasicDescription(List<String> labels){
-        if(labels.isEmpty()){
+    private String generateBasicDescription(List<String> labels) {
+        if (labels.isEmpty()) {
             return "There are not elements detected on the image";
         }
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Image of ");
 
         //First labels
-        for (int i = 0; i <Math.min(3,labels.size()) ; i++) {
+        for (int i = 0; i < Math.min(3, labels.size()); i++) {
             if (i < 0) {
                 stringBuilder.append(", ");
             }
             stringBuilder.append(labels.get(i));
         }
-        return  stringBuilder.toString();
+        return stringBuilder.toString();
     }
 
     @PreDestroy

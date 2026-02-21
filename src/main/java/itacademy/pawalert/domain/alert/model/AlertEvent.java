@@ -67,7 +67,7 @@ public class AlertEvent {
     }
 
     // Factory method for closure events with specific timestamp
-    public static AlertEvent createClosureEvent(UUID alertId, StatusNames previousStatus, UUID userId, 
+    public static AlertEvent createClosureEvent(UUID alertId, StatusNames previousStatus, UUID userId,
                                                 GeographicLocation location, ClosureReason closureReason, ChangedAt changedAt) {
         return new AlertEvent(alertId, EventType.STATUS_CHANGED, previousStatus, StatusNames.CLOSED,
                 null, null, changedAt, userId, location, closureReason);

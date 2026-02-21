@@ -12,4 +12,5 @@ public record PetResponse(
         String gender,
         String petDescription,
         String petImage
-) {}
+) {
+}

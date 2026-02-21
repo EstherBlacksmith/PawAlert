@@ -8,7 +8,7 @@ public class ForbiddenException extends RuntimeException {
 
     public static ForbiddenException notAuthorized(String action) {
         return new ForbiddenException(
-            "You are not authorized to " + action
+                "You are not authorized to " + action
         );
     }
 }
