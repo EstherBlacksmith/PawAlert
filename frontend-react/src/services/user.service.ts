@@ -146,4 +146,31 @@ export const userService = {
     const response = await api.get<Record<string, unknown>>(`/users/${userId}`)
     return transformUserResponse(response.data)
   },
+
+  // ========== ADMIN METHODS ==========
+
+  // Admin: Get all users
+  getAllUsers: async (): Promise<User[]> => {
+    const response = await api.get<Record<string, unknown>[]>('/users/admin/all')
+    return response.data.map(transformUserResponse)
+  },
+
+  // Admin: Delete user by ID
+  deleteUser: async (userId: string): Promise<void> => {
+    await api.delete(`/users/admin/${userId}`)
+  },
+
+  // Admin: Update user by ID
+  adminUpdateUser: async (userId: string, data: Partial<User>): Promise<User> => {
+    const response = await api.put<Record<string, unknown>>(`/users/admin/${userId}`, {
+      newUsername: data.username,
+      newEmail: data.email,
+      newSurname: data.surname,
+      newPhonenumber: data.phoneNumber,
+      telegramChatId: data.telegramChatId,
+      emailNotificationsEnabled: data.emailNotificationsEnabled,
+      telegramNotificationsEnabled: data.telegramNotificationsEnabled
+    })
+    return transformUserResponse(response.data)
+  },
 }

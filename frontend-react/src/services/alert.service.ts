@@ -188,4 +188,10 @@ export const alertService = {
     const response = await api.get<AlertSubscriptionWithDetails[]>('/alerts/subscriptions/me')
     return response.data
   },
+
+  // Get alerts by user ID (admin use)
+  getAlertsByUserId: async (userId: string): Promise<Alert[]> => {
+    const response = await api.get<Alert[]>('/alerts/search', { params: { userId } })
+    return response.data
+  },
 }

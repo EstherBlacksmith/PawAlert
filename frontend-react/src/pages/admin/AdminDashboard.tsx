@@ -1,69 +1,67 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Box, Heading, VStack, HStack, Card, Table, Button, Flex, Spinner,
-  Badge, Text, Input, Select, SimpleGrid, Icon
+  Box, Heading, VStack, HStack, Card, Flex, Spinner, Text, SimpleGrid, Stat, Tabs
 } from '@chakra-ui/react'
-import { FaSearch, FaTimes, FaEye } from 'react-icons/fa'
+import { FaUsers, FaPaw, FaBell, FaExclamationTriangle } from 'react-icons/fa'
 import { useAuth } from '../../context/AuthContext'
+import { userService } from '../../services/user.service'
+import { petService } from '../../services/pet.service'
 import { alertService } from '../../services/alert.service'
-import { useMetadata } from '../../hooks/useMetadata'
-import { Alert, AlertStatus, MetadataDto } from '../../types'
+import { User, Pet, Alert } from '../../types'
+import UsersTab from './components/UsersTab'
+import PetsTab from './components/PetsTab'
+import AlertsTab from './components/AlertsTab'
 
-interface FilterState {
-  status: string
-  species: string
-  createdFrom: string
-  createdTo: string
-  updatedFrom: string
-  updatedTo: string
-}
-
-const statusColors: Record<string, string> = {
-  OPENED: 'red',
-  SEEN: 'yellow',
-  SAFE: 'green',
-  CLOSED: 'gray',
+interface Stats {
+  totalUsers: number
+  totalPets: number
+  totalAlerts: number
+  openAlerts: number
 }
 
 export default function AdminDashboard() {
   const { isAdmin } = useAuth()
   const navigate = useNavigate()
-  const [alerts, setAlerts] = useState<Alert[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const { metadata } = useMetadata('StatusNames')
-  const { metadata: speciesMetadata } = useMetadata('Species')
   
-  const [filters, setFilters] = useState<FilterState>({
-    status: '',
-    species: '',
-    createdFrom: '',
-    createdTo: '',
-    updatedFrom: '',
-    updatedTo: ''
+  const [users, setUsers] = useState<User[]>([])
+  const [pets, setPets] = useState<Pet[]>([])
+  const [alerts, setAlerts] = useState<Alert[]>([])
+  const [stats, setStats] = useState<Stats>({
+    totalUsers: 0,
+    totalPets: 0,
+    totalAlerts: 0,
+    openAlerts: 0
   })
+  
+  const [isLoading, setIsLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('alerts')
 
-  const fetchAlerts = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true)
     try {
-      // Build filter params - only include non-empty values
-      const filterParams: Record<string, string> = {}
+      const [usersData, petsData, alertsData] = await Promise.all([
+        userService.getAllUsers().catch(() => [] as User[]),
+        petService.getAllPets().catch(() => [] as Pet[]),
+        alertService.searchAlertsWithFilters({}).catch(() => [] as Alert[])
+      ])
       
-      if (filters.status) filterParams.status = filters.status
-      if (filters.species) filterParams.species = filters.species
-      if (filters.createdFrom) filterParams.createdFrom = filters.createdFrom + 'T00:00:00'
-      if (filters.createdTo) filterParams.createdTo = filters.createdTo + 'T23:59:59'
-      if (filters.updatedFrom) filterParams.updatedFrom = filters.updatedFrom + 'T00:00:00'
-      if (filters.updatedTo) filterParams.updatedTo = filters.updatedTo + 'T23:59:59'
+      setUsers(usersData)
+      setPets(petsData)
+      setAlerts(alertsData)
       
-      const data = await alertService.searchAlertsWithFilters(filterParams)
-      setAlerts(data)
+      setStats({
+        totalUsers: usersData.length,
+        totalPets: petsData.length,
+        totalAlerts: alertsData.length,
+        openAlerts: alertsData.filter(a => a.status === 'OPENED').length
+      })
     } catch (error) {
-      console.error('Error fetching alerts:', error)
+      console.error('Error fetching admin data:', error)
     } finally {
       setIsLoading(false)
     }
-  }, [filters])
+  }, [])
 
   useEffect(() => {
     // Redirect non-admin users
@@ -72,237 +70,170 @@ export default function AdminDashboard() {
       return
     }
     
-    fetchAlerts()
-  }, [isAdmin, navigate, fetchAlerts])
+    fetchData()
+  }, [isAdmin, navigate, fetchData])
 
-  const handleFilterChange = (field: keyof FilterState, value: string) => {
-    setFilters(prev => ({ ...prev, [field]: value }))
+  const refreshData = () => {
+    fetchData()
   }
 
-  const clearFilters = () => {
-    setFilters({
-      status: '',
-      species: '',
-      createdFrom: '',
-      createdTo: '',
-      updatedFrom: '',
-      updatedTo: ''
-    })
+  if (isLoading) {
+    return (
+      <Flex justify="center" align="center" minH="400px">
+        <Spinner size="xl" color="purple.500" />
+      </Flex>
+    )
   }
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '-'
-    try {
-      const date = new Date(dateString)
-      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    } catch {
-      return dateString
-    }
-  }
-
-  const getStatusDisplayName = (status: string): string => {
-    const meta = metadata?.find((m: MetadataDto) => m.value === status)
-    return meta?.displayName || status
-  }
-
-  const getSpeciesDisplayName = (species: string): string => {
-    const meta = speciesMetadata?.find((m: MetadataDto) => m.value === species)
-    return meta?.displayName || species
-  }
-
-  const hasActiveFilters = Object.values(filters).some(v => v !== '')
 
   return (
     <VStack gap={6} align="stretch">
       {/* Header */}
       <Box>
         <Heading size="lg" color="gray.800" _dark={{ color: 'white' }}>
-          Admin Dashboard - Alert Management
+          Admin Dashboard
         </Heading>
         <Text color="gray.500" mt={1}>
-          View and filter all alerts in the system
+          Manage users, pets, and alerts across the platform
         </Text>
       </Box>
 
-      {/* Filter Panel */}
-      <Card.Root p={6} boxShadow="sm">
-        <VStack gap={4} align="stretch">
-          <Heading size="sm" color="gray.700" _dark={{ color: 'gray.300' }}>
-            Filters
-          </Heading>
-          
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={4}>
-            {/* Status Filter */}
-            <Box>
-              <Text fontSize="sm" fontWeight="medium" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                Status
-              </Text>
-              <Select
-                value={filters.status}
-                onChange={(e) => handleFilterChange('status', e.target.value)}
-                placeholder="All statuses"
-              >
-                {metadata?.map((item: MetadataDto) => (
-                  <option key={item.value} value={item.value}>
-                    {item.displayName}
-                  </option>
-                ))}
-              </Select>
+      {/* Statistics Cards */}
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={4}>
+        <Card.Root p={4}>
+          <Flex align="center" gap={4}>
+            <Box
+              p={3}
+              borderRadius="lg"
+              bg="purple.100"
+              _dark={{ bg: 'purple.900' }}
+            >
+              <FaUsers size={24} color="var(--chakra-colors-purple-500)" />
             </Box>
-
-            {/* Species Filter */}
             <Box>
-              <Text fontSize="sm" fontWeight="medium" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                Species
-              </Text>
-              <Select
-                value={filters.species}
-                onChange={(e) => handleFilterChange('species', e.target.value)}
-                placeholder="All species"
-              >
-                {speciesMetadata?.map((item: MetadataDto) => (
-                  <option key={item.value} value={item.value}>
-                    {item.displayName}
-                  </option>
-                ))}
-              </Select>
+              <Text fontSize="sm" color="gray.500">Total Users</Text>
+              <Text fontSize="2xl" fontWeight="bold">{stats.totalUsers}</Text>
             </Box>
-
-            {/* Created Date From */}
-            <Box>
-              <Text fontSize="sm" fontWeight="medium" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                Created From
-              </Text>
-              <Input
-                type="date"
-                value={filters.createdFrom}
-                onChange={(e) => handleFilterChange('createdFrom', e.target.value)}
-              />
-            </Box>
-
-            {/* Created Date To */}
-            <Box>
-              <Text fontSize="sm" fontWeight="medium" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                Created To
-              </Text>
-              <Input
-                type="date"
-                value={filters.createdTo}
-                onChange={(e) => handleFilterChange('createdTo', e.target.value)}
-              />
-            </Box>
-
-            {/* Updated Date From */}
-            <Box>
-              <Text fontSize="sm" fontWeight="medium" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                Last Update From
-              </Text>
-              <Input
-                type="date"
-                value={filters.updatedFrom}
-                onChange={(e) => handleFilterChange('updatedFrom', e.target.value)}
-              />
-            </Box>
-
-            {/* Updated Date To */}
-            <Box>
-              <Text fontSize="sm" fontWeight="medium" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                Last Update To
-              </Text>
-              <Input
-                type="date"
-                value={filters.updatedTo}
-                onChange={(e) => handleFilterChange('updatedTo', e.target.value)}
-              />
-            </Box>
-          </SimpleGrid>
-
-          {/* Action Buttons */}
-          <HStack justify="flex-end" gap={3}>
-            {hasActiveFilters && (
-              <Button variant="outline" onClick={clearFilters}>
-                <Icon as={FaTimes} mr={2} />
-                Clear Filters
-              </Button>
-            )}
-            <Button colorScheme="purple" onClick={fetchAlerts}>
-              <Icon as={FaSearch} mr={2} />
-              Search
-            </Button>
-          </HStack>
-        </VStack>
-      </Card.Root>
-
-      {/* Results */}
-      <Card.Root p={6} boxShadow="sm">
-        <VStack gap={4} align="stretch">
-          <Flex justify="space-between" align="center">
-            <Heading size="sm" color="gray.700" _dark={{ color: 'gray.300' }}>
-              Results ({alerts.length} alerts)
-            </Heading>
           </Flex>
+        </Card.Root>
 
-          {isLoading ? (
-            <Flex justify="center" align="center" minH="200px">
-              <Spinner size="xl" color="purple.500" />
-            </Flex>
-          ) : alerts.length === 0 ? (
-            <Flex justify="center" align="center" minH="200px">
-              <Text color="gray.500">No alerts found matching your criteria</Text>
-            </Flex>
-          ) : (
-            <Box overflowX="auto">
-              <Table.Root>
-                <Table.Header>
-                  <Table.Row>
-                    <Table.ColumnHeader>Status</Table.ColumnHeader>
-                    <Table.ColumnHeader>Title</Table.ColumnHeader>
-                    <Table.ColumnHeader>Species</Table.ColumnHeader>
-                    <Table.ColumnHeader>Created</Table.ColumnHeader>
-                    <Table.ColumnHeader>Last Updated</Table.ColumnHeader>
-                    <Table.ColumnHeader textAlign="center">Actions</Table.ColumnHeader>
-                  </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                  {alerts.map((alert) => (
-                    <Table.Row key={alert.id}>
-                      <Table.Cell>
-                        <Badge colorPalette={statusColors[alert.status] || 'gray'}>
-                          {getStatusDisplayName(alert.status)}
-                        </Badge>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text fontWeight="medium">{alert.title}</Text>
-                        <Text fontSize="sm" color="gray.500" noOfLines={1}>
-                          {alert.description}
-                        </Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text>{alert.petId ? 'Pet' : '-'}</Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text fontSize="sm">{formatDate(alert.createdAt)}</Text>
-                      </Table.Cell>
-                      <Table.Cell>
-                        <Text fontSize="sm">{formatDate(alert.updatedAt || alert.createdAt)}</Text>
-                      </Table.Cell>
-                      <Table.Cell textAlign="center">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          colorScheme="purple"
-                          onClick={() => navigate(`/alerts/${alert.id}`)}
-                        >
-                          <Icon as={FaEye} />
-                        </Button>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
-                </Table.Body>
-              </Table.Root>
+        <Card.Root p={4}>
+          <Flex align="center" gap={4}>
+            <Box
+              p={3}
+              borderRadius="lg"
+              bg="blue.100"
+              _dark={{ bg: 'blue.900' }}
+            >
+              <FaPaw size={24} color="var(--chakra-colors-blue-500)" />
             </Box>
-          )}
-        </VStack>
+            <Box>
+              <Text fontSize="sm" color="gray.500">Total Pets</Text>
+              <Text fontSize="2xl" fontWeight="bold">{stats.totalPets}</Text>
+            </Box>
+          </Flex>
+        </Card.Root>
+
+        <Card.Root p={4}>
+          <Flex align="center" gap={4}>
+            <Box
+              p={3}
+              borderRadius="lg"
+              bg="green.100"
+              _dark={{ bg: 'green.900' }}
+            >
+              <FaBell size={24} color="var(--chakra-colors-green-500)" />
+            </Box>
+            <Box>
+              <Text fontSize="sm" color="gray.500">Total Alerts</Text>
+              <Text fontSize="2xl" fontWeight="bold">{stats.totalAlerts}</Text>
+            </Box>
+          </Flex>
+        </Card.Root>
+
+        <Card.Root p={4}>
+          <Flex align="center" gap={4}>
+            <Box
+              p={3}
+              borderRadius="lg"
+              bg="red.100"
+              _dark={{ bg: 'red.900' }}
+            >
+              <FaExclamationTriangle size={24} color="var(--chakra-colors-red-500)" />
+            </Box>
+            <Box>
+              <Text fontSize="sm" color="gray.500">Open Alerts</Text>
+              <Text fontSize="2xl" fontWeight="bold">{stats.openAlerts}</Text>
+            </Box>
+          </Flex>
+        </Card.Root>
+      </SimpleGrid>
+
+      {/* Tabs */}
+      <Card.Root p={6} boxShadow="sm">
+        <Tabs.Root value={activeTab} onValueChange={(e) => setActiveTab(e.value)}>
+          <Tabs.List mb={6}>
+            <Tabs.Trigger value="alerts">
+              <HStack gap={2}>
+                <FaBell />
+                <Text>Alerts</Text>
+                <Box
+                  px={2}
+                  py={0.5}
+                  borderRadius="full"
+                  bg="gray.100"
+                  _dark={{ bg: 'gray.700' }}
+                  fontSize="xs"
+                >
+                  {stats.totalAlerts}
+                </Box>
+              </HStack>
+            </Tabs.Trigger>
+            <Tabs.Trigger value="users">
+              <HStack gap={2}>
+                <FaUsers />
+                <Text>Users</Text>
+                <Box
+                  px={2}
+                  py={0.5}
+                  borderRadius="full"
+                  bg="gray.100"
+                  _dark={{ bg: 'gray.700' }}
+                  fontSize="xs"
+                >
+                  {stats.totalUsers}
+                </Box>
+              </HStack>
+            </Tabs.Trigger>
+            <Tabs.Trigger value="pets">
+              <HStack gap={2}>
+                <FaPaw />
+                <Text>Pets</Text>
+                <Box
+                  px={2}
+                  py={0.5}
+                  borderRadius="full"
+                  bg="gray.100"
+                  _dark={{ bg: 'gray.700' }}
+                  fontSize="xs"
+                >
+                  {stats.totalPets}
+                </Box>
+              </HStack>
+            </Tabs.Trigger>
+          </Tabs.List>
+
+          <Tabs.Content value="alerts">
+            <AlertsTab />
+          </Tabs.Content>
+
+          <Tabs.Content value="users">
+            <UsersTab users={users} onRefresh={refreshData} />
+          </Tabs.Content>
+
+          <Tabs.Content value="pets">
+            <PetsTab pets={pets} onRefresh={refreshData} />
+          </Tabs.Content>
+        </Tabs.Root>
       </Card.Root>
     </VStack>
   )

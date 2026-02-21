@@ -20,7 +20,7 @@ function StatCard({ icon, label, value, color, onClick }: StatCardProps) {
     <Card.Root 
       p={6} 
       boxShadow="sm" 
-      cursor={onClick ? "pointer" : "default"}
+      cursor={onClick ? "pointer" : "default"}la app
       _hover={onClick ? { boxShadow: 'md', transform: 'translateY(-2px)' } : undefined}
       transition="all 0.2s"
       onClick={onClick}
