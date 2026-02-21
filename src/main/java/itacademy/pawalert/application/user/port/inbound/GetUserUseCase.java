@@ -5,6 +5,7 @@ import itacademy.pawalert.domain.user.model.Email;
 import itacademy.pawalert.domain.user.model.Surname;
 import itacademy.pawalert.domain.user.model.Username;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface GetUserUseCase {
@@ -16,4 +17,6 @@ public interface GetUserUseCase {
    boolean existsBySurname(Surname surname);
    boolean existsByEmail(Email email);
    User getBySurname(Surname surname);
+   List<User> getAllUsers();
+
 }

@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -69,7 +70,6 @@ public class UserService implements
 
     @Override
     public User updatePhonenumber(UUID userId, PhoneNumber phoneNumber) {
-
         return userRepositoryPort.updatePhoneNumber(userId,phoneNumber);
     }
 
@@ -82,6 +82,11 @@ public class UserService implements
     public User getBySurname(Surname surname) {
         return userRepositoryPort.findBySurname(surname)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + surname));
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepositoryPort.findAll();
     }
 
     @Override

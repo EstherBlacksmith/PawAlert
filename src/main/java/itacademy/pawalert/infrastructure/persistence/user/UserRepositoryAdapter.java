@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -192,6 +193,13 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     @Override
     public boolean existsByRole(Role role) {
         return jpaUserRepository.existsByRole(role);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return jpaUserRepository.findAll().stream()
+                .map(UserEntity::toDomain)
+                .toList();
     }
 
 }
