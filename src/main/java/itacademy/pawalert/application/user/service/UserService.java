@@ -4,6 +4,7 @@ import itacademy.pawalert.application.user.port.inbound.*;
 import itacademy.pawalert.application.user.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
+import itacademy.pawalert.domain.user.exception.CannotModifyLastAdminException;
 import itacademy.pawalert.domain.user.exception.UserNotFoundException;
 import itacademy.pawalert.domain.user.model.*;
 import itacademy.pawalert.infrastructure.rest.user.dto.RegistrationInput;
@@ -92,6 +93,11 @@ public class UserService implements
     }
 
     @Override
+    public long countByRole() {
+        return 0;
+    }
+
+    @Override
     public User getById(UUID userId) {
         return userRepositoryPort.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
@@ -108,6 +114,15 @@ public class UserService implements
     @Override
     public void deleteById(UUID userId) {
         User user = getById(userId);
+        // Security check: Cannot delete the last admin
+        if (user.role() == Role.ADMIN) {
+            long adminCount = userRepositoryPort.countByRole(Role.ADMIN);
+            if (adminCount <= 1) {
+                throw new CannotModifyLastAdminException(
+                        "Cannot delete the last admin user. At least one admin must exist."
+                );
+            }
+        }
         userRepositoryPort.delete(user);
     }
 
@@ -233,9 +248,19 @@ public class UserService implements
 
     @Override
     public User updateRole(UUID userId, Role newRole) {
+
         logger.info("updateRole called for userId: {} with newRole: {}", userId, newRole);
         User user = getById(userId);
         logger.info("Current user role before update: {}", user.role());
+        // Security check: Cannot demote the last admin
+        if (user.role() == Role.ADMIN && newRole == Role.USER) {
+            long adminCount = userRepositoryPort.countByRole(Role.ADMIN);
+            if (adminCount <= 1) {
+                throw new CannotModifyLastAdminException(
+                        "Cannot demote the last admin user. At least one admin must exist."
+                );
+            }
+        }
 
         user = user.withRole(newRole);
         logger.info("User role after withRole: {}", user.role());

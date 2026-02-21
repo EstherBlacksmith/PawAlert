@@ -22,5 +22,5 @@ public interface GetUserUseCase {
     User getBySurname(Surname surname);
 
     List<User> getAllUsers();
-
+    long countByRole();
 }
