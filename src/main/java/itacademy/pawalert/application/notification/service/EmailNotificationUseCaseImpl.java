@@ -53,7 +53,8 @@ public class EmailNotificationUseCaseImpl implements EmailNotificationUseCase {
         Pet pet = getPetUseCase.getPetById(alert.getPetId());
 
         String subject = formatter.formatEmailSubject(newStatus);
-        String body = formatter.formatStatusChangeMessage(alert, pet, newStatus);
+        // Use formatEmailBody to get HTML with pet image
+        String body = formatter.formatEmailBody(alert, pet, newStatus, newStatus);
 
         emailService.sendToUser(user.getEmail().value(), subject, body);
     }
