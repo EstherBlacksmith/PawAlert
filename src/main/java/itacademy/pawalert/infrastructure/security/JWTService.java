@@ -11,7 +11,7 @@ import java.util.Date;
 @Component
 public class JWTService {
 
-    private static final long EXPIRATION = 3600000; // 1 hour
+    private static final long EXPIRATION = 86400000; // 24 hours
     private static final String SECRET = "miClaveSecretaQueDebeSerMuyLarga123456";
 
     //This method is for generate the token only with the username
