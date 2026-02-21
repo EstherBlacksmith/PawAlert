@@ -21,7 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/alerts")
 public class AlertController {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AlertController.class);
 
     private final CreateAlertUseCase createAlertUseCase;
@@ -107,7 +107,7 @@ public class AlertController {
     public ResponseEntity<AlertDTO> closeAlert(
             @PathVariable String id,
             @Valid @RequestBody CloseAlertRequest request) {
-        
+
         GeographicLocation location = request.getLocation();
 
         logger.debug("Closing alert {} with reason: {}", id, request.getClosureReason());
@@ -131,7 +131,7 @@ public class AlertController {
         // Prevent closing through this endpoint
         if (request.getNewStatus() == StatusNames.CLOSED) {
             throw new IllegalArgumentException(
-                "Use POST /api/alerts/{id}/close to close an alert with a closure reason");
+                    "Use POST /api/alerts/{id}/close to close an alert with a closure reason");
         }
 
         logger.debug("Changing alert {} status to: {}", id, request.getNewStatus());
@@ -186,7 +186,7 @@ public class AlertController {
     ) {
 
         List<Alert> alerts = searchAlertsUseCase.search(
-                status, title, petName, species,breed,
+                status, title, petName, species, breed,
                 createdFrom, createdTo,
                 updatedFrom, updatedTo
         );

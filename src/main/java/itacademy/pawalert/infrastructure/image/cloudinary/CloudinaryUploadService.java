@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class CloudinaryUploadService  implements ImageUploader {
+public class CloudinaryUploadService implements ImageUploader {
 
     private final Cloudinary cloudinary;
 

@@ -1,31 +1,27 @@
 package itacademy.pawalert.infrastructure.notification.telegram;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class TelegramNotificationService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TelegramNotificationService.class);
+    private final RestTemplate restTemplate;
     @Value("${telegram.bot.token}")
     private String botToken;
-
     // Keep this for backward compatibility
     @Value("${telegram.bot.chat_id}")
     private String chatId;
-
-    private final RestTemplate restTemplate;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(TelegramNotificationService.class);
 
     public TelegramNotificationService() {
         this.restTemplate = new RestTemplate();
@@ -51,7 +47,7 @@ public class TelegramNotificationService {
         LOGGER.info("URL: {}", url);
         LOGGER.info("Chat ID: {}", chatId);
     }
-    
+
     public void sendPhotoWithCaption(String chatId, String photoUrl, String caption) {
         String url = "https://api.telegram.org/bot" + botToken + "/sendPhoto";
 

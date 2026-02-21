@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Component
 public class AlertRepositoryAdapter implements AlertRepositoryPort {
-    
+
     private final AlertRepository alertRepository;
 
     public AlertRepositoryAdapter(AlertRepository alertRepository) {

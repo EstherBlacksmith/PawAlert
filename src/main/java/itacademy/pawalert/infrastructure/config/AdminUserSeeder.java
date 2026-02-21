@@ -12,22 +12,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 /**
  * Seeder component that creates an initial admin user from environment variables.
-
- * 
+ * <p>
+ * <p>
  * Configuration properties:
  * - app.admin.username: Admin username (default: admin)
  * - app.admin.password: Admin password (required for seeding)
  * - app.admin.email: Admin email (default: admin@pawalert.local)
  * - app.admin.surname: Admin surname/display name (default: Administrator)
  * - app.admin.phone: Admin phone number (default: +34600000000)
- * 
+ * <p>
  * The seeder only runs when:
  * 1. The property app.admin.auto-create is set to true
  * 2. No user with ADMIN role already exists
@@ -78,21 +77,21 @@ public class AdminUserSeeder implements CommandLineRunner {
 
             // Create admin user
             User adminUser = new User(
-                UUID.randomUUID(),
-                username,
-                Email.of(adminEmail),
-                Surname.of(adminSurname),
-                PhoneNumber.of(adminPhone),
-                Role.ADMIN,
-                null // telegramChatId
+                    UUID.randomUUID(),
+                    username,
+                    Email.of(adminEmail),
+                    Surname.of(adminSurname),
+                    PhoneNumber.of(adminPhone),
+                    Role.ADMIN,
+                    null // telegramChatId
             );
 
             // Save with plain password (the repository will hash it)
             userRepository.saveWithPlainPassword(adminUser, adminPassword);
-            
+
             log.info("Admin user '{}' created successfully with email '{}'", adminUsername, adminEmail);
             log.info("IMPORTANT: Please change the default admin password after first login!");
-            
+
         } catch (IllegalArgumentException e) {
             log.error("Failed to create admin user due to invalid configuration: {}", e.getMessage());
         } catch (Exception e) {

@@ -6,4 +6,5 @@ public record AlertStatusChangedEvent(
         UUID alertId,
         StatusNames oldStatus,
         StatusNames newStatus
-) {}
+) {
+}

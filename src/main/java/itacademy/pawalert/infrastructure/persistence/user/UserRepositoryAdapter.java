@@ -5,7 +5,6 @@ import itacademy.pawalert.application.user.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.UserWithPassword;
-
 import itacademy.pawalert.domain.user.model.Email;
 import itacademy.pawalert.domain.user.model.PhoneNumber;
 import itacademy.pawalert.domain.user.model.Surname;
@@ -64,11 +63,11 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public User save(User user) {
-        String passwordHash = jpaUserRepository.findById(user.getId().toString())
+        String passwordHash = jpaUserRepository.findById(user.id().toString())
                 .map(UserEntity::getPasswordHash)
                 .orElse(null);
 
-        UserEntity entity = toEntity(user,passwordHash);
+        UserEntity entity = toEntity(user, passwordHash);
         UserEntity saved = jpaUserRepository.save(entity);
 
         return saved.toDomain();
@@ -95,6 +94,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     public boolean existsBySurname(Surname surname) {
         return jpaUserRepository.existsBySurname(String.valueOf(surname));
     }
+
     @Override
     public boolean existsByEmail(Email email) {
         return jpaUserRepository.existsByEmail(String.valueOf(email));
@@ -102,7 +102,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public void delete(User user) {
-        jpaUserRepository.deleteById(user.getId().toString());
+        jpaUserRepository.deleteById(user.id().toString());
     }
 
     @Override
@@ -114,19 +114,20 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     private UserEntity toEntity(User user, String passwordHash) {
         return new UserEntity(
-                user.getId().toString(),
-                user.getUsername().value(),
-                user.getEmail().value(),
+                user.id().toString(),
+                user.username().value(),
+                user.email().value(),
                 passwordHash,
-                user.getSurname().value(),
-                user.getPhoneNumber().value(),
-                user.getRole(),
+                user.surname().value(),
+                user.phoneNumber().value(),
+                user.role(),
                 LocalDateTime.now(),
-                user.getTelegramChatId() != null ? user.getTelegramChatId().value() : null,
-                user.isEmailNotificationsEnabled(),
-                user.isTelegramNotificationsEnabled()
+                user.telegramChatId() != null ? user.telegramChatId().value() : null,
+                user.emailNotificationsEnabled(),
+                user.telegramNotificationsEnabled()
         );
     }
+
     @Override
     public User saveWithPasswordHash(User user, String passwordHash) {
         UserEntity entity = toEntity(user, passwordHash);
@@ -187,7 +188,6 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         UserEntity saved = jpaUserRepository.save(entity);
         return saved.toDomain();
     }
-
 
 
     @Override

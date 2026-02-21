@@ -1,7 +1,7 @@
 package itacademy.pawalert.infrastructure.persistence.pet;
 
 import itacademy.pawalert.application.pet.port.outbound.PetRepositoryPort;
-import itacademy.pawalert.domain.pet.model.*;
+import itacademy.pawalert.domain.pet.model.Pet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

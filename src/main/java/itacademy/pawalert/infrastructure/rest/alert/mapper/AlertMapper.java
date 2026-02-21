@@ -1,10 +1,9 @@
-
 package itacademy.pawalert.infrastructure.rest.alert.mapper;
 
 import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPort;
 import itacademy.pawalert.domain.alert.model.*;
-import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
 import itacademy.pawalert.domain.user.User;
+import itacademy.pawalert.infrastructure.rest.alert.dto.AlertDTO;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertEventDTO;
 import itacademy.pawalert.infrastructure.rest.alert.dto.AlertWithContactDTO;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,7 @@ import java.util.UUID;
 
 @Component
 public class AlertMapper {
-    
+
     private final AlertEventRepositoryPort eventRepository;
 
     public AlertMapper(AlertEventRepositoryPort eventRepository) {
@@ -26,7 +25,7 @@ public class AlertMapper {
         AlertEvent latestEvent = eventRepository
                 .findLatestByAlertId(alert.getId())
                 .orElse(null);
-        
+
         GeographicLocation location = latestEvent != null ? latestEvent.getLocation() : null;
 
         // Get closure reason from the closure event (if alert is closed)
@@ -75,10 +74,11 @@ public class AlertMapper {
                 alert.getTitle(),
                 alert.getDescription(),
                 alert.currentStatus().getStatusName(),
-                creator.getPhoneNumber(),
-                creator.getSurname()
+                creator.phoneNumber(),
+                creator.surname()
         );
     }
+
     public List<AlertDTO> toDTOList(List<Alert> alerts) {
         return alerts.stream()
                 .map(this::toDTO)

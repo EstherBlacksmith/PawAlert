@@ -49,7 +49,7 @@ public class PetMapper {
                 pet.getPetId().toString(),
                 pet.getUserId().toString(),
                 pet.getChipNumber().value(),
-                pet.getWorkingPetName().value() ,
+                pet.getWorkingPetName().value(),
                 pet.getSpecies().name(),
                 pet.getBreed().value(),
                 pet.getSize().name(),

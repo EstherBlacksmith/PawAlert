@@ -6,5 +6,6 @@ import java.util.UUID;
 
 public interface DeleteUserUseCase {
     void deleteByEmail(Email email);
+
     void deleteById(UUID userId);
 }

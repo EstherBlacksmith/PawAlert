@@ -6,5 +6,6 @@ import itacademy.pawalert.infrastructure.rest.user.dto.RegistrationInput;
 
 public interface CreateUserUseCase {
     User register(RegistrationInput input);
+
     boolean existsByEmail(Email email);
 }

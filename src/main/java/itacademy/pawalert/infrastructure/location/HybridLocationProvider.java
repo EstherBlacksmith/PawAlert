@@ -9,7 +9,7 @@ public class HybridLocationProvider {
     private final IpLocationService ipLocationService;
     private GeographicLocation cachedGpsLocation;
 
-    public HybridLocationProvider( IpLocationService ipLocationService) {
+    public HybridLocationProvider(IpLocationService ipLocationService) {
         this.ipLocationService = ipLocationService;
     }
 

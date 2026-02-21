@@ -10,4 +10,5 @@ public record AuthResponse(
         String role,
         String phonenumber,
         String surname
-) {}
+) {
+}

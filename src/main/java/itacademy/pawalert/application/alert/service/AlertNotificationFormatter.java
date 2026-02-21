@@ -16,7 +16,8 @@ public class AlertNotificationFormatter {
     @Value("${app.frontend.url:http://localhost:5173}")
     private String frontendUrl;
 
-    public AlertNotificationFormatter() {}
+    public AlertNotificationFormatter() {
+    }
 
     public String formatStatusChangeMessage(Alert alert, Pet pet, StatusNames newStatus) {
 
@@ -48,17 +49,17 @@ public class AlertNotificationFormatter {
         String statusDisplayNew = getStatusDisplayName(newStatus);
         String statusDisplayOld = getStatusDisplayName(oldStatus);
         String timestamp = new SimpleDateFormat("dd/MM/yyyy HH:mm", new Locale("es", "ES")).format(new Date());
-        
+
         // Build status badge color
         String statusColor = getStatusColor(newStatus);
-        
+
         // Build pet description
         String petDescription = pet.getPetDescription() != null ? pet.getPetDescription().value() : "";
-        
+
         StringBuilder details = new StringBuilder();
         details.append("<li><strong>📋 Previous status:</strong> ").append(statusDisplayOld).append("</li>");
         details.append("<li><strong>✅ New status:</strong> <span style='color:").append(statusColor).append("'>").append(statusDisplayNew).append("</span></li>");
-        
+
         if (species != null && !species.isEmpty()) {
             details.append("<li><strong>🐕 Species:</strong> ").append(species).append("</li>");
         }
@@ -74,10 +75,10 @@ public class AlertNotificationFormatter {
         if (petDescription != null && !petDescription.isEmpty()) {
             details.append("<li><strong>📋 Pet notes:</strong> ").append(petDescription).append("</li>");
         }
-        
+
         // Build image HTML
         String imageHtml = getPetImageHtml(petImageUrl, petName);
-        
+
         return "<!DOCTYPE html>\n" +
                 "<html>\n" +
                 "<head>\n" +
@@ -113,7 +114,7 @@ public class AlertNotificationFormatter {
                 "                <div class='status-badge' style='background: " + statusColor + "; color: white;'>" + statusDisplayNew + "</div>\n" +
                 "            </div>\n" +
                 "            <ul class='details'>\n" +
-                "                " + details.toString() + "\n" +
+                "                " + details + "\n" +
                 "            </ul>\n" +
                 "            <div style='text-align: center;'>\n" +
                 "                <a href='" + alertUrl + "' class='button'>View Alert Details</a>\n" +
@@ -127,22 +128,22 @@ public class AlertNotificationFormatter {
                 "</body>\n" +
                 "</html>";
     }
-    
+
     private String getPetImageHtml(String petImageUrl, String petName) {
         if (petImageUrl == null || petImageUrl.isEmpty()) {
             return "<div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 150px; height: 150px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 10px auto; font-size: 60px;'>🐾</div>";
         }
-        
+
         // Check if it's a base64 image
         if (petImageUrl.startsWith("data:")) {
             // Use base64 directly
             return "<img src='" + petImageUrl + "' alt='Photo of " + petName + "' style='max-width: 200px; max-height: 200px; border-radius: 12px; margin: 10px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);' />";
         }
-        
+
         // Otherwise it's a URL (Cloudinary or other)
         return "<img src='" + petImageUrl + "' alt='Photo of " + petName + "' style='max-width: 200px; max-height: 200px; border-radius: 12px; margin: 10px 0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);' />";
     }
-    
+
     private String getStatusDisplayName(StatusNames status) {
         if (status == null) return "Unknown";
         return switch (status) {
@@ -153,7 +154,7 @@ public class AlertNotificationFormatter {
             default -> status.getDisplayName();
         };
     }
-    
+
     private String getStatusColor(StatusNames status) {
         if (status == null) return "#718096";
         return switch (status) {
@@ -164,7 +165,7 @@ public class AlertNotificationFormatter {
             default -> "#718096";
         };
     }
-    
+
     public String formatTelegramMessage(Alert alert, Pet pet, StatusNames newStatus) {
         String petImageUrl = pet.getPetImage() != null ? pet.getPetImage().value() : null;
         String petName = pet.getOfficialPetName().value();
@@ -174,37 +175,37 @@ public class AlertNotificationFormatter {
         String alertUrl = frontendUrl + "/alerts/" + alertId;
         String statusDisplay = getStatusDisplayName(newStatus);
         String statusEmoji = getStatusEmoji(newStatus);
-        
+
         // Check if image is base64
         boolean isBase64 = petImageUrl != null && petImageUrl.startsWith("data:");
-        
+
         StringBuilder message = new StringBuilder();
         message.append("🔔 <b>NEW ALERT UPDATE</b>\n\n");
-        
+
         // Only add photo link if it's a URL, not base64
         if (petImageUrl != null && !petImageUrl.isEmpty() && !isBase64) {
             message.append("📷 <a href=\"").append(petImageUrl).append("\">View photo of ").append(petName).append("</a>\n\n");
         }
-        
+
         message.append("🐾 <b>").append(petName).append("</b>\n");
         message.append("━━━━━━━━━━━━━━━━━━━━━━\n");
         message.append("📋 <b>Status:</b> ").append(statusEmoji).append(" ").append(statusDisplay).append("\n");
-        
+
         if (species != null && !species.isEmpty()) {
             message.append("🐕 <b>Type:</b> ").append(species).append("\n");
         }
-        
+
         if (description != null && !description.isEmpty()) {
             message.append("📝 <b>Description:</b> ").append(description).append("\n");
         }
-        
+
         message.append("━━━━━━━━━━━━━━━━━━━━━━\n");
         message.append("🔗 <a href=\"").append(alertUrl).append("\">View alert details</a>\n\n");
         message.append("<i>🐾 PawAlert - Helping find lost pets</i>");
-        
+
         return message.toString();
     }
-    
+
     private String getStatusEmoji(StatusNames status) {
         if (status == null) return "⚪";
         return switch (status) {

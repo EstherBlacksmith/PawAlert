@@ -3,15 +3,14 @@ package itacademy.pawalert.infrastructure.rest.image.controller;
 
 import itacademy.pawalert.application.image.service.ImageUploadService;
 import itacademy.pawalert.application.image.service.ImageValidationService;
-import itacademy.pawalert.domain.image.model.ImageClassificationResult;
 import itacademy.pawalert.domain.image.model.ImageValidationResult;
 import itacademy.pawalert.domain.image.model.PetAnalysisResult;
 import itacademy.pawalert.domain.image.port.inbound.PetImageAnalyzer;
-import itacademy.pawalert.infrastructure.image.google.GoogleVisionService;
-
 import org.springframework.http.ResponseEntity;
-
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -44,7 +43,7 @@ public class ImageController {
                                          @RequestParam String folder) {
         String url = uploadService.upload(file, folder);
 
-         return ResponseEntity.ok(url);
+        return ResponseEntity.ok(url);
     }
 
     @PostMapping("/analyze")
@@ -64,13 +63,13 @@ public class ImageController {
     public ResponseEntity<Map<String, Object>> classify(@RequestParam MultipartFile file) {
         try {
             PetAnalysisResult result = petImageAnalyzer.analyze(file.getBytes());
-            
+
             Map<String, Object> response = new HashMap<>();
-            
+
             if (result.isValidPet() && result.species() != null) {
                 String species = result.species().toLowerCase();
                 String classification;
-                
+
                 if (species.contains("dog") || species.contains("canine")) {
                     classification = "dog";
                 } else if (species.contains("cat") || species.contains("feline")) {
@@ -78,19 +77,19 @@ public class ImageController {
                 } else {
                     classification = "unknown";
                 }
-                
+
                 response.put("classification", classification);
                 response.put("confidence", result.speciesConfidence());
                 response.put("message", "Imagen clasificada como " + classification);
             } else {
                 response.put("classification", "unknown");
                 response.put("confidence", 0.0);
-                response.put("message", result.validationMessage() != null ? 
-                    result.validationMessage() : "No se detectó una mascota válida");
+                response.put("message", result.validationMessage() != null ?
+                        result.validationMessage() : "No se detectó una mascota válida");
             }
-            
+
             return ResponseEntity.ok(response);
-            
+
         } catch (IOException e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("classification", "error");

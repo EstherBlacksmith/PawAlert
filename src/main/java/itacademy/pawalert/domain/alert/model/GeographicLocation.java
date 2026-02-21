@@ -1,7 +1,8 @@
 package itacademy.pawalert.domain.alert.model;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import itacademy.pawalert.domain.alert.exception.InvalidLatitudeException;
 import itacademy.pawalert.domain.alert.exception.InvalidLongitudeException;
-import com.fasterxml.jackson.annotation.JsonCreator;
 
 public record GeographicLocation(
         double latitude,
@@ -26,10 +27,16 @@ public record GeographicLocation(
             throw new InvalidLatitudeException("Invalid latitude: " + latitude);
         }
     }
+
     private static void validateLongitude(double longitude) {
         if (Double.isNaN(longitude) || longitude < MIN_LONGITUDE || longitude > MAX_LONGITUDE) {
             throw new InvalidLongitudeException("Invalid longitude: " + longitude);
         }
+    }
+
+    //Factory method
+    public static GeographicLocation of(double latitude, double longitude) {
+        return new GeographicLocation(latitude, longitude);
     }
 
     // Haversine formula
@@ -49,11 +56,6 @@ public record GeographicLocation(
 
     public boolean isWithinRadius(GeographicLocation center, double radiusKm) {
         return distanceTo(center) <= radiusKm;
-    }
-
-    //Factory method
-    public static GeographicLocation of(double latitude, double longitude) {
-        return new GeographicLocation(latitude, longitude);
     }
 
     @Override

@@ -2,7 +2,6 @@ package itacademy.pawalert.infrastructure.persistence.alert;
 
 import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
-
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -41,7 +40,7 @@ public class AlertSubscriptionRepositoryAdapter implements AlertSubscriptionRepo
 
     @Override
     public boolean existsByAlertIdAndUserId(UUID alertId, UUID userId) {
-        return jpaRepository.existsByAlertIdAndUserId(alertId,userId);
+        return jpaRepository.existsByAlertIdAndUserId(alertId, userId);
     }
 
     @Override

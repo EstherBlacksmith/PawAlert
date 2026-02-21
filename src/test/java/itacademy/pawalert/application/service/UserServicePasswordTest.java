@@ -174,8 +174,8 @@ class UserServicePasswordTest {
 
             // Then
             assertNotNull(result);
-            assertEquals("testuser", result.getUsername().value());
-            assertEquals(testEmail, result.getEmail().value());
+            assertEquals("testuser", result.username().value());
+            assertEquals(testEmail, result.email().value());
             verify(passwordEncoder).encode(testPassword);
             verify(userRepository).saveWithPasswordHash(any(User.class), eq(hashedPassword));
         }
@@ -224,7 +224,7 @@ class UserServicePasswordTest {
             User result = userService.register(input);
 
             // Then
-            assertEquals(Role.USER, result.getRole());
+            assertEquals(Role.USER, result.role());
         }
     }
 

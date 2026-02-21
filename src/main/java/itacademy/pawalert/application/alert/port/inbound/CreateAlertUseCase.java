@@ -1,4 +1,5 @@
 package itacademy.pawalert.application.alert.port.inbound;
+
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.Description;
 import itacademy.pawalert.domain.alert.model.GeographicLocation;

@@ -8,14 +8,14 @@ public class AlertEventFactory {
 
     // Factory method for status changes
     public static AlertEvent createStatusChangedEvent(
-            Alert alert, StatusNames previousStatus, StatusNames newStatus, UUID userId, GeographicLocation location ){
+            Alert alert, StatusNames previousStatus, StatusNames newStatus, UUID userId, GeographicLocation location) {
 
         return AlertEvent.createStatusEvent(alert.getId(), previousStatus, newStatus, userId, location, ChangedAt.now());
     }
 
     // Factory method for closure events (includes closure reason)
     public static AlertEvent createClosureEvent(
-            Alert alert, StatusNames previousStatus, UUID userId, GeographicLocation location, ClosureReason closureReason ){
+            Alert alert, StatusNames previousStatus, UUID userId, GeographicLocation location, ClosureReason closureReason) {
 
         return AlertEvent.createClosureEvent(alert.getId(), previousStatus, userId, location, closureReason, ChangedAt.now());
     }

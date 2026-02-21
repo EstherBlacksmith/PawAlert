@@ -1,21 +1,21 @@
 package itacademy.pawalert.infrastructure.rest.pet.controller;
 
+import itacademy.pawalert.application.exception.UnauthorizedException;
 import itacademy.pawalert.application.pet.port.inbound.*;
-import itacademy.pawalert.domain.pet.model.*;
+import itacademy.pawalert.domain.pet.model.Pet;
 import itacademy.pawalert.domain.pet.specification.PetSpecifications;
 import itacademy.pawalert.infrastructure.rest.pet.dto.*;
 import itacademy.pawalert.infrastructure.rest.pet.mapper.PetMapper;
+import itacademy.pawalert.infrastructure.security.UserDetailsAdapter;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import itacademy.pawalert.infrastructure.security.UserDetailsAdapter;
-import itacademy.pawalert.application.exception.UnauthorizedException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -53,7 +53,7 @@ public class PetController {
             @Valid @RequestBody CreatePetRequest request) {
 
         String userId = getCurrentUserId();
-        
+
         // Create a new request with the authenticated user's ID
         CreatePetRequest requestWithUser = new CreatePetRequest(
                 userId,
@@ -68,7 +68,7 @@ public class PetController {
                 request.petDescription(),
                 request.petImage()
         );
-        
+
         Pet pet = createPetUseCase.createPet(requestWithUser);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(petMapper.toResponse(pet));
@@ -99,14 +99,14 @@ public class PetController {
 
     private String getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth == null || !auth.isAuthenticated()){
+        if (auth == null || !auth.isAuthenticated()) {
             throw new UnauthorizedException("User not authenticated");
         }
 
         Object principal = auth.getPrincipal();
 
-        if(principal instanceof UserDetailsAdapter){
-            return ((UserDetailsAdapter)principal).getUser().getId().toString();
+        if (principal instanceof UserDetailsAdapter) {
+            return ((UserDetailsAdapter) principal).getUser().id().toString();
         }
         throw new UnauthorizedException("Invalid authentication principal");
     }

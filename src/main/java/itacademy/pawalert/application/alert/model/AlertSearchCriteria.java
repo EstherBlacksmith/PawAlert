@@ -1,6 +1,7 @@
 package itacademy.pawalert.application.alert.model;
 
 import itacademy.pawalert.domain.alert.model.StatusNames;
+
 import java.time.LocalDateTime;
 
 public record AlertSearchCriteria(
@@ -15,6 +16,6 @@ public record AlertSearchCriteria(
         LocalDateTime updatedTo
 ) {
     public static AlertSearchCriteria empty() {
-        return new AlertSearchCriteria(null, null, null,null, null, null, null, null, null);
+        return new AlertSearchCriteria(null, null, null, null, null, null, null, null, null);
     }
 }

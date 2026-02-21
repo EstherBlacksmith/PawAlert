@@ -25,8 +25,8 @@ public class MailTestController {
         // Usamos sendHtmlEmail que es más flexible
         emailService.sendToUser(request.getTo(), request.getSubject(), request.getContent());
         return ResponseEntity.ok(Map.of(
-            "status", "success",
-            "message", "Email enviado correctamente a " + request.getTo()
+                "status", "success",
+                "message", "Email enviado correctamente a " + request.getTo()
         ));
     }
 
@@ -36,15 +36,15 @@ public class MailTestController {
     @PostMapping("/test")
     public ResponseEntity<Map<String, String>> sendTestEmail() {
         try {
-            emailService.sendToUser("arikhel@gmail.com","Contenido de prueba","Contenido de prueba");
+            emailService.sendToUser("arikhel@gmail.com", "Contenido de prueba", "Contenido de prueba");
             return ResponseEntity.ok(Map.of(
-                "status", "success",
-                "message", "Email de prueba enviado"
+                    "status", "success",
+                    "message", "Email de prueba enviado"
             ));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
-                "status", "error",
-                "message", "Error: " + e.getMessage()
+                    "status", "error",
+                    "message", "Error: " + e.getMessage()
             ));
         }
     }

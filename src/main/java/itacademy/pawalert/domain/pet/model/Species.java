@@ -5,8 +5,14 @@ import lombok.Getter;
 import java.util.Arrays;
 
 @Getter
-public enum Species implements  PetDisplayableEnum{
+public enum Species implements PetDisplayableEnum {
     CAT("Cat"), DOG("Dog"), BUNNY("Bunny"), FERRET("Ferret"), TURTLE("Turtle"), BIRD("Bird");
+
+    private final String value;
+
+    Species(String value) {
+        this.value = value;
+    }
 
     public static Species fromString(String value) {
         if (value == null || value.isBlank()) {
@@ -20,12 +26,6 @@ public enum Species implements  PetDisplayableEnum{
                             Arrays.toString(values())
             );
         }
-    }
-
-    private final String value;
-
-    Species(String value) {
-        this.value = value;
     }
 
     @Override

@@ -15,15 +15,15 @@ public enum StatusNames implements AlertDisplayableEnum {
         this.value = value;
     }
 
-    @Override
-    public String getDisplayName() {
-        return value;
-    }
-
     public static List<String> getActiveStatusNames() {
         return Arrays.stream(values())
                 .filter(status -> status != CLOSED)
                 .map(StatusNames::name)
                 .toList();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return value;
     }
 }

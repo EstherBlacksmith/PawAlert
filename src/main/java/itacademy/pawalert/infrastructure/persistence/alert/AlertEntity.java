@@ -36,8 +36,7 @@ public class AlertEntity {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "alert", cascade = CascadeType.ALL)
-    private List<AlertEventEntity> events = new ArrayList<>();
-
+    private final List<AlertEventEntity> events = new ArrayList<>();
 
 
     @Column(name = "deleted_at")

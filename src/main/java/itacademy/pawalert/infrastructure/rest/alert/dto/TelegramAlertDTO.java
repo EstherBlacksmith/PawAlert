@@ -20,4 +20,5 @@ public record TelegramAlertDTO(
         PetDescription petDescription,
         Username username,
         PhoneNumber phoneNumber
-) {}
+) {
+}
