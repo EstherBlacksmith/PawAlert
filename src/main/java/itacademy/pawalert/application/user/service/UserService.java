@@ -1,7 +1,7 @@
 package itacademy.pawalert.application.user.service;
 
-import itacademy.pawalert.application.user.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.application.user.port.inbound.*;
+import itacademy.pawalert.application.user.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.exception.UserNotFoundException;
@@ -9,7 +9,6 @@ import itacademy.pawalert.domain.user.model.*;
 import itacademy.pawalert.infrastructure.rest.user.dto.RegistrationInput;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 import java.util.List;
 import java.util.UUID;
@@ -36,8 +35,8 @@ public class UserService implements
 
         Username username = Username.of(input.username());
         Email email = Email.of(input.email());
-        Surname surname =  Surname.of(input.surname());
-        PhoneNumber phoneNumber =  PhoneNumber.of(input.phoneNumber());
+        Surname surname = Surname.of(input.surname());
+        PhoneNumber phoneNumber = PhoneNumber.of(input.phoneNumber());
 
 
         User user = new User(
@@ -70,7 +69,7 @@ public class UserService implements
 
     @Override
     public User updatePhonenumber(UUID userId, PhoneNumber phoneNumber) {
-        return userRepositoryPort.updatePhoneNumber(userId,phoneNumber);
+        return userRepositoryPort.updatePhoneNumber(userId, phoneNumber);
     }
 
     @Override
@@ -131,15 +130,15 @@ public class UserService implements
     public User updateUsername(UUID userId, Username newUsername) {
         User user = getById(userId);
         User updated = new User(
-                user.getId(),
+                user.id(),
                 newUsername,
-                user.getEmail(),
-                user.getSurname(),
-                user.getPhoneNumber(),
-                user.getRole(),
-                user.getTelegramChatId(),
-                user.isEmailNotificationsEnabled(),
-                user.isTelegramNotificationsEnabled()
+                user.email(),
+                user.surname(),
+                user.phoneNumber(),
+                user.role(),
+                user.telegramChatId(),
+                user.emailNotificationsEnabled(),
+                user.telegramNotificationsEnabled()
         );
         return userRepositoryPort.save(updated);
     }
@@ -148,15 +147,15 @@ public class UserService implements
     public User updateSurname(UUID userId, Surname newSurname) {
         User user = getById(userId);
         User updated = new User(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
+                user.id(),
+                user.username(),
+                user.email(),
                 newSurname,
-                user.getPhoneNumber(),
-                user.getRole(),
-                user.getTelegramChatId(),
-                user.isEmailNotificationsEnabled(),
-                user.isTelegramNotificationsEnabled()
+                user.phoneNumber(),
+                user.role(),
+                user.telegramChatId(),
+                user.emailNotificationsEnabled(),
+                user.telegramNotificationsEnabled()
         );
         return userRepositoryPort.save(updated);
     }
@@ -165,15 +164,15 @@ public class UserService implements
     public User updateEmail(UUID userId, Email newEmail) {
         User user = getById(userId);
         User updated = new User(
-                user.getId(),
-                user.getUsername(),
+                user.id(),
+                user.username(),
                 newEmail,
-                user.getSurname(),
-                user.getPhoneNumber(),
-                user.getRole(),
-                user.getTelegramChatId(),
-                user.isEmailNotificationsEnabled(),
-                user.isTelegramNotificationsEnabled()
+                user.surname(),
+                user.phoneNumber(),
+                user.role(),
+                user.telegramChatId(),
+                user.emailNotificationsEnabled(),
+                user.telegramNotificationsEnabled()
         );
         return userRepositoryPort.save(updated);
     }
@@ -182,15 +181,15 @@ public class UserService implements
     public User updateEmailNotifications(UUID userId, boolean emailNotificationsEnabled) {
         User user = getById(userId);
         User updated = new User(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getSurname(),
-                user.getPhoneNumber(),
-                user.getRole(),
-                user.getTelegramChatId(),
+                user.id(),
+                user.username(),
+                user.email(),
+                user.surname(),
+                user.phoneNumber(),
+                user.role(),
+                user.telegramChatId(),
                 emailNotificationsEnabled,
-                user.isTelegramNotificationsEnabled()
+                user.telegramNotificationsEnabled()
         );
         return userRepositoryPort.save(updated);
     }
@@ -199,14 +198,14 @@ public class UserService implements
     public User updateTelegramNotifications(UUID userId, boolean telegramNotificationsEnabled) {
         User user = getById(userId);
         User updated = new User(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getSurname(),
-                user.getPhoneNumber(),
-                user.getRole(),
-                user.getTelegramChatId(),
-                user.isEmailNotificationsEnabled(),
+                user.id(),
+                user.username(),
+                user.email(),
+                user.surname(),
+                user.phoneNumber(),
+                user.role(),
+                user.telegramChatId(),
+                user.emailNotificationsEnabled(),
                 telegramNotificationsEnabled
         );
         return userRepositoryPort.save(updated);
@@ -216,23 +215,30 @@ public class UserService implements
     public User updateTelegramChatId(UUID userId, TelegramChatId telegramChatId) {
         User user = getById(userId);
         User updated = new User(
-
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getSurname(),
-                user.getPhoneNumber(),
-                user.getRole(),
+                user.id(),
+                user.username(),
+                user.email(),
+                user.surname(),
+                user.phoneNumber(),
+                user.role(),
                 telegramChatId,
-                user.isEmailNotificationsEnabled(),
-                user.isTelegramNotificationsEnabled()
+                user.emailNotificationsEnabled(),
+                user.telegramNotificationsEnabled()
         );
         return userRepositoryPort.save(updated);
+    }
+
+    @Override
+    public User updateRole(UUID userId, Role newRole) {
+        User user = getById(userId);
+
+        user = user.withRole(newRole);
+        return userRepositoryPort.save(user);
     }
 
 
     public PhoneNumber getPhoneNumberById(UUID userId) {
         User user = getById(userId);
-        return user.getPhoneNumber();
+        return user.phoneNumber();
     }
 }

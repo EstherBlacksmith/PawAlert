@@ -1,10 +1,11 @@
 package itacademy.pawalert.infrastructure.rest.user.controller;
 
 import itacademy.pawalert.application.user.port.inbound.*;
+import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.model.*;
-import itacademy.pawalert.infrastructure.rest.user.dto.RegistrationInput;
 import itacademy.pawalert.infrastructure.rest.user.dto.ChangePasswordRequest;
+import itacademy.pawalert.infrastructure.rest.user.dto.RegistrationInput;
 import itacademy.pawalert.infrastructure.rest.user.dto.UpdateUserRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class UserController {
     }
 
     // ========== SPECIFIC ROUTES (MUST COME FIRST) ==========
-    
+
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody RegistrationInput request) {
         logger.debug("Register endpoint called with email: {}", request.email());
@@ -57,9 +58,9 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of(
-                        "id", saved.getId().toString(),
-                        "username", saved.getUsername(),
-                        "email", saved.getEmail()
+                        "id", saved.id().toString(),
+                        "username", saved.username(),
+                        "email", saved.email()
                 ));
     }
 
@@ -79,7 +80,7 @@ public class UserController {
     }
 
     // ========== PARAMETERIZED ROUTES (MUST COME LAST) ==========
-    
+
     @GetMapping("/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable String userId) {
         UUID convertedUserId = UUID.fromString(userId);
@@ -236,6 +237,10 @@ public class UserController {
             updateUserUseCase.updateTelegramNotifications(convertedUserId, request.telegramNotificationsEnabled());
         }
 
+        if (request.newRole() != null) {
+            Role newRole = Role.valueOf(request.newRole().toUpperCase());
+            updateUserUseCase.updateRole(convertedUserId, newRole);
+        }
 
         User updatedUser = getUserUseCase.getById(convertedUserId);
         return ResponseEntity.ok(updatedUser);
