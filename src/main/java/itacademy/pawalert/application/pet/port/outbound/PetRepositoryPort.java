@@ -19,4 +19,5 @@ public interface PetRepositoryPort {
     List<Pet> findAll(Specification<Pet> spec, Sort sort);
     Page<Pet> findAll(Specification<Pet> spec, Pageable pageable);
     List<Pet> findAllByUserId(UUID userId);
+    List<Pet> findAll();
 }

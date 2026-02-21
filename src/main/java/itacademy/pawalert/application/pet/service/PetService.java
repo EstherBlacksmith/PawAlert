@@ -166,6 +166,11 @@ public class PetService implements
     }
 
     @Override
+    public List<Pet> getAllPets() {
+        return petRepositoryPort.findAll();
+    }
+
+    @Override
     public ImageValidationResponse validateImage(MultipartFile file) {
         try {
             // Analyze the image

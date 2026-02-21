@@ -11,8 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -185,6 +187,42 @@ public class UserController {
         UUID convertedUserId = UUID.fromString(userId);
         deleteUserUseCase.deleteById(convertedUserId);
         return ResponseEntity.noContent().build();
+    }
+
+    // ========== ADMIN ENDPOINTS ==========
+
+    @GetMapping("/admin/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = getUserUseCase.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping("/admin/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteUserByAdmin(@PathVariable String id) {
+        UUID convertedUserId = UUID.fromString(id);
+        deleteUserUseCase.deleteById(convertedUserId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/admin/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<User> updateUserByAdmin(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateUserRequest request) {
+        UUID convertedUserId = UUID.fromString(id);
+
+        // Update fields if provided
+        if (request.newUsername() != null) {
+            updateUserUseCase.updateUsername(convertedUserId, Username.of(request.newUsername()));
+        }
+        if (request.newEmail() != null) {
+            updateUserUseCase.updateEmail(convertedUserId, Email.of(request.newEmail()));
+        }
+
+        User updatedUser = getUserUseCase.getById(convertedUserId);
+        return ResponseEntity.ok(updatedUser);
     }
 
 }

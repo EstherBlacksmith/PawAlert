@@ -1,6 +1,5 @@
 package itacademy.pawalert.application.user.port.outbound;
 
-import itacademy.pawalert.domain.pet.model.Pet;
 import itacademy.pawalert.domain.user.Role;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.UserWithPassword;
@@ -36,5 +35,9 @@ public interface UserRepositoryPort {
     boolean existsBySurname(Surname surname);
     String getPasswordHashById(UUID userId);
     boolean existsByRole(Role role);
+    List<User> findAll();
+
+
+
 
 }

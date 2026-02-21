@@ -68,4 +68,11 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
                 .map(PetEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<Pet> findAll() {
+        return petRepository.findAll().stream().
+                map(PetEntity::toDomain)
+                .toList();
+    }
 }

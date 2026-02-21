@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -169,5 +170,21 @@ public class PetController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+// ========== ADMIN ENDPOINTS ==========
 
+    @GetMapping("/admin/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<PetDTO>> getAllPets() {
+        List<Pet> pets = getPetUseCase.getAllPets();
+        return ResponseEntity.ok(petMapper.toDTOList(pets));
+    }
+
+    @DeleteMapping("/admin/{petId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deletePetByAdmin(@PathVariable String petId) {
+        UUID petIdConverted = UUID.fromString(petId);
+        // Pass null for userId - admin can delete any pet
+        deletePetUseCase.deletePetdById(petIdConverted, null);
+        return ResponseEntity.noContent().build();
+    }
 }

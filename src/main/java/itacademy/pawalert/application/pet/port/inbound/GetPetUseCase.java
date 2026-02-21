@@ -17,5 +17,5 @@ public interface GetPetUseCase  {
       List<Pet> searchPets(Specification<Pet> spec, Sort sort);
       Page<Pet> searchPets(Specification<Pet> spec, Pageable pageable);
 
-
+      List<Pet> getAllPets();
 }
