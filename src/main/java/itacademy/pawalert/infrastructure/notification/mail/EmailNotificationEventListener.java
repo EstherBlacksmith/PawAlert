@@ -10,11 +10,13 @@ import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertStatusChangedEvent;
 import itacademy.pawalert.domain.pet.model.Pet;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class EmailNotificationEventListener {
@@ -26,16 +28,30 @@ public class EmailNotificationEventListener {
 
     @EventListener
     public void handleAlertStatusChanged(AlertStatusChangedEvent event) {
+        log.info("[EMAIL-NOTIF] Event received: alertId={}, oldStatus={}, newStatus={}", 
+                event.alertId(), event.oldStatus(), event.newStatus());
 
         Alert alert = alertRepository.findById(event.alertId())
                 .orElseThrow(() -> new AlertNotFoundException("Alert not found: " + event.alertId()));
+        log.info("[EMAIL-NOTIF] Alert found: id={}, petId={}", alert.getId(), alert.getPetId());
+        
         Pet pet = petService.getPetById(alert.getPetId());
+        log.info("[EMAIL-NOTIF] Pet found: name={}", pet.getOfficialPetName());
 
         List<String> emails = notificationRepository.findSubscriberEmailsByAlertId(event.alertId());
+        log.info("[EMAIL-NOTIF] Found {} subscriber emails for alert {}", emails.size(), event.alertId());
+        
+        if (emails.isEmpty()) {
+            log.warn("[EMAIL-NOTIF] No subscribers with email notifications enabled for alert {}", event.alertId());
+            return;
+        }
+        
         String subject = formatter.formatEmailSubject(event.newStatus());
         String body = formatter.formatEmailBody(alert, pet, event.oldStatus(), event.newStatus());
+        log.info("[EMAIL-NOTIF] Sending emails to: {}", emails);
 
         for (String email : emails) {
+            log.info("[EMAIL-NOTIF] Sending email to: {}", email);
             emailService.sendToUser(email, subject, body);
         }
     }

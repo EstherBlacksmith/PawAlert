@@ -7,7 +7,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,6 +18,9 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 public class EmailServiceImpl implements EmailServicePort {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
+
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
     private final SpringTemplateEngine templateEngine;
     private final JavaMailSender mailSender;
@@ -36,15 +39,22 @@ public class EmailServiceImpl implements EmailServicePort {
 
     @Override
     public void sendToUser(String to, String subject, String htmlBody) {
-       try{ MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(htmlBody, true);
-        mailSender.send(message);
-        LOGGER.info("Email enviado a: {}", to);
+        LOGGER.info("[EMAIL-SERVICE] Attempting to send email to: {}, subject: {}, from: {}", to, subject, fromEmail);
+        try{ 
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
+            
+            LOGGER.info("[EMAIL-SERVICE] Calling mailSender.send()...");
+            mailSender.send(message);
+            LOGGER.info("[EMAIL-SERVICE] Email successfully sent to: {}", to);
         } catch (MessagingException e) {
-               LOGGER.error("Error sending email: {}", e.getMessage());
+            LOGGER.error("[EMAIL-SERVICE] MessagingException sending email to {}: {}", to, e.getMessage(), e);
+        } catch (Exception e) {
+            LOGGER.error("[EMAIL-SERVICE] Exception sending email to {}: {}", to, e.getMessage(), e);
         }
 
     }
