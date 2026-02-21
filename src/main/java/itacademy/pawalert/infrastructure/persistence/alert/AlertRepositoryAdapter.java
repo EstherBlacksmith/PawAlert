@@ -82,6 +82,9 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
         if (criteria.species() != null && !criteria.species().isBlank()) {
             spec = spec.and(AlertSpecifications.withPetSpecies(criteria.species()));
         }
+        if (criteria.breed() != null && !criteria.breed().isBlank()) {
+            spec = spec.and(AlertSpecifications.petBreedContains(criteria.breed()));
+        }
         if (criteria.createdFrom() != null) {
             spec = spec.and(AlertSpecifications.createdAfter(criteria.createdFrom()));
         }

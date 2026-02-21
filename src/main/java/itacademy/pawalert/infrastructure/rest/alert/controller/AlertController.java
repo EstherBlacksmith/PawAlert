@@ -178,6 +178,7 @@ public class AlertController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String petName,
             @RequestParam(required = false) String species,
+            @RequestParam(required = false) String breed,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdTo,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime updatedFrom,
@@ -185,7 +186,7 @@ public class AlertController {
     ) {
 
         List<Alert> alerts = searchAlertsUseCase.search(
-                status, title, petName, species,
+                status, title, petName, species,breed,
                 createdFrom, createdTo,
                 updatedFrom, updatedTo
         );
