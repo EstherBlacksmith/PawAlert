@@ -26,10 +26,18 @@ export default function Header() {
       zIndex={10}
     >
       <Flex justify="space-between" align="center">
-        <Flex align="center" flex={1} maxW="400px">
-          <Input placeholder="Search..." borderRadius="full" />
-        </Flex>
+        {/* Left side - Logo/Brand */}
+        <Text
+          fontSize="xl"
+          fontWeight="bold"
+          color="teal.500"
+          cursor="pointer"
+          onClick={() => navigate('/dashboard')}
+        >
+          PawAlert
+        </Text>
 
+        {/* Right side - User menu */}
         <Flex align="center" gap={4}>
           <IconButton aria-label="Notifications" variant="ghost" borderRadius="full">
             <FaBell />
