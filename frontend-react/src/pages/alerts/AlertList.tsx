@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Box, Heading, Button, SimpleGrid, Card, Text, Flex, Spinner, Badge, IconButton, HStack, Collapsible, Input, NativeSelect, Grid, VStack } from '@chakra-ui/react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
-import { FaPlus, FaEye, FaCog, FaTimes, FaMapMarkerAlt, FaSearch, FaArrowLeft } from 'react-icons/fa'
+import { FaPlus, FaSearch as FaSearchIcon, FaCog, FaTimes, FaMapMarkerAlt, FaSearch, FaArrowLeft } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
 import { Alert, AlertStatus, AlertSearchFilters } from '../../types'
 import { SubscribeButton } from '../../components/alerts/SubscribeButton'
@@ -146,16 +146,16 @@ export default function AlertList() {
        borderRadius="lg"
        boxShadow="lg"
      >
-       <Button 
-         variant="ghost" 
-         mb={4} 
-         onClick={() => navigate(-1)}
-         size="sm"
-         colorPalette="gray"
-       >
-         <FaArrowLeft style={{ marginRight: '8px' }} />
-         Back
-       </Button>
+        <Button 
+          variant="ghost" 
+          mb={4} 
+          onClick={() => navigate('/')}
+          size="sm"
+          colorPalette="gray"
+        >
+          <FaArrowLeft style={{ marginRight: '8px' }} />
+          Back
+        </Button>
 
        <Flex justify="space-between" align="center" mb={6}>
         <Box>
@@ -428,11 +428,11 @@ export default function AlertList() {
                      Location: {alert.latitude != null ? alert.latitude.toFixed(4) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(4) : 'N/A'}
                    </Text>
                    <Flex mt="auto" gap={2} justify="space-between" align="center">
-                     <Link to={`/alerts/${alert.id}`}>
-                       <IconButton aria-label="View" variant="ghost" size="sm" color="brand.500">
-                         <FaEye />
-                       </IconButton>
-                     </Link>
+                      <Link to={`/alerts/${alert.id}`}>
+                        <IconButton aria-label="View" variant="ghost" size="sm" color="brand.500">
+                          <FaSearchIcon />
+                        </IconButton>
+                      </Link>
                      <SubscribeButton
                        alertId={alert.id}
                        alertStatus={alert.status}

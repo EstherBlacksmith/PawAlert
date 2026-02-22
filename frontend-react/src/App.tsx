@@ -15,6 +15,7 @@ import AlertEdit from './pages/alerts/AlertEdit'
 import Profile from './pages/Profile'
 import NotFound from './pages/NotFound'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminPetDetail from './pages/admin/PetDetail'
 import UserDetail from './pages/admin/UserDetail'
 import UserEdit from './pages/admin/UserEdit'
 import MySubscriptions from './pages/subscriptions/MySubscriptions'
@@ -88,6 +89,11 @@ function App() {
         <Route path="admin/dashboard" element={
           <AdminRoute>
             <AdminDashboard />
+          </AdminRoute>
+        } />
+        <Route path="admin/pets/:id" element={
+          <AdminRoute>
+            <AdminPetDetail />
           </AdminRoute>
         } />
         <Route path="admin/users/:id" element={

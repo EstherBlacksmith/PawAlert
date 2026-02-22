@@ -106,10 +106,10 @@ export default function MySubscriptions() {
 
   return (
     <Box maxW="600px" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
-      <Button variant="ghost" mb={4} onClick={() => navigate(-1)}>
-        <FaArrowLeft style={{ marginRight: '8px' }} />
-        Back
-      </Button>
+      <Button variant="ghost" mb={4} onClick={() => navigate('/')}>
+         <FaArrowLeft style={{ marginRight: '8px' }} />
+         Back
+       </Button>
 
       <Flex justify="space-between" align="center" mb={6}>
         <Heading size="lg" color="gray.800" _dark={{ color: 'white' }}>

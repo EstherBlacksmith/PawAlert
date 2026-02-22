@@ -132,10 +132,10 @@ export default function Profile() {
 
   return (
     <Box maxW="900px" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
-      <Button variant="ghost" mb={4} onClick={() => navigate(-1)}>
-        <FaArrowLeft style={{ marginRight: '8px' }} />
-        Back
-      </Button>
+      <Button variant="ghost" mb={4} onClick={() => navigate('/')}>
+         <FaArrowLeft style={{ marginRight: '8px' }} />
+         Back
+       </Button>
 
       <Heading size="lg" mb={6} color="gray.800" _dark={{ color: 'white' }}>
         Profile Settings

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Box, Heading, Button, SimpleGrid, Card, Text, Flex, Spinner, Badge, IconButton, Image } from '@chakra-ui/react'
 import { Link, useNavigate } from 'react-router-dom'
-import { FaPlus, FaEdit, FaTrash, FaEye, FaHeart, FaArrowLeft } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaSearch as FaSearchIcon, FaHeart, FaArrowLeft } from 'react-icons/fa'
 import { petService } from '../../services/pet.service'
 import { alertService } from '../../services/alert.service'
 import { Pet, Alert } from '../../types'
@@ -62,16 +62,16 @@ export default function PetList() {
        borderRadius="lg"
        boxShadow="lg"
      >
-       <Button 
-         variant="ghost" 
-         mb={4} 
-         onClick={() => navigate(-1)}
-         size="sm"
-         colorPalette="gray"
-       >
-         <FaArrowLeft style={{ marginRight: '8px' }} />
-         Back
-       </Button>
+        <Button 
+          variant="ghost" 
+          mb={4} 
+          onClick={() => navigate('/')}
+          size="sm"
+          colorPalette="gray"
+        >
+          <FaArrowLeft style={{ marginRight: '8px' }} />
+          Back
+        </Button>
 
        <Flex justify="space-between" align="center" mb={6}>
         <Box>
@@ -138,42 +138,51 @@ export default function PetList() {
                   </Text>
                 )}
                 <Flex mt={4} gap={2} wrap="wrap" align="center">
-                  {activeAlerts[pet.petId] ? (
-                    <Button
-                      size="sm"
-                      colorPalette="blue"
-                      onClick={() => navigate(`/alerts/${activeAlerts[pet.petId].id}`)}
-                    >
-                      <FaEye style={{ marginRight: '4px' }} />
-                      View Alert
-                    </Button>
-                  ) : (
-                    <Button
-                      size="sm"
-                      colorPalette="brand"
-                      bg="brand.500"
-                      _hover={{ bg: 'brand.600' }}
-                      onClick={() => navigate(`/alerts/create?petId=${pet.petId}`)}
-                    >
-                      <FaHeart style={{ marginRight: '4px' }} />
-                      Create Alert
-                    </Button>
-                  )}
-                  <Link to={`/pets/${pet.petId}/edit`}>
-                    <IconButton aria-label="Edit" variant="ghost" size="sm" color="brand.500">
-                      <FaEdit />
-                    </IconButton>
-                  </Link>
-                  <IconButton 
-                    aria-label="Delete" 
-                    variant="ghost" 
-                    size="sm" 
-                    colorPalette="red"
-                    onClick={() => handleDelete(pet.petId)}
-                  >
-                    <FaTrash />
-                  </IconButton>
-                </Flex>
+                   <Button
+                     size="sm"
+                     colorPalette="blue"
+                     variant="outline"
+                     onClick={() => navigate(`/pets/${pet.petId}`)}
+                   >
+                     <FaSearchIcon style={{ marginRight: '4px' }} />
+                     View Pet
+                   </Button>
+                   {activeAlerts[pet.petId] ? (
+                      <Button
+                        size="sm"
+                        colorPalette="blue"
+                        onClick={() => navigate(`/alerts/${activeAlerts[pet.petId].id}`)}
+                      >
+                        <FaSearchIcon style={{ marginRight: '4px' }} />
+                        View Alert
+                      </Button>
+                   ) : (
+                     <Button
+                       size="sm"
+                       colorPalette="brand"
+                       bg="brand.500"
+                       _hover={{ bg: 'brand.600' }}
+                       onClick={() => navigate(`/alerts/create?petId=${pet.petId}`)}
+                     >
+                       <FaHeart style={{ marginRight: '4px' }} />
+                       Create Alert
+                     </Button>
+                   )}
+                   <Link to={`/pets/${pet.petId}/edit`}>
+                     <IconButton aria-label="Edit" variant="ghost" size="sm" color="brand.500">
+                       <FaEdit />
+                     </IconButton>
+                   </Link>
+                   <IconButton 
+                     aria-label="Delete" 
+                     variant="ghost" 
+                     size="sm" 
+                     colorPalette="red"
+                     onClick={() => handleDelete(pet.petId)}
+                   >
+                     <FaTrash />
+                   </IconButton>
+                 </Flex>
               </Card.Body>
             </Card.Root>
           ))}
