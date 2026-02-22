@@ -5,6 +5,7 @@ import itacademy.pawalert.domain.alert.model.StatusNames;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public interface SearchAlertsUseCase {
     List<Alert> search(
@@ -16,7 +17,8 @@ public interface SearchAlertsUseCase {
             LocalDateTime createdFrom,
             LocalDateTime createdTo,
             LocalDateTime updatedFrom,
-            LocalDateTime updatedTo
+            LocalDateTime updatedTo,
+            UUID userId
     );
 
 

@@ -66,6 +66,7 @@ export interface AlertSearchFilters {
   latitude?: number
   longitude?: number
   radiusKm?: number
+  userId?: string  // Filter by creator user ID
 }
 
 export interface LoginRequest {

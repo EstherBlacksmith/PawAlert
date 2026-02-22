@@ -133,6 +133,9 @@ export const alertService = {
         const toDateTime = new Date(dateToIsoDateTime(filters.createdTo, true))
         filtered = filtered.filter(a => new Date(a.createdAt) <= toDateTime)
       }
+      if (filters.userId) {
+        filtered = filtered.filter(a => a.userId === filters.userId)
+      }
       
       return filtered
     }
@@ -145,13 +148,16 @@ export const alertService = {
     if (filters.petName) params.petName = filters.petName
     if (filters.species) params.species = filters.species
     if (filters.breed) params.breed = filters.breed
+    if (filters.userId) params.userId = filters.userId
     // Convert dates to ISO datetime format for backend
     if (filters.createdFrom) params.createdFrom = dateToIsoDateTime(filters.createdFrom, false)
     if (filters.createdTo) params.createdTo = dateToIsoDateTime(filters.createdTo, true)
     if (filters.updatedFrom) params.updatedFrom = dateToIsoDateTime(filters.updatedFrom, false)
     if (filters.updatedTo) params.updatedTo = dateToIsoDateTime(filters.updatedTo, true)
     
+    console.log('[DEBUG] searchAlertsWithFilters - params:', params)
     const response = await api.get<Alert[]>('/alerts/search', { params })
+    console.log('[DEBUG] searchAlertsWithFilters - response:', response.data)
     return response.data
   },
 

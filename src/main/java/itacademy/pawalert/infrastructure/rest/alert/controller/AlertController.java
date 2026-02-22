@@ -182,13 +182,24 @@ public class AlertController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdFrom,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdTo,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime updatedFrom,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime updatedTo
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime updatedTo,
+            @RequestParam(required = false) String userId
     ) {
+
+        UUID userIdUUID = null;
+        if (userId != null && !userId.isEmpty()) {
+            try {
+                userIdUUID = UUID.fromString(userId);
+            } catch (IllegalArgumentException e) {
+                logger.warn("Invalid userId format: {}", userId);
+            }
+        }
 
         List<Alert> alerts = searchAlertsUseCase.search(
                 status, title, petName, species, breed,
                 createdFrom, createdTo,
-                updatedFrom, updatedTo
+                updatedFrom, updatedTo,
+                userIdUUID
         );
 
         return ResponseEntity.ok(alertMapper.toDTOList(alerts));

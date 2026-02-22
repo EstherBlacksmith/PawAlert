@@ -97,6 +97,9 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
         if (criteria.updatedTo() != null) {
             spec = spec.and(AlertSpecifications.lastUpdatedBefore(criteria.updatedTo()));
         }
+        if (criteria.userId() != null) {
+            spec = spec.and(AlertSpecifications.createdBy(criteria.userId()));
+        }
 
         return alertRepository.findAll(spec)
                 .stream()
