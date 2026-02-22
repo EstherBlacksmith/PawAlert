@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Box, Heading, Button, SimpleGrid, Card, Text, Flex, Spinner, Badge, IconButton, Image } from '@chakra-ui/react'
 import { Link, useNavigate } from 'react-router-dom'
-import { FaPlus, FaEdit, FaTrash, FaEye, FaHeart } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaEye, FaHeart, FaArrowLeft } from 'react-icons/fa'
 import { petService } from '../../services/pet.service'
 import { alertService } from '../../services/alert.service'
 import { Pet, Alert } from '../../types'
@@ -55,14 +55,25 @@ export default function PetList() {
     )
   }
 
-  return (
-    <Box
-      bg="rgba(255, 255, 255, 0.85)"
-      p={6}
-      borderRadius="lg"
-      boxShadow="lg"
-    >
-      <Flex justify="space-between" align="center" mb={6}>
+   return (
+     <Box
+       bg="rgba(255, 255, 255, 0.85)"
+       p={6}
+       borderRadius="lg"
+       boxShadow="lg"
+     >
+       <Button 
+         variant="ghost" 
+         mb={4} 
+         onClick={() => navigate(-1)}
+         size="sm"
+         colorPalette="gray"
+       >
+         <FaArrowLeft style={{ marginRight: '8px' }} />
+         Back
+       </Button>
+
+       <Flex justify="space-between" align="center" mb={6}>
         <Box>
           <Heading size="lg" color="gray.800">
             My Pets

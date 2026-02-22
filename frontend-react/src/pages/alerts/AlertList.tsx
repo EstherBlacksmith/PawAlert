@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Box, Heading, Button, SimpleGrid, Card, Text, Flex, Spinner, Badge, IconButton, HStack, Collapsible, Input, NativeSelect, Grid, VStack } from '@chakra-ui/react'
-import { Link } from 'react-router-dom'
-import { FaPlus, FaEye, FaCog, FaTimes, FaMapMarkerAlt, FaSearch } from 'react-icons/fa'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
+import { FaPlus, FaEye, FaCog, FaTimes, FaMapMarkerAlt, FaSearch, FaArrowLeft } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
 import { Alert, AlertStatus, AlertSearchFilters } from '../../types'
 import { SubscribeButton } from '../../components/alerts/SubscribeButton'
@@ -9,10 +9,10 @@ import { useMetadata } from '../../hooks/useMetadata'
 import { useLocation } from '../../hooks/useLocation'
 
 const statusColors: Record<string, string> = {
-  OPENED: 'red',
-  CLOSED: 'green',
-  SEEN: 'yellow',
-  SAFE: 'blue',
+  OPENED: '#b34045',
+  CLOSED: '#4091d7',
+  SEEN: '#fecf6d',
+  SAFE: '#2d884d',
 }
 
 const statusOptions: { value: string; label: string }[] = [
@@ -24,12 +24,14 @@ const statusOptions: { value: string; label: string }[] = [
 ]
 
 export default function AlertList() {
-  const [alerts, setAlerts] = useState<Alert[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
-  
-  // Filter state
-  const [status, setStatus] = useState<string>('')
+   const navigate = useNavigate()
+   const [searchParams] = useSearchParams()
+   const [alerts, setAlerts] = useState<Alert[]>([])
+   const [isLoading, setIsLoading] = useState(true)
+   const [isFilterOpen, setIsFilterOpen] = useState(false)
+   
+   // Filter state
+   const [status, setStatus] = useState<string>(searchParams.get('status') || '')
   const [species, setSpecies] = useState<string>('')
   const [petName, setPetName] = useState('')
   const [breed, setBreed] = useState('')
@@ -87,7 +89,7 @@ export default function AlertList() {
 
   useEffect(() => {
     fetchAlerts()
-  }, []) // Initial load
+  }, [fetchAlerts]) // Initial load and when filters change
 
   const handleApplyFilters = () => {
     fetchAlerts()
@@ -137,14 +139,25 @@ export default function AlertList() {
     )
   }
 
-  return (
-    <Box
-      bg="rgba(255, 255, 255, 0.85)"
-      p={6}
-      borderRadius="lg"
-      boxShadow="lg"
-    >
-      <Flex justify="space-between" align="center" mb={6}>
+   return (
+     <Box
+       bg="rgba(255, 255, 255, 0.85)"
+       p={6}
+       borderRadius="lg"
+       boxShadow="lg"
+     >
+       <Button 
+         variant="ghost" 
+         mb={4} 
+         onClick={() => navigate(-1)}
+         size="sm"
+         colorPalette="gray"
+       >
+         <FaArrowLeft style={{ marginRight: '8px' }} />
+         Back
+       </Button>
+
+       <Flex justify="space-between" align="center" mb={6}>
         <Box>
           <Heading size="lg" color="gray.800">
             Alerts
@@ -391,34 +404,44 @@ export default function AlertList() {
             Showing {alerts.length} alert{alerts.length !== 1 ? 's' : ''}
           </Text>
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
-            {alerts.map((alert) => (
-              <Card.Root key={alert.id}>
-                <Card.Body>
-                  <Flex justify="space-between" align="start" mb={2}>
-                    <Heading size="md">{alert.title}</Heading>
-                    <Badge colorPalette={statusColors[alert.status]}>{alert.status}</Badge>
-                  </Flex>
-                  <Text fontSize="sm" color="gray.500" mb={2} lineClamp={2}>
-                    {alert.description}
-                  </Text>
-                  <Text fontSize="xs" color="gray.400">
-                    Location: {alert.latitude != null ? alert.latitude.toFixed(4) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(4) : 'N/A'}
-                  </Text>
-                  <Flex mt={4} gap={2} justify="space-between" align="center">
-                    <Link to={`/alerts/${alert.id}`}>
-                      <IconButton aria-label="View" variant="ghost" size="sm" color="brand.500">
-                        <FaEye />
-                      </IconButton>
-                    </Link>
-                    <SubscribeButton
-                      alertId={alert.id}
-                      alertStatus={alert.status}
-                      size="sm"
-                    />
-                  </Flex>
-                </Card.Body>
-              </Card.Root>
-            ))}
+             {alerts.map((alert) => (
+               <Card.Root key={alert.id} display="flex" flexDirection="column">
+                 <Card.Body display="flex" flexDirection="column" flex="1">
+                   <Flex justify="space-between" align="start" mb={2}>
+                     <Heading size="md">{alert.title}</Heading>
+                     <Badge 
+                       bg={statusColors[alert.status]} 
+                       color="white"
+                       px={2}
+                       py={1}
+                       borderRadius="md"
+                       fontSize="xs"
+                       fontWeight="bold"
+                     >
+                       {alert.status}
+                     </Badge>
+                   </Flex>
+                   <Text fontSize="sm" color="gray.500" mb={2} lineClamp={2}>
+                     {alert.description}
+                   </Text>
+                   <Text fontSize="xs" color="gray.400" mb={4} flex="1">
+                     Location: {alert.latitude != null ? alert.latitude.toFixed(4) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(4) : 'N/A'}
+                   </Text>
+                   <Flex mt="auto" gap={2} justify="space-between" align="center">
+                     <Link to={`/alerts/${alert.id}`}>
+                       <IconButton aria-label="View" variant="ghost" size="sm" color="brand.500">
+                         <FaEye />
+                       </IconButton>
+                     </Link>
+                     <SubscribeButton
+                       alertId={alert.id}
+                       alertStatus={alert.status}
+                       size="sm"
+                     />
+                   </Flex>
+                 </Card.Body>
+               </Card.Root>
+             ))}
           </SimpleGrid>
         </>
       )}

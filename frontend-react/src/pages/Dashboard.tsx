@@ -122,41 +122,41 @@ export default function Dashboard() {
         </Text>
       </Box>
 
-      {/* Stats Grid */}
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6}>
-        <StatCard 
-          icon={GiPawPrint} 
-          label="Total Pets" 
-          value={stats.totalPets} 
-          color="blue" 
-          gradientColors="linear(to-br, blue.400, blue.500)"
-          onClick={() => navigate('/pets')} 
-        />
-        <StatCard 
-          icon={GiHealthPotion} 
-          label="Active Alerts" 
-          value={stats.activeAlerts} 
-          color="red" 
-          gradientColors="linear(to-br, red.400, red.500)"
-          onClick={() => navigate('/alerts')} 
-        />
-        <StatCard 
-          icon={GiCheck} 
-          label="Found Pets" 
-          value={stats.foundPets} 
-          color="green" 
-          gradientColors="linear(to-br, green.400, green.500)"
-          onClick={() => navigate('/alerts')} 
-        />
-        <StatCard 
-          icon={GiSword} 
-          label="Pending Alerts" 
-          value={stats.pendingAlerts} 
-          color="yellow" 
-          gradientColors="linear(to-br, yellow.400, orange.400)"
-          onClick={() => navigate('/alerts')} 
-        />
-      </SimpleGrid>
+       {/* Stats Grid */}
+       <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6}>
+         <StatCard 
+           icon={GiPawPrint} 
+           label="Total Pets" 
+           value={stats.totalPets} 
+           color="blue" 
+           gradientColors="linear(to-br, #4091d7, #2e5f9e)"
+           onClick={() => navigate('/pets')} 
+         />
+         <StatCard
+           icon={GiHealthPotion}
+           label="Active Alerts"
+           value={stats.activeAlerts}
+           color="red"
+           gradientColors="linear(to-br, #b34045, #8b2e32)"
+           onClick={() => navigate('/alerts?status=OPENED')}
+         />
+         <StatCard
+           icon={GiCheck}
+           label="Found Pets"
+           value={stats.foundPets}
+           color="green"
+           gradientColors="linear(to-br, #2d884d, #1f5a34)"
+           onClick={() => navigate('/alerts?status=CLOSED')}
+         />
+         <StatCard
+           icon={GiSword}
+           label="Pending Alerts"
+           value={stats.pendingAlerts}
+           color="yellow"
+           gradientColors="linear(to-br, #fecf6d, #d4a84a)"
+           onClick={() => navigate('/alerts?status=SEEN')}
+         />
+       </SimpleGrid>
 
       {/* Quick Actions */}
       <Box>
@@ -164,24 +164,24 @@ export default function Dashboard() {
           Quick Actions
         </Heading>
         <SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
-        <Card.Root p={4} cursor="pointer" _hover={{ boxShadow: 'lg', transform: 'translateY(-2px)' }} transition="all 0.2s" onClick={() => navigate('/pets/create')}>
-            <VStack>
-              <GiCat size={32} color="#F1B42F" />
-              <Text fontWeight="medium">Add New Pet</Text>
-            </VStack>
-          </Card.Root>
-          <Card.Root p={4} cursor="pointer" _hover={{ boxShadow: 'lg', transform: 'translateY(-2px)' }} transition="all 0.2s" onClick={() => navigate('/alerts/create')}>
-            <VStack>
-              <GiBell size={32} color="accent.500" />
-              <Text fontWeight="medium">Create Alert</Text>
-            </VStack>
-          </Card.Root>
-          <Card.Root p={4} cursor="pointer" _hover={{ boxShadow: 'lg', transform: 'translateY(-2px)' }} transition="all 0.2s" onClick={() => navigate('/alerts')}>
-            <VStack>
-              <GiList size={32} color="accent.500" />
-              <Text fontWeight="medium">View All Alerts</Text>
-            </VStack>
-          </Card.Root>
+         <Card.Root p={4} cursor="pointer" _hover={{ boxShadow: 'lg', transform: 'translateY(-2px)' }} transition="all 0.2s" onClick={() => navigate('/pets/create')}>
+             <VStack>
+               <GiCat size={32} color="#2d884d" />
+               <Text fontWeight="medium">Add New Pet</Text>
+             </VStack>
+           </Card.Root>
+           <Card.Root p={4} cursor="pointer" _hover={{ boxShadow: 'lg', transform: 'translateY(-2px)' }} transition="all 0.2s" onClick={() => navigate('/alerts/create')}>
+             <VStack>
+               <GiBell size={32} color="#b34045" />
+               <Text fontWeight="medium">Create Alert</Text>
+             </VStack>
+           </Card.Root>
+           <Card.Root p={4} cursor="pointer" _hover={{ boxShadow: 'lg', transform: 'translateY(-2px)' }} transition="all 0.2s" onClick={() => navigate('/alerts')}>
+             <VStack>
+               <GiList size={32} color="#4091d7" />
+               <Text fontWeight="medium">View All Alerts</Text>
+             </VStack>
+           </Card.Root>
         </SimpleGrid>
       </Box>
       </VStack>

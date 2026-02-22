@@ -111,208 +111,291 @@
 
 /* Success */
 .toast-success {
-  border-left: 4px solid #38a169;
+  border-left: 4px solid #22c55e;
+  background-color: #f0fdf4;
 }
 
 .toast-success .toast-title {
-  color: #276749;
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.toast-success .toast-description {
+  color: #22c55e;
+  font-weight: 500;
 }
 
 /* Error */
 .toast-error {
-  border-left: 4px solid #e53e3e;
+  border-left: 4px solid #ef4444;
+  background-color: #fef2f2;
 }
 
 .toast-error .toast-title {
-  color: #c53030;
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.toast-error .toast-description {
+  color: #ef4444;
+  font-weight: 500;
 }
 
 /* Info */
 .toast-info {
-  border-left: 4px solid #06b6d4;
+  border-left: 4px solid #3b82f6;
+  background-color: #eff6ff;
 }
 
 .toast-info .toast-title {
-  color: #0e7490;
+  color: #3b82f6;
+  font-weight: 700;
+}
+
+.toast-info .toast-description {
+  color: #3b82f6;
+  font-weight: 500;
 }
 
 /* Warning - Brand Orange */
 .toast-warning {
   border-left: 4px solid #f97316;
+  background-color: #fff7ed;
 }
 
 .toast-warning .toast-title {
-  color: #c2410c;
+  color: #f97316;
+  font-weight: 700;
 }
 
-/* Warning dark mode - Brand Orange */
-.toast-warning .toast-title {
-  color: #fb923c;
+.toast-warning .toast-description {
+  color: #f97316;
+  font-weight: 500;
 }
 
 /* Alert Status - OPEN (Red/Orange) - Alert is active/open */
 .toast-status-open {
   border-left: 4px solid #ff8c00;
-  background-color: #fff0e0;
+  background-color: #fff7ed;
 }
 
 .toast-status-open .toast-title {
-  color: #cc7000;
+  color: #ff8c00;
+  font-weight: 700;
 }
 
 .toast-status-open .toast-description {
-  color: #994d00;
+  color: #ff8c00;
+  font-weight: 500;
 }
 
 /* Alert Status - CLOSED (Grey) - Alert is closed */
 .toast-status-closed {
   border-left: 4px solid #9ca3af;
-  background-color: #e5e7eb;
+  background-color: #f3f4f6;
 }
 
 .toast-status-closed .toast-title {
-  color: #4b5563;
+  color: #9ca3af;
+  font-weight: 700;
 }
 
 .toast-status-closed .toast-description {
-  color: #6b7280;
+  color: #9ca3af;
+  font-weight: 500;
 }
 
 /* Alert Status - SAFE (Green) - Pet is safe */
 .toast-status-safe {
   border-left: 4px solid #10b981;
-  background-color: #d1fae5;
+  background-color: #f0fdf4;
 }
 
 .toast-status-safe .toast-title {
-  color: #047857;
+  color: #10b981;
+  font-weight: 700;
 }
 
 .toast-status-safe .toast-description {
-  color: #065f46;
+  color: #10b981;
+  font-weight: 500;
 }
 
 /* Alert Status - FOUND (Blue) - Pet was found */
 .toast-status-found {
   border-left: 4px solid #0ea5e9;
-  background-color: #e0f2fe;
+  background-color: #eff6ff;
 }
 
 .toast-status-found .toast-title {
-  color: #0369a1;
+  color: #0ea5e9;
+  font-weight: 700;
 }
 
 .toast-status-found .toast-description {
-  color: #075985;
+  color: #0ea5e9;
+  font-weight: 500;
 }
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
-  .toast {
-    background-color: #2d3748;
-    border-color: #4a5568;
-  }
+   .toast {
+      background-color: #1f2937;
+      border-color: #374151;
+   }
 
-  .toast-title {
-    color: #f7fafc;
-  }
+   .toast-title {
+      color: #f3f4f6;
+   }
 
-  .toast-description {
-    color: #cbd5e0;
-  }
+   .toast-description {
+      color: #d1d5db;
+   }
 
-  .toast-close {
-    color: #a0aec0;
-  }
+   .toast-close {
+      color: #9ca3af;
+   }
 
-  .toast-close:hover {
-    background-color: #4a5568;
-    color: #f7fafc;
-  }
+   .toast-close:hover {
+      background-color: #374151;
+      color: #f3f4f6;
+   }
 
-  .toast-action {
-    color: #63b3ed;
-    border-color: #63b3ed;
-  }
+   .toast-action {
+      color: #60a5fa;
+      border-color: #60a5fa;
+   }
 
-  .toast-action:hover {
-    background-color: #63b3ed;
-    color: #1a202c;
-  }
+   .toast-action:hover {
+      background-color: #60a5fa;
+      color: #1f2937;
+   }
 
-  /* Success dark mode */
-  .toast-success .toast-title {
-    color: #68d391;
-  }
+   /* Success dark mode */
+   .toast-success {
+      background-color: #f0fdf4;
+      border-left-color: #22c55e;
+   }
 
-  /* Error dark mode */
-  .toast-error .toast-title {
-    color: #fc8181;
-  }
+   .toast-success .toast-title {
+      color: #22c55e;
+      font-weight: 700;
+   }
 
-  /* Info dark mode */
-  .toast-info .toast-title {
-    color: #22d3ee;
-  }
+   .toast-success .toast-description {
+      color: #22c55e;
+      font-weight: 500;
+   }
 
-  /* Warning dark mode - Brand Orange */
-  .toast-warning .toast-title {
-    color: #fb923c;
-  }
+   /* Error dark mode */
+   .toast-error {
+      background-color: #fef2f2;
+      border-left-color: #ef4444;
+   }
 
-  /* Alert Status - OPEN (Red/Orange) - Dark mode */
-  .toast-status-open {
-    background-color: #431407;
-    border-left-color: #ff8c00;
-  }
+   .toast-error .toast-title {
+      color: #ef4444;
+      font-weight: 700;
+   }
 
-  .toast-status-open .toast-title {
-    color: #ffb347;
-  }
+   .toast-error .toast-description {
+      color: #ef4444;
+      font-weight: 500;
+   }
 
-  .toast-status-open .toast-description {
-    color: #ffd699;
-  }
+   /* Info dark mode */
+   .toast-info {
+      background-color: #eff6ff;
+      border-left-color: #3b82f6;
+   }
 
-  /* Alert Status - CLOSED (Grey) - Dark mode */
-  .toast-status-closed {
-    background-color: #1f2937;
-    border-left-color: #d1d5db;
-  }
+   .toast-info .toast-title {
+      color: #3b82f6;
+      font-weight: 700;
+   }
 
-  .toast-status-closed .toast-title {
-    color: #f3f4f6;
-  }
+   .toast-info .toast-description {
+      color: #3b82f6;
+      font-weight: 500;
+   }
 
-  .toast-status-closed .toast-description {
-    color: #d1d5db;
-  }
+   /* Warning dark mode - Brand Orange */
+   .toast-warning {
+      background-color: #fff7ed;
+      border-left-color: #f97316;
+   }
 
-  /* Alert Status - SAFE (Green) - Dark mode */
-  .toast-status-safe {
-    background-color: #052e16;
-    border-left-color: #34d399;
-  }
+   .toast-warning .toast-title {
+      color: #f97316;
+      font-weight: 700;
+   }
 
-  .toast-status-safe .toast-title {
-    color: #6ee7b7;
-  }
+   .toast-warning .toast-description {
+      color: #f97316;
+      font-weight: 500;
+   }
 
-  .toast-status-safe .toast-description {
-    color: #a7f3d0;
-  }
+   /* Alert Status - OPEN (Red/Orange) - Dark mode */
+   .toast-status-open {
+      background-color: #fff7ed;
+      border-left-color: #ff8c00;
+   }
 
-  /* Alert Status - FOUND (Blue) - Dark mode */
-  .toast-status-found {
-    background-color: #172554;
-    border-left-color: #38bdf8;
-  }
+   .toast-status-open .toast-title {
+      color: #ff8c00;
+      font-weight: 700;
+   }
 
-  .toast-status-found .toast-title {
-    color: #7dd3fc;
-  }
+   .toast-status-open .toast-description {
+      color: #ff8c00;
+      font-weight: 500;
+   }
 
-  .toast-status-found .toast-description {
-    color: #bae6fd;
-  }
+   /* Alert Status - CLOSED (Grey) - Dark mode */
+   .toast-status-closed {
+      background-color: #f3f4f6;
+      border-left-color: #9ca3af;
+   }
+
+   .toast-status-closed .toast-title {
+      color: #9ca3af;
+      font-weight: 700;
+   }
+
+   .toast-status-closed .toast-description {
+      color: #9ca3af;
+      font-weight: 500;
+   }
+
+   /* Alert Status - SAFE (Green) - Dark mode */
+   .toast-status-safe {
+      background-color: #f0fdf4;
+      border-left-color: #10b981;
+   }
+
+   .toast-status-safe .toast-title {
+      color: #10b981;
+      font-weight: 700;
+   }
+
+   .toast-status-safe .toast-description {
+      color: #10b981;
+      font-weight: 500;
+   }
+
+   /* Alert Status - FOUND (Blue) - Dark mode */
+   .toast-status-found {
+      background-color: #eff6ff;
+      border-left-color: #0ea5e9;
+   }
+
+   .toast-status-found .toast-title {
+      color: #0ea5e9;
+      font-weight: 700;
+   }
+
+   .toast-status-found .toast-description {
+      color: #0ea5e9;
+      font-weight: 500;
+   }
 }

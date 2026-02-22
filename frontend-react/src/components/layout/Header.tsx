@@ -44,15 +44,17 @@ export default function Header() {
 
         {/* Right side - User menu */}
         <Flex align="center" gap={4}>
-          <IconButton 
-            aria-label="Notifications" 
-            variant="ghost" 
-            borderRadius="full"
-            _hover={{ bg: 'brand.50', color: 'brand.500' }}
-            transition="all 0.2s"
-          >
-            <FaBell color="gray.600" />
-          </IconButton>
+           <IconButton 
+             aria-label="Notifications" 
+             variant="ghost" 
+             borderRadius="full"
+             _hover={{ bg: 'brand.50', color: 'brand.500' }}
+             transition="all 0.2s"
+             onClick={() => navigate('/subscriptions')}
+             cursor="pointer"
+           >
+             <FaBell color="gray.600" />
+           </IconButton>
 
           <Menu.Root>
             <Menu.Trigger asChild>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { Box, Text, VStack, Card } from '@chakra-ui/react'
 import { FaMapMarkerAlt } from 'react-icons/fa'
@@ -14,9 +14,27 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 })
 
-// Create numbered icons for the route
-const createNumberedIcon = (number: number, isLast: boolean = false) => {
-  const color = isLast ? 'green' : 'blue'
+// Create numbered icons for the route based on alert status
+const createNumberedIcon = (number: number, status: string | null = null) => {
+  // Map alert status to colors
+  const getColorByStatus = (status: string | null): string => {
+    switch (status) {
+      case 'OPENED':
+        return '#b34045' // Red/Orange
+      case 'CLOSED':
+        return '#9ca3af' // Gray
+      case 'SAFE':
+        return '#22c55e' // Green
+      case 'SEEN':
+        return '#fecf6d' // Yellow
+      case 'FOUND':
+        return '#0ea5e9' // Blue
+      default:
+        return '#0ea5e9' // Default blue
+    }
+  }
+
+  const color = getColorByStatus(status)
   return new L.DivIcon({
     className: 'custom-numbered-marker',
     html: `<div style="
@@ -204,23 +222,12 @@ export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMa
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            {/* Draw route line */}
-            {routeCoordinates.length > 1 && (
-              <Polyline
-                positions={routeCoordinates}
-                color="purple"
-                weight={3}
-                opacity={0.7}
-                dashArray="10, 10"
-              />
-            )}
-            
             {/* Render markers */}
             {eventsWithLocation.map((event, index) => (
               <Marker
                 key={event.id}
                 position={[event.latitude!, event.longitude!]}
-                icon={createNumberedIcon(index + 1, index === eventsWithLocation.length - 1)}
+                icon={createNumberedIcon(index + 1, event.newStatus)}
               >
                 <Popup>
                   <VStack align="start" gap={1} minWidth="180px">
@@ -248,17 +255,23 @@ export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMa
         {/* Legend */}
         <Box mt={3} p={3} bg="gray.50" borderRadius="md">
           <Text fontSize="sm" fontWeight="medium" mb={2}>
-            Route Legend:
+            Event Markers by Status:
           </Text>
           <VStack align="start" gap={1} fontSize="xs" color="gray.600">
             <Text>
-              <Text as="span" fontWeight="bold" color="blue.500">●</Text> Blue markers: Previous locations
+              <Text as="span" fontWeight="bold" style={{ color: '#b34045' }}>●</Text> Red/Orange: OPEN status
             </Text>
             <Text>
-              <Text as="span" fontWeight="bold" color="green.500">●</Text> Green marker: Latest location
+              <Text as="span" fontWeight="bold" style={{ color: '#9ca3af' }}>●</Text> Gray: CLOSED status
             </Text>
             <Text>
-              <Text as="span" color="purple">---</Text> Purple dashed line: Route path
+              <Text as="span" fontWeight="bold" style={{ color: '#22c55e' }}>●</Text> Green: SAFE status
+            </Text>
+            <Text>
+              <Text as="span" fontWeight="bold" style={{ color: '#fecf6d' }}>●</Text> Yellow: SEEN status
+            </Text>
+            <Text>
+              <Text as="span" fontWeight="bold" style={{ color: '#0ea5e9' }}>●</Text> Blue: FOUND status or other events
             </Text>
           </VStack>
         </Box>

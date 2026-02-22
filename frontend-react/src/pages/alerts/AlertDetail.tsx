@@ -4,6 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { FaArrowLeft, FaMapMarkerAlt, FaEdit, FaTrash, FaCalendar, FaDirections } from 'react-icons/fa'
 
 import { alertService } from '../../services/alert.service'
+import { userService } from '../../services/user.service'
+import { petService } from '../../services/pet.service'
 import type { Alert as AlertType, ErrorResponse, AlertStatus, AlertEvent } from '../../types'
 import { useAuth } from '../../context/AuthContext'
 import { useLocation } from '../../hooks/useLocation'
@@ -15,10 +17,10 @@ import { SubscribeButton } from '../../components/alerts/SubscribeButton'
 import { extractError, showSuccessToast, showErrorToast } from '../../utils/errorUtils'
 
 const statusColors: Record<string, string> = {
-  OPENED: 'red',
-  CLOSED: 'green',
-  SEEN: 'yellow',
-  SAFE: 'blue',
+  OPENED: '#b34045',
+  CLOSED: '#4091d7',
+  SEEN: '#fecf6d',
+  SAFE: '#2d884d',
 }
 
 export default function AlertDetail() {
@@ -39,6 +41,8 @@ export default function AlertDetail() {
     isOpen: boolean
     status: 'SEEN' | 'SAFE' | null
   }>({ isOpen: false, status: null })
+  const [userName, setUserName] = useState<string>('Unknown')
+  const [workingPetName, setWorkingPetName] = useState<string>('Unknown')
 
   // Authorization check: admin or alert owner can modify
   const canModify = user && (isAdmin() || alert?.userId === user.userId)
@@ -53,6 +57,29 @@ export default function AlertDetail() {
         if (id) {
           const data = await alertService.getAlert(id)
           setAlert(data)
+          
+          // Fetch user name if userId is available
+          if (data.userId) {
+            try {
+              const userData = await userService.getUser(data.userId)
+              setUserName(userData.username || 'Unknown')
+            } catch (userError) {
+              console.error('Error fetching user:', userError)
+              setUserName('Unknown')
+            }
+          }
+          
+          // Fetch pet name if petId is available
+          if (data.petId) {
+            try {
+              const petData = await petService.getPet(data.petId)
+              setWorkingPetName(petData.workingPetName || petData.officialPetName || 'Unknown')
+            } catch (petError) {
+              console.error('Error fetching pet:', petError)
+              setWorkingPetName('Unknown')
+            }
+          }
+          
           // Also fetch events
           setIsLoadingEvents(true)
           try {
@@ -239,7 +266,7 @@ export default function AlertDetail() {
   }
 
   return (
-    <Box maxW="900px" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
+    <Box maxW="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
       <Button variant="ghost" mb={4} onClick={() => navigate('/alerts')}>
         <FaArrowLeft style={{ marginRight: '8px' }} />
         Back to Alerts
@@ -259,169 +286,183 @@ export default function AlertDetail() {
         </Alert.Root>
       )}
 
-      <Card.Root>
-        <Card.Body>
-          <Flex justify="space-between" align="start" mb={4}>
-            <Box>
-              <Heading size="lg" color="gray.800" _dark={{ color: 'white' }}>
-                {alert.title}
-              </Heading>
-              <Text color="gray.500" mt={1}>
-                Created for pet ID: {alert.petId}
-              </Text>
-            </Box>
-            <Badge colorPalette={statusColors[alert.status]} fontSize="md" px={3} py={1}>
-              {alert.status}
-            </Badge>
-          </Flex>
+      <Flex gap={6} direction={{ base: 'column', lg: 'row' }}>
+        {/* Left Column - Alert Details */}
+        <Box flex={{ base: '1', lg: '0 0 45%' }} minW="0">
+          <Card.Root>
+            <Card.Body>
+               <Flex justify="space-between" align="start" mb={4}>
+                  <Box>
+                     <Heading size="lg" color="gray.800" _dark={{ color: 'white' }}>
+                       {alert.title}
+                     </Heading>
+                     <Text color="gray.600" mt={1} fontSize="sm">
+                       Created by: <Text as="span" fontWeight="600">{userName}</Text>
+                     </Text>
+                     <Text color="gray.600" fontSize="sm">
+                       Pet: <Text as="span" fontWeight="600">{workingPetName}</Text>
+                     </Text>
+                  </Box>
+                 <Badge colorPalette={statusColors[alert.status]} fontSize="md" px={3} py={1}>
+                   {alert.status}
+                 </Badge>
+               </Flex>
 
-          <VStack align="stretch" gap={4}>
-            <Box>
-              <Text fontWeight="bold" mb={1} color="gray.600">
-                Description
-              </Text>
-              <Text>{alert.description}</Text>
-            </Box>
+              <VStack align="stretch" gap={4}>
+                <Box>
+                  <Text fontWeight="bold" mb={1} color="gray.600">
+                    Description
+                  </Text>
+                  <Text>{alert.description}</Text>
+                </Box>
 
-            <Box>
-              <Text fontWeight="bold" mb={1} color="gray.600">
-                Location
-              </Text>
-              <HStack color="gray.500">
-                <FaMapMarkerAlt />
-                <Text>
-                  {alert.latitude != null ? alert.latitude.toFixed(6) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(6) : 'N/A'}
-                </Text>
-              </HStack>
-            </Box>
+                <Box>
+                  <Text fontWeight="bold" mb={1} color="gray.600">
+                    Location
+                  </Text>
+                  <HStack color="gray.500">
+                    <FaMapMarkerAlt />
+                    <Text>
+                      {alert.latitude != null ? alert.latitude.toFixed(6) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(6) : 'N/A'}
+                    </Text>
+                  </HStack>
+                </Box>
 
-            {alert.closureReason && (
-              <Box>
-                <Text fontWeight="bold" mb={1} color="gray.600">
-                  Closure Reason
-                </Text>
-                <Text>{alert.closureReason}</Text>
-              </Box>
-            )}
+                {alert.closureReason && (
+                  <Box>
+                    <Text fontWeight="bold" mb={1} color="gray.600">
+                      Closure Reason
+                    </Text>
+                    <Text>{alert.closureReason}</Text>
+                  </Box>
+                )}
 
-            {/* Edit/Delete Buttons - Only visible to authorized users */}
-            {canModify && (
-              <Box pt={2} pb={2} borderTop="1px" borderColor="gray.200">
-                <HStack gap={2}>
-                  {canEdit && (
+                {/* Edit/Delete Buttons - Only visible to authorized users */}
+                {canModify && (
+                  <Box pt={2} pb={2} borderTop="1px" borderColor="gray.200">
+                    <HStack gap={2}>
+                      {canEdit && (
+                        <Button
+                          size="sm"
+                          colorPalette="blue"
+                          bg="#4682B4"
+                          onClick={() => navigate(`/alerts/${id}/edit`)}
+                        >
+                          <FaEdit style={{ marginRight: '4px' }} />
+                          Edit Alert
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        colorPalette="red"
+                        bg="#DC143C"
+                        onClick={handleDelete}
+                        loading={isDeleting}
+                      >
+                        <FaTrash style={{ marginRight: '4px' }} />
+                        Delete Alert
+                      </Button>
+                    </HStack>
+                    {isClosedAlert && !isAdmin() && canModify && (
+                      <Text fontSize="xs" color="gray.500" mt={2}>
+                        Closed alerts can only be edited by administrators
+                      </Text>
+                    )}
+                  </Box>
+                )}
+
+                <Box pt={4} borderTop="1px" borderColor="gray.200">
+                  <Text fontWeight="bold" mb={3} color="gray.600">
+                    Update Status
+                  </Text>
+                  <HStack gap={2} wrap="wrap">
+                    {/* Mark as Seen - available for OPENED or SEEN status (any authenticated user) */}
                     <Button
                       size="sm"
-                      colorPalette="orange"
-                      onClick={() => navigate(`/alerts/${id}/edit`)}
+                      colorPalette="yellow"
+                      bg="#fecf6d"
+                      color="gray.800"
+                      onClick={() => handleOpenStatusDialog('SEEN')}
+                      disabled={alert.status !== 'OPENED' && alert.status !== 'SEEN' || isUpdatingStatus}
+                      title={alert.status === 'OPENED' || alert.status === 'SEEN' ? '' : 'Only available for OPENED or SEEN status'}
                     >
-                      <FaEdit style={{ marginRight: '4px' }} />
-                      Edit Alert
+                      {isUpdatingStatus ? <Spinner size="sm" /> : 'Mark as Seen'}
                     </Button>
-                  )}
-                  <Button
-                    size="sm"
-                    colorPalette="red"
-                    onClick={handleDelete}
-                    loading={isDeleting}
-                  >
-                    <FaTrash style={{ marginRight: '4px' }} />
-                    Delete Alert
-                  </Button>
-                </HStack>
-                {isClosedAlert && !isAdmin() && canModify && (
-                  <Text fontSize="xs" color="gray.500" mt={2}>
-                    Closed alerts can only be edited by administrators
+                    {/* Mark as Safe - available for OPENED or SEEN status (any authenticated user) */}
+                    <Button
+                      size="sm"
+                      colorPalette="green"
+                      bg="#2d884d"
+                      onClick={() => handleOpenStatusDialog('SAFE')}
+                      disabled={alert.status !== 'OPENED' && alert.status !== 'SEEN' || isUpdatingStatus}
+                      title={alert.status === 'OPENED' || alert.status === 'SEEN' ? '' : 'Only available for OPENED or SEEN status'}
+                    >
+                      {isUpdatingStatus ? <Spinner size="sm" /> : 'Mark as Safe'}
+                    </Button>
+                    {/* Mark as Closed - available for OPENED, SEEN, or SAFE status (owner/admin only) */}
+                    {(() => {
+                      const canCloseStatus = alert.status === 'OPENED' || alert.status === 'SEEN' || alert.status === 'SAFE'
+                      const closeTitle = !canModify
+                        ? 'Only alert owner or admin can close'
+                        : !canCloseStatus
+                          ? 'Only available for OPENED, SEEN, or SAFE status'
+                          : ''
+                      return (
+                        <Button
+                          size="sm"
+                          colorPalette="blue"
+                          bg="#4091d7"
+                          onClick={() => setShowClosureDialog(true)}
+                          disabled={!canModify || !canCloseStatus || isUpdatingStatus}
+                          title={closeTitle}
+                        >
+                          {isUpdatingStatus ? <Spinner size="sm" /> : 'Mark as Closed'}
+                        </Button>
+                      )
+                    })()}
+                  </HStack>
+                </Box>
+
+                {/* Subscription Section - Always visible */}
+                <Box pt={4} borderTop="1px" borderColor="gray.200">
+                  <Text fontWeight="bold" mb={3} color="gray.600">
+                    Notifications
                   </Text>
-                )}
-              </Box>
-            )}
+                  <SubscribeButton
+                    alertId={alert.id}
+                    alertStatus={alert.status}
+                    showStatus
+                  />
+                </Box>
+              </VStack>
+            </Card.Body>
+          </Card.Root>
+        </Box>
 
-            <Box pt={4} borderTop="1px" borderColor="gray.200">
-              <Text fontWeight="bold" mb={3} color="gray.600">
-                Update Status
-              </Text>
-              <HStack gap={2} wrap="wrap">
-                {/* Mark as Seen - available for OPENED or SEEN status (any authenticated user) */}
-                <Button 
-                  size="sm" 
-                  colorPalette="yellow" 
-                  onClick={() => handleOpenStatusDialog('SEEN')} 
-                  disabled={alert.status !== 'OPENED' && alert.status !== 'SEEN' || isUpdatingStatus}
-                  title={alert.status === 'OPENED' || alert.status === 'SEEN' ? '' : 'Only available for OPENED or SEEN status'}
-                >
-                  {isUpdatingStatus ? <Spinner size="sm" /> : 'Mark as Seen'}
-                </Button>
-                {/* Mark as Safe - available for OPENED or SEEN status (any authenticated user) */}
-                <Button 
-                  size="sm" 
-                  colorPalette="blue" 
-                  onClick={() => handleOpenStatusDialog('SAFE')} 
-                  disabled={alert.status !== 'OPENED' && alert.status !== 'SEEN' || isUpdatingStatus}
-                  title={alert.status === 'OPENED' || alert.status === 'SEEN' ? '' : 'Only available for OPENED or SEEN status'}
-                >
-                  {isUpdatingStatus ? <Spinner size="sm" /> : 'Mark as Safe'}
-                </Button>
-                {/* Mark as Closed - available for OPENED, SEEN, or SAFE status (owner/admin only) */}
-                {(() => {
-                  const canCloseStatus = alert.status === 'OPENED' || alert.status === 'SEEN' || alert.status === 'SAFE'
-                  const closeTitle = !canModify 
-                    ? 'Only alert owner or admin can close' 
-                    : !canCloseStatus 
-                      ? 'Only available for OPENED, SEEN, or SAFE status' 
-                      : ''
-                  return (
-                    <Button 
-                      size="sm" 
-                      colorPalette="green" 
-                      onClick={() => setShowClosureDialog(true)} 
-                      disabled={!canModify || !canCloseStatus || isUpdatingStatus}
-                      title={closeTitle}
-                    >
-                      {isUpdatingStatus ? <Spinner size="sm" /> : 'Mark as Closed'}
-                    </Button>
-                  )
-                })()}
-              </HStack>
-            </Box>
+        {/* Right Column - Events Section */}
+        <Box flex={{ base: '1', lg: '0 0 55%' }} minW="0">
+          <Tabs.Root defaultValue="route" variant="line">
+            <Tabs.List bg="white" borderBottom="2px" borderColor="gray.200" mb={0} p={0}>
+              <Tabs.Trigger value="route" px={4} py={2} fontWeight="medium" color="gray.600">
+                <FaDirections style={{ marginRight: '8px' }} />
+                Route Map
+              </Tabs.Trigger>
+              <Tabs.Trigger value="history" px={4} py={2} fontWeight="medium" color="gray.600">
+                <FaCalendar style={{ marginRight: '8px' }} />
+                History
+              </Tabs.Trigger>
+            </Tabs.List>
 
-            {/* Subscription Section - Always visible */}
-            <Box pt={4} borderTop="1px" borderColor="gray.200">
-              <Text fontWeight="bold" mb={3} color="gray.600">
-                Notifications
-              </Text>
-              <SubscribeButton
-                alertId={alert.id}
-                alertStatus={alert.status}
-                showStatus
-              />
-            </Box>
-          </VStack>
-        </Card.Body>
-      </Card.Root>
+            <Tabs.Content value="route" p={0} mt={0}>
+              <AlertRouteMap events={events} />
+            </Tabs.Content>
 
-      {/* Events Section - Timeline and Route Map */}
-      <Box mt={6}>
-        <Tabs.Root defaultValue="history" variant="line">
-          <Tabs.List bg="white" borderBottom="2px" borderColor="gray.200" mb={4}>
-            <Tabs.Trigger value="history" px={4} py={2} fontWeight="medium" color="gray.600">
-              <FaCalendar style={{ marginRight: '8px' }} />
-              History
-            </Tabs.Trigger>
-            <Tabs.Trigger value="route" px={4} py={2} fontWeight="medium" color="gray.600">
-              <FaDirections style={{ marginRight: '8px' }} />
-              Route Map
-            </Tabs.Trigger>
-          </Tabs.List>
-
-          <Tabs.Content value="history">
-            <AlertEventsList events={events} isLoading={isLoadingEvents} />
-          </Tabs.Content>
-
-          <Tabs.Content value="route">
-            <AlertRouteMap events={events} />
-          </Tabs.Content>
-        </Tabs.Root>
-      </Box>
+            <Tabs.Content value="history" p={0} mt={0}>
+              <AlertEventsList events={events} isLoading={isLoadingEvents} />
+            </Tabs.Content>
+          </Tabs.Root>
+        </Box>
+      </Flex>
 
       <ClosureReasonDialog
         open={showClosureDialog}

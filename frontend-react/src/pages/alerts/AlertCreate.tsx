@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Box, Heading, Button, VStack, Field, Input, Textarea, NativeSelect, Spinner, Flex, Text, Badge, HStack, Alert, SimpleGrid } from '@chakra-ui/react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { FaArrowLeft } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
 import { petService } from '../../services/pet.service'
 import { Pet, ErrorResponse } from '../../types'
@@ -156,6 +157,11 @@ export default function AlertCreate() {
 
   return (
     <Box w="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
+      <Button variant="ghost" mb={4} onClick={() => navigate('/alerts')}>
+        <FaArrowLeft style={{ marginRight: '8px' }} />
+        Back to Alerts
+      </Button>
+
       <Heading size="lg" mb={6} color="gray.800" fontWeight="bold">
         Create Alert
       </Heading>

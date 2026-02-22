@@ -21,21 +21,21 @@ export default function MainLayout() {
       bgRepeat="no-repeat"
     >
       <Sidebar isCollapsed={isCollapsed} onToggle={toggleSidebar} />
-      <Flex 
-        flex="1" 
-        direction="column" 
-        ml={isMobile ? 0 : isCollapsed ? '70px' : '250px'}
+      <Flex
+        flex="1"
+        direction="column"
+        ml={isMobile ? 0 : isCollapsed ? '70px' : '100px'}
         transition="margin-left 0.3s ease"
       >
         <Header onToggleSidebar={toggleSidebar} isSidebarCollapsed={isCollapsed} />
-        <Box 
-          flex="1" 
-          p={6} 
+        <Box
+          flex="1"
+          p={6}
           bg="rgba(255, 255, 255, 0.3)"
           _dark={{ bg: 'rgba(17, 24, 39, 0.5)' }}
-          maxW="1800px"
+          maxW="100%"
           w="100%"
-          mx="auto"
+          mx="0"
         >
           <Outlet />
         </Box>

@@ -38,6 +38,9 @@ export interface Alert {
   closureReason?: string
   createdAt: string
   updatedAt?: string
+  petName?: string
+  workingPetName?: string
+  createdByUsername?: string
 }
 
 export type AlertStatus = 'OPENED' | 'SEEN' | 'SAFE' | 'CLOSED'

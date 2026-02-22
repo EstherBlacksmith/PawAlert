@@ -35,6 +35,36 @@ const getEventColor = (eventType: string): string => {
   }
 }
 
+// Helper to get hex color for timeline dot based on event type
+const getEventHexColor = (eventType: string): string => {
+  switch (eventType) {
+    case 'STATUS_CHANGED':
+      return '#4091d7' // accent blue
+    case 'TITLE_CHANGED':
+      return '#7c3aed' // brand purple
+    case 'DESCRIPTION_CHANGED':
+      return '#f97316' // orange
+    default:
+      return '#9ca3af' // gray
+  }
+}
+
+// Helper to get pastel background color for timeline dot based on new status
+const getStatusPastelColor = (newStatus: string | null): string => {
+  switch (newStatus) {
+    case 'OPENED':
+      return '#fecaca' // light red/pink pastel
+    case 'SEEN':
+      return '#fef08a' // light yellow pastel
+    case 'SAFE':
+      return '#bbf7d0' // light green pastel
+    case 'CLOSED':
+      return '#bfdbfe' // light blue pastel
+    default:
+      return '#f3f4f6' // light gray pastel
+  }
+}
+
 // Helper to format status change text
 const formatStatusChange = (event: AlertEvent): string => {
   if (event.eventType === 'STATUS_CHANGED') {
@@ -133,18 +163,23 @@ export function AlertEventsList({ events, isLoading }: AlertEventsListProps) {
                   minW="32px"
                   h="32px"
                   borderRadius="full"
-                  bg={`${getEventColor(event.eventType)}.100`}
+                  bg={event.eventType === 'STATUS_CHANGED' ? getStatusPastelColor(event.newStatus) : `${getEventColor(event.eventType)}.100`}
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
                   zIndex={1}
                 >
-                  <GiCalendar size={14} color={`${getEventColor(event.eventType)}.600`} />
+                  <GiCalendar size={14} color="gray.400" />
                 </Box>
                 
                 <Box flex={1}>
                   <HStack justify="space-between" align="start" mb={1}>
-                    <Badge colorPalette={getEventColor(event.eventType)} fontSize="sm">
+                    <Badge
+                      colorPalette={event.eventType === 'STATUS_CHANGED' ? 'gray' : getEventColor(event.eventType)}
+                      bg={event.eventType === 'STATUS_CHANGED' ? getStatusPastelColor(event.newStatus) : undefined}
+                      color={event.eventType === 'STATUS_CHANGED' ? '#6b7280' : undefined}
+                      fontSize="sm"
+                    >
                       {getEventTypeDisplay(event.eventType)}
                     </Badge>
                     <Text fontSize="xs" color="gray.500">

@@ -13,10 +13,12 @@ function extractValue(obj: unknown): string | null {
 }
 
 // Helper function to extract boolean from backend response
+// Returns true as default for notification preferences when backend returns falsy values
 function extractBoolean(obj: unknown): boolean {
   if (typeof obj === 'boolean') return obj
   if (typeof obj === 'string') return obj === 'true'
-  return false
+  // Default to true for notification preferences (null/undefined from backend)
+  return true
 }
 
 // Transform backend user response to frontend User format

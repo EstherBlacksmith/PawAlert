@@ -26,10 +26,10 @@ L.Icon.Default.mergeOptions({
 // Create custom marker icons based on alert status
 const createAlertIcon = (status: AlertStatus): L.DivIcon => {
   const colors: Record<AlertStatus, string> = {
-    OPENED: '#E53E3E', // red - urgent
-    SEEN: '#DD6B20',   // orange
-    SAFE: '#38A169',   // green
-    CLOSED: '#718096'  // gray
+    OPENED: '#b34045', // red
+    SEEN: '#fecf6d',   // yellow/orange soft
+    SAFE: '#2d884d',   // green
+    CLOSED: '#4091d7'  // blue
   }
   
   const color = colors[status] || '#718096'
@@ -110,10 +110,10 @@ function FitBounds({
 // Get status color for badge
 const getStatusColor = (status: AlertStatus): string => {
   const colors: Record<AlertStatus, string> = {
-    OPENED: 'red',
-    SEEN: 'orange',
-    SAFE: 'green',
-    CLOSED: 'gray'
+    OPENED: '#b34045',
+    SEEN: '#fecf6d',
+    SAFE: '#2d884d',
+    CLOSED: '#4091d7'
   }
   return colors[status] || 'gray'
 }
@@ -340,18 +340,18 @@ export default function NearbyAlertsMap({
         </MapContainer>
         
         {/* Overlay Alert Counter Badge - only for fullHeight mode */}
-        {fullHeight && (
-          <Box
-            position="absolute"
-            top={4}
-            left={4}
-            bg="white"
-            borderRadius="md"
-            px={3}
-            py={2}
-            boxShadow="md"
-            zIndex={1000}
-          >
+         {fullHeight && (
+           <Box
+             position="absolute"
+             top={4}
+             right={4}
+             bg="white"
+             borderRadius="md"
+             px={3}
+             py={2}
+             boxShadow="md"
+             zIndex={1000}
+           >
             <HStack>
               <Icon as={FiAlertTriangle} color="orange.500" boxSize={4} />
               <Text fontSize="sm" fontWeight="medium" color="gray.700">
@@ -379,15 +379,15 @@ export default function NearbyAlertsMap({
           >
             <HStack gap={3} fontSize="xs" color="gray.500">
               <HStack>
-                <Box w={2} h={2} borderRadius="full" bg="red.500" />
+                <Box w={2} h={2} borderRadius="full" bg="orange.500" />
                 <Text>Open</Text>
               </HStack>
               <HStack>
-                <Box w={2} h={2} borderRadius="full" bg="orange.500" />
+                <Box w={2} h={2} borderRadius="full" bg="cyan.500" />
                 <Text>Seen</Text>
               </HStack>
               <HStack>
-                <Box w={2} h={2} borderRadius="full" bg="green.500" />
+                <Box w={2} h={2} borderRadius="full" bg="red.500" />
                 <Text>Safe</Text>
               </HStack>
               <HStack>
@@ -424,15 +424,15 @@ export default function NearbyAlertsMap({
             flexWrap="wrap"
           >
             <HStack>
-              <Box w={3} h={3} borderRadius="full" bg="red.500" />
+              <Box w={3} h={3} borderRadius="full" bg="orange.500" />
               <Text>Open</Text>
             </HStack>
             <HStack>
-              <Box w={3} h={3} borderRadius="full" bg="orange.500" />
+              <Box w={3} h={3} borderRadius="full" bg="cyan.500" />
               <Text>Seen</Text>
             </HStack>
             <HStack>
-              <Box w={3} h={3} borderRadius="full" bg="green.500" />
+              <Box w={3} h={3} borderRadius="full" bg="red.500" />
               <Text>Safe</Text>
             </HStack>
             <HStack>
