@@ -84,6 +84,8 @@ public class PetService implements
         Pet existing = petRepositoryPort.findById(petId).orElseThrow(() -> new PetNotFoundException("Pet not found"));
 
         Role userRole = getUserRole(userId);
+        
+        System.out.println("[PET-SERVICE] updatePet - petId: " + petId + ", userId: " + userId + ", petOwnerId: " + existing.getUserId() + ", userRole: " + userRole);
 
         checkOwnership(existing, userId, userRole);
 
@@ -126,6 +128,8 @@ public class PetService implements
     private void checkOwnership(Pet existingPet, UUID userId, Role userRole) {
         boolean isOwner = existingPet.getUserId().equals(userId);
         boolean isAdmin = userRole == Role.ADMIN;
+        
+        System.out.println("[PET-SERVICE] checkOwnership - isOwner: " + isOwner + ", isAdmin: " + isAdmin);
 
         if (!isOwner && !isAdmin) {
             throw new UnauthorizedException("Only the owner or admin can modify the pet data");

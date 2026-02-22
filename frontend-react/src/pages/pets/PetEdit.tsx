@@ -4,11 +4,13 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { petService } from '../../services/pet.service'
 import { useEnumValues } from '../../hooks/useMetadata'
+import { useAuth } from '../../context/AuthContext'
 import { ErrorResponse } from '../../types'
 
 export default function PetEdit() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isFetching, setIsFetching] = useState(true)
@@ -16,6 +18,7 @@ export default function PetEdit() {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [imageError, setImageError] = useState<string | null>(null)
   const [error, setError] = useState<ErrorResponse | null>(null)
+  const [petOwnerId, setPetOwnerId] = useState<string | null>(null)
   
   // Enum values from backend
   const { values: speciesValues, loading: speciesLoading } = useEnumValues('Species')
@@ -40,6 +43,19 @@ export default function PetEdit() {
       try {
         if (id) {
           const pet = await petService.getPet(id)
+          setPetOwnerId(pet.userId)
+          
+          // Check if user has permission to edit
+          if (user?.id !== pet.userId && user?.role !== 'ADMIN') {
+            setError({
+              status: 403,
+              error: 'Forbidden',
+              message: 'You do not have permission to edit this pet'
+            })
+            setIsFetching(false)
+            return
+          }
+          
           setFormData({
             officialPetName: pet.officialPetName,
             workingPetName: pet.workingPetName || '',
@@ -64,7 +80,7 @@ export default function PetEdit() {
       }
     }
     fetchPet()
-  }, [id])
+  }, [id, user])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })

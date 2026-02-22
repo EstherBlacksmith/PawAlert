@@ -198,13 +198,13 @@ export default function Login() {
                >
                  PawAlert
                </Heading>
-               <Text 
-                 fontSize="md" 
-                 color="gray.600" 
+               <Text
+                 fontSize="md"
+                 color="gray.600"
                  fontWeight="500"
                  mt={1}
                >
-                 Protege a tus mascotas 24/7
+                 Protect your pets 24/7
                </Text>
              </Box>
 
