@@ -18,6 +18,13 @@ export const petService = {
   },
 
   updatePet: async (petId: string, petData: UpdatePetRequest): Promise<Pet> => {
+    console.log('[DEBUG] updatePet called with petId:', petId)
+    console.log('[DEBUG] updatePet petData:', petData)
+    const token = localStorage.getItem('token')
+    console.log('[DEBUG] Token exists:', !!token)
+    if (token) {
+      console.log('[DEBUG] Token first 20 chars:', token.substring(0, 20))
+    }
     const response = await api.patch<Pet>(`/pets/${petId}`, petData)
     return response.data
   },

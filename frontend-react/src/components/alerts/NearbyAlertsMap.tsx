@@ -94,13 +94,25 @@ function FitBounds({
   const map = useMap()
   
   useEffect(() => {
-    if (alerts.length > 0) {
-      const bounds: [number, number][] = alerts.map(alert => [
-        alert.latitude,
-        alert.longitude
-      ])
-      bounds.push(userLocation)
-      map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 })
+    if (alerts.length > 0 && map) {
+      const bounds: [number, number][] = alerts
+        .filter(alert => alert.latitude != null && alert.longitude != null)
+        .map(alert => [
+          alert.latitude,
+          alert.longitude
+        ])
+      
+      if (userLocation && userLocation[0] != null && userLocation[1] != null) {
+        bounds.push(userLocation)
+      }
+      
+      if (bounds.length > 0) {
+        try {
+          map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 })
+        } catch (err) {
+          console.error('Error fitting bounds to map:', err)
+        }
+      }
     }
   }, [alerts, userLocation, map])
   
@@ -147,10 +159,23 @@ export default function NearbyAlertsMap({
     const fetchNearbyAlerts = async () => {
       try {
         setIsLoading(true)
+        setError(null)
+        console.log('[NearbyAlertsMap] Fetching alerts for location:', { latitude, longitude, radiusKm })
         const data = await alertService.getNearbyAlerts(latitude, longitude, radiusKm)
-        setAlerts(data)
+        console.log('[NearbyAlertsMap] Received alerts:', data)
+        
+        // Validate alert data
+        const validAlerts = data.filter(alert => {
+          if (!alert.latitude || !alert.longitude) {
+            console.warn('[NearbyAlertsMap] Alert missing coordinates:', alert.id)
+            return false
+          }
+          return true
+        })
+        
+        setAlerts(validAlerts)
       } catch (err) {
-        console.error('Error fetching nearby alerts:', err)
+        console.error('[NearbyAlertsMap] Error fetching nearby alerts:', err)
         setError('Could not load nearby alerts')
       } finally {
         setIsLoading(false)
@@ -301,13 +326,15 @@ export default function NearbyAlertsMap({
             </Popup>
           </Marker>
           
-          {/* Alert markers */}
-          {alerts.map((alert) => (
-            <Marker
-              key={alert.id}
-              position={[alert.latitude, alert.longitude]}
-              icon={createAlertIcon(alert.status)}
-            >
+           {/* Alert markers */}
+           {alerts
+             .filter(alert => alert.latitude != null && alert.longitude != null)
+             .map((alert) => (
+             <Marker
+               key={alert.id}
+               position={[alert.latitude, alert.longitude]}
+               icon={createAlertIcon(alert.status)}
+             >
               <Popup>
                 <VStack align="start" gap={2} minWidth="200px" p={1}>
                   <Text fontWeight="bold" fontSize="sm" color="gray.800">
