@@ -1,12 +1,14 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Box, Heading, Button, SimpleGrid, Card, Text, Flex, Spinner, Badge, IconButton, HStack, Collapsible, Input, NativeSelect, Grid, VStack } from '@chakra-ui/react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
-import { FaPlus, FaSearch as FaSearchIcon, FaCog, FaTimes, FaMapMarkerAlt, FaSearch, FaArrowLeft } from 'react-icons/fa'
+import { FaPlus, FaSearch as FaSearchIcon, FaCog, FaTimes, FaMapMarkerAlt, FaSearch, FaArrowLeft, FaChevronLeft, FaChevronRight, FaPaw } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
 import { Alert, AlertStatus, AlertSearchFilters } from '../../types'
 import { SubscribeButton } from '../../components/alerts/SubscribeButton'
 import { useMetadata } from '../../hooks/useMetadata'
 import { useLocation } from '../../hooks/useLocation'
+
+const ITEMS_PER_PAGE = 10
 
 const statusColors: Record<string, string> = {
   OPENED: '#b34045',
@@ -24,25 +26,26 @@ const statusOptions: { value: string; label: string }[] = [
 ]
 
 export default function AlertList() {
-   const navigate = useNavigate()
-   const [searchParams] = useSearchParams()
-   const [alerts, setAlerts] = useState<Alert[]>([])
-   const [isLoading, setIsLoading] = useState(true)
-   const [isFilterOpen, setIsFilterOpen] = useState(false)
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
+    const [alerts, setAlerts] = useState<Alert[]>([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [isFilterOpen, setIsFilterOpen] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
+    
+    // Filter state
+    const [status, setStatus] = useState<string>(searchParams.get('status') || '')
+   const [species, setSpecies] = useState<string>('')
+   const [petName, setPetName] = useState('')
+   const [breed, setBreed] = useState('')
+   const [createdFrom, setCreatedFrom] = useState('')
+   const [createdTo, setCreatedTo] = useState('')
+   const [radiusKm, setRadiusKm] = useState<string>('10')
    
-   // Filter state
-   const [status, setStatus] = useState<string>(searchParams.get('status') || '')
-  const [species, setSpecies] = useState<string>('')
-  const [petName, setPetName] = useState('')
-  const [breed, setBreed] = useState('')
-  const [createdFrom, setCreatedFrom] = useState('')
-  const [createdTo, setCreatedTo] = useState('')
-  const [radiusKm, setRadiusKm] = useState<string>('10')
-  
-  // Location state
-  const [userLatitude, setUserLatitude] = useState<number | null>(null)
-  const [userLongitude, setUserLongitude] = useState<number | null>(null)
-  const [locationError, setLocationError] = useState<string | null>(null)
+   // Location state
+   const [userLatitude, setUserLatitude] = useState<number | null>(null)
+   const [userLongitude, setUserLongitude] = useState<number | null>(null)
+   const [locationError, setLocationError] = useState<string | null>(null)
   
   // Hooks
   const { metadata: speciesOptions } = useMetadata('Species')
@@ -125,11 +128,23 @@ export default function AlertList() {
     setLocationError(null)
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleApplyFilters()
-    }
-  }
+   const handleKeyPress = (e: React.KeyboardEvent) => {
+     if (e.key === 'Enter') {
+       handleApplyFilters()
+     }
+   }
+
+   // Pagination calculations
+   const totalPages = Math.ceil(alerts.length / ITEMS_PER_PAGE)
+   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+   const endIndex = startIndex + ITEMS_PER_PAGE
+   const paginatedAlerts = alerts.slice(startIndex, endIndex)
+
+   const handlePageChange = (page: number) => {
+     setCurrentPage(page)
+     // Scroll to top of alerts section
+     window.scrollTo({ top: 0, behavior: 'smooth' })
+   }
 
   if (isLoading && alerts.length === 0) {
     return (
@@ -388,63 +403,119 @@ export default function AlertList() {
         </Collapsible.Content>
       </Collapsible.Root>
 
-      {/* Results */}
-      {alerts.length === 0 ? (
-        <Card.Root p={8} textAlign="center">
-          <Text color="gray.500">No alerts found matching your criteria.</Text>
-          <Link to="/alerts/create">
-            <Button mt={4} colorPalette="brand" variant="outline" bg="brand.50" _hover={{ bg: 'brand.100' }}>
-              Create a new alert
-            </Button>
-          </Link>
-        </Card.Root>
-      ) : (
-        <>
-          <Text fontSize="sm" color="gray.500" mb={4}>
-            Showing {alerts.length} alert{alerts.length !== 1 ? 's' : ''}
-          </Text>
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
-             {alerts.map((alert) => (
-               <Card.Root key={alert.id} display="flex" flexDirection="column">
-                 <Card.Body display="flex" flexDirection="column" flex="1">
-                   <Flex justify="space-between" align="start" mb={2}>
-                     <Heading size="md">{alert.title}</Heading>
-                     <Badge 
-                       bg={statusColors[alert.status]} 
-                       color="white"
-                       px={2}
-                       py={1}
-                       borderRadius="md"
-                       fontSize="xs"
-                       fontWeight="bold"
-                     >
-                       {alert.status}
-                     </Badge>
-                   </Flex>
-                   <Text fontSize="sm" color="gray.500" mb={2} lineClamp={2}>
-                     {alert.description}
-                   </Text>
-                   <Text fontSize="xs" color="gray.400" mb={4} flex="1">
-                     Location: {alert.latitude != null ? alert.latitude.toFixed(4) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(4) : 'N/A'}
-                   </Text>
-                   <Flex mt="auto" gap={2} justify="space-between" align="center">
-                      <Link to={`/alerts/${alert.id}`}>
-                        <IconButton aria-label="View" variant="ghost" size="sm" color="brand.500">
-                          <FaSearchIcon />
-                        </IconButton>
-                      </Link>
-                     <SubscribeButton
-                       alertId={alert.id}
-                       alertStatus={alert.status}
+       {/* Results */}
+       {alerts.length === 0 ? (
+         <Card.Root p={8} textAlign="center">
+           <Text color="gray.500">No alerts found matching your criteria.</Text>
+           <Link to="/alerts/create">
+             <Button mt={4} colorPalette="brand" variant="outline" bg="brand.50" _hover={{ bg: 'brand.100' }}>
+               Create a new alert
+             </Button>
+           </Link>
+         </Card.Root>
+       ) : (
+         <>
+           <Text fontSize="sm" color="gray.500" mb={4}>
+             Showing {startIndex + 1} to {Math.min(endIndex, alerts.length)} of {alerts.length} alert{alerts.length !== 1 ? 's' : ''}
+           </Text>
+           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} mb={6}>
+              {paginatedAlerts.map((alert) => (
+                <Card.Root key={alert.id} display="flex" flexDirection="column">
+                  <Card.Body display="flex" flexDirection="column" flex="1">
+                    <Flex justify="space-between" align="start" mb={2}>
+                      <Heading size="md">{alert.title}</Heading>
+                      <Badge 
+                        bg={statusColors[alert.status]} 
+                        color="white"
+                        px={2}
+                        py={1}
+                        borderRadius="md"
+                        fontSize="xs"
+                        fontWeight="bold"
+                      >
+                        {alert.status}
+                      </Badge>
+                    </Flex>
+                    <Text fontSize="sm" color="gray.500" mb={2} lineClamp={2}>
+                      {alert.description}
+                    </Text>
+                    <Text fontSize="xs" color="gray.400" mb={4} flex="1">
+                      Location: {alert.latitude != null ? alert.latitude.toFixed(4) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(4) : 'N/A'}
+                    </Text>
+                    <Flex mt="auto" gap={2} justify="space-between" align="center">
+                       <Link to={`/alerts/${alert.id}`}>
+                         <IconButton aria-label="View" variant="ghost" size="sm" color="brand.500">
+                           <FaSearchIcon />
+                         </IconButton>
+                       </Link>
+                       <IconButton
+                         aria-label="View pet"
+                         variant="ghost"
+                         size="sm"
+                         color="green.500"
+                         onClick={() => navigate(`/pets/${alert.petId}`)}
+                       >
+                         <FaPaw />
+                       </IconButton>
+                       <SubscribeButton
+                         alertId={alert.id}
+                         alertStatus={alert.status}
+                         size="sm"
+                       />
+                     </Flex>
+                  </Card.Body>
+                </Card.Root>
+              ))}
+           </SimpleGrid>
+
+           {/* Pagination Controls */}
+           {totalPages > 1 && (
+             <Flex justify="space-between" align="center" gap={4} flexWrap="wrap">
+               <Text fontSize="sm" color="gray.600">
+                 Page {currentPage} of {totalPages}
+               </Text>
+               <HStack gap={2}>
+                 <Button
+                   size="sm"
+                   variant="outline"
+                   onClick={() => handlePageChange(currentPage - 1)}
+                   disabled={currentPage === 1}
+                   colorPalette="brand"
+                 >
+                   <FaChevronLeft style={{ marginRight: '4px' }} />
+                   Previous
+                 </Button>
+                 
+                 <HStack gap={1}>
+                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                     <Button
+                       key={page}
                        size="sm"
-                     />
-                   </Flex>
-                 </Card.Body>
-               </Card.Root>
-             ))}
-          </SimpleGrid>
-        </>
-      )}
-    </Box>
-  )
-}
+                       variant={currentPage === page ? 'solid' : 'outline'}
+                       colorPalette={currentPage === page ? 'brand' : 'gray'}
+                       onClick={() => handlePageChange(page)}
+                       minW="32px"
+                     >
+                       {page}
+                     </Button>
+                   ))}
+                 </HStack>
+
+                 <Button
+                   size="sm"
+                   variant="outline"
+                   onClick={() => handlePageChange(currentPage + 1)}
+                   disabled={currentPage === totalPages}
+                   colorPalette="brand"
+                 >
+                   Next
+                   <FaChevronRight style={{ marginLeft: '4px' }} />
+                 </Button>
+               </HStack>
+             </Flex>
+           )}
+         </>
+       )}
+     </Box>
+   )
+ }
