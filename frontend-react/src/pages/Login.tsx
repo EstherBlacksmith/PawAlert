@@ -68,22 +68,25 @@ export default function Login() {
     }
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setIsLoading(true)
+   const handleSubmit = async (e: React.FormEvent) => {
+     e.preventDefault()
+     setError(null)
+     setIsLoading(true)
 
-    try {
-      await login({ email, password })
-      navigate('/dashboard')
-    } catch (err: unknown) {
-      // Use centralized error extraction for user-friendly messages
-      const friendlyError = extractError(err)
-      setError(friendlyError)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+     try {
+       console.log('[DEBUG] Login attempt with email:', email)
+       await login({ email, password })
+       console.log('[DEBUG] Login successful, navigating to dashboard')
+       navigate('/dashboard')
+     } catch (err: unknown) {
+       // Use centralized error extraction for user-friendly messages
+       console.log('[DEBUG] Login error:', err)
+       const friendlyError = extractError(err)
+       setError(friendlyError)
+     } finally {
+       setIsLoading(false)
+     }
+   }
 
   return (
     <Box
