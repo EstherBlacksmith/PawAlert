@@ -7,6 +7,7 @@ import { Alert, AlertStatus, AlertSearchFilters } from '../../types'
 import { SubscribeButton } from '../../components/alerts/SubscribeButton'
 import { useMetadata } from '../../hooks/useMetadata'
 import { useLocation } from '../../hooks/useLocation'
+import { useAuth } from '../../context/AuthContext'
 
 const ITEMS_PER_PAGE = 10
 
@@ -35,21 +36,23 @@ export default function AlertList() {
     
     // Filter state
     const [status, setStatus] = useState<string>(searchParams.get('status') || '')
-   const [species, setSpecies] = useState<string>('')
-   const [petName, setPetName] = useState('')
-   const [breed, setBreed] = useState('')
-   const [createdFrom, setCreatedFrom] = useState('')
-   const [createdTo, setCreatedTo] = useState('')
-   const [radiusKm, setRadiusKm] = useState<string>('10')
+    const [species, setSpecies] = useState<string>('')
+    const [petName, setPetName] = useState('')
+    const [breed, setBreed] = useState('')
+    const [createdFrom, setCreatedFrom] = useState('')
+    const [createdTo, setCreatedTo] = useState('')
+    const [radiusKm, setRadiusKm] = useState<string>('10')
+    const [showMyAlertsOnly, setShowMyAlertsOnly] = useState(false)
+    
+    // Location state
+    const [userLatitude, setUserLatitude] = useState<number | null>(null)
+    const [userLongitude, setUserLongitude] = useState<number | null>(null)
+    const [locationError, setLocationError] = useState<string | null>(null)
    
-   // Location state
-   const [userLatitude, setUserLatitude] = useState<number | null>(null)
-   const [userLongitude, setUserLongitude] = useState<number | null>(null)
-   const [locationError, setLocationError] = useState<string | null>(null)
-  
-  // Hooks
-  const { metadata: speciesOptions } = useMetadata('Species')
-  const { detectLocation, isLoading: isLocationLoading } = useLocation()
+   // Hooks
+   const { metadata: speciesOptions } = useMetadata('Species')
+   const { detectLocation, isLoading: isLocationLoading } = useLocation()
+   const { user } = useAuth()
 
   // Count active filters
   const activeFilterCount = [
@@ -59,36 +62,42 @@ export default function AlertList() {
     breed,
     createdFrom,
     createdTo,
-    userLatitude !== null && userLongitude !== null
+    userLatitude !== null && userLongitude !== null,
+    showMyAlertsOnly
   ].filter(Boolean).length
 
-  const fetchAlerts = useCallback(async () => {
-    setIsLoading(true)
-    try {
-      const filters: AlertSearchFilters = {}
-      
-      if (status) filters.status = status as AlertStatus
-      if (petName) filters.petName = petName
-      if (species) filters.species = species
-      if (breed) filters.breed = breed
-      if (createdFrom) filters.createdFrom = createdFrom
-      if (createdTo) filters.createdTo = createdTo
-      
-      // Add location filters if available
-      if (userLatitude !== null && userLongitude !== null && radiusKm) {
-        filters.latitude = userLatitude
-        filters.longitude = userLongitude
-        filters.radiusKm = parseFloat(radiusKm)
-      }
-      
-      const data = await alertService.searchAlertsWithFilters(filters)
-      setAlerts(data)
-    } catch (error) {
-      console.error('Error fetching alerts:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [status, species, petName, breed, createdFrom, createdTo, userLatitude, userLongitude, radiusKm])
+   const fetchAlerts = useCallback(async () => {
+     setIsLoading(true)
+     try {
+       const filters: AlertSearchFilters = {}
+       
+       if (status) filters.status = status as AlertStatus
+       if (petName) filters.petName = petName
+       if (species) filters.species = species
+       if (breed) filters.breed = breed
+       if (createdFrom) filters.createdFrom = createdFrom
+       if (createdTo) filters.createdTo = createdTo
+       
+       // Add user filter if "My Alerts" is enabled
+       if (showMyAlertsOnly && user?.userId) {
+         filters.userId = user.userId
+       }
+       
+       // Add location filters if available
+       if (userLatitude !== null && userLongitude !== null && radiusKm) {
+         filters.latitude = userLatitude
+         filters.longitude = userLongitude
+         filters.radiusKm = parseFloat(radiusKm)
+       }
+       
+       const data = await alertService.searchAlertsWithFilters(filters)
+       setAlerts(data)
+     } catch (error) {
+       console.error('Error fetching alerts:', error)
+     } finally {
+       setIsLoading(false)
+     }
+   }, [status, species, petName, breed, createdFrom, createdTo, userLatitude, userLongitude, radiusKm, showMyAlertsOnly, user?.userId])
 
   useEffect(() => {
     fetchAlerts()
@@ -106,6 +115,7 @@ export default function AlertList() {
     setCreatedFrom('')
     setCreatedTo('')
     setRadiusKm('10')
+    setShowMyAlertsOnly(false)
     setUserLatitude(null)
     setUserLongitude(null)
     setLocationError(null)
@@ -220,14 +230,29 @@ export default function AlertList() {
                     size="sm"
                     variant="ghost"
                     onClick={handleClearFilters}
-                    disabled={!status && !species && !petName && !breed && !createdFrom && !createdTo && userLatitude === null}
+                    disabled={!status && !species && !petName && !breed && !createdFrom && !createdTo && userLatitude === null && !showMyAlertsOnly}
                   >
                     <FaTimes style={{ marginRight: '4px' }} />
                     Clear All
                   </Button>
                 </Flex>
 
-                <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' }} gap={4}>
+                {/* My Alerts Filter */}
+                  <Box mb={4}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={showMyAlertsOnly}
+                        onChange={(e) => setShowMyAlertsOnly(e.target.checked)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                      <Text fontSize="sm" color="gray.700" _dark={{ color: 'gray.200' }}>
+                        Show only my alerts
+                      </Text>
+                    </label>
+                  </Box>
+
+                  <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' }} gap={4}>
                   {/* Status Filter */}
                   <Box>
                     <Text fontSize="sm" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>

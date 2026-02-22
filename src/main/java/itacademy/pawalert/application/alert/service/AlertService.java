@@ -70,7 +70,8 @@ public class AlertService implements
                 null,        // createdFrom
                 null,        // createdTo
                 null,        // updatedFrom
-                null         // updatedTo
+                null,        // updatedTo
+                null         // userId
         );
         return alertRepository.search(criteria);
     }
@@ -298,10 +299,11 @@ public class AlertService implements
                               LocalDateTime createdFrom,
                               LocalDateTime createdTo,
                               LocalDateTime updatedFrom,
-                              LocalDateTime updatedTo) {
+                              LocalDateTime updatedTo,
+                              UUID userId) {
 
         AlertSearchCriteria criteria = new AlertSearchCriteria(
-                status, title, petName, species, breed, createdFrom, createdTo, updatedFrom, updatedTo
+                status, title, petName, species, breed, createdFrom, createdTo, updatedFrom, updatedTo, userId
         );
 
         return alertRepository.search(criteria);
