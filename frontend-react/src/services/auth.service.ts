@@ -15,7 +15,9 @@ export const authService = {
         surname: authResponse.surname,
         phoneNumber: authResponse.phonenumber,
         telegramChatId: null,
-        role: authResponse.role as User['role']
+        role: authResponse.role as User['role'],
+        emailNotificationsEnabled: true,
+        telegramNotificationsEnabled: true
       } as User
     }
   },

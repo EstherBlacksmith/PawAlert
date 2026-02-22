@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Box, Heading, Button, VStack, Field, Input, Textarea, Flex, Spinner, Alert } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { FaArrowLeft } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
 import { useAuth } from '../../context/AuthContext'
 import { ErrorResponse } from '../../types'
@@ -101,6 +102,11 @@ export default function AlertEdit() {
 
   return (
     <Box w="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
+      <Button variant="ghost" mb={4} onClick={() => navigate(`/alerts/${id}`)}>
+        <FaArrowLeft style={{ marginRight: '8px' }} />
+        Back to Alert
+      </Button>
+
       <Heading size="lg" mb={6} color="gray.800" _dark={{ color: 'white' }}>
         Edit Alert
       </Heading>
@@ -155,9 +161,9 @@ export default function AlertEdit() {
             </Button>
             <Button 
               type="submit" 
-              colorPalette="brand" 
-              bg="brand.500"
-              _hover={{ bg: 'brand.600' }}
+              colorPalette="blue" 
+              bg="#4682B4"
+              _hover={{ bg: '#36648B' }}
               flex={1}
               loading={isLoading}
             >

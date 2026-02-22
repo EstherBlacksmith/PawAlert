@@ -125,27 +125,20 @@ export function SubscribeButton({
     return <Spinner size="sm" color="purple.500" />
   }
 
-  if (isSubscribed) {
-    return (
-      <HStack gap={2}>
-        {showStatus && (
-          <Text fontSize="sm" color="green.600">
-            Subscribed
-          </Text>
-        )}
-        <Button
-          size={size}
-          colorPalette="orange"
-          variant="outline"
-          onClick={handleUnsubscribe}
-          loading={isLoading}
-        >
-          <GiBell style={{ marginRight: '4px' }} />
-          Unsubscribe
-        </Button>
-      </HStack>
-    )
-  }
+   if (isSubscribed) {
+     return (
+       <Button
+         size={size}
+         colorPalette="gray"
+         variant="outline"
+         disabled
+         title="You are already subscribed to this alert"
+       >
+         <GiBell style={{ marginRight: '4px' }} />
+         Subscribed
+       </Button>
+     )
+   }
 
   return (
     <Button

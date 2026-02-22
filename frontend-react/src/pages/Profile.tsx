@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Box, Heading, Button, VStack, Field, Input, Text, Card, Flex, Avatar, Stack, Switch, Spinner, Alert, SimpleGrid } from '@chakra-ui/react'
+import { useNavigate } from 'react-router-dom'
+import { FaArrowLeft } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
 import { userService } from '../services/user.service'
 import { ErrorResponse } from '../types'
@@ -7,6 +9,7 @@ import { extractError, showSuccessToast, showErrorToast } from '../utils/errorUt
 import { GiUser, GiSave, GiBell, GiSmartphone, GiMail } from '../components/icons'
 
 export default function Profile() {
+  const navigate = useNavigate()
   const { user, setUser } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [isFetching, setIsFetching] = useState(true)
@@ -38,23 +41,23 @@ export default function Profile() {
           phoneNumber: freshUser.phoneNumber || '',
           telegramChatId: freshUser.telegramChatId || '',
           emailNotificationsEnabled: freshUser.emailNotificationsEnabled ?? true,
-          telegramNotificationsEnabled: freshUser.telegramNotificationsEnabled ?? false,
+          telegramNotificationsEnabled: freshUser.telegramNotificationsEnabled ?? true,
         }
         setUserData(data)
         // Also update the auth context with fresh data
         setUser(freshUser)
       } catch (error) {
         console.error('Error fetching user data:', error)
-        // Fall back to cached data
-        setUserData({
-          username: user?.username || '',
-          email: user?.email || '',
-          surname: user?.surname || '',
-          phoneNumber: user?.phoneNumber || '',
-          telegramChatId: user?.telegramChatId || '',
-          emailNotificationsEnabled: true,
-          telegramNotificationsEnabled: false,
-        })
+         // Fall back to cached data
+         setUserData({
+           username: user?.username || '',
+           email: user?.email || '',
+           surname: user?.surname || '',
+           phoneNumber: user?.phoneNumber || '',
+           telegramChatId: user?.telegramChatId || '',
+           emailNotificationsEnabled: user?.emailNotificationsEnabled ?? true,
+           telegramNotificationsEnabled: user?.telegramNotificationsEnabled ?? true,
+         })
       } finally {
         setIsFetching(false)
       }
@@ -63,15 +66,15 @@ export default function Profile() {
     fetchUserData()
   }, [user?.userId])
   
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    surname: '',
-    phoneNumber: '',
-    telegramChatId: '',
-    emailNotificationsEnabled: true,
-    telegramNotificationsEnabled: false,
-  })
+   const [formData, setFormData] = useState({
+     username: '',
+     email: '',
+     surname: '',
+     phoneNumber: '',
+     telegramChatId: '',
+     emailNotificationsEnabled: true,
+     telegramNotificationsEnabled: true,
+   })
   
   // Update form data when user data is fetched
   useEffect(() => {
@@ -106,7 +109,7 @@ export default function Profile() {
         phoneNumber: updatedUser.phoneNumber || '',
         telegramChatId: updatedUser.telegramChatId || '',
         emailNotificationsEnabled: updatedUser.emailNotificationsEnabled ?? true,
-        telegramNotificationsEnabled: updatedUser.telegramNotificationsEnabled ?? false,
+        telegramNotificationsEnabled: updatedUser.telegramNotificationsEnabled ?? true,
       })
       showSuccessToast('Profile Updated', 'Your changes have been saved successfully.')
     } catch (error) {
@@ -129,6 +132,11 @@ export default function Profile() {
 
   return (
     <Box maxW="900px" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
+      <Button variant="ghost" mb={4} onClick={() => navigate(-1)}>
+        <FaArrowLeft style={{ marginRight: '8px' }} />
+        Back
+      </Button>
+
       <Heading size="lg" mb={6} color="gray.800" _dark={{ color: 'white' }}>
         Profile Settings
       </Heading>
@@ -187,34 +195,34 @@ export default function Profile() {
               Notifications
             </Heading>
             <Stack gap={4}>
-              <Flex justify="space-between" align="center">
-                <Box>
-                  <Text fontWeight="medium">Email Notifications</Text>
-                  <Text fontSize="sm" color="gray.700">
-                    Receive alerts via email
-                  </Text>
-                </Box>
-                <Switch.Root name="emailNotificationsEnabled" checked={formData.emailNotificationsEnabled} onChange={handleSwitchChange}>
-                  <Switch.HiddenInput />
-                  <Switch.Control>
-                    <Switch.Thumb />
-                  </Switch.Control>
-                </Switch.Root>
-              </Flex>
-              <Flex justify="space-between" align="center">
-                <Box>
-                  <Text fontWeight="medium">Telegram Notifications</Text>
-                  <Text fontSize="sm" color="gray.700">
-                    Receive alerts via Telegram
-                  </Text>
-                </Box>
-                <Switch.Root name="telegramNotificationsEnabled" checked={formData.telegramNotificationsEnabled} onChange={handleSwitchChange}>
-                  <Switch.HiddenInput />
-                  <Switch.Control>
-                    <Switch.Thumb />
-                  </Switch.Control>
-                </Switch.Root>
-              </Flex>
+               <Flex justify="space-between" align="center">
+                 <Box>
+                   <Text fontWeight="medium">Email Notifications</Text>
+                   <Text fontSize="sm" color="gray.700">
+                     Receive alerts via email
+                   </Text>
+                 </Box>
+                 <Switch.Root name="emailNotificationsEnabled" checked={formData.emailNotificationsEnabled} onChange={handleSwitchChange} colorPalette="success">
+                   <Switch.HiddenInput />
+                   <Switch.Control>
+                     <Switch.Thumb />
+                   </Switch.Control>
+                 </Switch.Root>
+               </Flex>
+               <Flex justify="space-between" align="center">
+                 <Box>
+                   <Text fontWeight="medium">Telegram Notifications</Text>
+                   <Text fontSize="sm" color="gray.700">
+                     Receive alerts via Telegram
+                   </Text>
+                 </Box>
+                 <Switch.Root name="telegramNotificationsEnabled" checked={formData.telegramNotificationsEnabled} onChange={handleSwitchChange} colorPalette="success">
+                   <Switch.HiddenInput />
+                   <Switch.Control>
+                     <Switch.Thumb />
+                   </Switch.Control>
+                 </Switch.Root>
+               </Flex>
             </Stack>
           </Card.Body>
         </Card.Root>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Box, Heading, Button, VStack, Field, Input, Textarea, NativeSelect, Image, Text, Spinner, Flex, Alert, SimpleGrid } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { FaArrowLeft } from 'react-icons/fa'
 import { petService } from '../../services/pet.service'
 import { useEnumValues } from '../../hooks/useMetadata'
 import { ErrorResponse } from '../../types'
@@ -177,6 +178,11 @@ export default function PetEdit() {
 
   return (
     <Box w="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
+      <Button variant="ghost" mb={4} onClick={() => navigate(`/pets/${id}`)}>
+        <FaArrowLeft style={{ marginRight: '8px' }} />
+        Back to Pet
+      </Button>
+
       <Heading size="lg" mb={6} color="gray.800" _dark={{ color: 'white' }}>
         Edit Pet
       </Heading>
