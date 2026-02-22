@@ -137,7 +137,7 @@ class AlertRepositoryAdapterTest {
                 .thenReturn(List.of(entity));
 
         AlertSearchCriteria criteria = new AlertSearchCriteria(
-                StatusNames.OPENED, null, null, null, null, null, null, null
+                StatusNames.OPENED, null, null, null, null, null, null, null, null
         );
 
         // When
@@ -168,6 +168,7 @@ class AlertRepositoryAdapterTest {
                 "Lost",
                 "Fluffy",
                 "DOG",
+                "Labrador",
                 LocalDateTime.now().minusDays(7),
                 LocalDateTime.now(),
                 null,
