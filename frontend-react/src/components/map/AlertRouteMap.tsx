@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react'
-import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { Box, Text, VStack, Card } from '@chakra-ui/react'
 import { FaMapMarkerAlt } from 'react-icons/fa'
@@ -77,7 +77,42 @@ const getEventLabel = (event: AlertEvent): string => {
   }
 }
 
+// Component to handle map size invalidation when container becomes visible
+function MapSizeHandler({ containerRef }: { containerRef: React.RefObject<HTMLDivElement> }) {
+  const map = useMap()
+  const [hasInvalidated, setHasInvalidated] = useState(false)
+
+  useEffect(() => {
+    const checkAndInvalidate = () => {
+      if (containerRef.current && !hasInvalidated) {
+        const rect = containerRef.current.getBoundingClientRect()
+        // If container has non-zero dimensions, invalidate map size
+        if (rect.width > 0 && rect.height > 0) {
+          map.invalidateSize({ animate: true })
+          setHasInvalidated(true)
+        }
+      }
+    }
+
+    // Check immediately and then periodically
+    checkAndInvalidate()
+    const intervalId = setInterval(checkAndInvalidate, 500)
+    
+    // Also check when the window resizes
+    const resizeHandler = () => checkAndInvalidate()
+    window.addEventListener('resize', resizeHandler)
+
+    return () => {
+      clearInterval(intervalId)
+      window.removeEventListener('resize', resizeHandler)
+    }
+  }, [map, containerRef, hasInvalidated])
+
+  return null
+}
+
 export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMapProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
   // Filter events that have valid locations and sort by date
   const eventsWithLocation = useMemo(() => {
     return events
@@ -148,6 +183,7 @@ export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMa
         </Text>
         
         <Box
+          ref={containerRef}
           borderRadius="md"
           overflow="hidden"
           border="1px solid"
@@ -162,6 +198,7 @@ export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMa
             style={{ height: '100%', width: '100%' }}
             scrollWheelZoom={true}
           >
+            <MapSizeHandler containerRef={containerRef} />
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

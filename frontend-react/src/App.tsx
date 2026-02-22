@@ -37,6 +37,28 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading, isAdmin } = useAuth()
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        Loading...
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (!isAdmin()) {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  return <>{children}</>
+}
+
 function App() {
   return (
     <Routes>
@@ -63,9 +85,21 @@ function App() {
         <Route path="alerts/:id/edit" element={<AlertEdit />} />
         <Route path="subscriptions" element={<MySubscriptions />} />
         <Route path="profile" element={<Profile />} />
-        <Route path="admin/dashboard" element={<AdminDashboard />} />
-        <Route path="admin/users/:id" element={<UserDetail />} />
-        <Route path="admin/users/:id/edit" element={<UserEdit />} />
+        <Route path="admin/dashboard" element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        } />
+        <Route path="admin/users/:id" element={
+          <AdminRoute>
+            <UserDetail />
+          </AdminRoute>
+        } />
+        <Route path="admin/users/:id/edit" element={
+          <AdminRoute>
+            <UserEdit />
+          </AdminRoute>
+        } />
       </Route>
 
       <Route path="*" element={<NotFound />} />
