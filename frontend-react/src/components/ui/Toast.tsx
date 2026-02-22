@@ -8,10 +8,14 @@ function ToastItem({ toast }: { toast: ToastMessage }) {
     removeToast(toast.id);
   };
 
-  const typeClass = `toast toast-${toast.type}`;
+  // Build class names based on type and alertStatus
+  const baseClass = 'toast';
+  const typeClass = `${baseClass}-${toast.type}`;
+  const statusClass = toast.alertStatus ? `${baseClass}-status-${toast.alertStatus.toLowerCase()}` : '';
+  const typeClassFinal = `toast toast-${toast.type} ${statusClass}`;
 
   return (
-    <div className={typeClass}>
+    <div className={typeClassFinal}>
       <div className="toast-content">
         <strong className="toast-title">{toast.title}</strong>
         {toast.description && (

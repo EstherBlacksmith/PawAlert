@@ -25,14 +25,43 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       return updated.slice(0, MAX_NOTIFICATIONS);
     });
 
-    // Show toast notification
-    const toastType = notification.type === 'NEW_ALERT' ? 'info' : 
-                      notification.type === 'ALERT_STATUS_CHANGE' ? 'warning' : 'info';
+    // Determine toast type and color based on notification type and alert status
+    let toastType: 'info' | 'warning' | 'success' | 'error' = 'info';
+    let alertStatus: 'OPEN' | 'CLOSED' | 'SAFE' | 'FOUND' | undefined = undefined;
+
+    if (notification.type === 'ALERT_STATUS_CHANGE') {
+      alertStatus = notification.alertStatus as 'OPEN' | 'CLOSED' | 'SAFE' | 'FOUND' | 'SEEN';
+      
+      // Determine toast type based on new status
+      switch (alertStatus) {
+        case 'OPEN':
+          toastType = 'warning'; // Red/orange - alert is open/active
+          break;
+        case 'SEEN':
+          toastType = 'info'; // Blue - alert has been seen
+          break;
+        case 'CLOSED':
+          toastType = 'info'; // Will be styled as grey
+          break;
+        case 'SAFE':
+          toastType = 'success'; // Green - pet is safe
+          break;
+        case 'FOUND':
+          toastType = 'info'; // Blue - pet was found
+          break;
+        default:
+          toastType = 'info';
+      }
+    } else if (notification.type === 'NEW_ALERT') {
+      toastType = 'warning';
+      alertStatus = 'OPEN';
+    }
     
     toaster.create({
       title: notification.title,
       description: notification.message,
       type: toastType,
+      alertStatus: alertStatus,
       duration: 8000,
       closable: true,
       action: {

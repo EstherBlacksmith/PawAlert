@@ -189,7 +189,7 @@ export default function NearbyAlertsMap({
         alignItems="center"
         justifyContent="center"
       >
-        <Spinner size="md" color="purple.500" />
+        <Spinner size="md" color="accent.500" />
         <Text fontSize="sm" color="gray.500" mt={3}>
           Searching for nearby alerts...
         </Text>
@@ -357,7 +357,7 @@ export default function NearbyAlertsMap({
               <Text fontSize="sm" fontWeight="medium" color="gray.700">
                 {alerts.length} nearby alert{alerts.length > 1 ? 's' : ''}
               </Text>
-              <Badge colorPalette="purple" variant="subtle" fontSize="xs">
+              <Badge colorPalette="accent" variant="subtle" fontSize="xs">
                 {radiusKm}km
               </Badge>
             </HStack>
@@ -410,8 +410,8 @@ export default function NearbyAlertsMap({
                 {alerts.length} nearby alert{alerts.length > 1 ? 's' : ''}
               </Text>
             </HStack>
-            <Badge colorPalette="purple" variant="subtle" fontSize="xs">
-              {radiusKm}km radius
+            <Badge colorPalette="accent" variant="subtle" fontSize="xs">
+              {radiusKm} radius
             </Badge>
           </HStack>
 

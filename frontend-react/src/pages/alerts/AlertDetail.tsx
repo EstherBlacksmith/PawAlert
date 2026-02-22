@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Box, Heading, Button, VStack, Text, Flex, Spinner, Badge, HStack, Card, Alert, Tabs } from '@chakra-ui/react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { FaArrowLeft, FaMapMarkerAlt, FaEdit, FaTrash, FaRoute, FaHistory } from 'react-icons/fa'
+import { FaArrowLeft, FaMapMarkerAlt, FaEdit, FaTrash, FaCalendar, FaDirections } from 'react-icons/fa'
+
 import { alertService } from '../../services/alert.service'
 import type { Alert as AlertType, ErrorResponse, AlertStatus, AlertEvent } from '../../types'
 import { useAuth } from '../../context/AuthContext'
@@ -238,7 +239,7 @@ export default function AlertDetail() {
   }
 
   return (
-    <Box maxW="800px" mx="auto">
+    <Box maxW="900px" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
       <Button variant="ghost" mb={4} onClick={() => navigate('/alerts')}>
         <FaArrowLeft style={{ marginRight: '8px' }} />
         Back to Alerts
@@ -403,11 +404,11 @@ export default function AlertDetail() {
         <Tabs.Root defaultValue="history" variant="line">
           <Tabs.List bg="white" borderBottom="2px" borderColor="gray.200" mb={4}>
             <Tabs.Trigger value="history" px={4} py={2} fontWeight="medium" color="gray.600">
-              <FaHistory style={{ marginRight: '8px' }} />
+              <FaCalendar style={{ marginRight: '8px' }} />
               History
             </Tabs.Trigger>
             <Tabs.Trigger value="route" px={4} py={2} fontWeight="medium" color="gray.600">
-              <FaRoute style={{ marginRight: '8px' }} />
+              <FaDirections style={{ marginRight: '8px' }} />
               Route Map
             </Tabs.Trigger>
           </Tabs.List>

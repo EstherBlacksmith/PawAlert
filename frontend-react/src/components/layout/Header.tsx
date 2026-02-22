@@ -1,5 +1,5 @@
-import { Box, Flex, Text, Input, IconButton, Avatar, Menu, Portal, Button } from '@chakra-ui/react'
-import { FaBell, FaUser, FaSignOutAlt } from 'react-icons/fa'
+import { Box, Flex, Text, IconButton, Avatar, Menu, Portal, Button } from '@chakra-ui/react'
+import { FaPaw, FaBell, FaUser, FaSignOutAlt } from 'react-icons/fa'
 import { useAuth } from '../../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
@@ -27,20 +27,31 @@ export default function Header() {
     >
       <Flex justify="space-between" align="center">
         {/* Left side - Logo/Brand */}
-        <Text
-          fontSize="xl"
-          fontWeight="bold"
-          color="teal.500"
-          cursor="pointer"
-          onClick={() => navigate('/dashboard')}
-        >
-          PawAlert
-        </Text>
+        <Flex align="center" gap={3}>
+          <Text
+            fontSize="xl"
+            fontWeight="bold"
+            color="brand.500"
+            cursor="pointer"
+            onClick={() => navigate('/dashboard')}
+            _hover={{ color: 'brand.600', transform: 'scale(1.02)' }}
+            transition="all 0.2s"
+          >
+            <FaPaw style={{ marginRight: '8px', verticalAlign: 'middle', color: 'brand.500' }} />
+            PawAlert
+          </Text>
+        </Flex>
 
         {/* Right side - User menu */}
         <Flex align="center" gap={4}>
-          <IconButton aria-label="Notifications" variant="ghost" borderRadius="full">
-            <FaBell />
+          <IconButton 
+            aria-label="Notifications" 
+            variant="ghost" 
+            borderRadius="full"
+            _hover={{ bg: 'brand.50', color: 'brand.500' }}
+            transition="all 0.2s"
+          >
+            <FaBell color="gray.600" />
           </IconButton>
 
           <Menu.Root>
@@ -59,12 +70,21 @@ export default function Header() {
             <Portal>
               <Menu.Positioner>
                 <Menu.Content>
-                  <Menu.Item value="profile" onClick={() => navigate('/profile')}>
-                    <FaUser style={{ marginRight: '8px' }} />
+                  <Menu.Item 
+                    value="profile" 
+                    onClick={() => navigate('/profile')}
+                    _hover={{ bg: 'brand.50' }}
+                  >
+                    <FaUser style={{ marginRight: '8px', color: 'gray.600' }} />
                     Profile
                   </Menu.Item>
                   <Menu.Separator />
-                  <Menu.Item value="logout" onClick={handleLogout} color="red.500">
+                  <Menu.Item 
+                    value="logout" 
+                    onClick={handleLogout} 
+                    color="red.500"
+                    _hover={{ bg: 'red.50' }}
+                  >
                     <FaSignOutAlt style={{ marginRight: '8px' }} />
                     Logout
                   </Menu.Item>

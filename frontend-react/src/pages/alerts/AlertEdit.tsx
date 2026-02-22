@@ -94,13 +94,13 @@ export default function AlertEdit() {
   if (isFetching) {
     return (
       <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="purple.500" />
+        <Spinner size="xl" color="brand.500" />
       </Flex>
     )
   }
 
   return (
-    <Box maxW="600px" mx="auto">
+    <Box w="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
       <Heading size="lg" mb={6} color="gray.800" _dark={{ color: 'white' }}>
         Edit Alert
       </Heading>
@@ -140,7 +140,7 @@ export default function AlertEdit() {
               onChange={handleChange} 
               required
               placeholder="Enter alert description"
-              rows={5}
+              rows={4}
             />
           </Field.Root>
 
@@ -155,7 +155,9 @@ export default function AlertEdit() {
             </Button>
             <Button 
               type="submit" 
-              colorScheme="purple" 
+              colorPalette="brand" 
+              bg="brand.500"
+              _hover={{ bg: 'brand.600' }}
               flex={1}
               loading={isLoading}
             >

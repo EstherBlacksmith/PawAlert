@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Box, Heading, VStack, Text, Flex, Spinner, Card, Badge, HStack, Button, EmptyState, Icon } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import { FaBell, FaArrowRight, FaTrash, FaExclamationCircle } from 'react-icons/fa'
+import { GiBell, GiDirectionSigns, GiTrashCan, GiInfo, GiEye, GiArrowRight } from '../../components/icons'
 import { alertService } from '../../services/alert.service'
 import type { AlertSubscriptionWithDetails, ErrorResponse } from '../../types'
 import { toast } from '../../toaster'
@@ -79,7 +79,7 @@ export default function MySubscriptions() {
   if (isLoading) {
     return (
       <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="purple.500" />
+        <Spinner size="xl" color="accent.500" />
       </Flex>
     )
   }
@@ -88,15 +88,15 @@ export default function MySubscriptions() {
     return (
       <Box textAlign="center" py={10}>
         <Icon color="red.500" mb={4}>
-          <FaExclamationCircle size={48} />
+          <GiInfo size={48} />
         </Icon>
         <Text color="red.500" fontSize="lg" mb={2}>
           {error.error || 'Error'}
         </Text>
-        <Text color="gray.500" mb={4}>
+        <Text color="gray.700" mb={4}>
           {error.message}
         </Text>
-        <Button colorScheme="purple" onClick={() => window.location.reload()}>
+        <Button colorPalette="brand" onClick={() => window.location.reload()}>
           Retry
         </Button>
       </Box>
@@ -104,13 +104,13 @@ export default function MySubscriptions() {
   }
 
   return (
-    <Box maxW="800px" mx="auto">
+    <Box maxW="600px" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
       <Flex justify="space-between" align="center" mb={6}>
         <Heading size="lg" color="gray.800" _dark={{ color: 'white' }}>
-          <FaBell style={{ marginRight: '12px', display: 'inline' }} />
+          <GiBell style={{ marginRight: '12px', display: 'inline' }} />
           My Subscriptions
         </Heading>
-        <Text color="gray.500">
+        <Text color="gray.700">
           {subscriptions.length} active subscription{subscriptions.length !== 1 ? 's' : ''}
         </Text>
       </Flex>
@@ -119,13 +119,13 @@ export default function MySubscriptions() {
         <EmptyState.Root>
           <EmptyState.Content>
             <EmptyState.Indicator>
-              <FaBell />
+              <GiBell />
             </EmptyState.Indicator>
             <EmptyState.Title>No subscriptions yet</EmptyState.Title>
             <EmptyState.Description>
               Subscribe to alerts to receive notifications when they are updated.
             </EmptyState.Description>
-            <Button colorPalette="purple" mt={4} onClick={() => navigate('/alerts')}>
+            <Button colorPalette="brand" mt={4} onClick={() => navigate('/alerts')}>
               Browse Alerts
             </Button>
           </EmptyState.Content>
@@ -138,7 +138,7 @@ export default function MySubscriptions() {
                 <Flex justify="space-between" align="start">
                   <Box flex="1" cursor="pointer" onClick={() => navigate(`/alerts/${subscription.alertId}`)}>
                     <HStack mb={2}>
-                      <Heading size="sm" color="purple.600">
+                      <Heading size="sm" color="brand.600">
                         {subscription.alert?.title || 'Unknown Alert'}
                       </Heading>
                       <Badge colorPalette={statusColors[subscription.alert?.status || 'OPENED']}>
@@ -152,7 +152,7 @@ export default function MySubscriptions() {
                       </Text>
                     )}
                     
-                    <Text fontSize="xs" color="gray.500">
+                    <Text fontSize="xs" color="gray.700">
                       Subscribed: {formatDate(subscription.subscribedAt)}
                     </Text>
                   </Box>
@@ -160,11 +160,11 @@ export default function MySubscriptions() {
                   <HStack gap={2}>
                     <Button
                       size="sm"
-                      colorPalette="purple"
+                      colorPalette="brand"
                       variant="ghost"
                       onClick={() => navigate(`/alerts/${subscription.alertId}`)}
                     >
-                      <FaArrowRight style={{ marginRight: '4px' }} />
+                      <GiArrowRight style={{ marginRight: '4px' }} />
                       View
                     </Button>
                     <Button
@@ -174,7 +174,7 @@ export default function MySubscriptions() {
                       onClick={() => handleUnsubscribe(subscription.alertId)}
                       loading={unsubscribingId === subscription.alertId}
                     >
-                      <FaTrash style={{ marginRight: '4px' }} />
+                      <GiTrashCan style={{ marginRight: '4px' }} />
                       Unsubscribe
                     </Button>
                   </HStack>

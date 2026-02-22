@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Box, VStack, Heading, Text, Input, Button, Field, HStack, Alert } from '@chakra-ui/react'
 import { Link, useNavigate } from 'react-router-dom'
+import { FaPaw } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
 import { ErrorResponse } from '../types'
 import { extractError, showSuccessToast } from '../utils/errorUtils'
@@ -97,12 +98,32 @@ export default function Register() {
         borderRadius="lg"
         boxShadow="lg"
         p={8}
+        position="relative"
+        overflow="hidden"
       >
-        <VStack gap={6}>
+        {/* Subtle gradient overlay */}
+        <Box
+          position="absolute"
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          bgGradient="linear(to-br, brand.50, transparent)"
+          pointerEvents="none"
+        />
+        <VStack gap={6} position="relative">
           {/* Logo */}
           <Box textAlign="center">
-            <Text fontSize="4xl" mb={2}>🐾</Text>
-            <Heading size="lg" color="purple.600" _dark={{ color: 'purple.400' }}>
+            <Box 
+              display="inline-block" 
+              p={4} 
+              borderRadius="full" 
+              bgGradient="linear(to-br, brand.400, brand.500)"
+              mb={2}
+            >
+              <FaPaw size={40} color="white" />
+            </Box>
+            <Heading size="lg" color="brand.500">
               Create Account
             </Heading>
             <Text color="gray.500" mt={1}>
@@ -229,9 +250,11 @@ export default function Register() {
               <Button
                 type="submit"
                 w="full"
-                colorScheme="purple"
+                colorPalette="brand"
                 size="lg"
                 loading={isLoading}
+                bg="brand.500"
+                _hover={{ bg: 'brand.600' }}
               >
                 Create Account
               </Button>
@@ -242,7 +265,7 @@ export default function Register() {
           <Text textAlign="center" fontSize="sm" color="gray.500">
             Already have an account?{' '}
             <Link to="/login">
-              <Text as="span" color="purple.600" _dark={{ color: 'purple.400' }} fontWeight="medium">
+              <Text as="span" color="brand.500" fontWeight="medium" _hover={{ color: 'brand.600' }}>
                 Sign in here
               </Text>
             </Link>

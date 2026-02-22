@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Box, Heading, Button, SimpleGrid, Card, Text, Flex, Spinner, Badge, IconButton, HStack, Collapsible, Input, NativeSelect, Grid, VStack } from '@chakra-ui/react'
 import { Link } from 'react-router-dom'
-import { FaPlus, FaEye, FaFilter, FaTimes, FaMapMarkerAlt, FaSearch } from 'react-icons/fa'
+import { FaPlus, FaEye, FaCog, FaTimes, FaMapMarkerAlt, FaSearch } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
 import { Alert, AlertStatus, AlertSearchFilters } from '../../types'
 import { SubscribeButton } from '../../components/alerts/SubscribeButton'
@@ -132,19 +132,24 @@ export default function AlertList() {
   if (isLoading && alerts.length === 0) {
     return (
       <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="purple.500" />
+        <Spinner size="xl" color="brand.500" />
       </Flex>
     )
   }
 
   return (
-    <Box>
+    <Box
+      bg="rgba(255, 255, 255, 0.85)"
+      p={6}
+      borderRadius="lg"
+      boxShadow="lg"
+    >
       <Flex justify="space-between" align="center" mb={6}>
         <Box>
-          <Heading size="lg" color="gray.800" _dark={{ color: 'white' }}>
+          <Heading size="lg" color="gray.800">
             Alerts
           </Heading>
-          <Text color="gray.500" mt={1}>
+          <Text color="gray.600" mt={1}>
             View and manage pet alerts
           </Text>
         </Box>
@@ -152,18 +157,20 @@ export default function AlertList() {
           <Button
             variant="outline"
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            colorScheme={activeFilterCount > 0 ? 'purple' : 'gray'}
+            colorPalette={activeFilterCount > 0 ? 'brand' : 'gray'}
+            bg={activeFilterCount > 0 ? 'brand.50' : undefined}
+            borderColor={activeFilterCount > 0 ? 'brand.500' : undefined}
           >
-            <FaFilter style={{ marginRight: '8px' }} />
+            <FaCog style={{ marginRight: '8px' }} />
             Filters
             {activeFilterCount > 0 && (
-              <Badge ml={2} colorPalette="purple" borderRadius="full">
+              <Badge ml={2} colorPalette="accent" borderRadius="full">
                 {activeFilterCount}
               </Badge>
             )}
           </Button>
           <Link to="/alerts/create">
-            <Button colorScheme="purple">
+            <Button colorPalette="brand" bg="brand.500" _hover={{ bg: 'brand.600' }}>
               <FaPlus style={{ marginRight: '8px' }} />
               Create Alert
             </Button>
@@ -321,7 +328,10 @@ export default function AlertList() {
                           aria-label="Use my location"
                           size="sm"
                           variant="outline"
-                          colorPalette="purple"
+                          colorPalette="brand"
+                          bg="brand.50"
+                          borderColor="brand.500"
+                          _hover={{ bg: 'brand.100' }}
                           onClick={handleGetLocation}
                           loading={isLocationLoading}
                         >
@@ -348,7 +358,9 @@ export default function AlertList() {
                 {/* Apply Button */}
                 <Flex justify="flex-end">
                   <Button
-                    colorScheme="purple"
+                    colorPalette="brand"
+                    bg="brand.500"
+                    _hover={{ bg: 'brand.600' }}
                     onClick={handleApplyFilters}
                     loading={isLoading}
                     size="sm"
@@ -368,7 +380,7 @@ export default function AlertList() {
         <Card.Root p={8} textAlign="center">
           <Text color="gray.500">No alerts found matching your criteria.</Text>
           <Link to="/alerts/create">
-            <Button mt={4} colorScheme="purple" variant="outline">
+            <Button mt={4} colorPalette="brand" variant="outline" bg="brand.50" _hover={{ bg: 'brand.100' }}>
               Create a new alert
             </Button>
           </Link>
@@ -394,7 +406,7 @@ export default function AlertList() {
                   </Text>
                   <Flex mt={4} gap={2} justify="space-between" align="center">
                     <Link to={`/alerts/${alert.id}`}>
-                      <IconButton aria-label="View" variant="ghost" size="sm">
+                      <IconButton aria-label="View" variant="ghost" size="sm" color="brand.500">
                         <FaEye />
                       </IconButton>
                     </Link>

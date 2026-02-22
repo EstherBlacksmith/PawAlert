@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Box, Heading, Button, VStack, Field, Input, Textarea, NativeSelect, Image, Text, Spinner, Flex, Alert } from '@chakra-ui/react'
+import { Box, Heading, Button, VStack, Field, Input, Textarea, NativeSelect, Image, Text, Spinner, Flex, Alert, SimpleGrid } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { petService } from '../../services/pet.service'
 import { useEnumValues } from '../../hooks/useMetadata'
@@ -170,13 +170,13 @@ export default function PetEdit() {
   if (isFetching) {
     return (
       <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="purple.500" />
+        <Spinner size="xl" color="brand.500" />
       </Flex>
     )
   }
 
   return (
-    <Box maxW="600px" mx="auto">
+    <Box w="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
       <Heading size="lg" mb={6} color="gray.800" _dark={{ color: 'white' }}>
         Edit Pet
       </Heading>
@@ -196,9 +196,9 @@ export default function PetEdit() {
       )}
 
       <Box as="form" onSubmit={handleSubmit}>
-        <VStack gap={4}>
-          {/* Image Upload Section */}
-          <Field.Root>
+        <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+          {/* Image Upload Section - spans full width */}
+          <Field.Root gridColumn={{ base: '1', md: 'span 2' }}>
             <Field.Label>Pet Photo</Field.Label>
             <Box
               border="2px dashed"
@@ -207,27 +207,27 @@ export default function PetEdit() {
               p={4}
               textAlign="center"
               cursor="pointer"
-              _hover={{ borderColor: 'purple.400', bg: 'gray.50' }}
+              _hover={{ borderColor: 'brand.400', bg: 'brand.50' }}
               onClick={() => fileInputRef.current?.click()}
               position="relative"
             >
               {isValidatingImage ? (
                 <Box py={4}>
-                  <Spinner size="lg" color="purple.500" />
-                  <Text mt={2} color="gray.500">Validating image...</Text>
+                  <Spinner size="lg" color="brand.500" />
+                  <Text mt={2} color="gray.700">Validating image...</Text>
                 </Box>
               ) : imagePreview ? (
                 <Box position="relative">
                   <Image 
                     src={imagePreview} 
                     alt="Pet preview" 
-                    maxH="200px" 
+                    maxH="150px" 
                     mx="auto" 
                     borderRadius="md"
                   />
                   <Button
                     size="sm"
-                    colorScheme="red"
+                    colorPalette="red"
                     position="absolute"
                     top={2}
                     right={2}
@@ -240,11 +240,11 @@ export default function PetEdit() {
                   </Button>
                 </Box>
               ) : (
-                <Box py={4}>
-                  <Text color="gray.500">
+                <Box py={2}>
+                  <Text color="gray.700">
                     Click to upload a new photo
                   </Text>
-                  <Text fontSize="sm" color="gray.400" mt={1}>
+                  <Text fontSize="sm" color="gray.600" mt={1}>
                     (AI will validate the image)
                   </Text>
                 </Box>
@@ -264,22 +264,22 @@ export default function PetEdit() {
             )}
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '1' }}>
             <Field.Label>Official Name *</Field.Label>
             <Input name="officialPetName" value={formData.officialPetName} onChange={handleChange} required />
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '2' }}>
             <Field.Label>Working Name</Field.Label>
             <Input name="workingPetName" value={formData.workingPetName} onChange={handleChange} />
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '1' }}>
             <Field.Label>Chip Number</Field.Label>
             <Input name="chipNumber" value={formData.chipNumber} onChange={handleChange} />
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '2' }}>
             <Field.Label>Species *</Field.Label>
             <NativeSelect.Root>
               <NativeSelect.Field 
@@ -302,12 +302,12 @@ export default function PetEdit() {
             </NativeSelect.Root>
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '1' }}>
             <Field.Label>Breed</Field.Label>
             <Input name="breed" value={formData.breed} onChange={handleChange} />
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '2' }}>
             <Field.Label>Size</Field.Label>
             <NativeSelect.Root>
               <NativeSelect.Field 
@@ -330,12 +330,12 @@ export default function PetEdit() {
             </NativeSelect.Root>
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '1' }}>
             <Field.Label>Color</Field.Label>
             <Input name="color" value={formData.color} onChange={handleChange} />
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '2' }}>
             <Field.Label>Gender</Field.Label>
             <NativeSelect.Root>
               <NativeSelect.Field 
@@ -358,17 +358,17 @@ export default function PetEdit() {
             </NativeSelect.Root>
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: 'span 2' }}>
             <Field.Label>Description</Field.Label>
-            <Textarea name="petDescription" value={formData.petDescription} onChange={handleChange} />
+            <Textarea name="petDescription" value={formData.petDescription} onChange={handleChange} rows={2} />
           </Field.Root>
 
-          <Box w="full" pt={4}>
-            <Button type="submit" colorScheme="purple" w="full" loading={isLoading}>
+          <Box gridColumn={{ base: '1', md: 'span 2' }} pt={2}>
+            <Button type="submit" colorPalette="brand" bg="brand.500" _hover={{ bg: 'brand.600' }} w="full" loading={isLoading}>
               Update Pet
             </Button>
           </Box>
-        </VStack>
+        </SimpleGrid>
       </Box>
     </Box>
   )
