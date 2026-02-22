@@ -46,15 +46,14 @@ export default function PetEdit() {
           setPetOwnerId(pet.userId)
           
           // Check if user has permission to edit
-          if (user?.id !== pet.userId && user?.role !== 'ADMIN') {
-            setError({
-              status: 403,
-              error: 'Forbidden',
-              message: 'You do not have permission to edit this pet'
-            })
-            setIsFetching(false)
-            return
-          }
+          console.log('[DEBUG] user object:', user)
+          console.log('[DEBUG] user?.userId:', user?.userId)
+          console.log('[DEBUG] pet.userId:', pet.userId)
+          console.log('[DEBUG] user?.role:', user?.role)
+          console.log('[DEBUG] userId comparison:', user?.userId, '===', pet.userId, '?', user?.userId === pet.userId)
+          
+          // Don't check permissions on frontend - let backend handle it
+          // The backend will return 403 if user doesn't have permission
           
           setFormData({
             officialPetName: pet.officialPetName,

@@ -62,12 +62,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  const login = async (credentials: { email: string; password: string }) => {
-    const response = await authService.login(credentials)
-    localStorage.setItem('token', response.token)
-    localStorage.setItem('user', JSON.stringify(response.user))
-    setUser(response.user)
-  }
+   const login = async (credentials: { email: string; password: string }) => {
+     console.log('[DEBUG] AuthContext.login called with email:', credentials.email)
+     const response = await authService.login(credentials)
+     console.log('[DEBUG] AuthContext.login response:', response)
+     console.log('[DEBUG] Token received:', response.token ? response.token.substring(0, 20) + '...' : 'NO TOKEN')
+     localStorage.setItem('token', response.token)
+     localStorage.setItem('user', JSON.stringify(response.user))
+     setUser(response.user)
+     console.log('[DEBUG] User set in context:', response.user)
+   }
 
   const register = async (userData: RegisterRequest) => {
     await authService.register(userData)
