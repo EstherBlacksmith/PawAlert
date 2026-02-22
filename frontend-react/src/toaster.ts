@@ -1,4 +1,4 @@
-import { ToastType } from './context/ToastContext'
+import { ToastType, AlertStatus } from './context/ToastContext'
 
 // Global toast function reference - will be set by ToastProvider
 let globalShowToast: ((options: {
@@ -7,6 +7,7 @@ let globalShowToast: ((options: {
   type: ToastType
   duration?: number
   closable?: boolean
+  alertStatus?: AlertStatus
   action?: {
     label: string
     onClick: () => void
@@ -21,6 +22,7 @@ export function registerToastFunction(
     type: ToastType
     duration?: number
     closable?: boolean
+    alertStatus?: AlertStatus
     action?: {
       label: string
       onClick: () => void
@@ -38,6 +40,7 @@ export const toaster = {
     type?: ToastType
     duration?: number
     closable?: boolean
+    alertStatus?: AlertStatus
     action?: {
       label: string
       onClick: () => void
@@ -53,6 +56,7 @@ export const toaster = {
       type: options.type || 'info',
       duration: options.duration,
       closable: options.closable,
+      alertStatus: options.alertStatus,
       action: options.action,
     })
   },

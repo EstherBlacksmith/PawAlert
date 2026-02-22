@@ -129,20 +129,81 @@
 
 /* Info */
 .toast-info {
-  border-left: 4px solid #3182ce;
+  border-left: 4px solid #06b6d4;
 }
 
 .toast-info .toast-title {
-  color: #2b6cb0;
+  color: #0e7490;
 }
 
-/* Warning */
+/* Warning - Brand Orange */
 .toast-warning {
-  border-left: 4px solid #dd6b20;
+  border-left: 4px solid #f97316;
 }
 
 .toast-warning .toast-title {
-  color: #c05621;
+  color: #c2410c;
+}
+
+/* Warning dark mode - Brand Orange */
+.toast-warning .toast-title {
+  color: #fb923c;
+}
+
+/* Alert Status - OPEN (Red/Orange) - Alert is active/open */
+.toast-status-open {
+  border-left: 4px solid #ff8c00;
+  background-color: #fff0e0;
+}
+
+.toast-status-open .toast-title {
+  color: #cc7000;
+}
+
+.toast-status-open .toast-description {
+  color: #994d00;
+}
+
+/* Alert Status - CLOSED (Grey) - Alert is closed */
+.toast-status-closed {
+  border-left: 4px solid #9ca3af;
+  background-color: #e5e7eb;
+}
+
+.toast-status-closed .toast-title {
+  color: #4b5563;
+}
+
+.toast-status-closed .toast-description {
+  color: #6b7280;
+}
+
+/* Alert Status - SAFE (Green) - Pet is safe */
+.toast-status-safe {
+  border-left: 4px solid #10b981;
+  background-color: #d1fae5;
+}
+
+.toast-status-safe .toast-title {
+  color: #047857;
+}
+
+.toast-status-safe .toast-description {
+  color: #065f46;
+}
+
+/* Alert Status - FOUND (Blue) - Pet was found */
+.toast-status-found {
+  border-left: 4px solid #0ea5e9;
+  background-color: #e0f2fe;
+}
+
+.toast-status-found .toast-title {
+  color: #0369a1;
+}
+
+.toast-status-found .toast-description {
+  color: #075985;
 }
 
 /* Dark mode support */
@@ -191,11 +252,67 @@
 
   /* Info dark mode */
   .toast-info .toast-title {
-    color: #63b3ed;
+    color: #22d3ee;
   }
 
-  /* Warning dark mode */
+  /* Warning dark mode - Brand Orange */
   .toast-warning .toast-title {
-    color: #f6ad55;
+    color: #fb923c;
+  }
+
+  /* Alert Status - OPEN (Red/Orange) - Dark mode */
+  .toast-status-open {
+    background-color: #431407;
+    border-left-color: #ff8c00;
+  }
+
+  .toast-status-open .toast-title {
+    color: #ffb347;
+  }
+
+  .toast-status-open .toast-description {
+    color: #ffd699;
+  }
+
+  /* Alert Status - CLOSED (Grey) - Dark mode */
+  .toast-status-closed {
+    background-color: #1f2937;
+    border-left-color: #d1d5db;
+  }
+
+  .toast-status-closed .toast-title {
+    color: #f3f4f6;
+  }
+
+  .toast-status-closed .toast-description {
+    color: #d1d5db;
+  }
+
+  /* Alert Status - SAFE (Green) - Dark mode */
+  .toast-status-safe {
+    background-color: #052e16;
+    border-left-color: #34d399;
+  }
+
+  .toast-status-safe .toast-title {
+    color: #6ee7b7;
+  }
+
+  .toast-status-safe .toast-description {
+    color: #a7f3d0;
+  }
+
+  /* Alert Status - FOUND (Blue) - Dark mode */
+  .toast-status-found {
+    background-color: #172554;
+    border-left-color: #38bdf8;
+  }
+
+  .toast-status-found .toast-title {
+    color: #7dd3fc;
+  }
+
+  .toast-status-found .toast-description {
+    color: #bae6fd;
   }
 }

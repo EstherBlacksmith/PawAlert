@@ -1,5 +1,5 @@
 import { Box, VStack, HStack, Text, Badge, Spinner, Card } from '@chakra-ui/react'
-import { FaMapMarkerAlt, FaHistory } from 'react-icons/fa'
+import { GiMapMarker, GiCalendar, GiInfo, GiCheck, GiEdit } from '../icons'
 import type { AlertEvent } from '../../types'
 
 interface AlertEventsListProps {
@@ -25,9 +25,9 @@ const getEventTypeDisplay = (eventType: string): string => {
 const getEventColor = (eventType: string): string => {
   switch (eventType) {
     case 'STATUS_CHANGED':
-      return 'blue'
+      return 'accent'
     case 'TITLE_CHANGED':
-      return 'purple'
+      return 'brand'
     case 'DESCRIPTION_CHANGED':
       return 'orange'
     default:
@@ -92,7 +92,7 @@ export function AlertEventsList({ events, isLoading }: AlertEventsListProps) {
       <Card.Root>
         <Card.Body>
           <Box textAlign="center" py={6}>
-            <FaHistory size={32} color="#A0AEC0" style={{ margin: '0 auto 12px' }} />
+            <GiCalendar size={32} color="gray.400" style={{ margin: '0 auto 12px' }} />
             <Text color="gray.500">No events recorded for this alert yet.</Text>
           </Box>
         </Card.Body>
@@ -139,7 +139,7 @@ export function AlertEventsList({ events, isLoading }: AlertEventsListProps) {
                   justifyContent="center"
                   zIndex={1}
                 >
-                  <FaHistory size={14} color={`var(--chakra-colors-${getEventColor(event.eventType)}-600)`} />
+                  <GiCalendar size={14} color={`${getEventColor(event.eventType)}.600`} />
                 </Box>
                 
                 <Box flex={1}>
@@ -174,7 +174,7 @@ export function AlertEventsList({ events, isLoading }: AlertEventsListProps) {
                   {/* Location */}
                   {event.latitude != null && event.longitude != null && (
                     <HStack mt={2} gap={1} color="gray.500" fontSize="xs">
-                      <FaMapMarkerAlt size={10} />
+                      <GiMapMarker size={10} />
                       <Text>
                         {event.latitude.toFixed(6)}, {event.longitude.toFixed(6)}
                       </Text>

@@ -23,7 +23,7 @@ export default function NotFound() {
         </Text>
         <Link to="/dashboard">
           <Button
-            colorScheme="purple"
+            colorPalette="brand"
             size="lg"
             mt={4}
           >

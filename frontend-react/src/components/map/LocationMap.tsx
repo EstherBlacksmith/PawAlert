@@ -149,7 +149,7 @@ export default function LocationMap({
         <Button
           type="button"
           variant="outline"
-          colorPalette="purple"
+          colorPalette="accent"
           size="sm"
           onClick={onDetectLocation}
           loading={isDetectingLocation}
@@ -200,7 +200,7 @@ export default function LocationMap({
       </Box>
 
       {/* Coordinates Display */}
-      <HStack justify="space-between" fontSize="sm" color="gray.600" _dark={{ color: 'gray.400' }}>
+      <HStack justify="space-between" fontSize="sm" color="gray.800" _dark={{ color: 'gray.300' }}>
         <Text>
           {hasPosition ? (
             <>
@@ -214,7 +214,7 @@ export default function LocationMap({
       </HStack>
 
       {/* Tip */}
-      <Text fontSize="xs" color="gray.500" _dark={{ color: 'gray.400' }}>
+      <Text fontSize="xs" color="gray.700" _dark={{ color: 'gray.300' }}>
         Tip: Click on the map or drag the marker to refine the exact location.
       </Text>
     </VStack>

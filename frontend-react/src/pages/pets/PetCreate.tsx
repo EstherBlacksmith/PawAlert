@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Box, Heading, Button, VStack, Field, Input, Textarea, NativeSelect, Image, Text, Spinner, Alert } from '@chakra-ui/react'
+import { Box, Heading, Button, VStack, Field, Input, Textarea, NativeSelect, Image, Text, Spinner, Alert, SimpleGrid } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { petService } from '../../services/pet.service'
 import { useEnumValues } from '../../hooks/useMetadata'
@@ -165,7 +165,7 @@ export default function PetCreate() {
   }
 
   return (
-    <Box maxW="600px" mx="auto">
+    <Box w="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
       <Heading size="lg" mb={6} color="gray.800" _dark={{ color: 'white' }}>
         Add New Pet
       </Heading>
@@ -185,9 +185,9 @@ export default function PetCreate() {
       )}
 
       <Box as="form" onSubmit={handleSubmit}>
-        <VStack gap={4}>
-          {/* Image Upload Section */}
-          <Field.Root>
+        <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+          {/* Image Upload Section - spans full width */}
+          <Field.Root gridColumn={{ base: '1', md: 'span 2' }}>
             <Field.Label>Pet Photo</Field.Label>
             <Box
               border="2px dashed"
@@ -196,27 +196,27 @@ export default function PetCreate() {
               p={4}
               textAlign="center"
               cursor="pointer"
-              _hover={{ borderColor: 'purple.400', bg: 'gray.50' }}
+              _hover={{ borderColor: 'brand.400', bg: 'brand.50' }}
               onClick={() => fileInputRef.current?.click()}
               position="relative"
             >
               {isValidatingImage ? (
                 <Box py={4}>
-                  <Spinner size="lg" color="purple.500" />
-                  <Text mt={2} color="gray.500">Validating image...</Text>
+                  <Spinner size="lg" color="brand.500" />
+                  <Text mt={2} color="gray.700">Validating image...</Text>
                 </Box>
               ) : imagePreview ? (
                 <Box position="relative">
                   <Image 
                     src={imagePreview} 
                     alt="Pet preview" 
-                    maxH="200px" 
+                    maxH="150px" 
                     mx="auto" 
                     borderRadius="md"
                   />
                   <Button
                     size="sm"
-                    colorScheme="red"
+                    colorPalette="red"
                     position="absolute"
                     top={2}
                     right={2}
@@ -229,11 +229,11 @@ export default function PetCreate() {
                   </Button>
                 </Box>
               ) : (
-                <Box py={4}>
-                  <Text color="gray.500">
+                <Box py={2}>
+                  <Text color="gray.700">
                     Click to upload a photo
                   </Text>
-                  <Text fontSize="sm" color="gray.400" mt={1}>
+                  <Text fontSize="sm" color="gray.600" mt={1}>
                     (AI will detect species, breed, color)
                   </Text>
                 </Box>
@@ -253,22 +253,22 @@ export default function PetCreate() {
             )}
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '1' }}>
             <Field.Label>Official Name *</Field.Label>
-            <Input name="officialPetName" value={formData.officialPetName} onChange={handleChange} required />
+            <Input name="officialPetName" value={formData.officialPetName} onChange={handleChange} required bg="white" color="gray.800" />
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '2' }}>
             <Field.Label>Working Name</Field.Label>
-            <Input name="workingPetName" value={formData.workingPetName} onChange={handleChange} />
+            <Input name="workingPetName" value={formData.workingPetName} onChange={handleChange} bg="white" color="gray.800" />
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '1' }}>
             <Field.Label>Chip Number</Field.Label>
-            <Input name="chipNumber" value={formData.chipNumber} onChange={handleChange} />
+            <Input name="chipNumber" value={formData.chipNumber} onChange={handleChange} bg="white" color="gray.800" />
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '2' }}>
             <Field.Label>Species *</Field.Label>
             <NativeSelect.Root>
               <NativeSelect.Field 
@@ -288,15 +288,15 @@ export default function PetCreate() {
             </NativeSelect.Root>
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '1' }}>
             <Field.Label>Breed</Field.Label>
-            <Input name="breed" value={formData.breed} onChange={handleChange} placeholder={!formData.breed ? "Detected from image" : ""} />
+            <Input name="breed" value={formData.breed} onChange={handleChange} placeholder={!formData.breed ? "Detected from image" : ""} bg="white" color="gray.800" />
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '2' }}>
             <Field.Label>Size</Field.Label>
             <NativeSelect.Root>
-               <NativeSelect.Field name="size" value={formData.size} onChange={handleChange} _disabled={{ opacity: loadingSize ? 0.5 : 1, pointerEvents: loadingSize ? 'none' : 'auto' }}>
+               <NativeSelect.Field name="size" value={formData.size} onChange={handleChange} bg="white" color="gray.800" _disabled={{ opacity: loadingSize ? 0.5 : 1, pointerEvents: loadingSize ? 'none' : 'auto' }}>
                 <option value="">Select size</option>
                 {sizeValues.map((size) => (
                   <option key={size.value} value={size.value}>
@@ -308,15 +308,15 @@ export default function PetCreate() {
             </NativeSelect.Root>
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '1' }}>
             <Field.Label>Color</Field.Label>
-            <Input name="color" value={formData.color} onChange={handleChange} placeholder={!formData.color ? "Detected from image" : ""} />
+            <Input name="color" value={formData.color} onChange={handleChange} placeholder={!formData.color ? "Detected from image" : ""} bg="white" color="gray.800" />
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '2' }}>
             <Field.Label>Gender</Field.Label>
             <NativeSelect.Root>
-               <NativeSelect.Field name="gender" value={formData.gender} onChange={handleChange} _disabled={{ opacity: loadingGender ? 0.5 : 1, pointerEvents: loadingGender ? 'none' : 'auto' }}>
+               <NativeSelect.Field name="gender" value={formData.gender} onChange={handleChange} bg="white" color="gray.800" _disabled={{ opacity: loadingGender ? 0.5 : 1, pointerEvents: loadingGender ? 'none' : 'auto' }}>
                 <option value="">Select gender</option>
                 {genderValues.map((gender) => (
                   <option key={gender.value} value={gender.value}>
@@ -328,22 +328,25 @@ export default function PetCreate() {
             </NativeSelect.Root>
           </Field.Root>
 
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: 'span 2' }}>
             <Field.Label>Description</Field.Label>
             <Textarea 
               name="petDescription" 
               value={formData.petDescription} 
               onChange={handleChange}
               placeholder={!formData.petDescription ? "Auto-generated from image" : ""}
+              rows={2}
+              bg="white"
+              color="gray.800"
             />
           </Field.Root>
 
-          <Box w="full" pt={4}>
-            <Button type="submit" colorScheme="purple" w="full" loading={isLoading}>
+          <Box gridColumn={{ base: '1', md: 'span 2' }} pt={2}>
+            <Button type="submit" colorPalette="brand" bg="brand.500" _hover={{ bg: 'brand.600' }} w="full" loading={isLoading}>
               Add Pet
             </Button>
           </Box>
-        </VStack>
+        </SimpleGrid>
       </Box>
     </Box>
   )

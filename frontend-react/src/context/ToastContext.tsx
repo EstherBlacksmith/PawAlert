@@ -3,6 +3,8 @@ import { registerToastFunction } from '../toaster';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
+export type AlertStatus = 'OPEN' | 'CLOSED' | 'SAFE' | 'FOUND' | undefined;
+
 export interface ToastMessage {
   id: string;
   title: string;
@@ -10,6 +12,7 @@ export interface ToastMessage {
   type: ToastType;
   duration?: number;
   closable?: boolean;
+  alertStatus?: AlertStatus;
   action?: {
     label: string;
     onClick: () => void;

@@ -167,7 +167,7 @@ export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMa
       <Card.Root>
         <Card.Body>
           <Box textAlign="center" py={8}>
-            <FaMapMarkerAlt size={32} color="#A0AEC0" style={{ margin: '0 auto 12px' }} />
+            <FaMapMarkerAlt size={32} color="gray.400" style={{ margin: '0 auto 12px' }} />
             <Text color="gray.500">No location data available for this alert.</Text>
           </Box>
         </Card.Body>

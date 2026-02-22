@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Box, Heading, Button, SimpleGrid, Card, Text, Flex, Spinner, Badge, IconButton, Image } from '@chakra-ui/react'
 import { Link, useNavigate } from 'react-router-dom'
-import { FaPlus, FaEdit, FaTrash, FaExclamationTriangle, FaEye } from 'react-icons/fa'
+import { FaPlus, FaEdit, FaTrash, FaEye, FaHeart } from 'react-icons/fa'
 import { petService } from '../../services/pet.service'
 import { alertService } from '../../services/alert.service'
 import { Pet, Alert } from '../../types'
@@ -50,24 +50,29 @@ export default function PetList() {
   if (isLoading) {
     return (
       <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="purple.500" />
+        <Spinner size="xl" color="brand.500" />
       </Flex>
     )
   }
 
   return (
-    <Box>
+    <Box
+      bg="rgba(255, 255, 255, 0.85)"
+      p={6}
+      borderRadius="lg"
+      boxShadow="lg"
+    >
       <Flex justify="space-between" align="center" mb={6}>
         <Box>
-          <Heading size="lg" color="gray.800" _dark={{ color: 'white' }}>
+          <Heading size="lg" color="gray.800">
             My Pets
           </Heading>
-          <Text color="gray.500" mt={1}>
+          <Text color="gray.600" mt={1}>
             Manage your registered pets
           </Text>
         </Box>
         <Link to="/pets/create">
-          <Button colorScheme="purple">
+          <Button colorPalette="brand" bg="brand.500" _hover={{ bg: 'brand.600' }}>
             <FaPlus style={{ marginRight: '8px' }} />
             Add Pet
           </Button>
@@ -78,7 +83,7 @@ export default function PetList() {
         <Card.Root p={8} textAlign="center">
           <Text color="gray.500">No pets registered yet.</Text>
           <Link to="/pets/create">
-            <Button mt={4} colorScheme="purple" variant="outline">
+            <Button mt={4} colorPalette="brand" variant="outline" bg="brand.50" _hover={{ bg: 'brand.100' }}>
               Register your first pet
             </Button>
           </Link>
@@ -134,15 +139,17 @@ export default function PetList() {
                   ) : (
                     <Button
                       size="sm"
-                      colorPalette="orange"
+                      colorPalette="brand"
+                      bg="brand.500"
+                      _hover={{ bg: 'brand.600' }}
                       onClick={() => navigate(`/alerts/create?petId=${pet.petId}`)}
                     >
-                      <FaExclamationTriangle style={{ marginRight: '4px' }} />
+                      <FaHeart style={{ marginRight: '4px' }} />
                       Create Alert
                     </Button>
                   )}
                   <Link to={`/pets/${pet.petId}/edit`}>
-                    <IconButton aria-label="Edit" variant="ghost" size="sm">
+                    <IconButton aria-label="Edit" variant="ghost" size="sm" color="brand.500">
                       <FaEdit />
                     </IconButton>
                   </Link>

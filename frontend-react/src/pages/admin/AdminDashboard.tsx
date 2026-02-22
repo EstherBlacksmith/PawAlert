@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Box, Heading, VStack, HStack, Card, Flex, Spinner, Text, SimpleGrid, Stat, Tabs
 } from '@chakra-ui/react'
-import { FaUsers, FaPaw, FaBell, FaExclamationTriangle } from 'react-icons/fa'
+import { FaUsers, FaPaw, FaBell, FaHeart, FaShieldAlt } from 'react-icons/fa'
 import { useAuth } from '../../context/AuthContext'
 import { userService } from '../../services/user.service'
 import { petService } from '../../services/pet.service'
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
   if (isLoading) {
     return (
       <Flex justify="center" align="center" minH="400px">
-        <Spinner size="xl" color="purple.500" />
+        <Spinner size="xl" color="brand.500" />
       </Flex>
     )
   }
@@ -104,10 +104,10 @@ export default function AdminDashboard() {
             <Box
               p={3}
               borderRadius="lg"
-              bg="purple.100"
-              _dark={{ bg: 'purple.900' }}
+              bg="brand.100"
+              _dark={{ bg: 'brand.900' }}
             >
-              <FaUsers size={24} color="var(--chakra-colors-purple-500)" />
+              <FaUsers size={24} color="accent.500" />
             </Box>
             <Box>
               <Text fontSize="sm" color="gray.500">Total Users</Text>
@@ -121,10 +121,10 @@ export default function AdminDashboard() {
             <Box
               p={3}
               borderRadius="lg"
-              bg="blue.100"
-              _dark={{ bg: 'blue.900' }}
+              bg="accent.100"
+              _dark={{ bg: 'accent.900' }}
             >
-              <FaPaw size={24} color="var(--chakra-colors-blue-500)" />
+              <FaPaw size={24} color="brand.500" />
             </Box>
             <Box>
               <Text fontSize="sm" color="gray.500">Total Pets</Text>
@@ -141,7 +141,7 @@ export default function AdminDashboard() {
               bg="green.100"
               _dark={{ bg: 'green.900' }}
             >
-              <FaBell size={24} color="var(--chakra-colors-green-500)" />
+              <FaBell size={24} color="green.500" />
             </Box>
             <Box>
               <Text fontSize="sm" color="gray.500">Total Alerts</Text>
@@ -158,7 +158,7 @@ export default function AdminDashboard() {
               bg="red.100"
               _dark={{ bg: 'red.900' }}
             >
-              <FaExclamationTriangle size={24} color="var(--chakra-colors-red-500)" />
+              <FaHeart size={24} color="red.500" />
             </Box>
             <Box>
               <Text fontSize="sm" color="gray.500">Open Alerts</Text>
@@ -174,7 +174,7 @@ export default function AdminDashboard() {
           <Tabs.List mb={6}>
             <Tabs.Trigger value="alerts">
               <HStack gap={2}>
-                <FaBell />
+                <FaBell color="gray.600" />
                 <Text>Alerts</Text>
                 <Box
                   px={2}
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
             </Tabs.Trigger>
             <Tabs.Trigger value="users">
               <HStack gap={2}>
-                <FaUsers />
+                <FaUsers color="gray.600" />
                 <Text>Users</Text>
                 <Box
                   px={2}
@@ -206,7 +206,7 @@ export default function AdminDashboard() {
             </Tabs.Trigger>
             <Tabs.Trigger value="pets">
               <HStack gap={2}>
-                <FaPaw />
+                <FaPaw color="gray.600" />
                 <Text>Pets</Text>
                 <Box
                   px={2}

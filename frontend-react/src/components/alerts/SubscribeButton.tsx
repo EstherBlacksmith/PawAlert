@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Button, Spinner, HStack, Badge, Text } from '@chakra-ui/react'
-import { FaBell, FaBellSlash } from 'react-icons/fa'
+import { GiBell } from '../icons'
 import { alertService } from '../../services/alert.service'
 import { useAuth } from '../../context/AuthContext'
 import { showSuccessToast, showErrorToast } from '../../utils/errorUtils'
@@ -98,7 +98,7 @@ export function SubscribeButton({
           disabled
           title="Cannot subscribe to closed alerts"
         >
-          <FaBell style={{ marginRight: '4px' }} />
+          <GiBell style={{ marginRight: '4px' }} />
           Subscribe
         </Button>
       </HStack>
@@ -110,12 +110,12 @@ export function SubscribeButton({
     return (
       <Button
         size={size}
-        colorPalette="purple"
+        colorPalette="orange"
         variant="outline"
         disabled
         title="Login to subscribe to alerts"
       >
-        <FaBell style={{ marginRight: '4px' }} />
+        <GiBell style={{ marginRight: '4px' }} />
         Subscribe
       </Button>
     )
@@ -135,12 +135,12 @@ export function SubscribeButton({
         )}
         <Button
           size={size}
-          colorPalette="green"
+          colorPalette="orange"
           variant="outline"
           onClick={handleUnsubscribe}
           loading={isLoading}
         >
-          <FaBellSlash style={{ marginRight: '4px' }} />
+          <GiBell style={{ marginRight: '4px' }} />
           Unsubscribe
         </Button>
       </HStack>
@@ -150,13 +150,13 @@ export function SubscribeButton({
   return (
     <Button
       size={size}
-      colorPalette="purple"
+      colorPalette="orange"
       variant="solid"
       onClick={handleSubscribe}
       loading={isLoading}
       disabled={!canSubscribe}
     >
-      <FaBell style={{ marginRight: '4px' }} />
+      <GiBell style={{ marginRight: '4px' }} />
       Subscribe
     </Button>
   )

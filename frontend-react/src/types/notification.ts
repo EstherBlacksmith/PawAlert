@@ -4,7 +4,7 @@ export interface NotificationMessage {
   title: string;
   message: string;
   alertId: string;
-  alertStatus: string;
+  alertStatus: 'OPEN' | 'CLOSED' | 'SAFE' | 'FOUND' | 'SEEN';
   petName: string;
   timestamp: string;
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, Heading, Button, VStack, Field, Input, Textarea, NativeSelect, Spinner, Flex, Text, Badge, HStack, Alert } from '@chakra-ui/react'
+import { Box, Heading, Button, VStack, Field, Input, Textarea, NativeSelect, Spinner, Flex, Text, Badge, HStack, Alert, SimpleGrid } from '@chakra-ui/react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { alertService } from '../../services/alert.service'
 import { petService } from '../../services/pet.service'
@@ -149,14 +149,14 @@ export default function AlertCreate() {
   if (isFetchingPets) {
     return (
       <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="purple.500" />
+        <Spinner size="xl" color="brand.500" />
       </Flex>
     )
   }
 
   return (
-    <Box maxW="600px" mx="auto">
-      <Heading size="lg" mb={6} color="gray.800" _dark={{ color: 'white' }}>
+    <Box w="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
+      <Heading size="lg" mb={6} color="gray.800" fontWeight="bold">
         Create Alert
       </Heading>
 
@@ -189,21 +189,31 @@ export default function AlertCreate() {
       )}
 
       <Box as="form" onSubmit={handleSubmit}>
-        <VStack gap={4}>
-          <Field.Root>
+        <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+          <Field.Root gridColumn={{ base: '1', md: '1' }}>
             <Field.Label>Title *</Field.Label>
-            <Input name="title" value={formData.title} onChange={handleChange} required placeholder="Alert title" />
+            <Input 
+              name="title" 
+              value={formData.title} 
+              onChange={handleChange} 
+              required 
+              placeholder="Alert title"
+              bg="white" 
+              color="gray.800"
+              _placeholder={{ color: 'gray.500' }}
+            />
           </Field.Root>
 
-          <Field.Root>
-            <Field.Label>Description *</Field.Label>
-            <Textarea name="description" value={formData.description} onChange={handleChange} required placeholder="Describe the situation" />
-          </Field.Root>
-
-          <Field.Root>
+          <Field.Root gridColumn={{ base: '1', md: '2' }}>
             <Field.Label>Pet *</Field.Label>
             <NativeSelect.Root>
-              <NativeSelect.Field name="petId" value={formData.petId} onChange={handleChange}>
+              <NativeSelect.Field 
+                name="petId" 
+                value={formData.petId} 
+                onChange={handleChange}
+                bg="white"
+                color="gray.800"
+              >
                 <option value="">Select a pet</option>
                 {pets.map((pet) => (
                   <option key={pet.petId} value={pet.petId}>
@@ -215,10 +225,25 @@ export default function AlertCreate() {
             </NativeSelect.Root>
           </Field.Root>
 
+          <Field.Root gridColumn={{ base: '1', md: 'span 2' }}>
+            <Field.Label>Description *</Field.Label>
+            <Textarea 
+              name="description" 
+              value={formData.description} 
+              onChange={handleChange} 
+              required 
+              placeholder="Describe the situation" 
+              rows={2}
+              bg="white" 
+              color="gray.800"
+              _placeholder={{ color: 'gray.500' }}
+            />
+          </Field.Root>
+
           {/* Location Detection Section */}
-          <Box w="full">
+          <Box gridColumn={{ base: '1', md: 'span 2' }}>
             <HStack mb={2} justify="space-between" align="center">
-              <Text fontWeight="medium" fontSize="sm">Location</Text>
+              <Text fontWeight="medium" fontSize="sm" color="gray.800">Location</Text>
               {locationSource && (
                 <Badge 
                   colorPalette={locationSource === 'gps' ? 'green' : 'orange'}
@@ -247,7 +272,7 @@ export default function AlertCreate() {
               }))}
               onDetectLocation={handleDetectLocation}
               isDetectingLocation={isLocationLoading}
-              height="300px"
+              height="200px"
             />
 
             {/* Manual Coordinate Input (fallback) */}
@@ -261,7 +286,10 @@ export default function AlertCreate() {
                   value={formData.latitude} 
                   onChange={handleChange} 
                   required 
-                  placeholder="40.416775" 
+                  placeholder="40.416775"
+                  bg="white" 
+                  color="gray.800"
+                  _placeholder={{ color: 'gray.500' }}
                 />
               </Field.Root>
 
@@ -274,18 +302,21 @@ export default function AlertCreate() {
                   value={formData.longitude} 
                   onChange={handleChange} 
                   required 
-                  placeholder="-3.703790" 
+                  placeholder="-3.703790"
+                  bg="white" 
+                  color="gray.800"
+                  _placeholder={{ color: 'gray.500' }}
                 />
               </Field.Root>
             </HStack>
           </Box>
 
-          <Box w="full" pt={4}>
-            <Button type="submit" colorPalette="red" w="full" loading={isLoading}>
+          <Box gridColumn={{ base: '1', md: 'span 2' }} pt={2}>
+            <Button type="submit" colorPalette="brand" bg="brand.500" _hover={{ bg: 'brand.600' }} w="full" loading={isLoading}>
               Create Alert
             </Button>
           </Box>
-        </VStack>
+        </SimpleGrid>
       </Box>
     </Box>
   )
