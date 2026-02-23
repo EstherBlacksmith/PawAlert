@@ -35,3 +35,11 @@ config/
 resources/
 src/main/resources/google-credentials.json
 src/main/resources/application.properties
+
+### Node.js ###
+node_modules/
+frontend-react/node_modules/
+
+### Screenshots and docs ###
+screenshots/
+stash_full.txt
