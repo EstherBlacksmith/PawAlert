@@ -5,16 +5,17 @@
 -- Added: surname, role, telegram_chat_id, email_notifications_enabled, telegram_notifications_enabled
 CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(255) PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
+    username VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    surname VARCHAR(255),
+    surname VARCHAR(255) NOT NULL,
     phone_number VARCHAR(50),
     role VARCHAR(20) DEFAULT 'USER',
     telegram_chat_id VARCHAR(100),
-    email_notifications_enabled BOOLEAN DEFAULT FALSE,
+    email_notifications_enabled BOOLEAN DEFAULT TRUE,
     telegram_notifications_enabled BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP
 );
 
 -- Alerts table
@@ -25,7 +26,8 @@ CREATE TABLE IF NOT EXISTS alerts (
     title VARCHAR(255) NOT NULL,
     description TEXT,
     status VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP
 );
 
 -- Alert events table
@@ -41,6 +43,7 @@ CREATE TABLE IF NOT EXISTS alert_events (
     changed_by_user_id VARCHAR(255),
     latitude DOUBLE PRECISION,
     longitude DOUBLE PRECISION,
+    closure_reason VARCHAR(50),
     FOREIGN KEY (alert_id) REFERENCES alerts (id)
 );
 
@@ -58,7 +61,8 @@ CREATE TABLE IF NOT EXISTS pets (
     pet_gender VARCHAR(20),
     pet_description TEXT,
     pet_image TEXT,
-    created_at TIMESTAMP NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    deleted_at TIMESTAMP
 );
 
 -- Alert subscriptions table
