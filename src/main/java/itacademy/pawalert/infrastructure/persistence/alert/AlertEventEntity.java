@@ -18,6 +18,9 @@ public class AlertEventEntity {
 
     @Id
     private String id;
+    @ManyToOne
+    @JoinColumn(name = "alert_id")
+    private AlertEntity alert;
     @Column(name = "event_type")
     private String eventType;
     @Column(name = "old_value")
@@ -38,9 +41,6 @@ public class AlertEventEntity {
     private Double longitude;
     @Column(name = "closure_reason")
     private String closureReason;
-    @ManyToOne
-    @JoinColumn(name = "alert_id")
-    private AlertEntity alert;
 
     public AlertEventEntity() {
     }

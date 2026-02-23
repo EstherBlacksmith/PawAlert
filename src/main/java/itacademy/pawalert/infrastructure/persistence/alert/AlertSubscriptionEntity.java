@@ -16,12 +16,12 @@ public class AlertSubscriptionEntity {
     @Id
     @Column(name = "id", nullable = false)
     private UUID id;
+    @Column(name = "alert_id", nullable = false)
+    private UUID alertId;
     @Column(name = "user_id", nullable = false)
     private UUID userId;
     @Column(name = "subscribed_at", nullable = false)
     private LocalDateTime subscribedAt;
-    @Column(name = "alert_id", nullable = false)
-    private UUID alertId;
 
     // Empty constructor required by JPA/Hibernate
     public AlertSubscriptionEntity() {
