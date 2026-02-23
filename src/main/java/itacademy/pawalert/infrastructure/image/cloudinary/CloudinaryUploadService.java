@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class CloudinaryUploadService  implements ImageUploader {
+public class CloudinaryUploadService implements ImageUploader {
 
     private final Cloudinary cloudinary;
 
@@ -32,6 +32,9 @@ public class CloudinaryUploadService  implements ImageUploader {
             Map<String, Object> options = new HashMap<>();
             options.put("folder", folder);  // Folder in Cloudinary
             options.put("resource_type", "image");
+            // Cache 1 year
+            options.put("cache", "public, max-age=31536000");
+            options.put("expires", System.currentTimeMillis() + 31536000000L);
 
             // Upload
             Map result = cloudinary.uploader().upload(tempFile, options);

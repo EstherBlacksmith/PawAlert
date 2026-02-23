@@ -1,20 +1,19 @@
 package itacademy.pawalert.infrastructure.image.google;
 
-import com.google.type.Color;
-import com.google.cloud.vision.v1.ColorInfo;
 import com.google.cloud.vision.v1.*;
 import com.google.protobuf.ByteString;
+import com.google.type.Color;
 import itacademy.pawalert.domain.image.model.*;
 import itacademy.pawalert.domain.image.port.outbound.ImageAnalysisPort;
 import itacademy.pawalert.domain.image.service.PetColorClassifier;
 import itacademy.pawalert.domain.image.service.PetColorClassifier.RGBColor;
-
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -183,9 +182,9 @@ public class GoogleVisionImageAnalysisPort implements ImageAnalysisPort {
         if (petColors.isEmpty()) {
             // Fallback to the first color if all colors are filtered
             ColorInfo firstColor = colors.getFirst();
-            int r = (int)(firstColor.getColor().getRed() * 255);
-            int g = (int)(firstColor.getColor().getGreen() * 255);
-            int b = (int)(firstColor.getColor().getBlue() * 255);
+            int r = (int) (firstColor.getColor().getRed() * 255);
+            int g = (int) (firstColor.getColor().getGreen() * 255);
+            int b = (int) (firstColor.getColor().getBlue() * 255);
             String colorName = petColorClassifier.mapToPetColor(r, g, b);
             return new ColorResult(colorName, petColorClassifier.rgbToHex(r, g, b), firstColor.getScore());
         }
@@ -207,9 +206,9 @@ public class GoogleVisionImageAnalysisPort implements ImageAnalysisPort {
     private RGBColor toRGBColor(ColorInfo colorInfo) {
         Color color = colorInfo.getColor();
         return new RGBColor(
-                (int)(color.getRed() * 255),
-                (int)(color.getGreen() * 255),
-                (int)(color.getBlue() * 255),
+                (int) (color.getRed() * 255),
+                (int) (color.getGreen() * 255),
+                (int) (color.getBlue() * 255),
                 colorInfo.getScore(),
                 colorInfo.getPixelFraction()
         );

@@ -10,9 +10,13 @@ import java.util.UUID;
 
 public interface GetAlertUseCase {
     Alert getAlertById(UUID alertId);
+
     List<Alert> getAlertsByPetId(UUID petId);
+
     List<AlertEvent> getAlertHistory(UUID alertId);
+
     AlertWithContactDTO getAlertWithCreatorPhone(UUID alertId);
+
     Optional<Alert> getActiveAlertByPetId(UUID petId);
 
 }

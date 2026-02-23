@@ -7,5 +7,6 @@ public record UpdateUserRequest(String newUsername,
                                 String newEmail,
                                 Boolean emailNotificationsEnabled,
                                 Boolean telegramNotificationsEnabled,
-                                String telegramChatId) {
+                                String telegramChatId,
+                                String newRole) {
 }

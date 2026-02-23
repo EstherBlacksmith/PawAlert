@@ -1,7 +1,9 @@
 package itacademy.pawalert.application.alert.model;
 
 import itacademy.pawalert.domain.alert.model.StatusNames;
+
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record AlertSearchCriteria(
         StatusNames status,
@@ -12,9 +14,10 @@ public record AlertSearchCriteria(
         LocalDateTime createdFrom,
         LocalDateTime createdTo,
         LocalDateTime updatedFrom,
-        LocalDateTime updatedTo
+        LocalDateTime updatedTo,
+        UUID userId
 ) {
     public static AlertSearchCriteria empty() {
-        return new AlertSearchCriteria(null, null, null,null, null, null, null, null, null);
+        return new AlertSearchCriteria(null, null, null, null, null, null, null, null, null, null);
     }
 }

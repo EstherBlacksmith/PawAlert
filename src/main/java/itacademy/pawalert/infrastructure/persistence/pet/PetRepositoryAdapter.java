@@ -1,7 +1,7 @@
 package itacademy.pawalert.infrastructure.persistence.pet;
 
 import itacademy.pawalert.application.pet.port.outbound.PetRepositoryPort;
-import itacademy.pawalert.domain.pet.model.*;
+import itacademy.pawalert.domain.pet.model.Pet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -66,6 +66,13 @@ public class PetRepositoryAdapter implements PetRepositoryPort {
     public List<Pet> findAllByUserId(UUID userId) {
         return petRepository.findByUserId(userId.toString()).stream()
                 .map(PetEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Pet> findAll() {
+        return petRepository.findAll().stream().
+                map(PetEntity::toDomain)
                 .toList();
     }
 }

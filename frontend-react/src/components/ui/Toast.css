@@ -1,0 +1,401 @@
+/* Toast Container - positioned at top-start (top-left) */
+.toast-container {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 400px;
+  pointer-events: none;
+}
+
+/* Individual Toast */
+.toast {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 320px;
+  max-width: 400px;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+  pointer-events: auto;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Toast Content */
+.toast-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Toast Title */
+.toast-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+/* Toast Description */
+.toast-description {
+  font-size: 14px;
+  color: #4a5568;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Toast Action Button */
+.toast-action {
+  margin-top: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3182ce;
+  background-color: transparent;
+  border: 1px solid #3182ce;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.toast-action:hover {
+  background-color: #3182ce;
+  color: #ffffff;
+}
+
+/* Toast Close Button */
+.toast-close {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #718096;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.toast-close:hover {
+  background-color: #edf2f7;
+  color: #1a202c;
+}
+
+/* Toast Type Variants */
+
+/* Success */
+.toast-success {
+  border-left: 4px solid #22c55e;
+  background-color: #f0fdf4;
+}
+
+.toast-success .toast-title {
+  color: #22c55e;
+  font-weight: 700;
+}
+
+.toast-success .toast-description {
+  color: #22c55e;
+  font-weight: 500;
+}
+
+/* Error */
+.toast-error {
+  border-left: 4px solid #ef4444;
+  background-color: #fef2f2;
+}
+
+.toast-error .toast-title {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.toast-error .toast-description {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+/* Info */
+.toast-info {
+  border-left: 4px solid #3b82f6;
+  background-color: #eff6ff;
+}
+
+.toast-info .toast-title {
+  color: #3b82f6;
+  font-weight: 700;
+}
+
+.toast-info .toast-description {
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+/* Warning - Brand Orange */
+.toast-warning {
+  border-left: 4px solid #f97316;
+  background-color: #fff7ed;
+}
+
+.toast-warning .toast-title {
+  color: #f97316;
+  font-weight: 700;
+}
+
+.toast-warning .toast-description {
+  color: #f97316;
+  font-weight: 500;
+}
+
+/* Alert Status - OPEN (Red/Orange) - Alert is active/open */
+.toast-status-open {
+  border-left: 4px solid #ff8c00;
+  background-color: #fff7ed;
+}
+
+.toast-status-open .toast-title {
+  color: #ff8c00;
+  font-weight: 700;
+}
+
+.toast-status-open .toast-description {
+  color: #ff8c00;
+  font-weight: 500;
+}
+
+/* Alert Status - CLOSED (Grey) - Alert is closed */
+.toast-status-closed {
+  border-left: 4px solid #9ca3af;
+  background-color: #f3f4f6;
+}
+
+.toast-status-closed .toast-title {
+  color: #9ca3af;
+  font-weight: 700;
+}
+
+.toast-status-closed .toast-description {
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* Alert Status - SAFE (Green) - Pet is safe */
+.toast-status-safe {
+  border-left: 4px solid #10b981;
+  background-color: #f0fdf4;
+}
+
+.toast-status-safe .toast-title {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.toast-status-safe .toast-description {
+  color: #10b981;
+  font-weight: 500;
+}
+
+/* Alert Status - FOUND (Blue) - Pet was found */
+.toast-status-found {
+  border-left: 4px solid #0ea5e9;
+  background-color: #eff6ff;
+}
+
+.toast-status-found .toast-title {
+  color: #0ea5e9;
+  font-weight: 700;
+}
+
+.toast-status-found .toast-description {
+  color: #0ea5e9;
+  font-weight: 500;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+   .toast {
+      background-color: #1f2937;
+      border-color: #374151;
+   }
+
+   .toast-title {
+      color: #f3f4f6;
+   }
+
+   .toast-description {
+      color: #d1d5db;
+   }
+
+   .toast-close {
+      color: #9ca3af;
+   }
+
+   .toast-close:hover {
+      background-color: #374151;
+      color: #f3f4f6;
+   }
+
+   .toast-action {
+      color: #60a5fa;
+      border-color: #60a5fa;
+   }
+
+   .toast-action:hover {
+      background-color: #60a5fa;
+      color: #1f2937;
+   }
+
+   /* Success dark mode */
+   .toast-success {
+      background-color: #f0fdf4;
+      border-left-color: #22c55e;
+   }
+
+   .toast-success .toast-title {
+      color: #22c55e;
+      font-weight: 700;
+   }
+
+   .toast-success .toast-description {
+      color: #22c55e;
+      font-weight: 500;
+   }
+
+   /* Error dark mode */
+   .toast-error {
+      background-color: #fef2f2;
+      border-left-color: #ef4444;
+   }
+
+   .toast-error .toast-title {
+      color: #ef4444;
+      font-weight: 700;
+   }
+
+   .toast-error .toast-description {
+      color: #ef4444;
+      font-weight: 500;
+   }
+
+   /* Info dark mode */
+   .toast-info {
+      background-color: #eff6ff;
+      border-left-color: #3b82f6;
+   }
+
+   .toast-info .toast-title {
+      color: #3b82f6;
+      font-weight: 700;
+   }
+
+   .toast-info .toast-description {
+      color: #3b82f6;
+      font-weight: 500;
+   }
+
+   /* Warning dark mode - Brand Orange */
+   .toast-warning {
+      background-color: #fff7ed;
+      border-left-color: #f97316;
+   }
+
+   .toast-warning .toast-title {
+      color: #f97316;
+      font-weight: 700;
+   }
+
+   .toast-warning .toast-description {
+      color: #f97316;
+      font-weight: 500;
+   }
+
+   /* Alert Status - OPEN (Red/Orange) - Dark mode */
+   .toast-status-open {
+      background-color: #fff7ed;
+      border-left-color: #ff8c00;
+   }
+
+   .toast-status-open .toast-title {
+      color: #ff8c00;
+      font-weight: 700;
+   }
+
+   .toast-status-open .toast-description {
+      color: #ff8c00;
+      font-weight: 500;
+   }
+
+   /* Alert Status - CLOSED (Grey) - Dark mode */
+   .toast-status-closed {
+      background-color: #f3f4f6;
+      border-left-color: #9ca3af;
+   }
+
+   .toast-status-closed .toast-title {
+      color: #9ca3af;
+      font-weight: 700;
+   }
+
+   .toast-status-closed .toast-description {
+      color: #9ca3af;
+      font-weight: 500;
+   }
+
+   /* Alert Status - SAFE (Green) - Dark mode */
+   .toast-status-safe {
+      background-color: #f0fdf4;
+      border-left-color: #10b981;
+   }
+
+   .toast-status-safe .toast-title {
+      color: #10b981;
+      font-weight: 700;
+   }
+
+   .toast-status-safe .toast-description {
+      color: #10b981;
+      font-weight: 500;
+   }
+
+   /* Alert Status - FOUND (Blue) - Dark mode */
+   .toast-status-found {
+      background-color: #eff6ff;
+      border-left-color: #0ea5e9;
+   }
+
+   .toast-status-found .toast-title {
+      color: #0ea5e9;
+      font-weight: 700;
+   }
+
+   .toast-status-found .toast-description {
+      color: #0ea5e9;
+      font-weight: 500;
+   }
+}

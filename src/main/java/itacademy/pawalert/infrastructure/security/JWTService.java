@@ -56,5 +56,6 @@ public class JWTService {
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = SECRET.getBytes();
-        return new javax.crypto.spec.SecretKeySpec(keyBytes, "HmacSHA256");    }
+        return new javax.crypto.spec.SecretKeySpec(keyBytes, "HmacSHA256");
+    }
 }

@@ -13,31 +13,31 @@ import java.util.UUID;
 @Slf4j
 @Component
 public class CurrentUserProviderAdapter implements CurrentUserProviderPort {
-    
+
     @Override
     public UUID getCurrentUserId() {
         log.debug("[CURRENT_USER] Getting current user ID");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        
+
         if (authentication == null) {
             log.warn("[CURRENT_USER] Authentication is null");
             return null;
         }
-        
+
         if (!authentication.isAuthenticated()) {
             log.warn("[CURRENT_USER] Authentication is not authenticated");
             return null;
         }
-        
+
         log.debug("[CURRENT_USER] Authentication name: {}", authentication.getName());
         log.debug("[CURRENT_USER] Authentication principal type: {}", authentication.getPrincipal().getClass().getName());
-        
+
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserDetailsAdapter) {
             User user = ((UserDetailsAdapter) principal).getUser();
             if (user != null) {
-                log.info("[CURRENT_USER] Found user ID: {}", user.getId());
-                return user.getId();
+                log.info("[CURRENT_USER] Found user ID: {}", user.id());
+                return user.id();
             } else {
                 log.warn("[CURRENT_USER] User is null in UserDetailsAdapter");
             }
@@ -46,7 +46,7 @@ public class CurrentUserProviderAdapter implements CurrentUserProviderPort {
         }
         return null;
     }
-    
+
     @Override
     public boolean isCurrentUserAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -54,7 +54,7 @@ public class CurrentUserProviderAdapter implements CurrentUserProviderPort {
             return false;
         }
         return authentication.getAuthorities().stream()
-            .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
     }
 
     @Override
@@ -63,12 +63,12 @@ public class CurrentUserProviderAdapter implements CurrentUserProviderPort {
         if (authentication == null || !authentication.isAuthenticated()) {
             return null;
         }
-        
+
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserDetailsAdapter userDetailsAdapter) {
             User user = userDetailsAdapter.getUser();
             if (user != null) {
-                return user.getRole();
+                return user.role();
             }
         }
         return null;

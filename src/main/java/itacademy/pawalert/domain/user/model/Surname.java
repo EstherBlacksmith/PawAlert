@@ -20,11 +20,11 @@ public record Surname(@JsonValue String value) {
         }
     }
 
-    public boolean isCompound() {
-        return value.contains(" ") || value.contains("-") || value.contains("'");
-    }
-
     public static Surname of(String surname) {
         return new Surname(surname);
+    }
+
+    public boolean isCompound() {
+        return value.contains(" ") || value.contains("-") || value.contains("'");
     }
 }

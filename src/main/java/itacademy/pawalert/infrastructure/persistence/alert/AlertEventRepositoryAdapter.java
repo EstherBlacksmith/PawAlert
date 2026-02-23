@@ -4,6 +4,7 @@ import itacademy.pawalert.application.alert.port.outbound.AlertEventRepositoryPo
 import itacademy.pawalert.domain.alert.model.AlertEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,14 +23,14 @@ public class AlertEventRepositoryAdapter implements AlertEventRepositoryPort {
     @Override
     public AlertEvent save(AlertEvent event) {
         // Debug logging
-        log.debug("[ALERT-EVENT-SAVE] Saving event for alertId={}, eventId={}, eventType={}", 
+        log.debug("[ALERT-EVENT-SAVE] Saving event for alertId={}, eventId={}, eventType={}",
                 event.getAlertId(), event.getId(), event.getEventType());
-        
+
         // Get the AlertEntity reference from the event's alertId
         AlertEntity alertEntity = alertRepository.getReferenceById(event.getAlertId().toString());
         AlertEventEntity entity = AlertEventEntity.fromDomain(event, alertEntity);
         AlertEventEntity saved = eventRepository.save(entity);
-        
+
         log.debug("[ALERT-EVENT-SAVE] Event saved successfully: id={}", saved.getId());
         return saved.toDomain();
     }

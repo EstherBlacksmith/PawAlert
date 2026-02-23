@@ -5,6 +5,7 @@ import java.util.UUID;
 
 public interface NotificationRepository {
     List<String> findSubscriberEmailsByAlertId(UUID alertId);
+
     List<String> findSubscriberTelegramChatIdsByAlertId(UUID alertId);
 
 }

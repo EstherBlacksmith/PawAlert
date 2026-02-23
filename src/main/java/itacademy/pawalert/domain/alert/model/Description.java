@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 
-public record Description( String description) {
+public record Description(String description) {
 
     private static final int MIN_LENGTH = 25;
     private static final int MAX_LENGTH = 500;
@@ -22,15 +22,14 @@ public record Description( String description) {
         description = description.trim();
     }
 
+    @JsonCreator
+    public static Description of(String description) {
+        return new Description(description);
+    }
 
     @JsonValue
     public String getValue() {
         return description;
-    }
-
-    @JsonCreator
-    public static Description of(String description) {
-        return new Description(description);
     }
 
 }

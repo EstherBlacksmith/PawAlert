@@ -47,12 +47,12 @@ public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseC
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
         // 2. Check if user wants telegram notifications
-        if (!user.isTelegramNotificationsEnabled()) {
+        if (!user.telegramNotificationsEnabled()) {
             return;  // Skip silently
         }
 
         // 3. Check if user has telegram chat ID
-        TelegramChatId chatId = user.getTelegramChatId();
+        TelegramChatId chatId = user.telegramChatId();
         if (chatId == null || !chatId.isLinked()) {
             return;  // Skip silently
         }
@@ -64,8 +64,8 @@ public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseC
 
         // 5. Format and send with new format
         String message = formatter.formatTelegramMessage(alert, pet, newStatus);
-        String chatIdValue = user.getTelegramChatId().value();
-        
+        String chatIdValue = user.telegramChatId().value();
+
         // Try to send photo if available
         String petImageUrl = pet.getPetImage() != null ? pet.getPetImage().value() : null;
         if (petImageUrl != null && !petImageUrl.isEmpty()) {

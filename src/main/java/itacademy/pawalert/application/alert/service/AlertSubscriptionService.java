@@ -1,12 +1,12 @@
 package itacademy.pawalert.application.alert.service;
 
+import itacademy.pawalert.application.alert.port.inbound.AlertSubscriptionUseCase;
 import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
+import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.exception.CannotSubscribeToClosedAlertException;
 import itacademy.pawalert.application.exception.SubscriptionAlreadyExistsException;
 import itacademy.pawalert.application.exception.SubscriptionNotFoundException;
-import itacademy.pawalert.application.alert.port.inbound.AlertSubscriptionUseCase;
-import itacademy.pawalert.application.alert.port.outbound.AlertSubscriptionRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.AlertSubscription;
 import itacademy.pawalert.domain.alert.model.StatusNames;
@@ -37,7 +37,7 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
     @Override
     public AlertSubscription subscribeToAlert(UUID alertId, UUID userId) {
         log.info("[SUBSCRIBE-SERVICE] Subscribing user {} to alert {}", userId, alertId);
-        
+
         Alert alert = alertRepository.findById(alertId)
                 .orElseThrow(() -> {
                     log.error("[SUBSCRIBE-SERVICE] Alert not found: {}", alertId);
@@ -45,7 +45,7 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
                 });
 
         log.info("[SUBSCRIBE-SERVICE] Found alert with status: {}", alert.currentStatus().getStatusName());
-        
+
         if (alert.currentStatus().getStatusName() == StatusNames.CLOSED) {
             log.error("[SUBSCRIBE-SERVICE] Cannot subscribe to closed alert: {}", alertId);
             throw new CannotSubscribeToClosedAlertException(alertId);
@@ -60,7 +60,7 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
         log.info("[SUBSCRIBE-SERVICE] Creating new subscription");
         AlertSubscription subscription = AlertSubscription.create(alertId, userId);
         AlertSubscription saved = subscriptionRepository.save(subscription);
-        log.info("[SUBSCRIBE-SERVICE] Subscription saved with ID: {}", saved.getId());
+        log.info("[SUBSCRIBE-SERVICE] Subscription saved with ID: {}", saved.id());
         return saved;
     }
 
@@ -69,12 +69,12 @@ public class AlertSubscriptionService implements AlertSubscriptionUseCase {
         List<AlertSubscription> subscriptions = subscriptionRepository.findByUserId(userId);
 
         AlertSubscription subscription = subscriptions.stream()
-                .filter(s -> s.getAlertId().equals(alertId))
+                .filter(s -> s.alertId().equals(alertId))
                 .findFirst()
                 .orElseThrow(() -> new SubscriptionNotFoundException(
                         "Subscription not found for alert " + alertId + " and user " + userId));
 
-        subscriptionRepository.deleteById(subscription.getId());
+        subscriptionRepository.deleteById(subscription.id());
     }
 
 

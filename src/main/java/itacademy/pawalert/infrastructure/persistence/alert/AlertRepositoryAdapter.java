@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Component
 public class AlertRepositoryAdapter implements AlertRepositoryPort {
-    
+
     private final AlertRepository alertRepository;
 
     public AlertRepositoryAdapter(AlertRepository alertRepository) {
@@ -96,6 +96,9 @@ public class AlertRepositoryAdapter implements AlertRepositoryPort {
         }
         if (criteria.updatedTo() != null) {
             spec = spec.and(AlertSpecifications.lastUpdatedBefore(criteria.updatedTo()));
+        }
+        if (criteria.userId() != null) {
+            spec = spec.and(AlertSpecifications.createdBy(criteria.userId()));
         }
 
         return alertRepository.findAll(spec)

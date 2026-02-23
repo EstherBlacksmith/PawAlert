@@ -14,12 +14,12 @@ import java.util.UUID;
 
 /**
  * Application Service that orchestrates alert creation with auto-subscription.
- * 
+ * <p>
  * This service follows the Domain-Driven Design (DDD) and SOLID principles:
  * - SRP: Single responsibility - orchestrates the creation workflow
  * - OCP: Open for extension, closed for modification
  * - Clear separation between domain operations (alert creation vs subscription)
- * 
+ *
  * @see CreateAlertUseCase
  * @see AlertSubscriptionUseCase
  */
@@ -49,9 +49,9 @@ public class AlertApplicationService implements CreateAlertUseCase {
      * @return the created alert
      */
     @Override
-    public Alert createOpenedAlert(UUID petId, Title title, Description description, 
+    public Alert createOpenedAlert(UUID petId, Title title, Description description,
                                    UUID userId, GeographicLocation location) {
-        log.info("[ALERT-APPLICATION-SERVICE] Starting orchestrated alert creation for petId={}, userId={}", 
+        log.info("[ALERT-APPLICATION-SERVICE] Starting orchestrated alert creation for petId={}, userId={}",
                 petId, userId);
 
         // Step 1: Create the alert (using the domain service that handles alert creation only)
@@ -61,12 +61,12 @@ public class AlertApplicationService implements CreateAlertUseCase {
         // Step 2: Auto-subscribe the creator to their own alert
         try {
             alertSubscriptionUseCase.subscribeToAlert(createdAlert.getId(), userId);
-            log.info("[ALERT-APPLICATION-SERVICE] Auto-subscribed user {} to alert {}", 
+            log.info("[ALERT-APPLICATION-SERVICE] Auto-subscribed user {} to alert {}",
                     userId, createdAlert.getId());
         } catch (Exception e) {
             // Log the error but don't fail the alert creation
             // The alert was successfully created, subscription failure shouldn't rollback the alert
-            log.error("[ALERT-APPLICATION-SERVICE] Failed to auto-subscribe user {} to alert {}: {}", 
+            log.error("[ALERT-APPLICATION-SERVICE] Failed to auto-subscribe user {} to alert {}: {}",
                     userId, createdAlert.getId(), e.getMessage());
         }
 

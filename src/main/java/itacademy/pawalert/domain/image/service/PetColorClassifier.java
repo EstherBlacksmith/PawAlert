@@ -1,6 +1,5 @@
 package itacademy.pawalert.domain.image.service;
 
-import itacademy.pawalert.domain.image.model.ColorResult;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -8,24 +7,6 @@ import java.util.Set;
 
 @Component
 public class PetColorClassifier {
-
-    // Definiciones de colores de mascotas con rangos RGB
-    private record PetColorDefinition(
-            String name,
-            int minR, int minG, int minB,
-            int maxR, int maxG, int maxB
-    ) {
-        public double distanceFrom(int r, int g, int b) {
-            int centerR = (minR + maxR) / 2;
-            int centerG = (minG + maxG) / 2;
-            int centerB = (minB + maxB) / 2;
-            return Math.sqrt(
-                    Math.pow(r - centerR, 2) +
-                            Math.pow(g - centerG, 2) +
-                            Math.pow(b - centerB, 2)
-            );
-        }
-    }
 
     private static final List<PetColorDefinition> PET_COLORS = List.of(
             new PetColorDefinition("Black", 0, 0, 0, 60, 60, 60),
@@ -40,16 +21,7 @@ public class PetColorClassifier {
             new PetColorDefinition("Sable", 120, 70, 30, 180, 130, 70),
             new PetColorDefinition("Brindle", 80, 50, 30, 140, 100, 70)
     );
-
     private static final Set<String> BACKGROUND_HINTS = Set.of("white", "cream", "grey");
-
-    public record RGBColor(int r, int g, int b, double score, double pixelFraction) {}
-
-    public record ClassificationResult(
-            String primaryColor,
-            String secondaryColor,
-            List<String> allColors
-    ) {}
 
     public String mapToPetColor(int r, int g, int b) {
         String closestColor = "Unknown";
@@ -104,5 +76,33 @@ public class PetColorClassifier {
 
     public String rgbToHex(int r, int g, int b) {
         return String.format("#%02X%02X%02X", r, g, b);
+    }
+
+    // Definiciones de colores de mascotas con rangos RGB
+    private record PetColorDefinition(
+            String name,
+            int minR, int minG, int minB,
+            int maxR, int maxG, int maxB
+    ) {
+        public double distanceFrom(int r, int g, int b) {
+            int centerR = (minR + maxR) / 2;
+            int centerG = (minG + maxG) / 2;
+            int centerB = (minB + maxB) / 2;
+            return Math.sqrt(
+                    Math.pow(r - centerR, 2) +
+                            Math.pow(g - centerG, 2) +
+                            Math.pow(b - centerB, 2)
+            );
+        }
+    }
+
+    public record RGBColor(int r, int g, int b, double score, double pixelFraction) {
+    }
+
+    public record ClassificationResult(
+            String primaryColor,
+            String secondaryColor,
+            List<String> allColors
+    ) {
     }
 }

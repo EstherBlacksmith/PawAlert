@@ -20,10 +20,10 @@ class AlertSubscriptionTest {
         AlertSubscription subscription = AlertSubscription.create(alertId, userId);
 
         // Then
-        assertNotNull(subscription.getId());
-        assertEquals(alertId, subscription.getAlertId());
-        assertEquals(userId, subscription.getUserId());
-        assertNotNull(subscription.getSubscribedAt());
+        assertNotNull(subscription.id());
+        assertEquals(alertId, subscription.alertId());
+        assertEquals(userId, subscription.userId());
+        assertNotNull(subscription.subscribedAt());
 
     }
 

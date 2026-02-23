@@ -43,7 +43,7 @@ public class EmailNotificationUseCaseImpl implements EmailNotificationUseCase {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
 
-        if (!user.isEmailNotificationsEnabled()) {
+        if (!user.emailNotificationsEnabled()) {
             return;
         }
 
@@ -56,6 +56,6 @@ public class EmailNotificationUseCaseImpl implements EmailNotificationUseCase {
         // Use formatEmailBody to get HTML with pet image
         String body = formatter.formatEmailBody(alert, pet, newStatus, newStatus);
 
-        emailService.sendToUser(user.getEmail().value(), subject, body);
+        emailService.sendToUser(user.email().value(), subject, body);
     }
 }

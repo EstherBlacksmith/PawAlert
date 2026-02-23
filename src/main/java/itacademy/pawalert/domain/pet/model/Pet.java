@@ -97,6 +97,23 @@ public class Pet {
         );
     }
 
+    public Pet apply(UpdatePetRequest request) {
+        return new Pet.PetBuilder()
+                .userId(this.userId)
+                .petId(this.petId)
+                .chipNumber(request.hasChipNumber() ? ChipNumber.of(request.chipNumber()) : this.chipNumber)
+                .officialPetName(request.hasOfficialPetName() ? PetOfficialName.of(request.officialPetName()) : this.officialPetName)
+                .workingPetName(request.hasWorkingPetName() ? PetWorkingName.of(request.workingPetName()) : this.workingPetName)
+                .species(request.hasSpecies() ? Species.fromString(request.species()) : this.species)
+                .breed(request.hasBreed() ? Breed.of(request.breed()) : this.breed)
+                .size(request.hasSize() ? Size.fromString(request.size()) : this.size)
+                .gender(request.hasGender() ? Gender.fromString(request.gender()) : this.gender)
+                .color(request.hasColor() ? Color.of(request.color()) : this.color)
+                .petDescription(request.hasPetDescription() ? PetDescription.of(request.petDescription()) : this.petDescription)
+                .petImage(request.hasPetImage() ? PetImage.of(request.petImage()) : this.petImage)
+                .build();
+    }
+
     public static class PetBuilder {
         private UUID userId;
         private UUID petId;
@@ -175,23 +192,6 @@ public class Pet {
             return new Pet(this);
         }
 
-    }
-
-    public Pet apply(UpdatePetRequest request) {
-        return new Pet.PetBuilder()
-                .userId(this.userId)
-                .petId(this.petId)
-                .chipNumber(request.hasChipNumber() ? ChipNumber.of(request.chipNumber()) : this.chipNumber)
-                .officialPetName(request.hasOfficialPetName() ? PetOfficialName.of(request.officialPetName()) : this.officialPetName)
-                .workingPetName(request.hasWorkingPetName() ? PetWorkingName.of(request.workingPetName()) : this.workingPetName)
-                .species(request.hasSpecies() ? Species.fromString(request.species()) : this.species)
-                .breed(request.hasBreed() ? Breed.of(request.breed()) : this.breed)
-                .size(request.hasSize() ? Size.fromString(request.size()) : this.size)
-                .gender(request.hasGender() ? Gender.fromString(request.gender()) : this.gender)
-                .color(request.hasColor() ? Color.of(request.color()) : this.color)
-                .petDescription(request.hasPetDescription() ? PetDescription.of(request.petDescription()) : this.petDescription)
-                .petImage(request.hasPetImage() ? PetImage.of(request.petImage()) :this.petImage)
-                .build();
     }
 }
 

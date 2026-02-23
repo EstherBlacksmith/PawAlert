@@ -4,9 +4,16 @@ package itacademy.pawalert.domain.alert.model;
 import lombok.Getter;
 
 import java.util.Arrays;
+
 @Getter
-public enum ClosureReason implements AlertDisplayableEnum{
+public enum ClosureReason implements AlertDisplayableEnum {
     FOUNDED("Founded"), FALSE_ALARM("False alarm"), OTHER_REASON("Other reason");
+
+    private final String value;
+
+    ClosureReason(String value) {
+        this.value = value;
+    }
 
     public static ClosureReason fromString(String value) {
         if (value == null || value.isBlank()) {
@@ -20,12 +27,6 @@ public enum ClosureReason implements AlertDisplayableEnum{
                             Arrays.toString(values())
             );
         }
-    }
-
-    private final String value;
-
-    ClosureReason(String value) {
-        this.value = value;
     }
 
     @Override

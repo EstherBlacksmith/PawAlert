@@ -9,9 +9,13 @@ import java.util.List;
 
 public interface ImageAnalysisPort {
     List<LabelResult> detectLabels(byte[] imageBytes);
+
     String detectText(byte[] imageBytes);
+
     ColorResult detectColors(byte[] imageBytes);
+
     SafetyResult checkSafety(byte[] imageBytes);
+
     List<DetectedObject> detectObjects(byte[] imageBytes);
 }
 

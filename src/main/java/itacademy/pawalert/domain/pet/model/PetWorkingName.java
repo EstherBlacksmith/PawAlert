@@ -2,23 +2,8 @@ package itacademy.pawalert.domain.pet.model;
 
 public record PetWorkingName(String value) {
 
-    public String value() {
-        return this.value;
-    }
-    public static PetWorkingName of(String petName) {
-        return new PetWorkingName(petName);
-    }
-
-    public static PetWorkingName ofNullable(String petName) {
-        if (petName == null || petName.isBlank()) {
-            return null;
-        }
-        return new PetWorkingName(petName);
-    }
-
     private static final java.util.regex.Pattern NAME_PATTERN =
             java.util.regex.Pattern.compile("^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñÇç'\\-\\s]+$");
-
     private static final int MIN_LENGTH = 3;
     private static final int MAX_LENGTH = 50;
 
@@ -40,6 +25,21 @@ public record PetWorkingName(String value) {
             throw new IllegalArgumentException("The name contains invalid characters");
         }
 
+    }
+
+    public static PetWorkingName of(String petName) {
+        return new PetWorkingName(petName);
+    }
+
+    public static PetWorkingName ofNullable(String petName) {
+        if (petName == null || petName.isBlank()) {
+            return null;
+        }
+        return new PetWorkingName(petName);
+    }
+
+    public String value() {
+        return this.value;
     }
 
 }

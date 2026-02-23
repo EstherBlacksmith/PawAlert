@@ -11,7 +11,8 @@ import java.util.UUID;
 
 public final class AlertSpecifications {
 
-    private AlertSpecifications() {} // Utility class
+    private AlertSpecifications() {
+    } // Utility class
 
     public static Specification<AlertEntity> notDeleted() {
         return (root, query, cb) -> cb.isNull(root.get("deletedAt"));

@@ -1,17 +1,13 @@
 package itacademy.pawalert.infrastructure.exception;
 
-import itacademy.pawalert.application.exception.AlertNotFoundException;
-import itacademy.pawalert.application.exception.CannotSubscribeToClosedAlertException;
-import itacademy.pawalert.application.exception.ForbiddenException;
-import itacademy.pawalert.application.exception.SubscriptionAlreadyExistsException;
-import itacademy.pawalert.application.exception.SubscriptionNotFoundException;
-import itacademy.pawalert.application.exception.UnauthorizedException;
+import itacademy.pawalert.application.exception.*;
+import itacademy.pawalert.domain.alert.exception.*;
 import itacademy.pawalert.domain.image.exception.ImageUploadException;
 import itacademy.pawalert.domain.image.exception.ImageValidationException;
-import itacademy.pawalert.domain.user.exception.UserNotFoundException;
-import itacademy.pawalert.domain.alert.exception.*;
-import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.notification.exception.EmailSendException;
+import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
+import itacademy.pawalert.domain.user.exception.CannotModifyLastAdminException;
+import itacademy.pawalert.domain.user.exception.UserNotFoundException;
 import itacademy.pawalert.infrastructure.rest.alert.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,7 +28,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse(401, "Unauthorized", "Invalid email or password"));
     }
-    
+
     @ExceptionHandler(CannotSubscribeToClosedAlertException.class)
     public ResponseEntity<ErrorResponse> handleCannotSubscribeToClosedAlertException(CannotSubscribeToClosedAlertException ex) {
         log.warn("[EXCEPTION] CannotSubscribeToClosedAlertException: {}", ex.getMessage());
@@ -125,31 +121,42 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(409, "Subscription already exists", ex.getMessage()));
     }
+
     @ExceptionHandler(SubscriptionNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleSubscriptionNotFoundException(SubscriptionNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(404, "Subscription not found", ex.getMessage()));
     }
+
     @ExceptionHandler(EmailSendException.class)
     public ResponseEntity<ErrorResponse> handleEmailSendException(EmailSendException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(500, "Error sending mail", ex.getMessage()));
     }
+
     @ExceptionHandler(ImageUploadException.class)
     public ResponseEntity<ErrorResponse> handleImageUploadException(ImageUploadException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(400, "Image upload exception", ex.getMessage()));
     }
+
     @ExceptionHandler(ImageValidationException.class)
     public ResponseEntity<ErrorResponse> handleImageValidationException(ImageValidationException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(400, "Image upload exception", ex.getMessage()));
     }
 
+    @ExceptionHandler(CannotModifyLastAdminException.class)
+    public ResponseEntity<ErrorResponse> handleCannotModifyLastAdminException(
+            CannotModifyLastAdminException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "Cannot modify last admin", ex.getMessage()));
+    }
+
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ErrorResponse> handleIOException(IOException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(500,"ERROR_IO", "Image upload exception: " + ex.getMessage()));
+                .body(new ErrorResponse(500, "ERROR_IO", "Image upload exception: " + ex.getMessage()));
     }
 
     @ExceptionHandler(RuntimeException.class)
