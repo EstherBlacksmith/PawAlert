@@ -12,6 +12,11 @@ export const petService = {
     return response.data
   },
 
+  getPetById: async (petId: string): Promise<Pet> => {
+    const response = await api.get<Pet>(`/pets/${petId}`)
+    return response.data
+  },
+
   createPet: async (petData: CreatePetRequest): Promise<Pet> => {
     const response = await api.post<Pet>('/pets', petData)
     return response.data
@@ -78,4 +83,18 @@ export const petService = {
     const response = await api.get<Pet[]>(`/pets/user/${userId}`)
     return response.data
   },
+}
+
+export class PetService {
+  static getPetById = petService.getPetById
+  static getPets = petService.getPets
+  static getPet = petService.getPet
+  static createPet = petService.createPet
+  static updatePet = petService.updatePet
+  static deletePet = petService.deletePet
+  static validateImage = petService.validateImage
+  static uploadImage = petService.uploadImage
+  static getAllPets = petService.getAllPets
+  static adminDeletePet = petService.adminDeletePet
+  static getPetsByUserId = petService.getPetsByUserId
 }

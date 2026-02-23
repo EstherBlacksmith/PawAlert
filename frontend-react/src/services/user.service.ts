@@ -162,19 +162,34 @@ export const userService = {
     await api.delete(`/users/admin/${userId}`)
   },
 
-  // Admin: Update user by ID
-  adminUpdateUser: async (userId: string, data: Partial<User>): Promise<User> => {
-    console.log('adminUpdateUser called with data:', data)
-    const response = await api.put<Record<string, unknown>>(`/users/admin/${userId}`, {
-      newUsername: data.username,
-      newEmail: data.email,
-      newSurname: data.surname,
-      newPhonenumber: data.phoneNumber,
-      telegramChatId: data.telegramChatId,
-      emailNotificationsEnabled: data.emailNotificationsEnabled,
-      telegramNotificationsEnabled: data.telegramNotificationsEnabled,
-      newRole: data.role
-    })
-    return transformUserResponse(response.data)
-  },
+   // Admin: Update user by ID
+   adminUpdateUser: async (userId: string, data: Partial<User>): Promise<User> => {
+     console.log('adminUpdateUser called with data:', data)
+     const response = await api.put<Record<string, unknown>>(`/users/admin/${userId}`, {
+       newUsername: data.username,
+       newEmail: data.email,
+       newSurname: data.surname,
+       newPhonenumber: data.phoneNumber,
+       telegramChatId: data.telegramChatId,
+       emailNotificationsEnabled: data.emailNotificationsEnabled,
+       telegramNotificationsEnabled: data.telegramNotificationsEnabled,
+       newRole: data.role
+     })
+     return transformUserResponse(response.data)
+   },
+}
+
+// Export UserService class for class-based imports
+export class UserService {
+  static getUser = userService.getUser
+  static updateUser = userService.updateUser
+  static updateUsername = userService.updateUsername
+  static updateEmail = userService.updateEmail
+  static updatePhoneNumber = userService.updatePhoneNumber
+  static updateSurname = userService.updateSurname
+  static updateTelegramChatId = userService.updateTelegramChatId
+  static updateNotificationPreferences = userService.updateNotificationPreferences
+  static getAllUsers = userService.getAllUsers
+  static deleteUser = userService.deleteUser
+  static adminUpdateUser = userService.adminUpdateUser
 }

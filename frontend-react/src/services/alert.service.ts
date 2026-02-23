@@ -8,7 +8,7 @@ export const alertService = {
   },
 
   getAllAlerts: async (): Promise<Alert[]> => {
-    const response = await api.get<Alert[]>('/alerts')
+    const response = await api.get<Alert[]>('/alerts/admin/all')
     return response.data
   },
 
@@ -200,4 +200,29 @@ export const alertService = {
     const response = await api.get<Alert[]>('/alerts/search', { params: { userId } })
     return response.data
   },
+}
+
+// Export AlertService class for class-based imports
+export class AlertService {
+  static getAlerts = alertService.getAlerts
+  static getAllAlerts = alertService.getAllAlerts
+  static getAlert = alertService.getAlert
+  static createAlert = alertService.createAlert
+  static closeAlert = alertService.closeAlert
+  static updateAlertStatus = alertService.updateAlertStatus
+  static updateAlertTitle = alertService.updateAlertTitle
+  static updateAlertDescription = alertService.updateAlertDescription
+  static deleteAlert = alertService.deleteAlert
+  static updateAlert = alertService.updateAlert
+  static getAlertsByStatus = alertService.getAlertsByStatus
+  static getAlertEvents = alertService.getAlertEvents
+  static getActiveAlertByPetId = alertService.getActiveAlertByPetId
+  static searchAlertsWithFilters = alertService.searchAlertsWithFilters
+  static getAllAlertsForAdmin = alertService.getAllAlertsForAdmin
+  static getNearbyAlerts = alertService.getNearbyAlerts
+  static subscribeToAlert = alertService.subscribeToAlert
+  static unsubscribeFromAlert = alertService.unsubscribeFromAlert
+  static isSubscribedToAlert = alertService.isSubscribedToAlert
+  static getMySubscriptions = alertService.getMySubscriptions
+  static getAlertsByUserId = alertService.getAlertsByUserId
 }

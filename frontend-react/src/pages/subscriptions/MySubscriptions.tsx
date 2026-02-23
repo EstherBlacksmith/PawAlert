@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Box, Heading, VStack, Text, Flex, Spinner, Card, Badge, HStack, Button, EmptyState, Icon } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
-import { FaArrowLeft } from 'react-icons/fa'
-import { GiBell, GiDirectionSigns, GiTrashCan, GiInfo, GiEye, GiArrowRight } from '../../components/icons'
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
+import { GiBell, GiDirectionSigns, GiTrashCan, GiInfo, GiEye } from '../../components/icons'
 import { alertService } from '../../services/alert.service'
 import type { AlertSubscriptionWithDetails, ErrorResponse } from '../../types'
 import { toast } from '../../toaster'
@@ -172,15 +172,15 @@ export default function MySubscriptions() {
                    </Box>
                    
                    <HStack gap={2} flexShrink={0}>
-                     <Button
-                       size="sm"
-                       colorPalette="brand"
-                       variant="ghost"
-                       onClick={() => navigate(`/alerts/${subscription.alertId}`)}
-                     >
-                       <GiArrowRight style={{ marginRight: '4px' }} />
-                       View
-                     </Button>
+                      <Button
+                        size="sm"
+                        colorPalette="brand"
+                        variant="ghost"
+                        onClick={() => navigate(`/alerts/${subscription.alertId}`)}
+                      >
+                        <FaArrowRight style={{ marginRight: '4px' }} />
+                        View
+                      </Button>
                      <Button
                        size="sm"
                        colorPalette="red"
