@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react'
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
-import { Box, Text, HStack, VStack, Button, Icon } from '@chakra-ui/react'
+import { Box, Typography, Stack, Button } from '@mui/material'
 import { FiNavigation } from 'react-icons/fi'
 import './map.css'
 
@@ -127,7 +127,7 @@ export default function LocationMap({
   const position: [number, number] | null = hasPosition ? [latitude!, longitude!] : null
   const prevPositionRef = useRef<[number, number] | null>(null)
   
-  // Determine if we should fly to the new position (only when position changes from null or from detect location)
+  // Determine if we should fly to the new position
   const shouldFly = hasPosition && 
     (prevPositionRef.current === null || 
      (prevPositionRef.current[0] !== latitude || prevPositionRef.current[1] !== longitude))
@@ -143,35 +143,35 @@ export default function LocationMap({
   }, [onLocationChange])
 
   return (
-    <VStack gap={2} align="stretch">
+    <Stack spacing={1.5}>
       {/* Detect Location Button */}
       {onDetectLocation && (
         <Button
           type="button"
-          variant="outline"
-          colorPalette="accent"
-          size="sm"
+          variant="outlined"
+          color="primary"
+          size="small"
           onClick={onDetectLocation}
-          loading={isDetectingLocation}
-          disabled={disabled}
-          mb={2}
+          disabled={disabled || isDetectingLocation}
+          startIcon={<FiNavigation />}
+          sx={{ mb: 1 }}
         >
-          <Icon as={FiNavigation} mr={2} />
           {isDetectingLocation ? 'Detecting...' : 'Use My Location'}
         </Button>
       )}
 
       {/* Map Container */}
       <Box
-        borderRadius="md"
-        overflow="hidden"
-        border="1px solid"
-        borderColor="gray.200"
-        _dark={{ borderColor: 'gray.600' }}
-        height={height}
+        sx={{
+          borderRadius: 1,
+          overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'divider',
+          height: height,
+          opacity: disabled ? 0.6 : 1,
+          pointerEvents: disabled ? 'none' : 'auto',
+        }}
         className="location-map-wrapper"
-        opacity={disabled ? 0.6 : 1}
-        pointerEvents={disabled ? 'none' : 'auto'}
       >
         <MapContainer
           center={position || DEFAULT_CENTER}
@@ -200,23 +200,23 @@ export default function LocationMap({
       </Box>
 
       {/* Coordinates Display */}
-      <HStack justify="space-between" fontSize="sm" color="gray.800" _dark={{ color: 'gray.300' }}>
-        <Text>
+      <Stack direction="row" justifyContent="space-between" fontSize="0.875rem" color="text.primary">
+        <Typography variant="body2">
           {hasPosition ? (
             <>
-              <Text as="span" fontWeight="medium">Lat:</Text> {latitude?.toFixed(6)}, 
-              <Text as="span" fontWeight="medium" ml={2}>Lng:</Text> {longitude?.toFixed(6)}
+              <Typography component="span" fontWeight="medium">Lat:</Typography> {latitude?.toFixed(6)}, 
+              <Typography component="span" fontWeight="medium" sx={{ ml: 1 }}>Lng:</Typography> {longitude?.toFixed(6)}
             </>
           ) : (
             'Click on the map to select a location'
           )}
-        </Text>
-      </HStack>
+        </Typography>
+      </Stack>
 
       {/* Tip */}
-      <Text fontSize="xs" color="gray.700" _dark={{ color: 'gray.300' }}>
+      <Typography variant="caption" color="text.secondary">
         Tip: Click on the map or drag the marker to refine the exact location.
-      </Text>
-    </VStack>
+      </Typography>
+    </Stack>
   )
 }

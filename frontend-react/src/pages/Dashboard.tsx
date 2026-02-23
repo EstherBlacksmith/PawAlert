@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Box, SimpleGrid, Heading, Text, Card, Icon, VStack, Flex, Spinner } from '@chakra-ui/react'
-import { GiPawPrint, GiHealthPotion, GiCheck, GiSword, GiDog, GiBell, GiList, GiCat } from '../components/icons'
+import { Box, Grid, Typography, Card, CardContent, Stack, CircularProgress, Paper, Button } from '@mui/material'
+import { GiPawPrint, GiHealthPotion, GiCheck, GiSword, GiBell, GiCat } from '../components/icons'
 import { useAuth } from '../context/AuthContext'
 import { petService } from '../services/pet.service'
 import { alertService } from '../services/alert.service'
@@ -16,50 +16,60 @@ interface StatCardProps {
   onClick?: () => void
 }
 
-function StatCard({ icon, label, value, color, onClick, gradientColors }: StatCardProps) {
+function StatCard({ icon: Icon, label, value, color, onClick, gradientColors }: StatCardProps) {
   return (
-    <Card.Root 
-      p={6} 
-      boxShadow="lg" 
-      cursor={onClick ? "pointer" : "default"}
-      _hover={onClick ? { boxShadow: 'xl', transform: 'translateY(-4px)' } : undefined}
-      transition="all 0.3s"
+    <Card 
+      elevation={3}
+      sx={{ 
+        p: 3, 
+        cursor: onClick ? "pointer" : "default",
+        transition: 'all 0.3s',
+        '&:hover': onClick ? { 
+          boxShadow: 6, 
+          transform: 'translateY(-4px)' 
+        } : undefined,
+        overflow: 'hidden',
+        position: 'relative'
+      }}
       onClick={onClick}
-      overflow="hidden"
-      position="relative"
     >
       {/* Gradient background overlay */}
       {gradientColors && (
         <Box
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          bgGradient={`to-br ${gradientColors}`}
-          opacity={0.1}
-          pointerEvents="none"
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: gradientColors,
+            opacity: 0.1,
+            pointerEvents: 'none'
+          }}
         />
       )}
-      <Flex align="center" gap={4} position="relative">
-        <Box
-          p={3}
-          borderRadius="full"
-          bgGradient={`to-br ${gradientColors || `${color}.100`, `${color}.200`}`}
-          _dark={{ bg: `${color}.900` }}
-        >
-          <Icon as={icon} boxSize={6} color={`${color}.500`} />
-        </Box>
-        <Box>
-          <Text fontSize="3xl" fontWeight="bold" color="gray.800" _dark={{ color: 'white' }}>
-            {value}
-          </Text>
-          <Text fontSize="sm" color="gray.700">
-            {label}
-          </Text>
-        </Box>
-      </Flex>
-    </Card.Root>
+      <CardContent sx={{ position: 'relative' }}>
+        <Stack direction="row" alignItems="center" gap={2}>
+          <Box
+            sx={{
+              p: 1.5,
+              borderRadius: '50%',
+              background: gradientColors || `${color}.light`
+            }}
+          >
+            <Icon size={24} />
+          </Box>
+          <Box>
+            <Typography variant="h3" fontWeight="bold" color="text.primary">
+              {value}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {label}
+            </Typography>
+          </Box>
+        </Stack>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -67,29 +77,33 @@ export default function Dashboard() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [stats, setStats] = useState({
-    totalPets: 0,
-    activeAlerts: 0,
-    foundPets: 0,
-    pendingAlerts: 0,
+    myPets: 0,
+    openAlerts: 0,
+    inProgressAlerts: 0,
+    resolvedAlerts: 0,
+    mySubscriptions: 0,
   })
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [pets, alerts] = await Promise.all([
+        const [pets, alerts, subscriptions] = await Promise.all([
           petService.getPets(),
           alertService.getAlerts(),
+          alertService.getMySubscriptions(),
         ])
 
-        const activeAlerts = alerts.filter((a: Alert) => a.status === 'OPENED').length
-        const foundPets = alerts.filter((a: Alert) => a.status === 'CLOSED').length
+        const openAlerts = alerts.filter((a: Alert) => a.status === 'OPENED').length
+        const inProgressAlerts = alerts.filter((a: Alert) => a.status === 'SEEN' || a.status === 'SAFE').length
+        const resolvedAlerts = alerts.filter((a: Alert) => a.status === 'CLOSED').length
 
         setStats({
-          totalPets: pets.length,
-          activeAlerts,
-          foundPets,
-          pendingAlerts: alerts.length - activeAlerts - foundPets,
+          myPets: pets.length,
+          openAlerts,
+          inProgressAlerts,
+          resolvedAlerts,
+          mySubscriptions: subscriptions.length,
         })
       } catch (error) {
         console.error('Error fetching stats:', error)
@@ -103,88 +117,116 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="purple.500" />
-      </Flex>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+        <CircularProgress color="primary" />
+      </Box>
     )
   }
 
   return (
-    <Box bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
-      <VStack gap={6} align="stretch">
+    <Paper sx={{ bgcolor: 'rgba(255, 255, 255, 0.85)', p: 3, borderRadius: 2, boxShadow: 3 }}>
+      <Stack spacing={3}>
       {/* Welcome Section */}
       <Box>
-        <Heading size="lg" color="gray.800" _dark={{ color: 'white' }}>
+        <Typography variant="h5" color="text.primary">
           Welcome back, {user?.username}!
-        </Heading>
-        <Text color="gray.700" mt={1}>
-          Here's an overview of your pet alerts
-        </Text>
+        </Typography>
+        <Typography color="text.secondary" sx={{ mt: 0.5 }}>
+          Here's your personal overview
+        </Typography>
       </Box>
 
-       {/* Stats Grid */}
-       <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6}>
-         <StatCard 
-           icon={GiPawPrint} 
-           label="Total Pets" 
-           value={stats.totalPets} 
-           color="blue" 
-           gradientColors="linear(to-br, #4091d7, #2e5f9e)"
-           onClick={() => navigate('/pets')} 
-         />
-         <StatCard
-           icon={GiHealthPotion}
-           label="Active Alerts"
-           value={stats.activeAlerts}
-           color="red"
-           gradientColors="linear(to-br, #b34045, #8b2e32)"
-           onClick={() => navigate('/alerts?status=OPENED')}
-         />
-         <StatCard
-           icon={GiCheck}
-           label="Found Pets"
-           value={stats.foundPets}
-           color="green"
-           gradientColors="linear(to-br, #2d884d, #1f5a34)"
-           onClick={() => navigate('/alerts?status=CLOSED')}
-         />
-         <StatCard
-           icon={GiSword}
-           label="Pending Alerts"
-           value={stats.pendingAlerts}
-           color="yellow"
-           gradientColors="linear(to-br, #fecf6d, #d4a84a)"
-           onClick={() => navigate('/alerts?status=SEEN')}
-         />
-       </SimpleGrid>
+       {/* Stats Grid - 5 cards showing user's personal data */}
+       <Grid container spacing={3}>
+         <Grid item xs={12} sm={6} md={2.4}>
+           <StatCard 
+             icon={GiPawPrint} 
+             label="My Pets" 
+             value={stats.myPets} 
+             color="blue" 
+             gradientColors="linear-gradient(to bottom right, #4091d7, #2e5f9e)"
+             onClick={() => navigate('/pets')} 
+           />
+         </Grid>
+         <Grid item xs={12} sm={6} md={2.4}>
+           <StatCard
+             icon={GiHealthPotion}
+             label="Open Alerts"
+             value={stats.openAlerts}
+             color="red"
+             gradientColors="linear-gradient(to bottom right, #b34045, #8b2e32)"
+             onClick={() => navigate('/alerts?status=OPENED')}
+           />
+         </Grid>
+         <Grid item xs={12} sm={6} md={2.4}>
+           <StatCard
+             icon={GiSword}
+             label="In Progress"
+             value={stats.inProgressAlerts}
+             color="orange"
+             gradientColors="linear-gradient(to bottom right, #ff9800, #f57c00)"
+             onClick={() => navigate('/alerts?status=SEEN,SAFE')}
+           />
+         </Grid>
+         <Grid item xs={12} sm={6} md={2.4}>
+           <StatCard
+             icon={GiCheck}
+             label="Resolved"
+             value={stats.resolvedAlerts}
+             color="green"
+             gradientColors="linear-gradient(to bottom right, #2d884d, #1f5a34)"
+             onClick={() => navigate('/alerts?status=CLOSED')}
+           />
+         </Grid>
+         <Grid item xs={12} sm={6} md={2.4}>
+           <StatCard
+             icon={GiBell}
+             label="My Subscriptions"
+             value={stats.mySubscriptions}
+             color="purple"
+             gradientColors="linear-gradient(to bottom right, #9c27b0, #7b1fa2)"
+             onClick={() => navigate('/subscriptions')}
+           />
+         </Grid>
+       </Grid>
 
       {/* Quick Actions */}
       <Box>
-        <Heading size="md" mb={4} color="gray.800" _dark={{ color: 'white' }}>
+        <Typography variant="h6" mb={2} color="text.primary">
           Quick Actions
-        </Heading>
-        <SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
-         <Card.Root p={4} cursor="pointer" _hover={{ boxShadow: 'lg', transform: 'translateY(-2px)' }} transition="all 0.2s" onClick={() => navigate('/pets/create')}>
-             <VStack>
-               <GiCat size={32} color="#2d884d" />
-               <Text fontWeight="medium">Add New Pet</Text>
-             </VStack>
-           </Card.Root>
-           <Card.Root p={4} cursor="pointer" _hover={{ boxShadow: 'lg', transform: 'translateY(-2px)' }} transition="all 0.2s" onClick={() => navigate('/alerts/create')}>
-             <VStack>
-               <GiBell size={32} color="#b34045" />
-               <Text fontWeight="medium">Create Alert</Text>
-             </VStack>
-           </Card.Root>
-           <Card.Root p={4} cursor="pointer" _hover={{ boxShadow: 'lg', transform: 'translateY(-2px)' }} transition="all 0.2s" onClick={() => navigate('/alerts')}>
-             <VStack>
-               <GiList size={32} color="#4091d7" />
-               <Text fontWeight="medium">View All Alerts</Text>
-             </VStack>
-           </Card.Root>
-        </SimpleGrid>
+        </Typography>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+           <Button
+            variant="contained"
+            size="large"
+            startIcon={<GiCat />}
+            onClick={() => navigate('/pets/create')}
+            sx={{
+              bgcolor: '#2d884d',
+              '&:hover': { bgcolor: '#1f5a34' },
+              px: 4,
+              py: 1.5,
+            }}
+          >
+            Add New Pet
+          </Button>
+          <Button
+            variant="contained"
+            size="large"
+            startIcon={<GiHealthPotion />}
+            onClick={() => navigate('/alerts/create')}
+            sx={{
+              bgcolor: '#b34045',
+              '&:hover': { bgcolor: '#8b2e32' },
+              px: 4,
+              py: 1.5,
+            }}
+          >
+            Create Alert
+          </Button>
+        </Stack>
       </Box>
-      </VStack>
-    </Box>
+      </Stack>
+    </Paper>
   )
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Heading, Button, SimpleGrid, Card, Text, Flex, Spinner, Badge, IconButton, Image } from '@chakra-ui/react'
+import { Box, Typography, Button, Grid, Card, CardContent, CardMedia, CircularProgress, Chip, IconButton, Paper } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
 import { FaPlus, FaEdit, FaTrash, FaSearch as FaSearchIcon, FaHeart, FaArrowLeft } from 'react-icons/fa'
 import { petService } from '../../services/pet.service'
@@ -49,145 +49,133 @@ export default function PetList() {
 
   if (isLoading) {
     return (
-      <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="brand.500" />
-      </Flex>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+        <CircularProgress color="primary" />
+      </Box>
     )
   }
 
    return (
-     <Box
-       bg="rgba(255, 255, 255, 0.85)"
-       p={6}
-       borderRadius="lg"
-       boxShadow="lg"
-     >
+     <Paper sx={{ bgcolor: 'rgba(255, 255, 255, 0.85)', p: 3, borderRadius: 2, boxShadow: 3 }}>
         <Button 
-          variant="ghost" 
-          mb={4} 
+          variant="text"
+          sx={{ mb: 2 }}
           onClick={() => navigate('/')}
-          size="sm"
-          colorPalette="gray"
+          size="small"
+          startIcon={<FaArrowLeft />}
         >
-          <FaArrowLeft style={{ marginRight: '8px' }} />
           Back
         </Button>
 
-       <Flex justify="space-between" align="center" mb={6}>
+       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Heading size="lg" color="gray.800">
+          <Typography variant="h5" color="text.primary">
             My Pets
-          </Heading>
-          <Text color="gray.600" mt={1}>
+          </Typography>
+          <Typography color="text.secondary" sx={{ mt: 0.5 }}>
             Manage your registered pets
-          </Text>
+          </Typography>
         </Box>
-        <Link to="/pets/create">
-          <Button colorPalette="brand" bg="brand.500" _hover={{ bg: 'brand.600' }}>
-            <FaPlus style={{ marginRight: '8px' }} />
-            Add Pet
-          </Button>
-        </Link>
-      </Flex>
+        <Button component={Link} to="/pets/create" variant="contained" color="primary" startIcon={<FaPlus />}>
+          Add Pet
+        </Button>
+      </Box>
 
       {pets.length === 0 ? (
-        <Card.Root p={8} textAlign="center">
-          <Text color="gray.500">No pets registered yet.</Text>
-          <Link to="/pets/create">
-            <Button mt={4} colorPalette="brand" variant="outline" bg="brand.50" _hover={{ bg: 'brand.100' }}>
-              Register your first pet
-            </Button>
-          </Link>
-        </Card.Root>
+        <Card sx={{ p: 4, textAlign: 'center' }}>
+          <Typography color="text.secondary">No pets registered yet.</Typography>
+          <Button component={Link} to="/pets/create" sx={{ mt: 2 }} variant="outlined" color="primary">
+            Register your first pet
+          </Button>
+        </Card>
       ) : (
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
+        <Grid container spacing={3}>
           {pets.map((pet) => (
-            <Card.Root key={pet.petId} overflow="hidden">
-              {pet.petImage ? (
-                <Box position="relative" h="200px" overflow="hidden">
-                  <Image 
-                    src={pet.petImage} 
-                    alt={pet.officialPetName}
-                    objectFit="cover"
-                    w="full"
-                    h="full"
-                  />
-                </Box>
-              ) : (
-                <Box 
-                  h="200px" 
-                  bg="gray.100" 
-                  display="flex" 
-                  alignItems="center" 
-                  justifyContent="center"
-                >
-                  <Text color="gray.400" fontSize="3xl">🐾</Text>
-                </Box>
-              )}
-              <Card.Body>
-                <Heading size="md" mb={2}>{pet.officialPetName}</Heading>
-                <Text fontSize="sm" color="gray.500" mb={2}>
-                  {pet.species} {pet.breed && `- ${pet.breed}`}
-                </Text>
-                {pet.gender && (
-                  <Badge mb={2}>{pet.gender}</Badge>
+            <Grid item xs={12} sm={6} lg={4} key={pet.petId}>
+              <Card sx={{ overflow: 'hidden' }}>
+                {pet.petImage ? (
+                  <Box sx={{ position: 'relative', height: '200px', overflow: 'hidden' }}>
+                    <CardMedia
+                      component="img"
+                      image={pet.petImage}
+                      alt={pet.officialPetName}
+                      sx={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                    />
+                  </Box>
+                ) : (
+                  <Box 
+                    sx={{ 
+                      height: '200px', 
+                      bgcolor: 'grey.100', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center' 
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '3rem' }}>🐾</Typography>
+                  </Box>
                 )}
-                {pet.workingPetName && (
-                  <Text fontSize="sm" color="gray.400">
-                    Also known as: {pet.workingPetName}
-                  </Text>
-                )}
-                <Flex mt={4} gap={2} wrap="wrap" align="center">
-                   <Button
-                     size="sm"
-                     colorPalette="blue"
-                     variant="outline"
-                     onClick={() => navigate(`/pets/${pet.petId}`)}
-                   >
-                     <FaSearchIcon style={{ marginRight: '4px' }} />
-                     View Pet
-                   </Button>
-                   {activeAlerts[pet.petId] ? (
-                      <Button
-                        size="sm"
-                        colorPalette="blue"
-                        onClick={() => navigate(`/alerts/${activeAlerts[pet.petId].id}`)}
-                      >
-                        <FaSearchIcon style={{ marginRight: '4px' }} />
-                        View Alert
-                      </Button>
-                   ) : (
+                <CardContent>
+                  <Typography variant="h6" mb={1}>{pet.officialPetName}</Typography>
+                  <Typography variant="body2" color="text.secondary" mb={1}>
+                    {pet.species} {pet.breed && `- ${pet.breed}`}
+                  </Typography>
+                  {pet.gender && (
+                    <Chip label={pet.gender} size="small" sx={{ mb: 1 }} />
+                  )}
+                  {pet.workingPetName && (
+                    <Typography variant="body2" color="text.disabled">
+                      Also known as: {pet.workingPetName}
+                    </Typography>
+                  )}
+                  <Box sx={{ display: 'flex', mt: 2, gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
                      <Button
-                       size="sm"
-                       colorPalette="brand"
-                       bg="brand.500"
-                       _hover={{ bg: 'brand.600' }}
-                       onClick={() => navigate(`/alerts/create?petId=${pet.petId}`)}
+                       size="small"
+                       variant="outlined"
+                       color="primary"
+                       onClick={() => navigate(`/pets/${pet.petId}`)}
+                       startIcon={<FaSearchIcon />}
                      >
-                       <FaHeart style={{ marginRight: '4px' }} />
-                       Create Alert
+                       View Pet
                      </Button>
-                   )}
-                   <Link to={`/pets/${pet.petId}/edit`}>
-                     <IconButton aria-label="Edit" variant="ghost" size="sm" color="brand.500">
+                     {activeAlerts[pet.petId] ? (
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color="primary"
+                          onClick={() => navigate(`/alerts/${activeAlerts[pet.petId].id}`)}
+                          startIcon={<FaSearchIcon />}
+                        >
+                          View Alert
+                        </Button>
+                     ) : (
+                       <Button
+                         size="small"
+                         variant="contained"
+                         color="primary"
+                         onClick={() => navigate(`/alerts/create?petId=${pet.petId}`)}
+                         startIcon={<FaHeart />}
+                       >
+                         Create Alert
+                       </Button>
+                     )}
+                     <IconButton component={Link} to={`/pets/${pet.petId}/edit`} size="small" color="primary">
                        <FaEdit />
                      </IconButton>
-                   </Link>
-                   <IconButton 
-                     aria-label="Delete" 
-                     variant="ghost" 
-                     size="sm" 
-                     colorPalette="red"
-                     onClick={() => handleDelete(pet.petId)}
-                   >
-                     <FaTrash />
-                   </IconButton>
-                 </Flex>
-              </Card.Body>
-            </Card.Root>
+                     <IconButton 
+                       size="small" 
+                       color="error"
+                       onClick={() => handleDelete(pet.petId)}
+                     >
+                       <FaTrash />
+                     </IconButton>
+                   </Box>
+                </CardContent>
+              </Card>
+            </Grid>
           ))}
-        </SimpleGrid>
+        </Grid>
       )}
-    </Box>
+    </Paper>
   )
 }

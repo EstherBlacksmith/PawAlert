@@ -4,15 +4,13 @@ import {
   Box,
   Button,
   Card,
-  CardBody,
+  CardContent,
   CardHeader,
-  Heading,
-  Spinner,
-  HStack,
-  VStack,
-  Text,
-  Badge,
-} from '@chakra-ui/react'
+  Typography,
+  CircularProgress,
+  Stack,
+  Chip
+} from '@mui/material'
 import { useToast } from '../../context/ToastContext'
 import { userService } from '../../services/user.service'
 import { User } from '../../types'
@@ -51,54 +49,52 @@ const UserDetail: React.FC = () => {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <Spinner size="xl" />
+        <CircularProgress />
       </Box>
     )
   }
 
   if (!user) {
     return (
-      <Box p={4}>
-        <Text>User not found</Text>
+      <Box p={2}>
+        <Typography>User not found</Typography>
         <Button onClick={() => navigate('/admin/dashboard')}>Back to Dashboard</Button>
       </Box>
     )
   }
 
   return (
-    <Box p={4}>
+    <Box p={2}>
       <Card>
-        <CardHeader>
-          <Heading>{user.name}</Heading>
-        </CardHeader>
-        <CardBody>
-          <VStack align="start" spacing={4}>
+        <CardHeader title={user.name} />
+        <CardContent>
+          <Stack spacing={2}>
             <Box>
-              <Text fontWeight="bold">Email:</Text>
-              <Text>{user.email}</Text>
+              <Typography variant="subtitle2" fontWeight="bold">Email:</Typography>
+              <Typography>{user.email}</Typography>
             </Box>
             <Box>
-              <Text fontWeight="bold">Phone:</Text>
-              <Text>{user.phone || 'N/A'}</Text>
+              <Typography variant="subtitle2" fontWeight="bold">Phone:</Typography>
+              <Typography>{user.phone || 'N/A'}</Typography>
             </Box>
             <Box>
-              <Text fontWeight="bold">Role:</Text>
-              <Badge colorScheme="blue">{user.role || 'USER'}</Badge>
+              <Typography variant="subtitle2" fontWeight="bold">Role:</Typography>
+              <Chip label={user.role || 'USER'} color="primary" size="small" />
             </Box>
             <Box>
-              <Text fontWeight="bold">Status:</Text>
-              <Badge colorScheme="green">Active</Badge>
+              <Typography variant="subtitle2" fontWeight="bold">Status:</Typography>
+              <Chip label="Active" color="success" size="small" />
             </Box>
-            <HStack spacing={2}>
-              <Button colorScheme="blue" onClick={() => navigate(`/admin/users/${id}/edit`)}>
+            <Stack direction="row" spacing={1}>
+              <Button variant="contained" color="primary" onClick={() => navigate(`/admin/users/${id}/edit`)}>
                 Edit
               </Button>
-              <Button colorScheme="gray" onClick={() => navigate('/admin/dashboard')}>
+              <Button variant="contained" onClick={() => navigate('/admin/dashboard')}>
                 Back
               </Button>
-            </HStack>
-          </VStack>
-        </CardBody>
+            </Stack>
+          </Stack>
+        </CardContent>
       </Card>
     </Box>
   )

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Box, Heading, Button, VStack, Input, Textarea, Image, Text, Spinner, Flex, Alert, SimpleGrid, Select } from '@chakra-ui/react'
+import { Box, Typography, Button, Stack, TextField, CircularProgress, Alert as MuiAlert, Grid, FormControl, InputLabel, Select, MenuItem, Paper } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { petService } from '../../services/pet.service'
@@ -185,73 +185,65 @@ export default function PetEdit() {
 
   if (isFetching) {
     return (
-      <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="brand.500" />
-      </Flex>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+        <CircularProgress color="primary" />
+      </Box>
     )
   }
 
   return (
-    <Box w="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
-      <Button variant="ghost" mb={4} onClick={() => navigate(`/pets/${id}`)}>
-        <FaArrowLeft style={{ marginRight: '8px' }} />
+    <Paper sx={{ width: '100%', mx: 'auto', bgcolor: 'rgba(255, 255, 255, 0.85)', p: 3, borderRadius: 2, boxShadow: 3 }}>
+      <Button variant="text" sx={{ mb: 2 }} onClick={() => navigate(`/pets/${id}`)} startIcon={<FaArrowLeft />}>
         Back to Pet
       </Button>
 
-      <Heading size="lg" mb={6} color="gray.800" _dark={{ color: 'white' }}>
+      <Typography variant="h5" mb={3} color="text.primary">
         Edit Pet
-      </Heading>
+      </Typography>
 
       {error && (
-        <Alert.Root status="error" mb={6} borderRadius="md">
-          <Alert.Indicator />
-          <Box flex="1">
-            <Alert.Title fontSize="sm" fontWeight="bold">
-              {error.error || 'Error'}
-            </Alert.Title>
-            <Alert.Description fontSize="sm">
-              {error.message}
-            </Alert.Description>
-          </Box>
-        </Alert.Root>
+        <MuiAlert severity="error" sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" component="div">{error.error || 'Error'}</Typography>
+          <Typography variant="body2">{error.message}</Typography>
+        </MuiAlert>
       )}
 
-       <Box as="form" onSubmit={handleSubmit}>
-         <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+       <Box component="form" onSubmit={handleSubmit}>
+         <Grid container spacing={2}>
            {/* Image Upload Section - spans full width */}
-           <Box gridColumn={{ base: '1', md: 'span 2' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Pet Photo</Text>
+           <Grid item xs={12}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Pet Photo</Typography>
             <Box
-              border="2px dashed"
-              borderColor={imageError ? 'red.400' : 'gray.300'}
-              borderRadius="md"
-              p={4}
-              textAlign="center"
-              cursor="pointer"
-              _hover={{ borderColor: 'brand.400', bg: 'brand.50' }}
+              sx={{
+                border: '2px dashed',
+                borderColor: imageError ? 'error.main' : 'grey.400',
+                borderRadius: 1,
+                p: 2,
+                textAlign: 'center',
+                cursor: 'pointer',
+                '&:hover': { borderColor: 'primary.main', bgcolor: 'primary.50' },
+                position: 'relative'
+              }}
               onClick={() => fileInputRef.current?.click()}
-              position="relative"
             >
               {isValidatingImage ? (
-                <Box py={4}>
-                  <Spinner size="lg" color="brand.500" />
-                  <Text mt={2} color="gray.700">Validating image...</Text>
+                <Box sx={{ py: 2 }}>
+                  <CircularProgress color="primary" />
+                  <Typography sx={{ mt: 1 }} color="text.secondary">Validating image...</Typography>
                 </Box>
               ) : imagePreview ? (
-                <Box position="relative">
-                  <Image 
-                    src={imagePreview} 
-                    alt="Pet preview" 
-                    maxH="150px" 
-                    mx="auto" 
-                    borderRadius="md"
+                <Box sx={{ position: 'relative' }}>
+                  <Box
+                    component="img"
+                    src={imagePreview}
+                    alt="Pet preview"
+                    sx={{ maxHeight: '150px', mx: 'auto', borderRadius: 1 }}
                   />
                   <Button
-                    size="sm"
-                    colorPalette="red"
-                    position="absolute"
-                    top={2}
-                    right={2}
+                    size="small"
+                    variant="contained"
+                    color="error"
+                    sx={{ position: 'absolute', top: 8, right: 8 }}
                     onClick={(e) => {
                       e.stopPropagation()
                       handleRemoveImage()
@@ -261,13 +253,13 @@ export default function PetEdit() {
                   </Button>
                 </Box>
               ) : (
-                <Box py={2}>
-                  <Text color="gray.700">
+                <Box sx={{ py: 1 }}>
+                  <Typography color="text.primary">
                     Click to upload a new photo
-                  </Text>
-                  <Text fontSize="sm" color="gray.600" mt={1}>
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                     (AI will validate the image)
-                  </Text>
+                  </Typography>
                 </Box>
               )}
               <input
@@ -279,109 +271,121 @@ export default function PetEdit() {
               />
             </Box>
             {imageError && (
-              <Text color="red.500" fontSize="sm" mt={1}>
+              <Typography color="error" variant="body2" sx={{ mt: 0.5 }}>
                 {imageError}
-               </Text>
+               </Typography>
              )}
-           </Box>
+           </Grid>
 
-           <Box gridColumn={{ base: '1', md: '1' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Official Name *</Text>
-             <Input name="officialPetName" value={formData.officialPetName} onChange={handleChange} required />
-           </Box>
+           <Grid item xs={12} sm={6}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Official Name *</Typography>
+             <TextField name="officialPetName" value={formData.officialPetName} onChange={handleChange} required fullWidth size="small" />
+           </Grid>
 
-           <Box gridColumn={{ base: '1', md: '2' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Working Name</Text>
-             <Input name="workingPetName" value={formData.workingPetName} onChange={handleChange} />
-           </Box>
+           <Grid item xs={12} sm={6}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Working Name</Typography>
+             <TextField name="workingPetName" value={formData.workingPetName} onChange={handleChange} fullWidth size="small" />
+           </Grid>
 
-           <Box gridColumn={{ base: '1', md: '1' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Chip Number</Text>
-             <Input name="chipNumber" value={formData.chipNumber} onChange={handleChange} />
-           </Box>
+           <Grid item xs={12} sm={6}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Chip Number</Typography>
+             <TextField name="chipNumber" value={formData.chipNumber} onChange={handleChange} fullWidth size="small" />
+           </Grid>
 
-           <Box gridColumn={{ base: '1', md: '2' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Species *</Text>
-             <Select 
-               name="species" 
-               value={formData.species} 
-               onChange={handleChange}
-               disabled={speciesLoading}
-             >
-               {speciesLoading ? (
-                 <option value="">Loading...</option>
-               ) : (
-                 speciesValues.map((item) => (
-                   <option key={item.value} value={item.value}>
-                     {item.displayName}
-                   </option>
-                 ))
-               )}
-             </Select>
-           </Box>
+           <Grid item xs={12} sm={6}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Species *</Typography>
+             <FormControl fullWidth size="small">
+               <InputLabel>Select species</InputLabel>
+               <Select
+                 name="species" 
+                 value={formData.species} 
+                 onChange={handleChange}
+                 disabled={speciesLoading}
+                 label="Select species"
+               >
+                 {speciesLoading ? (
+                   <MenuItem value="">Loading...</MenuItem>
+                 ) : (
+                   speciesValues.map((item) => (
+                     <MenuItem key={item.value} value={item.value}>
+                       {item.displayName}
+                     </MenuItem>
+                   ))
+                 )}
+               </Select>
+             </FormControl>
+           </Grid>
 
-           <Box gridColumn={{ base: '1', md: '1' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Breed</Text>
-             <Input name="breed" value={formData.breed} onChange={handleChange} />
-           </Box>
+           <Grid item xs={12} sm={6}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Breed</Typography>
+             <TextField name="breed" value={formData.breed} onChange={handleChange} fullWidth size="small" />
+           </Grid>
 
-           <Box gridColumn={{ base: '1', md: '2' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Size</Text>
-             <Select 
-               name="size" 
-               value={formData.size} 
-               onChange={handleChange}
-               disabled={sizeLoading}
-             >
-               {sizeLoading ? (
-                 <option value="">Loading...</option>
-               ) : (
-                 sizeValues.map((item) => (
-                   <option key={item.value} value={item.value}>
-                     {item.displayName}
-                   </option>
-                 ))
-               )}
-             </Select>
-           </Box>
+           <Grid item xs={12} sm={6}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Size</Typography>
+             <FormControl fullWidth size="small">
+               <InputLabel>Select size</InputLabel>
+               <Select
+                 name="size" 
+                 value={formData.size} 
+                 onChange={handleChange}
+                 disabled={sizeLoading}
+                 label="Select size"
+               >
+                 {sizeLoading ? (
+                   <MenuItem value="">Loading...</MenuItem>
+                 ) : (
+                   sizeValues.map((item) => (
+                     <MenuItem key={item.value} value={item.value}>
+                       {item.displayName}
+                     </MenuItem>
+                   ))
+                 )}
+               </Select>
+             </FormControl>
+           </Grid>
 
-           <Box gridColumn={{ base: '1', md: '1' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Color</Text>
-             <Input name="color" value={formData.color} onChange={handleChange} />
-           </Box>
+           <Grid item xs={12} sm={6}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Color</Typography>
+             <TextField name="color" value={formData.color} onChange={handleChange} fullWidth size="small" />
+           </Grid>
 
-           <Box gridColumn={{ base: '1', md: '2' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Gender</Text>
-             <Select 
-               name="gender" 
-               value={formData.gender} 
-               onChange={handleChange}
-               disabled={genderLoading}
-             >
-               {genderLoading ? (
-                 <option value="">Loading...</option>
-               ) : (
-                 genderValues.map((item) => (
-                   <option key={item.value} value={item.value}>
-                     {item.displayName}
-                   </option>
-                 ))
-               )}
-             </Select>
-           </Box>
+           <Grid item xs={12} sm={6}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Gender</Typography>
+             <FormControl fullWidth size="small">
+               <InputLabel>Select gender</InputLabel>
+               <Select
+                 name="gender" 
+                 value={formData.gender} 
+                 onChange={handleChange}
+                 disabled={genderLoading}
+                 label="Select gender"
+               >
+                 {genderLoading ? (
+                   <MenuItem value="">Loading...</MenuItem>
+                 ) : (
+                   genderValues.map((item) => (
+                     <MenuItem key={item.value} value={item.value}>
+                       {item.displayName}
+                     </MenuItem>
+                   ))
+                 )}
+               </Select>
+             </FormControl>
+           </Grid>
 
-           <Box gridColumn={{ base: '1', md: 'span 2' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Description</Text>
-             <Textarea name="petDescription" value={formData.petDescription} onChange={handleChange} rows={2} />
-           </Box>
+           <Grid item xs={12}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Description</Typography>
+             <TextField name="petDescription" value={formData.petDescription} onChange={handleChange} multiline rows={2} fullWidth size="small" />
+           </Grid>
 
-          <Box gridColumn={{ base: '1', md: 'span 2' }} pt={2}>
-            <Button type="submit" colorPalette="brand" bg="brand.500" _hover={{ bg: 'brand.600' }} w="full" loading={isLoading}>
-              Update Pet
+          <Grid item xs={12} sx={{ pt: 1 }}>
+            <Button type="submit" variant="contained" color="primary" fullWidth disabled={isLoading}>
+              {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Update Pet'}
             </Button>
-          </Box>
-        </SimpleGrid>
+          </Grid>
+        </Grid>
       </Box>
-    </Box>
+    </Paper>
   )
 }

@@ -1,3 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#6366f1">
-  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="#FFA500"/>
+  
+  <!-- Dog face - inspired by game-icons.net style -->
+  <!-- Main face -->
+  <ellipse cx="32" cy="36" rx="18" ry="16" fill="white"/>
+  
+  <!-- Ears -->
+  <ellipse cx="16" cy="20" rx="6" ry="10" fill="white" transform="rotate(-20 16 20)"/>
+  <ellipse cx="48" cy="20" rx="6" ry="10" fill="white" transform="rotate(20 48 20)"/>
+  
+  <!-- Inner ears -->
+  <ellipse cx="16" cy="22" rx="3" ry="6" fill="#FFE4C4" transform="rotate(-20 16 22)"/>
+  <ellipse cx="48" cy="22" rx="3" ry="6" fill="#FFE4C4" transform="rotate(20 48 22)"/>
+  
+  <!-- Eyes -->
+  <circle cx="24" cy="32" r="4" fill="#333"/>
+  <circle cx="40" cy="32" r="4" fill="#333"/>
+  
+  <!-- Eye highlights -->
+  <circle cx="25" cy="31" r="1.5" fill="white"/>
+  <circle cx="41" cy="31" r="1.5" fill="white"/>
+  
+  <!-- Nose -->
+  <ellipse cx="32" cy="40" rx="5" ry="4" fill="#333"/>
+  <ellipse cx="32" cy="39" rx="2" ry="1" fill="#666"/>
+  
+  <!-- Mouth -->
+  <path d="M 28 44 Q 32 48 36 44" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Tongue (cute touch) -->
+  <ellipse cx="32" cy="47" rx="3" ry="4" fill="#FF6B6B"/>
 </svg>

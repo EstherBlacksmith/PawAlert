@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
-import { Box, Text, VStack, Card } from '@chakra-ui/react'
+import { Box, Typography, Stack, Card, CardContent } from '@mui/material'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import type { AlertEvent } from '../../types'
 import './map.css'
@@ -16,21 +16,20 @@ L.Icon.Default.mergeOptions({
 
 // Create numbered icons for the route based on alert status
 const createNumberedIcon = (number: number, status: string | null = null) => {
-  // Map alert status to colors
   const getColorByStatus = (status: string | null): string => {
     switch (status) {
       case 'OPENED':
-        return '#b34045' // Red/Orange
+        return '#b34045'
       case 'CLOSED':
-        return '#9ca3af' // Gray
+        return '#9ca3af'
       case 'SAFE':
-        return '#22c55e' // Green
+        return '#22c55e'
       case 'SEEN':
-        return '#fecf6d' // Yellow
+        return '#fecf6d'
       case 'FOUND':
-        return '#0ea5e9' // Blue
+        return '#0ea5e9'
       default:
-        return '#0ea5e9' // Default blue
+        return '#0ea5e9'
     }
   }
 
@@ -57,7 +56,6 @@ const createNumberedIcon = (number: number, status: string | null = null) => {
   })
 }
 
-// Default center: Madrid, Spain
 const DEFAULT_CENTER: [number, number] = [40.4168, -3.7038]
 const DEFAULT_ZOOM = 5
 
@@ -66,7 +64,6 @@ interface AlertRouteMapProps {
   height?: string
 }
 
-// Helper to format date for popup
 const formatDate = (dateString: string): string => {
   try {
     const date = new Date(dateString)
@@ -81,7 +78,6 @@ const formatDate = (dateString: string): string => {
   }
 }
 
-// Get event label based on type
 const getEventLabel = (event: AlertEvent): string => {
   switch (event.eventType) {
     case 'STATUS_CHANGED':
@@ -95,7 +91,6 @@ const getEventLabel = (event: AlertEvent): string => {
   }
 }
 
-// Component to handle map size invalidation when container becomes visible
 function MapSizeHandler({ containerRef }: { containerRef: React.RefObject<HTMLDivElement> }) {
   const map = useMap()
   const [hasInvalidated, setHasInvalidated] = useState(false)
@@ -104,7 +99,6 @@ function MapSizeHandler({ containerRef }: { containerRef: React.RefObject<HTMLDi
     const checkAndInvalidate = () => {
       if (containerRef.current && !hasInvalidated) {
         const rect = containerRef.current.getBoundingClientRect()
-        // If container has non-zero dimensions, invalidate map size
         if (rect.width > 0 && rect.height > 0) {
           map.invalidateSize({ animate: true })
           setHasInvalidated(true)
@@ -112,11 +106,8 @@ function MapSizeHandler({ containerRef }: { containerRef: React.RefObject<HTMLDi
       }
     }
 
-    // Check immediately and then periodically
     checkAndInvalidate()
     const intervalId = setInterval(checkAndInvalidate, 500)
-    
-    // Also check when the window resizes
     const resizeHandler = () => checkAndInvalidate()
     window.addEventListener('resize', resizeHandler)
 
@@ -131,19 +122,17 @@ function MapSizeHandler({ containerRef }: { containerRef: React.RefObject<HTMLDi
 
 export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  // Filter events that have valid locations and sort by date
+  
   const eventsWithLocation = useMemo(() => {
     return events
       .filter(event => event.latitude != null && event.longitude != null)
       .sort((a, b) => new Date(a.changedAt).getTime() - new Date(b.changedAt).getTime())
   }, [events])
 
-  // Get route coordinates
   const routeCoordinates: [number, number][] = useMemo(() => {
     return eventsWithLocation.map(event => [event.latitude!, event.longitude!])
   }, [eventsWithLocation])
 
-  // Calculate center based on all markers
   const center: [number, number] = useMemo(() => {
     if (routeCoordinates.length === 0) {
       return DEFAULT_CENTER
@@ -153,18 +142,15 @@ export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMa
       return routeCoordinates[0]
     }
 
-    // Calculate the centroid of all points
     const latSum = routeCoordinates.reduce((sum, [lat]) => sum + lat, 0)
     const lngSum = routeCoordinates.reduce((sum, [, lng]) => sum + lng, 0)
     return [latSum / routeCoordinates.length, lngSum / routeCoordinates.length]
   }, [routeCoordinates])
 
-  // Calculate appropriate zoom level based on markers spread
   const zoom = useMemo(() => {
     if (routeCoordinates.length === 0) return DEFAULT_ZOOM
     if (routeCoordinates.length === 1) return 15
     
-    // Calculate bounds and determine appropriate zoom
     const minLat = Math.min(...routeCoordinates.map(([lat]) => lat))
     const maxLat = Math.max(...routeCoordinates.map(([lat]) => lat))
     const minLng = Math.min(...routeCoordinates.map(([, lng]) => lng))
@@ -182,32 +168,33 @@ export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMa
 
   if (!eventsWithLocation || eventsWithLocation.length === 0) {
     return (
-      <Card.Root>
-        <Card.Body>
-          <Box textAlign="center" py={8}>
-            <FaMapMarkerAlt size={32} color="gray.400" style={{ margin: '0 auto 12px' }} />
-            <Text color="gray.500">No location data available for this alert.</Text>
+      <Card>
+        <CardContent>
+          <Box textAlign="center" py={4}>
+            <FaMapMarkerAlt size={32} style={{ margin: '0 auto 12px', color: '#9ca3af' }} />
+            <Typography color="text.secondary">No location data available for this alert.</Typography>
           </Box>
-        </Card.Body>
-      </Card.Root>
+        </CardContent>
+      </Card>
     )
   }
 
   return (
-    <Card.Root>
-      <Card.Body>
-        <Text fontWeight="bold" mb={4} fontSize="lg" color="gray.700">
+    <Card>
+      <CardContent>
+        <Typography fontWeight="bold" variant="h6" color="text.primary" sx={{ mb: 2 }}>
           Alert Route Map
-        </Text>
+        </Typography>
         
         <Box
           ref={containerRef}
-          borderRadius="md"
-          overflow="hidden"
-          border="1px solid"
-          borderColor="gray.200"
-          _dark={{ borderColor: 'gray.600' }}
-          height={height}
+          sx={{
+            borderRadius: 1,
+            overflow: 'hidden',
+            border: '1px solid',
+            borderColor: 'divider',
+            height: height,
+          }}
           className="location-map-wrapper"
         >
           <MapContainer
@@ -222,7 +209,6 @@ export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMa
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            {/* Render markers */}
             {eventsWithLocation.map((event, index) => (
               <Marker
                 key={event.id}
@@ -230,22 +216,22 @@ export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMa
                 icon={createNumberedIcon(index + 1, event.newStatus)}
               >
                 <Popup>
-                  <VStack align="start" gap={1} minWidth="180px">
-                    <Text fontWeight="bold" fontSize="sm">
+                  <Stack spacing={1} minWidth="180px">
+                    <Typography variant="body2" fontWeight="bold">
                       Location #{index + 1}
-                    </Text>
-                    <Text fontSize="xs" color="gray.600">
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
                       {getEventLabel(event)}
-                    </Text>
-                    <Text fontSize="xs" color="gray.500">
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
                       {formatDate(event.changedAt)}
-                    </Text>
+                    </Typography>
                     {event.latitude && event.longitude && (
-                      <Text fontSize="xs" color="gray.400">
+                      <Typography variant="caption" color="text.disabled">
                         {event.latitude.toFixed(6)}, {event.longitude.toFixed(6)}
-                      </Text>
+                      </Typography>
                     )}
-                  </VStack>
+                  </Stack>
                 </Popup>
               </Marker>
             ))}
@@ -253,29 +239,29 @@ export default function AlertRouteMap({ events, height = '400px' }: AlertRouteMa
         </Box>
 
         {/* Legend */}
-        <Box mt={3} p={3} bg="gray.50" borderRadius="md">
-          <Text fontSize="sm" fontWeight="medium" mb={2}>
+        <Box sx={{ mt: 2, p: 1.5, bgcolor: 'grey.100', borderRadius: 1 }}>
+          <Typography variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
             Event Markers by Status:
-          </Text>
-          <VStack align="start" gap={1} fontSize="xs" color="gray.600">
-            <Text>
-              <Text as="span" fontWeight="bold" style={{ color: '#b34045' }}>●</Text> Red/Orange: OPEN status
-            </Text>
-            <Text>
-              <Text as="span" fontWeight="bold" style={{ color: '#9ca3af' }}>●</Text> Gray: CLOSED status
-            </Text>
-            <Text>
-              <Text as="span" fontWeight="bold" style={{ color: '#22c55e' }}>●</Text> Green: SAFE status
-            </Text>
-            <Text>
-              <Text as="span" fontWeight="bold" style={{ color: '#fecf6d' }}>●</Text> Yellow: SEEN status
-            </Text>
-            <Text>
-              <Text as="span" fontWeight="bold" style={{ color: '#0ea5e9' }}>●</Text> Blue: FOUND status or other events
-            </Text>
-          </VStack>
+          </Typography>
+          <Stack spacing={0.5} fontSize="0.75rem" color="text.secondary">
+            <Typography variant="caption">
+              <Typography component="span" fontWeight="bold" sx={{ color: '#b34045' }}>●</Typography> Red/Orange: OPEN status
+            </Typography>
+            <Typography variant="caption">
+              <Typography component="span" fontWeight="bold" sx={{ color: '#9ca3af' }}>●</Typography> Gray: CLOSED status
+            </Typography>
+            <Typography variant="caption">
+              <Typography component="span" fontWeight="bold" sx={{ color: '#22c55e' }}>●</Typography> Green: SAFE status
+            </Typography>
+            <Typography variant="caption">
+              <Typography component="span" fontWeight="bold" sx={{ color: '#fecf6d' }}>●</Typography> Yellow: SEEN status
+            </Typography>
+            <Typography variant="caption">
+              <Typography component="span" fontWeight="bold" sx={{ color: '#0ea5e9' }}>●</Typography> Blue: FOUND status or other events
+            </Typography>
+          </Stack>
         </Box>
-      </Card.Body>
-    </Card.Root>
+      </CardContent>
+    </Card>
   )
 }

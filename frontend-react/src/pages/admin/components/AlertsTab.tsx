@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import {
   Box,
-  Button,
+  CircularProgress,
   Table,
-  Thead,
-  Tr,
-  Th,
-  Td,
-  Spinner,
-  HStack,
-  Badge,
-} from '@chakra-ui/react'
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  Chip,
+  Stack,
+  Paper
+} from '@mui/material'
 import { useToast } from '../../../context/ToastContext'
 import { AlertService } from '../../../services/alert.service'
 import { Alert } from '../../../types'
@@ -44,47 +46,49 @@ const AlertsTab: React.FC = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minH="400px">
-        <Spinner />
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress />
       </Box>
     )
   }
 
   return (
-    <Box overflowX="auto">
+    <TableContainer component={Paper}>
       <Table>
-        <Thead>
-          <Tr>
-            <Th>ID</Th>
-            <Th>Title</Th>
-            <Th>Status</Th>
-            <Th>Created</Th>
-            <Th>Actions</Th>
-          </Tr>
-        </Thead>
-        <tbody>
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Title</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell>Created</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {alerts.map((alert) => (
-            <tr key={alert.id}>
-              <td>{alert.id}</td>
-              <td>{alert.title}</td>
-              <td>
-                <Badge colorScheme={alert.status === 'OPEN' ? 'green' : 'gray'}>
-                  {alert.status}
-                </Badge>
-              </td>
-              <td>{new Date(alert.createdAt).toLocaleDateString()}</td>
-              <td>
-                <HStack spacing={2}>
-                  <Button size="sm" colorScheme="blue">
+            <TableRow key={alert.id}>
+              <TableCell>{alert.id}</TableCell>
+              <TableCell>{alert.title}</TableCell>
+              <TableCell>
+                <Chip
+                  label={alert.status}
+                  color={alert.status === 'OPEN' ? 'success' : 'default'}
+                  size="small"
+                />
+              </TableCell>
+              <TableCell>{new Date(alert.createdAt).toLocaleDateString()}</TableCell>
+              <TableCell>
+                <Stack direction="row" spacing={1}>
+                  <Button size="small" variant="contained" color="primary">
                     View
                   </Button>
-                </HStack>
-              </td>
-            </tr>
+                </Stack>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
+        </TableBody>
       </Table>
-    </Box>
+    </TableContainer>
   )
 }
 

@@ -1,40 +1,15 @@
 import { useState, useEffect } from 'react'
-import { Box, VStack, Heading, Text, Input, Button, Alert, HStack } from '@chakra-ui/react'
+import { Box, Stack, Typography, TextField, Button, Alert, AlertTitle, Paper, CircularProgress } from '@mui/material'
 import { Link, useNavigate } from 'react-router-dom'
-import { FaPaw } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
 import { ErrorResponse } from '../types'
 import NearbyAlertsMap from '../components/alerts/NearbyAlertsMap'
 import { extractError } from '../utils/errorUtils'
 
-// Define keyframe animations
-const slideUpAnimation = `
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes pulse {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.8;
-    }
-  }
-`
-
-// Inject animations into document
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style')
-  style.textContent = slideUpAnimation
-  document.head.appendChild(style)
+// Default location fallback (Madrid, Spain)
+const DEFAULT_LOCATION = {
+  latitude: 40.4168,
+  longitude: -3.7038
 }
 
 export default function Login() {
@@ -47,7 +22,7 @@ export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  // Get user's location on component mount
+  // Get user's location on component mount with fallback to default location
   useEffect(() => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -59,12 +34,17 @@ export default function Login() {
         },
         (err) => {
           console.warn('Geolocation error:', err)
-          setLocationError('Location not available')
+          // Use default location as fallback
+          setLocation(DEFAULT_LOCATION)
+          setLocationError('Using default location')
         },
         { enableHighAccuracy: false, timeout: 5000, maximumAge: 300000 }
       )
     } else {
-      setLocationError('Geolocation not supported')
+      // Geolocation not supported, use default location
+      console.warn('Geolocation not supported')
+      setLocation(DEFAULT_LOCATION)
+      setLocationError('Using default location')
     }
   }, [])
 
@@ -90,288 +70,286 @@ export default function Login() {
 
   return (
     <Box
-      minH="100vh"
-      display="flex"
-      bgImage="url('/src/assets/bg-image.jpg')"
-      bgSize="cover"
-      bgPosition="center"
-      bgAttachment={{ base: 'scroll', lg: 'fixed' }}
-      position="relative"
-      _before={{
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        bg: 'rgba(0, 0, 0, 0.4)',
-        backdropFilter: 'blur(2px)',
-        zIndex: 1
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        backgroundImage: "url('/src/assets/bg-image.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: { xs: 'scroll', lg: 'fixed' },
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.4)',
+          backdropFilter: 'blur(2px)',
+          zIndex: 1
+        }
       }}
     >
       {/* Map Section - Left side on desktop, hidden on mobile */}
-       <Box
-         display={{ base: 'none', lg: 'block' }}
-         w="50%"
-         h="100vh"
-         position="relative"
-         bg="gray.100"
-         overflow="hidden"
-         zIndex={2}
-       >
-        {location ? (
-          <Box position="absolute" top={0} left={0} right={0} bottom={0}>
-            <NearbyAlertsMap
-              latitude={location.latitude}
-              longitude={location.longitude}
-              radiusKm={10}
-              fullHeight={true}
-            />
-          </Box>
-        ) : (
-          <Box 
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            display="flex" 
-            alignItems="center" 
-            justifyContent="center"
-          >
-            <Text color="gray.400">Getting location...</Text>
-          </Box>
-        )}
-      </Box>
+        <Box
+          sx={{
+            display: { xs: 'none', lg: 'block' },
+            width: '50%',
+            height: '100vh',
+            position: 'relative',
+            bgcolor: 'grey.100',
+            overflow: 'hidden',
+            zIndex: 2
+          }}
+        >
+         {location ? (
+           <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+             <NearbyAlertsMap
+               latitude={location.latitude}
+               longitude={location.longitude}
+               radiusKm={10}
+               fullHeight={true}
+             />
+           </Box>
+         ) : (
+           <Box 
+             sx={{
+               position: 'absolute',
+               top: 0,
+               left: 0,
+               right: 0,
+               bottom: 0,
+               display: 'flex', 
+               alignItems: 'center', 
+               justifyContent: 'center'
+             }}
+           >
+             <Typography color="text.disabled">Getting location...</Typography>
+           </Box>
+         )}
+       </Box>
 
        {/* Login Form Section - Right side on desktop, full width on mobile */}
        <Box
-         w={{ base: 'full', lg: '50%' }}
-         display="flex"
-         alignItems="center"
-         justifyContent="center"
-         p={{ base: 4, md: 6, lg: 8 }}
-         position="relative"
-         zIndex={2}
+         sx={{
+           width: { xs: '100%', lg: '50%' },
+           display: 'flex',
+           alignItems: 'center',
+           justifyContent: 'center',
+           p: { xs: 2, md: 3, lg: 4 },
+           position: 'relative',
+           zIndex: 2
+         }}
        >
-         <Box
-           w="full"
-           maxW={{ base: 'full', md: '450px', lg: '480px' }}
-           bg="rgba(255, 255, 255, 0.95)"
-           backdropFilter="blur(10px)"
-           borderRadius="2xl"
-           border="1px solid"
-           borderColor="rgba(255, 255, 255, 0.2)"
-           boxShadow="0 8px 32px rgba(0, 0, 0, 0.1)"
-           p={{ base: 6, md: 8, lg: 10 }}
-           position="relative"
-           overflow="hidden"
-           animation="slideUp 0.6s ease-out"
+         <Paper
+           elevation={8}
+           sx={{
+             width: '100%',
+             maxWidth: { xs: '100%', md: '450px', lg: '480px' },
+             bgcolor: 'rgba(255, 255, 255, 0.95)',
+             backdropFilter: 'blur(10px)',
+             borderRadius: 4,
+             border: '1px solid rgba(255, 255, 255, 0.2)',
+             p: { xs: 3, md: 4, lg: 5 },
+             position: 'relative',
+             overflow: 'hidden',
+             animation: 'slideUp 0.6s ease-out',
+             '@keyframes slideUp': {
+               from: { opacity: 0, transform: 'translateY(20px)' },
+               to: { opacity: 1, transform: 'translateY(0)' }
+             }
+           }}
          >
           {/* Subtle gradient overlay */}
           <Box
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            bgGradient="linear(to-br, brand.50, transparent)"
-            pointerEvents="none"
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(to bottom right, rgba(251, 111, 4, 0.05), transparent)',
+              pointerEvents: 'none'
+            }}
           />
-          <VStack gap={6} position="relative">
+          <Stack spacing={3} position="relative">
            {/* Logo */}
-             <Box textAlign="center">
-               <Box 
-                 display="inline-block" 
-                 p={4} 
-                 borderRadius="full" 
-                 bgGradient="linear(to-br, brand.400, brand.500)"
-                 mb={4}
-                 boxShadow="0 8px 16px rgba(251, 111, 4, 0.2)"
-                 animation="pulse 2s infinite"
-               >
-                 <FaPaw size={40} color="white" />
-               </Box>
-               <Heading 
-                 size="2xl" 
-                 color="brand.500"
-                 fontWeight="700"
-                 letterSpacing="-0.5px"
-                 mb={2}
-               >
-                 PawAlert
-               </Heading>
-               <Text
-                 fontSize="md"
-                 color="gray.600"
-                 fontWeight="500"
-                 mt={1}
-               >
-                 Protect your pets 24/7
-               </Text>
-             </Box>
-
-            {/* Mobile Map Section - Show below logo on mobile */}
-            {location && (
-              <Box 
-                display={{ base: 'block', lg: 'none' }} 
-                w="full" 
-                borderRadius="md" 
-                overflow="hidden"
-              >
-                <NearbyAlertsMap
-                  latitude={location.latitude}
-                  longitude={location.longitude}
-                  radiusKm={10}
-                />
+              <Box textAlign="center">
+                <Box 
+                  sx={{
+                    display: 'inline-block',
+                    mb: 2,
+                    animation: 'pulse 2s infinite',
+                    '@keyframes pulse': {
+                      '0%, 100%': { opacity: 1 },
+                      '50%': { opacity: 0.8 }
+                    }
+                  }}
+                >
+                  <img 
+                    src="/labrador-head.png" 
+                    alt="PawAlert Logo" 
+                    style={{ width: 120, height: 120 }}
+                  />
+                </Box>
+                 <Typography
+                   variant="body2"
+                   color="text.secondary"
+                   fontWeight={500}
+                   sx={{ mt: 1 }}
+                 >
+                   Welcome back to our commewnity 🐾
+                 </Typography>
               </Box>
-            )}
+
+              {/* Mobile Map Section - Show below logo on mobile */}
+              {location && (
+                <Box 
+                  sx={{ 
+                    display: { xs: 'block', lg: 'none' }, 
+                    width: '100%', 
+                    borderRadius: 1, 
+                    overflow: 'hidden' 
+                  }}
+                >
+                  <NearbyAlertsMap
+                    latitude={location.latitude}
+                    longitude={location.longitude}
+                    radiusKm={10}
+                  />
+                </Box>
+              )}
             {locationError && (
-              <Text fontSize="xs" color="gray.400">{locationError}</Text>
+              <Typography variant="caption" color="text.disabled">{locationError}</Typography>
             )}
 
             {/* Error Message */}
             {error && (
-              <Alert.Root status="error" w="full" borderRadius="md">
-                <Alert.Indicator />
-                <Box flex="1">
-                  {typeof error === 'string' ? (
-                    <Text fontSize="sm" color="red.600">
-                      {error}
-                    </Text>
-                  ) : (
-                    <>
-                      <Alert.Title fontSize="sm" fontWeight="bold">
-                        {error.error || 'Error'}
-                      </Alert.Title>
-                      <Alert.Description fontSize="sm">
-                        {error.message}
-                      </Alert.Description>
-                    </>
-                  )}
-                </Box>
-              </Alert.Root>
+              <Alert severity="error" sx={{ width: '100%' }}>
+                {typeof error === 'string' ? (
+                  <Typography variant="body2" color="error.dark">
+                    {error}
+                  </Typography>
+                ) : (
+                  <>
+                    <AlertTitle>{error.error || 'Error'}</AlertTitle>
+                    {error.message}
+                  </>
+                )}
+              </Alert>
             )}
 
               {/* Form */}
               <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-                <VStack gap={5} w="full">
-                  <Box w="full">
-                    <Text 
-                      as="label"
-                      fontSize="sm" 
-                      fontWeight="600" 
-                      color="gray.700"
-                      display="block"
-                      mb={2}
+                <Stack spacing={3} width="100%">
+                  <Box width="100%">
+                    <Typography 
+                      variant="caption"
+                      fontWeight={600}
+                      color="text.secondary"
+                      sx={{ display: 'block', mb: 1 }}
                     >
                       Email
-                    </Text>
-                    <Input
+                    </Typography>
+                    <TextField
                       type="email"
                       value={email}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                       placeholder="Enter your email"
                       required
-                      bg="rgba(255, 255, 255, 0.8)"
-                      borderColor="rgba(0, 0, 0, 0.1)"
-                      fontSize="md"
-                      py={3}
-                      px={4}
-                      transition="all 0.3s ease"
-                      _focus={{
-                        borderColor: 'brand.500',
-                        boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
-                        bg: 'white'
-                      }}
-                      _hover={{
-                        borderColor: 'rgba(0, 0, 0, 0.2)',
-                        bg: 'white'
+                      fullWidth
+                      size="medium"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          bgcolor: 'rgba(255, 255, 255, 0.8)',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            bgcolor: 'white',
+                          },
+                          '&.Mui-focused': {
+                            bgcolor: 'white',
+                          }
+                        }
                       }}
                     />
                   </Box>
 
-                  <Box w="full">
-                    <Text 
-                      as="label"
-                      fontSize="sm" 
-                      fontWeight="600" 
-                      color="gray.700"
-                      display="block"
-                      mb={2}
+                  <Box width="100%">
+                    <Typography 
+                      variant="caption"
+                      fontWeight={600}
+                      color="text.secondary"
+                      sx={{ display: 'block', mb: 1 }}
                     >
                       Password
-                    </Text>
-                    <Input
+                    </Typography>
+                    <TextField
                       type="password"
                       value={password}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                       placeholder="Enter your password"
                       required
-                      bg="rgba(255, 255, 255, 0.8)"
-                      borderColor="rgba(0, 0, 0, 0.1)"
-                      fontSize="md"
-                      py={3}
-                      px={4}
-                      transition="all 0.3s ease"
-                      _focus={{
-                        borderColor: 'brand.500',
-                        boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
-                        bg: 'white'
-                      }}
-                      _hover={{
-                        borderColor: 'rgba(0, 0, 0, 0.2)',
-                        bg: 'white'
+                      fullWidth
+                      size="medium"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          bgcolor: 'rgba(255, 255, 255, 0.8)',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            bgcolor: 'white',
+                          },
+                          '&.Mui-focused': {
+                            bgcolor: 'white',
+                          }
+                        }
                       }}
                     />
                   </Box>
 
                  <Button
                    type="submit"
-                   w="full"
-                   colorPalette="brand"
-                   size="lg"
-                   loading={isLoading}
-                   bg="brand.500"
-                   color="white"
-                   fontWeight="600"
-                   fontSize="md"
-                   py={3}
-                   transition="all 0.3s ease"
-                   _hover={{ 
-                     bg: 'brand.600',
-                     transform: 'translateY(-2px)',
-                     boxShadow: '0 12px 24px rgba(251, 111, 4, 0.3)'
-                   }}
-                   _active={{
-                     transform: 'translateY(0)'
+                   fullWidth
+                   variant="contained"
+                   color="primary"
+                   size="large"
+                   disabled={isLoading}
+                   sx={{
+                     fontWeight: 600,
+                     py: 1.5,
+                     transition: 'all 0.3s ease',
+                     '&:hover': { 
+                       transform: 'translateY(-2px)',
+                       boxShadow: '0 12px 24px rgba(251, 111, 4, 0.3)'
+                     }
                    }}
                  >
-                   Sign In
+                   {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
                  </Button>
-               </VStack>
+               </Stack>
              </form>
 
              {/* Register Link */}
-             <Text textAlign="center" fontSize="sm" color="gray.600" fontWeight="500">
+             <Typography textAlign="center" variant="body2" color="text.secondary" fontWeight={500}>
                Don't have an account?{' '}
-               <Link to="/register">
-                 <Text 
-                   as="span" 
-                   color="brand.500" 
-                   fontWeight="600" 
-                   _hover={{ 
-                     color: 'brand.600',
-                     textDecoration: 'underline'
+               <Link to="/register" style={{ textDecoration: 'none' }}>
+                 <Typography 
+                   component="span"
+                   variant="body2"
+                   color="primary"
+                   fontWeight={600}
+                   sx={{ 
+                     '&:hover': { 
+                       textDecoration: 'underline'
+                     }
                    }}
-                   transition="all 0.3s ease"
                  >
                    Register here
-                 </Text>
+                 </Typography>
                </Link>
-             </Text>
-          </VStack>
-        </Box>
+             </Typography>
+          </Stack>
+        </Paper>
       </Box>
     </Box>
   )

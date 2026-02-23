@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, Heading, Button, VStack, Input, Textarea, Spinner, Flex, Text, Badge, HStack, Alert, SimpleGrid, Select } from '@chakra-ui/react'
+import { Box, Typography, Button, Stack, TextField, CircularProgress, Alert as MuiAlert, Grid, FormControl, InputLabel, Select, MenuItem, Chip, Paper } from '@mui/material'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
@@ -149,119 +149,108 @@ export default function AlertCreate() {
 
   if (isFetchingPets) {
     return (
-      <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="brand.500" />
-      </Flex>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+        <CircularProgress color="primary" />
+      </Box>
     )
   }
 
   return (
-    <Box w="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
-      <Button variant="ghost" mb={4} onClick={() => navigate('/alerts')}>
-        <FaArrowLeft style={{ marginRight: '8px' }} />
+    <Paper sx={{ width: '100%', mx: 'auto', bgcolor: 'rgba(255, 255, 255, 0.85)', p: 3, borderRadius: 2, boxShadow: 3 }}>
+      <Button variant="text" sx={{ mb: 2 }} onClick={() => navigate('/alerts')} startIcon={<FaArrowLeft />}>
         Back to Alerts
       </Button>
 
-      <Heading size="lg" mb={6} color="gray.800" fontWeight="bold">
+      <Typography variant="h5" mb={3} color="text.primary" fontWeight="bold">
         Create Alert
-      </Heading>
+      </Typography>
 
       {error && (
-        <Alert.Root status="error" mb={6} borderRadius="md">
-          <Alert.Indicator />
-          <Box flex="1">
-            <Alert.Title fontSize="sm" fontWeight="bold">
-              {error.error || 'Error'}
-            </Alert.Title>
-            <Alert.Description fontSize="sm">
-              {error.message}
-            </Alert.Description>
-          </Box>
-        </Alert.Root>
+        <MuiAlert severity="error" sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" component="div">{error.error || 'Error'}</Typography>
+          <Typography variant="body2">{error.message}</Typography>
+        </MuiAlert>
       )}
 
       {preselectedPet && (
-        <Alert.Root status="info" mb={6} borderRadius="md">
-          <Alert.Indicator />
-          <Box flex="1">
-            <Alert.Title fontSize="sm" fontWeight="bold">
-              Creating alert for: {preselectedPet.officialPetName}
-            </Alert.Title>
-            <Alert.Description fontSize="sm">
-              {preselectedPet.species} {preselectedPet.breed && `- ${preselectedPet.breed}`}
-            </Alert.Description>
-          </Box>
-        </Alert.Root>
+        <MuiAlert severity="info" sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" component="div">
+            Creating alert for: {preselectedPet.officialPetName}
+          </Typography>
+          <Typography variant="body2">
+            {preselectedPet.species} {preselectedPet.breed && `- ${preselectedPet.breed}`}
+          </Typography>
+        </MuiAlert>
       )}
 
-       <Box as="form" onSubmit={handleSubmit}>
-         <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-           <Box gridColumn={{ base: '1', md: '1' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Title *</Text>
-             <Input 
+       <Box component="form" onSubmit={handleSubmit}>
+         <Grid container spacing={2}>
+           <Grid item xs={12}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Title *</Typography>
+             <TextField 
                name="title" 
                value={formData.title} 
                onChange={handleChange} 
                required 
                placeholder="Alert title"
-               bg="white" 
-               color="gray.800"
-               _placeholder={{ color: 'gray.500' }}
+               fullWidth
+               size="small"
+               bgcolor="white"
              />
-           </Box>
+           </Grid>
 
-           <Box gridColumn={{ base: '1', md: '2' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Pet *</Text>
-             <Select 
-               name="petId" 
-               value={formData.petId} 
-               onChange={handleChange}
-               bg="white"
-               color="gray.800"
-             >
-               <option value="">Select a pet</option>
-               {pets.map((pet) => (
-                 <option key={pet.petId} value={pet.petId}>
-                   {pet.officialPetName}
-                 </option>
-               ))}
-             </Select>
-           </Box>
+           <Grid item xs={12}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Pet *</Typography>
+             <FormControl fullWidth size="small">
+               <InputLabel>Select a pet</InputLabel>
+               <Select
+                 name="petId" 
+                 value={formData.petId} 
+                 onChange={handleChange}
+                 label="Select a pet"
+               >
+                 <MenuItem value="">Select a pet</MenuItem>
+                 {pets.map((pet) => (
+                   <MenuItem key={pet.petId} value={pet.petId}>
+                     {pet.officialPetName}
+                   </MenuItem>
+                 ))}
+               </Select>
+             </FormControl>
+           </Grid>
 
-           <Box gridColumn={{ base: '1', md: 'span 2' }}>
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Description *</Text>
-             <Textarea 
+           <Grid item xs={12}>
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Description *</Typography>
+             <TextField 
                name="description" 
                value={formData.description} 
                onChange={handleChange} 
                required 
                placeholder="Describe the situation" 
+               multiline
                rows={2}
-               bg="white" 
-               color="gray.800"
-               _placeholder={{ color: 'gray.500' }}
+               fullWidth
+               size="small"
              />
-           </Box>
+           </Grid>
 
           {/* Location Detection Section */}
-          <Box gridColumn={{ base: '1', md: 'span 2' }}>
-            <HStack mb={2} justify="space-between" align="center">
-              <Text fontWeight="medium" fontSize="sm" color="gray.800">Location</Text>
+          <Grid item xs={12}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+              <Typography fontWeight="medium" variant="body2" color="text.primary">Location</Typography>
               {locationSource && (
-                <Badge 
-                  colorPalette={locationSource === 'gps' ? 'green' : 'orange'}
-                  fontSize="xs"
-                >
-                  {locationSource === 'gps' ? 'GPS' : 'IP'} Location
-                </Badge>
+                <Chip 
+                  label={locationSource === 'gps' ? 'GPS Location' : 'IP Location'}
+                  size="small"
+                  color={locationSource === 'gps' ? 'success' : 'warning'}
+                />
               )}
-            </HStack>
+            </Box>
 
             {locationError && (
-              <Alert.Root status="warning" mb={3} borderRadius="md" fontSize="sm">
-                <Alert.Indicator />
-                <Text fontSize="sm">{locationError}</Text>
-              </Alert.Root>
+              <MuiAlert severity="warning" sx={{ mb: 2 }}>
+                {locationError}
+              </MuiAlert>
             )}
 
             {/* Interactive Map */}
@@ -279,48 +268,46 @@ export default function AlertCreate() {
             />
 
            {/* Manual Coordinate Input (fallback) */}
-             <HStack gap={4} mt={3}>
-               <Box flex="1">
-                 <Text as="label" display="block" fontWeight="medium" mb={2}>Latitude *</Text>
-                 <Input 
+             <Grid container spacing={2} sx={{ mt: 1 }}>
+               <Grid item xs={6}>
+                 <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Latitude *</Typography>
+                 <TextField 
                    name="latitude" 
                    type="number" 
-                   step="any" 
                    value={formData.latitude} 
                    onChange={handleChange} 
                    required 
                    placeholder="40.416775"
-                   bg="white" 
-                   color="gray.800"
-                   _placeholder={{ color: 'gray.500' }}
+                   fullWidth
+                   size="small"
+                   inputProps={{ step: 'any' }}
                  />
-               </Box>
+               </Grid>
 
-               <Box flex="1">
-                 <Text as="label" display="block" fontWeight="medium" mb={2}>Longitude *</Text>
-                 <Input 
+               <Grid item xs={6}>
+                 <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Longitude *</Typography>
+                 <TextField 
                    name="longitude" 
                    type="number" 
-                   step="any" 
                    value={formData.longitude} 
                    onChange={handleChange} 
                    required 
                    placeholder="-3.703790"
-                   bg="white" 
-                   color="gray.800"
-                   _placeholder={{ color: 'gray.500' }}
+                   fullWidth
+                   size="small"
+                   inputProps={{ step: 'any' }}
                  />
-               </Box>
-             </HStack>
-          </Box>
+               </Grid>
+             </Grid>
+          </Grid>
 
-          <Box gridColumn={{ base: '1', md: 'span 2' }} pt={2}>
-            <Button type="submit" colorPalette="brand" bg="brand.500" _hover={{ bg: 'brand.600' }} w="full" loading={isLoading}>
-              Create Alert
+          <Grid item xs={12} sx={{ pt: 1 }}>
+            <Button type="submit" variant="contained" color="primary" fullWidth disabled={isLoading}>
+              {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Create Alert'}
             </Button>
-          </Box>
-        </SimpleGrid>
+          </Grid>
+        </Grid>
       </Box>
-    </Box>
+    </Paper>
   )
 }

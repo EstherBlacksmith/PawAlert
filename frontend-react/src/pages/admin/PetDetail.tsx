@@ -4,15 +4,13 @@ import {
   Box,
   Button,
   Card,
-  CardBody,
+  CardContent,
   CardHeader,
-  Heading,
-  Spinner,
-  HStack,
-  VStack,
-  Text,
-  Badge,
-} from '@chakra-ui/react'
+  Typography,
+  CircularProgress,
+  Stack,
+  Chip
+} from '@mui/material'
 import { useToast } from '../../context/ToastContext'
 import { petService } from '../../services/pet.service'
 import { Pet } from '../../types'
@@ -51,54 +49,52 @@ const AdminPetDetail: React.FC = () => {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <Spinner size="xl" />
+        <CircularProgress />
       </Box>
     )
   }
 
   if (!pet) {
     return (
-      <Box p={4}>
-        <Text>Pet not found</Text>
+      <Box p={2}>
+        <Typography>Pet not found</Typography>
         <Button onClick={() => navigate('/admin/dashboard')}>Back to Dashboard</Button>
       </Box>
     )
   }
 
   return (
-    <Box p={4}>
+    <Box p={2}>
       <Card>
-        <CardHeader>
-          <Heading>{pet.name}</Heading>
-        </CardHeader>
-        <CardBody>
-          <VStack align="start" spacing={4}>
+        <CardHeader title={pet.name} />
+        <CardContent>
+          <Stack spacing={2}>
             <Box>
-              <Text fontWeight="bold">Type:</Text>
-              <Text>{pet.type}</Text>
+              <Typography variant="subtitle2" fontWeight="bold">Type:</Typography>
+              <Typography>{pet.type}</Typography>
             </Box>
             <Box>
-              <Text fontWeight="bold">Breed:</Text>
-              <Text>{pet.breed || 'N/A'}</Text>
+              <Typography variant="subtitle2" fontWeight="bold">Breed:</Typography>
+              <Typography>{pet.breed || 'N/A'}</Typography>
             </Box>
             <Box>
-              <Text fontWeight="bold">Owner:</Text>
-              <Text>{pet.owner?.name || 'N/A'}</Text>
+              <Typography variant="subtitle2" fontWeight="bold">Owner:</Typography>
+              <Typography>{pet.owner?.name || 'N/A'}</Typography>
             </Box>
             <Box>
-              <Text fontWeight="bold">Status:</Text>
-              <Badge colorScheme="green">Active</Badge>
+              <Typography variant="subtitle2" fontWeight="bold">Status:</Typography>
+              <Chip label="Active" color="success" size="small" />
             </Box>
-            <HStack spacing={2}>
-              <Button colorScheme="blue" onClick={() => navigate(`/admin/pets/${id}/edit`)}>
+            <Stack direction="row" spacing={1}>
+              <Button variant="contained" color="primary" onClick={() => navigate(`/pets/${id}/edit`)}>
                 Edit
               </Button>
-              <Button colorScheme="gray" onClick={() => navigate('/admin/dashboard')}>
+              <Button variant="contained" onClick={() => navigate('/admin/dashboard')}>
                 Back
               </Button>
-            </HStack>
-          </VStack>
-        </CardBody>
+            </Stack>
+          </Stack>
+        </CardContent>
       </Card>
     </Box>
   )

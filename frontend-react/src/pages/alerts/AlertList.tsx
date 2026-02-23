@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { Box, Heading, Button, SimpleGrid, Card, Text, Flex, Spinner, Badge, IconButton, HStack, Collapse, Input, Grid, VStack, Select } from '@chakra-ui/react'
+import { Box, Typography, Button, Grid, Card, CardContent, CircularProgress, Chip, IconButton, Stack, TextField, Paper, Collapse, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, Pagination } from '@mui/material'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { FaPlus, FaSearch as FaSearchIcon, FaCog, FaTimes, FaMapMarkerAlt, FaSearch, FaArrowLeft, FaChevronLeft, FaChevronRight, FaPaw } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
@@ -21,6 +21,7 @@ const statusColors: Record<string, string> = {
 const statusOptions: { value: string; label: string }[] = [
   { value: '', label: 'All Statuses' },
   { value: 'OPENED', label: 'Opened' },
+  { value: 'SEEN,SAFE', label: 'In Progress' },
   { value: 'SEEN', label: 'Seen' },
   { value: 'SAFE', label: 'Safe' },
   { value: 'CLOSED', label: 'Closed' },
@@ -69,9 +70,16 @@ export default function AlertList() {
    const fetchAlerts = useCallback(async () => {
      setIsLoading(true)
      try {
+       // Parse comma-separated statuses
+       const statuses = status.split(',').filter(s => s.trim())
+       
        const filters: AlertSearchFilters = {}
        
-       if (status) filters.status = status as AlertStatus
+       // For single status, use the API filter directly
+       // For multiple statuses, we'll filter client-side
+       if (statuses.length === 1) {
+         filters.status = statuses[0] as AlertStatus
+       }
        if (petName) filters.petName = petName
        if (species) filters.species = species
        if (breed) filters.breed = breed
@@ -90,7 +98,13 @@ export default function AlertList() {
          filters.radiusKm = parseFloat(radiusKm)
        }
        
-       const data = await alertService.searchAlertsWithFilters(filters)
+       let data = await alertService.searchAlertsWithFilters(filters)
+       
+       // Apply client-side filtering for multiple statuses
+       if (statuses.length > 1) {
+         data = data.filter(alert => statuses.includes(alert.status))
+       }
+       
        setAlerts(data)
      } catch (error) {
        console.error('Error fetching alerts:', error)
@@ -158,385 +172,316 @@ export default function AlertList() {
 
   if (isLoading && alerts.length === 0) {
     return (
-      <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="brand.500" />
-      </Flex>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+        <CircularProgress color="primary" />
+      </Box>
     )
   }
 
    return (
-     <Box
-       bg="rgba(255, 255, 255, 0.85)"
-       p={6}
-       borderRadius="lg"
-       boxShadow="lg"
-     >
+     <Paper sx={{ bgcolor: 'rgba(255, 255, 255, 0.85)', p: 3, borderRadius: 2, boxShadow: 3 }}>
         <Button 
-          variant="ghost" 
-          mb={4} 
+          variant="text"
+          sx={{ mb: 2 }}
           onClick={() => navigate('/')}
-          size="sm"
-          colorPalette="gray"
+          size="small"
+          startIcon={<FaArrowLeft />}
         >
-          <FaArrowLeft style={{ marginRight: '8px' }} />
           Back
         </Button>
 
-       <Flex justify="space-between" align="center" mb={6}>
+       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Heading size="lg" color="gray.800">
+          <Typography variant="h5" color="text.primary">
             Alerts
-          </Heading>
-          <Text color="gray.600" mt={1}>
+          </Typography>
+          <Typography color="text.secondary" sx={{ mt: 0.5 }}>
             View and manage pet alerts
-          </Text>
+          </Typography>
         </Box>
-        <HStack gap={3}>
+        <Stack direction="row" spacing={1.5}>
           <Button
-            variant="outline"
+            variant="outlined"
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            colorPalette={activeFilterCount > 0 ? 'brand' : 'gray'}
-            bg={activeFilterCount > 0 ? 'brand.50' : undefined}
-            borderColor={activeFilterCount > 0 ? 'brand.500' : undefined}
+            color={activeFilterCount > 0 ? 'primary' : 'inherit'}
+            sx={activeFilterCount > 0 ? { bgcolor: 'primary.50', borderColor: 'primary.main' } : {}}
+            startIcon={<FaCog />}
           >
-            <FaCog style={{ marginRight: '8px' }} />
             Filters
             {activeFilterCount > 0 && (
-              <Badge ml={2} colorPalette="accent" borderRadius="full">
-                {activeFilterCount}
-              </Badge>
+              <Chip label={activeFilterCount} size="small" color="secondary" sx={{ ml: 1 }} />
             )}
           </Button>
-          <Link to="/alerts/create">
-            <Button colorPalette="brand" bg="brand.500" _hover={{ bg: 'brand.600' }}>
-              <FaPlus style={{ marginRight: '8px' }} />
-              Create Alert
-            </Button>
-          </Link>
-        </HStack>
-      </Flex>
+          <Button component={Link} to="/alerts/create" variant="contained" color="primary" startIcon={<FaPlus />}>
+            Create Alert
+          </Button>
+        </Stack>
+      </Box>
 
       {/* Filter Panel */}
       <Collapse in={isFilterOpen}>
-        <Card.Root mb={6} bg="gray.50" _dark={{ bg: 'gray.800' }}>
-            <Card.Body p={4}>
-              <VStack align="stretch" gap={4}>
-                <Flex justify="space-between" align="center">
-                  <Text fontWeight="medium" color="gray.700" _dark={{ color: 'gray.200' }}>
+        <Card sx={{ mb: 3, bgcolor: 'grey.50' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Stack spacing={2}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography fontWeight="medium" color="text.primary">
                     Filter Alerts
-                  </Text>
+                  </Typography>
                   <Button
-                    size="sm"
-                    variant="ghost"
+                    size="small"
+                    variant="text"
                     onClick={handleClearFilters}
                     disabled={!status && !species && !petName && !breed && !createdFrom && !createdTo && userLatitude === null && !showMyAlertsOnly}
+                    startIcon={<FaTimes />}
                   >
-                    <FaTimes style={{ marginRight: '4px' }} />
                     Clear All
                   </Button>
-                </Flex>
+                </Box>
 
                 {/* My Alerts Filter */}
-                  <Box mb={4}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={showMyAlertsOnly}
-                        onChange={(e) => setShowMyAlertsOnly(e.target.checked)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                      <Text fontSize="sm" color="gray.700" _dark={{ color: 'gray.200' }}>
-                        Show only my alerts
-                      </Text>
-                    </label>
+                  <Box sx={{ mb: 2 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={showMyAlertsOnly}
+                          onChange={(e) => setShowMyAlertsOnly(e.target.checked)}
+                        />
+                      }
+                      label={<Typography variant="body2" color="text.primary">Show only my alerts</Typography>}
+                    />
                   </Box>
 
-                  <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' }} gap={4}>
+                  <Grid container spacing={2}>
                   {/* Status Filter */}
-                  <Box>
-                    <Text fontSize="sm" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                      Status
-                    </Text>
-                    <Select
-                      size="sm"
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                    >
-                      {statusOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </Select>
-                  </Box>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel>Status</InputLabel>
+                      <Select
+                        value={status}
+                        label="Status"
+                        onChange={(e) => setStatus(e.target.value)}
+                      >
+                        {statusOptions.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
 
                   {/* Species Filter */}
-                  <Box>
-                    <Text fontSize="sm" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                      Species
-                    </Text>
-                    <Select
-                      size="sm"
-                      value={species}
-                      onChange={(e) => setSpecies(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="All Species"
-                    >
-                      <option value="">All Species</option>
-                      {speciesOptions?.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.displayName}
-                        </option>
-                      ))}
-                    </Select>
-                  </Box>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel>Species</InputLabel>
+                      <Select
+                        value={species}
+                        label="Species"
+                        onChange={(e) => setSpecies(e.target.value)}
+                      >
+                        <MenuItem value="">All Species</MenuItem>
+                        {speciesOptions?.map((option) => (
+                          <MenuItem key={option.value} value={option.value}>
+                            {option.displayName}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
 
                   {/* Pet Name Filter */}
-                  <Box>
-                    <Text fontSize="sm" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                      Pet Name
-                    </Text>
-                    <Input
+                  <Grid item xs={12} sm={6} md={3}>
+                    <TextField
                       placeholder="Search by pet name..."
                       value={petName}
                       onChange={(e) => setPetName(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      size="sm"
+                      size="small"
+                      fullWidth
+                      label="Pet Name"
                     />
-                  </Box>
+                  </Grid>
 
                   {/* Breed Filter */}
-                  <Box>
-                    <Text fontSize="sm" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                      Breed
-                    </Text>
-                    <Input
+                  <Grid item xs={12} sm={6} md={3}>
+                    <TextField
                       placeholder="Search by breed..."
                       value={breed}
                       onChange={(e) => setBreed(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      size="sm"
+                      size="small"
+                      fullWidth
+                      label="Breed"
                     />
-                  </Box>
+                  </Grid>
 
                   {/* Date From Filter */}
-                  <Box>
-                    <Text fontSize="sm" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                      Date From
-                    </Text>
-                    <Input
+                  <Grid item xs={12} sm={6} md={3}>
+                    <TextField
                       type="date"
                       value={createdFrom}
                       onChange={(e) => setCreatedFrom(e.target.value)}
-                      size="sm"
+                      size="small"
+                      fullWidth
+                      label="Date From"
+                      InputLabelProps={{ shrink: true }}
                     />
-                  </Box>
+                  </Grid>
 
                   {/* Date To Filter */}
-                  <Box>
-                    <Text fontSize="sm" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                      Date To
-                    </Text>
-                    <Input
+                  <Grid item xs={12} sm={6} md={3}>
+                    <TextField
                       type="date"
                       value={createdTo}
                       onChange={(e) => setCreatedTo(e.target.value)}
-                      size="sm"
+                      size="small"
+                      fullWidth
+                      label="Date To"
+                      InputLabelProps={{ shrink: true }}
                     />
-                  </Box>
+                  </Grid>
 
                   {/* Distance Filter */}
-                  <Box>
-                    <Text fontSize="sm" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
-                      Distance (km)
-                    </Text>
-                    <Flex gap={2}>
-                      <Input
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Stack direction="row" spacing={1}>
+                      <TextField
                         type="number"
                         placeholder="Radius"
                         value={radiusKm}
                         onChange={(e) => setRadiusKm(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        size="sm"
-                        min="1"
-                        max="1000"
-                        flex="1"
+                        size="small"
+                        label="Distance (km)"
+                        inputProps={{ min: 1, max: 1000 }}
+                        sx={{ flex: 1 }}
                       />
                       {userLatitude !== null && userLongitude !== null ? (
                         <IconButton
-                          aria-label="Clear location"
-                          size="sm"
-                          variant="outline"
-                          colorPalette="red"
+                          size="small"
+                          color="error"
                           onClick={handleClearLocation}
                         >
                           <FaTimes />
                         </IconButton>
                       ) : (
                         <IconButton
-                          aria-label="Use my location"
-                          size="sm"
-                          variant="outline"
-                          colorPalette="brand"
-                          bg="brand.50"
-                          borderColor="brand.500"
-                          _hover={{ bg: 'brand.100' }}
+                          size="small"
+                          color="primary"
                           onClick={handleGetLocation}
-                          loading={isLocationLoading}
+                          disabled={isLocationLoading}
                         >
                           <FaMapMarkerAlt />
                         </IconButton>
                       )}
-                    </Flex>
-                  </Box>
+                    </Stack>
+                  </Grid>
                 </Grid>
 
                 {/* Location Status */}
                 {locationError && (
-                  <Text fontSize="sm" color="red.500">
+                  <Typography variant="body2" color="error">
                     {locationError}
-                  </Text>
+                  </Typography>
                 )}
                 {userLatitude !== null && userLongitude !== null && (
-                  <Text fontSize="sm" color="green.500">
+                  <Typography variant="body2" color="success.main">
                     <FaMapMarkerAlt style={{ display: 'inline', marginRight: '4px' }} />
                     Location set: {userLatitude.toFixed(4)}, {userLongitude.toFixed(4)}
-                  </Text>
+                  </Typography>
                 )}
 
                 {/* Apply Button */}
-                <Flex justify="flex-end">
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
-                    colorPalette="brand"
-                    bg="brand.500"
-                    _hover={{ bg: 'brand.600' }}
+                    variant="contained"
+                    color="primary"
                     onClick={handleApplyFilters}
-                    loading={isLoading}
-                    size="sm"
+                    disabled={isLoading}
+                    size="small"
+                    startIcon={<FaSearch />}
                   >
-                    <FaSearch style={{ marginRight: '8px' }} />
                     Apply Filters
                   </Button>
-                </Flex>
-              </VStack>
-            </Card.Body>
-          </Card.Root>
+                </Box>
+              </Stack>
+            </CardContent>
+          </Card>
       </Collapse>
 
        {/* Results */}
        {alerts.length === 0 ? (
-         <Card.Root p={8} textAlign="center">
-           <Text color="gray.500">No alerts found matching your criteria.</Text>
-           <Link to="/alerts/create">
-             <Button mt={4} colorPalette="brand" variant="outline" bg="brand.50" _hover={{ bg: 'brand.100' }}>
-               Create a new alert
-             </Button>
-           </Link>
-         </Card.Root>
+         <Card sx={{ p: 4, textAlign: 'center' }}>
+           <Typography color="text.secondary">No alerts found matching your criteria.</Typography>
+           <Button component={Link} to="/alerts/create" sx={{ mt: 2 }} variant="outlined" color="primary">
+             Create a new alert
+           </Button>
+         </Card>
        ) : (
          <>
-           <Text fontSize="sm" color="gray.500" mb={4}>
+           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
              Showing {startIndex + 1} to {Math.min(endIndex, alerts.length)} of {alerts.length} alert{alerts.length !== 1 ? 's' : ''}
-           </Text>
-           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6} mb={6}>
+           </Typography>
+           <Grid container spacing={3} sx={{ mb: 3 }}>
               {paginatedAlerts.map((alert) => (
-                <Card.Root key={alert.id} display="flex" flexDirection="column">
-                  <Card.Body display="flex" flexDirection="column" flex="1">
-                    <Flex justify="space-between" align="start" mb={2}>
-                      <Heading size="md">{alert.title}</Heading>
-                      <Badge 
-                        bg={statusColors[alert.status]} 
-                        color="white"
-                        px={2}
-                        py={1}
-                        borderRadius="md"
-                        fontSize="xs"
-                        fontWeight="bold"
-                      >
-                        {alert.status}
-                      </Badge>
-                    </Flex>
-                    <Text fontSize="sm" color="gray.500" mb={2} lineClamp={2}>
-                      {alert.description}
-                    </Text>
-                    <Text fontSize="xs" color="gray.400" mb={4} flex="1">
-                      Location: {alert.latitude != null ? alert.latitude.toFixed(4) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(4) : 'N/A'}
-                    </Text>
-                    <Flex mt="auto" gap={2} justify="space-between" align="center">
-                       <Link to={`/alerts/${alert.id}`}>
-                         <IconButton aria-label="View" variant="ghost" size="sm" color="brand.500">
+                <Grid item xs={12} sm={6} lg={4} key={alert.id}>
+                  <Card sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <CardContent sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                        <Typography variant="h6">{alert.title}</Typography>
+                        <Chip 
+                          label={alert.status}
+                          size="small"
+                          sx={{ 
+                            bgcolor: statusColors[alert.status],
+                            color: 'white',
+                            fontWeight: 'bold'
+                          }}
+                        />
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                        {alert.description}
+                      </Typography>
+                      <Typography variant="caption" color="text.disabled" sx={{ mb: 2, flex: 1 }}>
+                        Location: {alert.latitude != null ? alert.latitude.toFixed(4) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(4) : 'N/A'}
+                      </Typography>
+                      <Box sx={{ display: 'flex', mt: 'auto', gap: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+                         <IconButton component={Link} to={`/alerts/${alert.id}`} size="small" color="primary">
                            <FaSearchIcon />
                          </IconButton>
-                       </Link>
-                       <IconButton
-                         aria-label="View pet"
-                         variant="ghost"
-                         size="sm"
-                         color="green.500"
-                         onClick={() => navigate(`/pets/${alert.petId}`)}
-                       >
-                         <FaPaw />
-                       </IconButton>
-                       <SubscribeButton
-                         alertId={alert.id}
-                         alertStatus={alert.status}
-                         size="sm"
-                       />
-                     </Flex>
-                  </Card.Body>
-                </Card.Root>
+                         <IconButton
+                           size="small"
+                           color="success"
+                           onClick={() => navigate(`/pets/${alert.petId}`)}
+                         >
+                           <FaPaw />
+                         </IconButton>
+                         <SubscribeButton
+                           alertId={alert.id}
+                           alertStatus={alert.status}
+                           size="small"
+                         />
+                       </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
               ))}
-           </SimpleGrid>
+           </Grid>
 
            {/* Pagination Controls */}
            {totalPages > 1 && (
-             <Flex justify="space-between" align="center" gap={4} flexWrap="wrap">
-               <Text fontSize="sm" color="gray.600">
-                 Page {currentPage} of {totalPages}
-               </Text>
-               <HStack gap={2}>
-                 <Button
-                   size="sm"
-                   variant="outline"
-                   onClick={() => handlePageChange(currentPage - 1)}
-                   disabled={currentPage === 1}
-                   colorPalette="brand"
-                 >
-                   <FaChevronLeft style={{ marginRight: '4px' }} />
-                   Previous
-                 </Button>
-                 
-                 <HStack gap={1}>
-                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                     <Button
-                       key={page}
-                       size="sm"
-                       variant={currentPage === page ? 'solid' : 'outline'}
-                       colorPalette={currentPage === page ? 'brand' : 'gray'}
-                       onClick={() => handlePageChange(page)}
-                       minW="32px"
-                     >
-                       {page}
-                     </Button>
-                   ))}
-                 </HStack>
-
-                 <Button
-                   size="sm"
-                   variant="outline"
-                   onClick={() => handlePageChange(currentPage + 1)}
-                   disabled={currentPage === totalPages}
-                   colorPalette="brand"
-                 >
-                   Next
-                   <FaChevronRight style={{ marginLeft: '4px' }} />
-                 </Button>
-               </HStack>
-             </Flex>
+             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+               <Pagination
+                 count={totalPages}
+                 page={currentPage}
+                 onChange={(_, page) => handlePageChange(page)}
+                 color="primary"
+                 showFirstButton
+                 showLastButton
+               />
+             </Box>
            )}
          </>
        )}
-     </Box>
+     </Paper>
    )
  }

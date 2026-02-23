@@ -1,16 +1,22 @@
-import { Box, HStack, Text, Circle } from '@chakra-ui/react';
-import { useNotifications } from '../../context/NotificationContext';
-import { GiCircle } from '../icons';
+import { Stack, Typography, Box } from '@mui/material'
+import { useNotifications } from '../../context/NotificationContext'
 
 export default function ConnectionStatus() {
-  const { isConnected } = useNotifications();
+  const { isConnected } = useNotifications()
 
   return (
-    <HStack gap={2} px={3} py={2}>
-      <Circle size={2} bg={isConnected ? 'accent.500' : 'red.500'} />
-      <Text fontSize="sm" color="gray.600" _dark={{ color: 'gray.400' }}>
+    <Stack direction="row" spacing={1} alignItems="center" sx={{ px: 1.5, py: 1 }}>
+      <Box
+        sx={{
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          bgcolor: isConnected ? 'success.main' : 'error.main',
+        }}
+      />
+      <Typography variant="body2" color="text.secondary">
         {isConnected ? 'Connected' : 'Disconnected'}
-      </Text>
-    </HStack>
-  );
+      </Typography>
+    </Stack>
+  )
 }

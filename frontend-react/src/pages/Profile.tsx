@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Box, Heading, Button, VStack, Input, Text, Card, Flex, Avatar, Stack, Switch, Spinner, Alert, SimpleGrid } from '@chakra-ui/react'
+import { Box, Typography, Button, Stack, TextField, Card, CardContent, Switch, FormControlLabel, CircularProgress, Alert, Grid, Paper } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
 import { userService } from '../services/user.service'
 import { ErrorResponse } from '../types'
 import { extractError, showSuccessToast, showErrorToast } from '../utils/errorUtils'
-import { GiUser, GiSave, GiBell, GiSmartphone, GiMail } from '../components/icons'
+import { GiSave } from '../components/icons'
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -123,123 +123,134 @@ export default function Profile() {
   
   if (isFetching) {
     return (
-      <Box maxW="600px" mx="auto" textAlign="center" py={10}>
-        <Spinner size="xl" />
-        <Text mt={4}>Loading profile...</Text>
+      <Box sx={{ maxWidth: '600px', mx: 'auto', textAlign: 'center', py: 5 }}>
+        <CircularProgress />
+        <Typography sx={{ mt: 2 }}>Loading profile...</Typography>
       </Box>
     )
   }
 
   return (
-    <Box maxW="900px" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
-      <Button variant="ghost" mb={4} onClick={() => navigate('/')}>
-         <FaArrowLeft style={{ marginRight: '8px' }} />
+    <Paper sx={{ maxWidth: '900px', mx: 'auto', bgcolor: 'rgba(255, 255, 255, 0.85)', p: 3, borderRadius: 2, boxShadow: 3 }}>
+      <Button variant="text" sx={{ mb: 2 }} onClick={() => navigate('/')} startIcon={<FaArrowLeft />}>
          Back
        </Button>
 
-      <Heading size="lg" mb={6} color="gray.800" _dark={{ color: 'white' }}>
+      <Typography variant="h5" mb={3} color="text.primary">
         Profile Settings
-      </Heading>
+      </Typography>
 
       {error && (
-        <Alert.Root status="error" mb={4}>
-          <Alert.Indicator />
-          <Alert.Title>{error.error}</Alert.Title>
-          <Alert.Description>{error.message}</Alert.Description>
-        </Alert.Root>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          <Typography variant="subtitle2" component="div">{error.error}</Typography>
+          <Typography variant="body2">{error.message}</Typography>
+        </Alert>
       )}
 
-      <SimpleGrid columns={{ base: 1, md: 2 }} gap={4} mb={6}>
-        <Card.Root>
-          <Card.Body>
-            <Heading size="md" mb={4}>
-              Edit Profile
-            </Heading>
+      <Grid container spacing={2} mb={3}>
+        <Grid item xs={12} md={6}>
+          <Card elevation={2}>
+            <CardContent>
+              <Typography variant="h6" mb={2}>
+                Edit Profile
+              </Typography>
 
-            <Box as="form" onSubmit={handleSubmit}>
-              <VStack gap={4}>
-                <Box>
-                  <Text as="label" display="block" fontWeight="medium" mb={2}>Username</Text>
-                  <Input name="username" value={formData.username} onChange={handleChange} />
-                </Box>
+              <Box component="form" onSubmit={handleSubmit}>
+                <Stack spacing={2}>
+                  <Box>
+                    <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Username</Typography>
+                    <TextField name="username" value={formData.username} onChange={handleChange} fullWidth size="small" />
+                  </Box>
 
-                <Box>
-                  <Text as="label" display="block" fontWeight="medium" mb={2}>Surname (Apellido)</Text>
-                  <Input name="surname" value={formData.surname} onChange={handleChange} placeholder="Your surname" />
-                </Box>
+                  <Box>
+                    <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Surname (Apellido)</Typography>
+                    <TextField name="surname" value={formData.surname} onChange={handleChange} placeholder="Your surname" fullWidth size="small" />
+                  </Box>
 
-                <Box>
-                  <Text as="label" display="block" fontWeight="medium" mb={2}>Email</Text>
-                  <Input name="email" type="email" value={formData.email} onChange={handleChange} />
-                </Box>
+                  <Box>
+                    <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Email</Typography>
+                    <TextField name="email" type="email" value={formData.email} onChange={handleChange} fullWidth size="small" />
+                  </Box>
 
-                <Box>
-                  <Text as="label" display="block" fontWeight="medium" mb={2}>Phone Number</Text>
-                  <Input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} placeholder="+34 600 000 000" />
-                  <Text fontSize="sm" color="gray.600" mt={1}>Format: optional + followed by 7-20 digits/symbols (e.g., +34600123456)</Text>
-                </Box>
+                  <Box>
+                    <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Phone Number</Typography>
+                    <TextField name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} placeholder="+34 600 000 000" fullWidth size="small" />
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>Format: optional + followed by 7-20 digits/symbols (e.g., +34600123456)</Typography>
+                  </Box>
 
-                <Box>
-                  <Text as="label" display="block" fontWeight="medium" mb={2}>Telegram Chat ID</Text>
-                  <Input name="telegramChatId" value={formData.telegramChatId} onChange={handleChange} placeholder="Optional" />
-                  <Text fontSize="sm" color="gray.600" mt={1}>Get your Chat ID from @userinfobot on Telegram</Text>
-                </Box>
-              </VStack>
-            </Box>
-          </Card.Body>
-        </Card.Root>
+                  <Box>
+                    <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Telegram Chat ID</Typography>
+                    <TextField name="telegramChatId" value={formData.telegramChatId} onChange={handleChange} placeholder="Optional" fullWidth size="small" />
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>Get your Chat ID from @userinfobot on Telegram</Typography>
+                  </Box>
+                </Stack>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
 
-        <Card.Root>
-          <Card.Body>
-            <Heading size="md" mb={4}>
-              Notifications
-            </Heading>
-            <Stack gap={4}>
-               <Flex justify="space-between" align="center">
+        <Grid item xs={12} md={6}>
+          <Card elevation={2}>
+            <CardContent>
+              <Typography variant="h6" mb={2}>
+                Notifications
+              </Typography>
+              <Stack spacing={2}>
+               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                  <Box>
-                   <Text fontWeight="medium">Email Notifications</Text>
-                   <Text fontSize="sm" color="gray.700">
+                   <Typography fontWeight="medium">Email Notifications</Typography>
+                   <Typography variant="body2" color="text.secondary">
                      Receive alerts via email
-                   </Text>
+                   </Typography>
                  </Box>
-                 <Switch.Root name="emailNotificationsEnabled" checked={formData.emailNotificationsEnabled} onChange={handleSwitchChange} colorPalette="success">
-                   <Switch.HiddenInput />
-                   <Switch.Control>
-                     <Switch.Thumb />
-                   </Switch.Control>
-                 </Switch.Root>
-               </Flex>
-               <Flex justify="space-between" align="center">
+                 <FormControlLabel
+                   control={
+                     <Switch
+                       name="emailNotificationsEnabled"
+                       checked={formData.emailNotificationsEnabled}
+                       onChange={handleSwitchChange}
+                       color="success"
+                     />
+                   }
+                   label=""
+                 />
+               </Box>
+               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                  <Box>
-                   <Text fontWeight="medium">Telegram Notifications</Text>
-                   <Text fontSize="sm" color="gray.700">
+                   <Typography fontWeight="medium">Telegram Notifications</Typography>
+                   <Typography variant="body2" color="text.secondary">
                      Receive alerts via Telegram
-                   </Text>
+                   </Typography>
                  </Box>
-                 <Switch.Root name="telegramNotificationsEnabled" checked={formData.telegramNotificationsEnabled} onChange={handleSwitchChange} colorPalette="success">
-                   <Switch.HiddenInput />
-                   <Switch.Control>
-                     <Switch.Thumb />
-                   </Switch.Control>
-                 </Switch.Root>
-               </Flex>
+                 <FormControlLabel
+                   control={
+                     <Switch
+                       name="telegramNotificationsEnabled"
+                       checked={formData.telegramNotificationsEnabled}
+                       onChange={handleSwitchChange}
+                       color="success"
+                     />
+                   }
+                   label=""
+                 />
+               </Box>
             </Stack>
-          </Card.Body>
-        </Card.Root>
-      </SimpleGrid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       <Button 
         type="submit" 
-        colorPalette="brand" 
-        bg="brand.500"
-        _hover={{ bg: 'brand.600' }}
-        w="full" 
-        loading={isLoading}
+        variant="contained" 
+        color="primary"
+        fullWidth 
+        disabled={isLoading}
         onClick={handleSubmit}
+        startIcon={<GiSave />}
       >
-        <GiSave style={{ marginRight: '8px' }} />
         Save Changes
       </Button>
-    </Box>
+    </Paper>
   )
 }

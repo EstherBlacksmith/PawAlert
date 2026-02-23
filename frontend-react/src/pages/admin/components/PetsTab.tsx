@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import {
   Box,
-  Button,
+  CircularProgress,
   Table,
-  Thead,
-  Tr,
-  Th,
-  Td,
-  Spinner,
-  HStack,
-} from '@chakra-ui/react'
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  Stack,
+  Paper
+} from '@mui/material'
 import { useToast } from '../../../context/ToastContext'
 import { PetService } from '../../../services/pet.service'
 import { Pet } from '../../../types'
@@ -43,43 +45,43 @@ const PetsTab: React.FC = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minH="400px">
-        <Spinner />
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress />
       </Box>
     )
   }
 
   return (
-    <Box overflowX="auto">
+    <TableContainer component={Paper}>
       <Table>
-        <Thead>
-          <Tr>
-            <Th>ID</Th>
-            <Th>Name</Th>
-            <Th>Type</Th>
-            <Th>Owner</Th>
-            <Th>Actions</Th>
-          </Tr>
-        </Thead>
-        <tbody>
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Type</TableCell>
+            <TableCell>Owner</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {pets.map((pet) => (
-            <tr key={pet.id}>
-              <td>{pet.id}</td>
-              <td>{pet.name}</td>
-              <td>{pet.type}</td>
-              <td>{pet.owner?.name || 'N/A'}</td>
-              <td>
-                <HStack spacing={2}>
-                  <Button size="sm" colorScheme="blue">
+            <TableRow key={pet.id}>
+              <TableCell>{pet.id}</TableCell>
+              <TableCell>{pet.name}</TableCell>
+              <TableCell>{pet.type}</TableCell>
+              <TableCell>{pet.owner?.name || 'N/A'}</TableCell>
+              <TableCell>
+                <Stack direction="row" spacing={1}>
+                  <Button size="small" variant="contained" color="primary">
                     View
                   </Button>
-                </HStack>
-              </td>
-            </tr>
+                </Stack>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
+        </TableBody>
       </Table>
-    </Box>
+    </TableContainer>
   )
 }
 

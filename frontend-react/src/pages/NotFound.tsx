@@ -1,36 +1,49 @@
-import { Box, Heading, Text, Button, VStack } from '@chakra-ui/react'
+import { Box, Typography, Button, Stack } from '@mui/material'
 import { Link } from 'react-router-dom'
 
 export default function NotFound() {
   return (
     <Box
-      minH="100vh"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      bg="gray.50"
-      p={4}
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'grey.50',
+        p: 2
+      }}
     >
-      <VStack gap={6} textAlign="center">
-        <Text fontSize="8xl" fontWeight="bold" color="purple.500">
+      <Stack spacing={3} textAlign="center" alignItems="center">
+        <Typography
+          variant="h1"
+          sx={{
+            fontSize: '8rem',
+            fontWeight: 'bold',
+            color: 'primary.main'
+          }}
+        >
           404
-        </Text>
-        <Heading size="xl" color="gray.800">
+        </Typography>
+        <Typography variant="h3" color="text.primary">
           Page Not Found
-        </Heading>
-        <Text color="gray.500" fontSize="lg" maxW="400px">
+        </Typography>
+        <Typography
+          color="text.secondary"
+          sx={{ fontSize: '1.125rem', maxWidth: '400px' }}
+        >
           The page you're looking for doesn't exist or has been moved.
-        </Text>
-        <Link to="/dashboard">
-          <Button
-            colorPalette="brand"
-            size="lg"
-            mt={4}
-          >
-            Go to Dashboard
-          </Button>
-        </Link>
-      </VStack>
+        </Typography>
+        <Button
+          component={Link}
+          to="/dashboard"
+          variant="contained"
+          color="primary"
+          size="large"
+          sx={{ mt: 2 }}
+        >
+          Go to Dashboard
+        </Button>
+      </Stack>
     </Box>
   )
 }

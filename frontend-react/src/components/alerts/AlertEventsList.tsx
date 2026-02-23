@@ -1,5 +1,5 @@
-import { Box, VStack, HStack, Text, Badge, Spinner, Card } from '@chakra-ui/react'
-import { GiMapMarker, GiCalendar, GiInfo, GiCheck, GiEdit } from '../icons'
+import { Box, Typography, Chip, CircularProgress, Card, CardContent, Stack } from '@mui/material'
+import { GiMapMarker, GiCalendar } from '../icons'
 import type { AlertEvent } from '../../types'
 
 interface AlertEventsListProps {
@@ -22,30 +22,16 @@ const getEventTypeDisplay = (eventType: string): string => {
 }
 
 // Helper to get event color based on type
-const getEventColor = (eventType: string): string => {
+const getEventColor = (eventType: string): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
   switch (eventType) {
     case 'STATUS_CHANGED':
-      return 'accent'
+      return 'info'
     case 'TITLE_CHANGED':
-      return 'brand'
+      return 'primary'
     case 'DESCRIPTION_CHANGED':
-      return 'orange'
+      return 'warning'
     default:
-      return 'gray'
-  }
-}
-
-// Helper to get hex color for timeline dot based on event type
-const getEventHexColor = (eventType: string): string => {
-  switch (eventType) {
-    case 'STATUS_CHANGED':
-      return '#4091d7' // accent blue
-    case 'TITLE_CHANGED':
-      return '#7c3aed' // brand purple
-    case 'DESCRIPTION_CHANGED':
-      return '#f97316' // orange
-    default:
-      return '#9ca3af' // gray
+      return 'default'
   }
 }
 
@@ -110,23 +96,23 @@ const formatDate = (dateString: string): string => {
 export function AlertEventsList({ events, isLoading }: AlertEventsListProps) {
   if (isLoading) {
     return (
-      <Box textAlign="center" py={8}>
-        <Spinner size="lg" color="purple.500" />
-        <Text mt={4} color="gray.500">Loading events...</Text>
+      <Box textAlign="center" py={4}>
+        <CircularProgress />
+        <Typography color="text.secondary" sx={{ mt: 2 }}>Loading events...</Typography>
       </Box>
     )
   }
 
   if (!events || events.length === 0) {
     return (
-      <Card.Root>
-        <Card.Body>
-          <Box textAlign="center" py={6}>
-            <GiCalendar size={32} color="gray.400" style={{ margin: '0 auto 12px' }} />
-            <Text color="gray.500">No events recorded for this alert yet.</Text>
+      <Card>
+        <CardContent>
+          <Box textAlign="center" py={3}>
+            <GiCalendar size={32} style={{ margin: '0 auto 12px', color: '#9ca3af' }} />
+            <Typography color="text.secondary">No events recorded for this alert yet.</Typography>
           </Box>
-        </Card.Body>
-      </Card.Root>
+        </CardContent>
+      </Card>
     )
   }
 
@@ -136,91 +122,96 @@ export function AlertEventsList({ events, isLoading }: AlertEventsListProps) {
   )
 
   return (
-    <Card.Root>
-      <Card.Body>
-        <Text fontWeight="bold" mb={4} fontSize="lg" color="gray.700">
+    <Card>
+      <CardContent>
+        <Typography fontWeight="bold" variant="h6" color="text.primary" sx={{ mb: 2 }}>
           Alert History
-        </Text>
-        <VStack align="stretch" gap={0}>
+        </Typography>
+        <Stack spacing={0}>
           {sortedEvents.map((event, index) => (
             <Box key={event.id} position="relative">
               {/* Timeline connector line */}
               {index < sortedEvents.length - 1 && (
                 <Box
-                  position="absolute"
-                  left="15px"
-                  top="40px"
-                  bottom="-20px"
-                  width="2px"
-                  bg="gray.200"
-                  zIndex={0}
+                  sx={{
+                    position: 'absolute',
+                    left: '15px',
+                    top: '40px',
+                    bottom: '-20px',
+                    width: '2px',
+                    bgcolor: 'divider',
+                    zIndex: 0,
+                  }}
                 />
               )}
               
-              <HStack align="start" gap={4} py={3}>
+              <Stack direction="row" alignItems="flex-start" spacing={2} py={1.5}>
                 {/* Timeline dot */}
                 <Box
-                  minW="32px"
-                  h="32px"
-                  borderRadius="full"
-                  bg={event.eventType === 'STATUS_CHANGED' ? getStatusPastelColor(event.newStatus) : `${getEventColor(event.eventType)}.100`}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  zIndex={1}
+                  sx={{
+                    minWidth: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    bgcolor: event.eventType === 'STATUS_CHANGED' ? getStatusPastelColor(event.newStatus) : 'action.hover',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1,
+                  }}
                 >
-                  <GiCalendar size={14} color="gray.400" />
+                  <GiCalendar size={14} style={{ color: '#9ca3af' }} />
                 </Box>
                 
                 <Box flex={1}>
-                  <HStack justify="space-between" align="start" mb={1}>
-                    <Badge
-                      colorPalette={event.eventType === 'STATUS_CHANGED' ? 'gray' : getEventColor(event.eventType)}
-                      bg={event.eventType === 'STATUS_CHANGED' ? getStatusPastelColor(event.newStatus) : undefined}
-                      color={event.eventType === 'STATUS_CHANGED' ? '#6b7280' : undefined}
-                      fontSize="sm"
-                    >
-                      {getEventTypeDisplay(event.eventType)}
-                    </Badge>
-                    <Text fontSize="xs" color="gray.500">
+                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
+                    <Chip
+                      label={getEventTypeDisplay(event.eventType)}
+                      color={getEventColor(event.eventType)}
+                      size="small"
+                      sx={{
+                        bgcolor: event.eventType === 'STATUS_CHANGED' ? getStatusPastelColor(event.newStatus) : undefined,
+                        color: event.eventType === 'STATUS_CHANGED' ? '#6b7280' : undefined,
+                      }}
+                    />
+                    <Typography variant="caption" color="text.secondary">
                       {formatDate(event.changedAt)}
-                    </Text>
-                  </HStack>
+                    </Typography>
+                  </Stack>
                   
                   {/* Status change */}
                   {event.eventType === 'STATUS_CHANGED' && (
-                    <Text fontSize="sm" color="gray.700" fontWeight="medium">
+                    <Typography variant="body2" color="text.primary" fontWeight="medium">
                       {formatStatusChange(event)}
                       {event.closureReason && (
-                        <Text as="span" color="gray.500" fontStyle="italic">
+                        <Typography component="span" variant="body2" color="text.secondary" fontStyle="italic">
                           {' '}(Reason: {event.closureReason})
-                        </Text>
+                        </Typography>
                       )}
-                    </Text>
+                    </Typography>
                   )}
                   
                   {/* Value change */}
                   {formatValueChange(event) && (
-                    <Text fontSize="sm" color="gray.600">
+                    <Typography variant="body2" color="text.secondary">
                       {formatValueChange(event)}
-                    </Text>
+                    </Typography>
                   )}
                   
                   {/* Location */}
                   {event.latitude != null && event.longitude != null && (
-                    <HStack mt={2} gap={1} color="gray.500" fontSize="xs">
+                    <Stack direction="row" spacing={0.5} alignItems="center" mt={1} color="text.secondary">
                       <GiMapMarker size={10} />
-                      <Text>
+                      <Typography variant="caption">
                         {event.latitude.toFixed(6)}, {event.longitude.toFixed(6)}
-                      </Text>
-                    </HStack>
+                      </Typography>
+                    </Stack>
                   )}
                 </Box>
-              </HStack>
+              </Stack>
             </Box>
           ))}
-        </VStack>
-      </Card.Body>
-    </Card.Root>
+        </Stack>
+      </CardContent>
+    </Card>
   )
 }

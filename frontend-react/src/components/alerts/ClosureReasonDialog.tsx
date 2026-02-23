@@ -1,13 +1,15 @@
 import {
-  Box,
-  Button,
   Dialog,
-  Flex,
-  Heading,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
   RadioGroup,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
+  FormControlLabel,
+  Radio,
+  Box,
+} from '@mui/material'
 import { useState } from 'react'
 
 export type ClosureReason = 'FOUNDED' | 'FALSE_ALARM' | 'OTHER_REASON'
@@ -46,68 +48,57 @@ export function ClosureReasonDialog({
   }
 
   return (
-    <Dialog.Root open={open} onOpenChange={(details) => onOpenChange(details.open)}>
-      <Dialog.Backdrop />
-      <Dialog.Positioner>
-        <Dialog.Content>
-          <Dialog.Header>
-            <Heading size="md">Close Alert</Heading>
-          </Dialog.Header>
-          <Dialog.Body>
-          <Text mb={4} color="gray.600">
-            Please select a reason for closing this alert:
-          </Text>
-          <VStack align="stretch" gap={3}>
-            <RadioGroup.Root
-              value={selectedReason || ''}
-              onValueChange={(e) => setSelectedReason(e.value as ClosureReason)}
-            >
-              <VStack align="stretch" gap={2}>
-                {(Object.keys(closureReasonLabels) as ClosureReason[]).map((reason) => (
-                  <Box
-                    key={reason}
-                    p={3}
-                    borderWidth="1px"
-                    borderRadius="md"
-                    cursor="pointer"
-                    onClick={() => setSelectedReason(reason)}
-                    bg={selectedReason === reason ? 'purple.50' : undefined}
-                    borderColor={selectedReason === reason ? 'purple.500' : undefined}
-                    _dark={{
-                      bg: selectedReason === reason ? 'purple.900' : undefined,
-                      borderColor: selectedReason === reason ? 'purple.300' : undefined,
-                    }}
-                  >
-                    <RadioGroup.Item value={reason}>
-                      <RadioGroup.ItemHiddenInput />
-                      <RadioGroup.ItemIndicator />
-                      <RadioGroup.ItemText fontWeight="medium">
-                        {closureReasonLabels[reason]}
-                      </RadioGroup.ItemText>
-                    </RadioGroup.Item>
-                  </Box>
-                ))}
-              </VStack>
-            </RadioGroup.Root>
-          </VStack>
-        </Dialog.Body>
-        <Dialog.Footer>
-          <Flex gap={2} justify="flex-end">
-            <Button variant="outline" onClick={handleClose} disabled={isLoading}>
-              Cancel
-            </Button>
-            <Button
-              colorPalette="green"
-              onClick={handleConfirm}
-              disabled={!selectedReason || isLoading}
-              loading={isLoading}
-            >
-              Confirm Close
-            </Button>
-          </Flex>
-        </Dialog.Footer>
-        </Dialog.Content>
-      </Dialog.Positioner>
-    </Dialog.Root>
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>Close Alert</DialogTitle>
+      <DialogContent>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          Please select a reason for closing this alert:
+        </Typography>
+        <RadioGroup
+          value={selectedReason || ''}
+          onChange={(e) => setSelectedReason(e.target.value as ClosureReason)}
+        >
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {(Object.keys(closureReasonLabels) as ClosureReason[]).map((reason) => (
+              <Box
+                key={reason}
+                sx={{
+                  p: 1.5,
+                  border: '1px solid',
+                  borderColor: selectedReason === reason ? 'primary.main' : 'divider',
+                  borderRadius: 1,
+                  cursor: 'pointer',
+                  bgcolor: selectedReason === reason ? 'primary.50' : 'transparent',
+                  '&:hover': {
+                    bgcolor: 'action.hover',
+                  },
+                }}
+                onClick={() => setSelectedReason(reason)}
+              >
+                <FormControlLabel
+                  value={reason}
+                  control={<Radio />}
+                  label={closureReasonLabels[reason]}
+                  sx={{ m: 0 }}
+                />
+              </Box>
+            ))}
+          </Box>
+        </RadioGroup>
+      </DialogContent>
+      <DialogActions>
+        <Button variant="outlined" onClick={handleClose} disabled={isLoading}>
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={handleConfirm}
+          disabled={!selectedReason || isLoading}
+        >
+          Confirm Close
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }

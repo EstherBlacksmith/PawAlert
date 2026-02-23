@@ -1,112 +1,140 @@
-import { Box, Flex, Text, IconButton, Avatar, Menu, Portal, Button } from '@chakra-ui/react'
-import { FaPaw, FaBell, FaUser, FaSignOutAlt } from 'react-icons/fa'
+import { Box, AppBar, Toolbar, Typography, IconButton, Avatar, Menu, MenuItem, Divider } from '@mui/material'
+import { FaBell, FaUser, FaSignOutAlt } from 'react-icons/fa'
 import { useAuth } from '../../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 
 export default function Header() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   const handleLogout = () => {
     logout()
     navigate('/login')
+    setAnchorEl(null)
   }
 
-  const { isAdmin } = useAuth()
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleMenuClose = () => {
+    setAnchorEl(null)
+  }
 
   return (
-    <Box
-      as="header"
-      bg={isAdmin() ? 'rgba(255, 255, 255, 0.95)' : 'white'}
-      _dark={{ bg: isAdmin() ? 'rgba(31, 41, 55, 0.95)' : 'gray.800', borderColor: 'gray.700' }}
-      borderBottom="1px solid"
-      borderColor={isAdmin() ? 'gray.300' : 'gray.200'}
-      px={6}
-      py={3}
-      position="sticky"
-      top={0}
-      zIndex={10}
-      boxShadow={isAdmin() ? 'md' : 'none'}
+    <AppBar
+      position="static"
+      elevation={1}
+      sx={{
+        bgcolor: 'rgba(255, 255, 255, 0.85)',
+        borderBottom: '1px solid',
+        borderColor: 'grey.200',
+      }}
     >
-      <Flex justify="space-between" align="center">
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
         {/* Left side - Logo/Brand */}
-        <Flex align="center" gap={3}>
-          <Text
-            fontSize="xl"
-            fontWeight="bold"
-            color="brand.500"
-            cursor="pointer"
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              cursor: 'pointer',
+              color: 'primary.main',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              '&:hover': {
+                color: 'primary.dark',
+                transform: 'scale(1.02)',
+              },
+              transition: 'all 0.2s',
+            }}
             onClick={() => navigate('/dashboard')}
-            _hover={{ color: 'brand.600', transform: 'scale(1.02)' }}
-            transition="all 0.2s"
           >
-            <FaPaw style={{ marginRight: '8px', verticalAlign: 'middle', color: 'brand.500' }} />
+            <img 
+              src="/labrador-head.png" 
+              alt="PawAlert Logo" 
+              style={{ width: 28, height: 28 }}
+            />
             PawAlert
-          </Text>
-        </Flex>
+          </Typography>
+        </Box>
 
         {/* Right side - User menu */}
-         <Flex align="center" gap={4}>
-            <IconButton
-              aria-label="Notifications"
-              variant="ghost"
-              borderRadius="full"
-              color={isAdmin() ? 'gray.700' : 'gray.600'}
-              _hover={{ bg: isAdmin() ? 'gray.100' : 'brand.50', color: isAdmin() ? 'gray.900' : 'brand.500' }}
-              transition="all 0.2s"
-              onClick={() => navigate('/subscriptions')}
-              cursor="pointer"
-            >
-              <FaBell />
-            </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <IconButton
+            aria-label="notifications"
+            onClick={() => navigate('/subscriptions')}
+            sx={{
+              color: 'grey.600',
+              '&:hover': {
+                bgcolor: 'primary.50',
+                color: 'primary.main',
+              },
+            }}
+          >
+            <FaBell />
+          </IconButton>
 
-           <Menu.Root>
-             <Menu.Trigger asChild>
-               <Button
-                 variant="ghost"
-                 borderRadius="full"
-                 px={2}
-                 color={isAdmin() ? 'gray.700' : 'inherit'}
-                 _hover={{ bg: isAdmin() ? 'gray.100' : 'brand.50' }}
-               >
-                 <Flex align="center" gap={2}>
-                   <Avatar.Root size="sm">
-                     <Avatar.Fallback name={user?.username || 'User'} />
-                   </Avatar.Root>
-                   <Text display={{ base: 'none', md: 'block' }} fontSize="sm" color={isAdmin() ? 'gray.700' : 'inherit'}>
-                     {user?.username || 'User'}
-                   </Text>
-                 </Flex>
-               </Button>
-             </Menu.Trigger>
-             <Portal>
-               <Menu.Positioner>
-                 <Menu.Content bg={isAdmin() ? 'white' : undefined} _dark={{ bg: isAdmin() ? 'gray.800' : undefined }}>
-                   <Menu.Item
-                     value="profile"
-                     onClick={() => navigate('/profile')}
-                     _hover={{ bg: isAdmin() ? 'gray.100' : 'brand.50' }}
-                     color={isAdmin() ? 'gray.700' : 'inherit'}
-                   >
-                     <FaUser style={{ marginRight: '8px', color: isAdmin() ? 'gray.600' : 'gray.600' }} />
-                     Profile
-                   </Menu.Item>
-                   <Menu.Separator />
-                   <Menu.Item
-                     value="logout"
-                     onClick={handleLogout}
-                     color={isAdmin() ? 'red.600' : 'red.500'}
-                     _hover={{ bg: isAdmin() ? 'red.100' : 'red.50' }}
-                   >
-                     <FaSignOutAlt style={{ marginRight: '8px' }} />
-                     Logout
-                   </Menu.Item>
-                 </Menu.Content>
-               </Menu.Positioner>
-             </Portal>
-           </Menu.Root>
-         </Flex>
-      </Flex>
-    </Box>
+          <IconButton
+            onClick={handleMenuOpen}
+            sx={{
+              borderRadius: '50%',
+              px: 1,
+              color: 'grey.700',
+              '&:hover': {
+                bgcolor: 'primary.50',
+              },
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main', fontSize: '0.875rem' }}>
+                {user?.username?.charAt(0).toUpperCase() || 'U'}
+              </Avatar>
+              <Typography
+                variant="body2"
+                sx={{ display: { xs: 'none', md: 'block' }, color: 'grey.700' }}
+              >
+                {user?.username || 'User'}
+              </Typography>
+            </Box>
+          </IconButton>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                navigate('/profile')
+                handleMenuClose()
+              }}
+              sx={{ color: 'grey.700' }}
+            >
+              <FaUser style={{ marginRight: 8, color: 'grey.600' }} />
+              Profile
+            </MenuItem>
+            <Divider />
+            <MenuItem
+              onClick={handleLogout}
+              sx={{ color: 'error.main' }}
+            >
+              <FaSignOutAlt style={{ marginRight: 8 }} />
+              Logout
+            </MenuItem>
+          </Menu>
+        </Box>
+      </Toolbar>
+    </AppBar>
   )
 }

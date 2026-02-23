@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, Heading, Button, VStack, Text, Flex, Spinner, Badge, HStack, Card, Alert, Tabs } from '@chakra-ui/react'
+import { Box, Typography, Button, Stack, CircularProgress, Chip, Card, CardContent, Alert as MuiAlert, Tabs, Tab, Paper, Divider } from '@mui/material'
 import { useParams, useNavigate } from 'react-router-dom'
 import { FaArrowLeft, FaMapMarkerAlt, FaEdit, FaTrash, FaCalendar, FaDirections } from 'react-icons/fa'
 
@@ -43,6 +43,7 @@ export default function AlertDetail() {
   }>({ isOpen: false, status: null })
   const [userName, setUserName] = useState<string>('Unknown')
   const [workingPetName, setWorkingPetName] = useState<string>('Unknown')
+  const [tabValue, setTabValue] = useState(0)
 
   // Authorization check: admin or alert owner can modify
   const canModify = user && (isAdmin() || alert?.userId === user.userId)
@@ -248,17 +249,17 @@ export default function AlertDetail() {
 
   if (isLoading) {
     return (
-      <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="purple.500" />
-      </Flex>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+        <CircularProgress color="primary" />
+      </Box>
     )
   }
 
   if (!alert) {
     return (
-      <Box textAlign="center" py={10}>
-        <Text color="gray.500">Alert not found</Text>
-        <Button mt={4} colorScheme="purple" variant="outline" onClick={() => navigate('/alerts')}>
+      <Box sx={{ textAlign: 'center', py: 5 }}>
+        <Typography color="text.secondary">Alert not found</Typography>
+        <Button sx={{ mt: 2 }} variant="outlined" color="primary" onClick={() => navigate('/alerts')}>
           Back to Alerts
         </Button>
       </Box>
@@ -266,138 +267,134 @@ export default function AlertDetail() {
   }
 
   return (
-    <Box maxW="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
-      <Button variant="ghost" mb={4} onClick={() => navigate('/alerts')}>
-        <FaArrowLeft style={{ marginRight: '8px' }} />
+    <Paper sx={{ maxWidth: '100%', mx: 'auto', bgcolor: 'rgba(255, 255, 255, 0.85)', p: 3, borderRadius: 2, boxShadow: 3 }}>
+      <Button variant="text" sx={{ mb: 2 }} onClick={() => navigate('/alerts')} startIcon={<FaArrowLeft />}>
         Back to Alerts
       </Button>
 
       {error && (
-        <Alert.Root status="error" mb={6} borderRadius="md">
-          <Alert.Indicator />
-          <Box flex="1">
-            <Alert.Title fontSize="sm" fontWeight="bold">
-              {error.error || 'Error'}
-            </Alert.Title>
-            <Alert.Description fontSize="sm">
-              {error.message}
-            </Alert.Description>
-          </Box>
-        </Alert.Root>
+        <MuiAlert severity="error" sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" component="div">{error.error || 'Error'}</Typography>
+          <Typography variant="body2">{error.message}</Typography>
+        </MuiAlert>
       )}
 
-      <Flex gap={6} direction={{ base: 'column', lg: 'row' }}>
+      <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', lg: 'row' } }}>
         {/* Left Column - Alert Details */}
-        <Box flex={{ base: '1', lg: '0 0 45%' }} minW="0">
-          <Card.Root>
-            <Card.Body>
-               <Flex justify="space-between" align="start" mb={4}>
+        <Box sx={{ flex: { xs: '1', lg: '0 0 45%' }, minWidth: 0 }}>
+          <Card elevation={2}>
+            <CardContent>
+               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                   <Box>
-                     <Heading size="lg" color="gray.800" _dark={{ color: 'white' }}>
+                     <Typography variant="h5" color="text.primary">
                        {alert.title}
-                     </Heading>
-                     <Text color="gray.600" mt={1} fontSize="sm">
-                       Created by: <Text as="span" fontWeight="600">{userName}</Text>
-                     </Text>
-                     <Text color="gray.600" fontSize="sm">
-                       Pet: <Text as="span" fontWeight="600">{workingPetName}</Text>
-                     </Text>
+                     </Typography>
+                     <Typography color="text.secondary" sx={{ mt: 0.5, fontSize: '0.875rem' }}>
+                        Created by: <Box component="span" fontWeight={600}>{userName}</Box>
+                      </Typography>
+                      <Typography color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                        Pet: <Box component="span" fontWeight={600} sx={{ cursor: 'pointer', '&:hover': { color: 'primary.main', textDecoration: 'underline' } }} onClick={() => navigate(`/pets/${alert.petId}`)}>{workingPetName}</Box>
+                      </Typography>
                   </Box>
-                 <Badge colorPalette={statusColors[alert.status]} fontSize="md" px={3} py={1}>
-                   {alert.status}
-                 </Badge>
-               </Flex>
+                 <Chip 
+                   label={alert.status}
+                   sx={{ 
+                     bgcolor: statusColors[alert.status],
+                     color: 'white',
+                     fontWeight: 'bold'
+                   }}
+                 />
+               </Box>
 
-              <VStack align="stretch" gap={4}>
+              <Stack spacing={2}>
                 <Box>
-                  <Text fontWeight="bold" mb={1} color="gray.600">
+                  <Typography fontWeight="bold" mb={0.5} color="text.secondary">
                     Description
-                  </Text>
-                  <Text>{alert.description}</Text>
+                  </Typography>
+                  <Typography>{alert.description}</Typography>
                 </Box>
 
                 <Box>
-                  <Text fontWeight="bold" mb={1} color="gray.600">
+                  <Typography fontWeight="bold" mb={0.5} color="text.secondary">
                     Location
-                  </Text>
-                  <HStack color="gray.500">
+                  </Typography>
+                  <Stack direction="row" spacing={1} color="text.secondary">
                     <FaMapMarkerAlt />
-                    <Text>
+                    <Typography>
                       {alert.latitude != null ? alert.latitude.toFixed(6) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(6) : 'N/A'}
-                    </Text>
-                  </HStack>
+                    </Typography>
+                  </Stack>
                 </Box>
 
                 {alert.closureReason && (
                   <Box>
-                    <Text fontWeight="bold" mb={1} color="gray.600">
+                    <Typography fontWeight="bold" mb={0.5} color="text.secondary">
                       Closure Reason
-                    </Text>
-                    <Text>{alert.closureReason}</Text>
+                    </Typography>
+                    <Typography>{alert.closureReason}</Typography>
                   </Box>
                 )}
 
                 {/* Edit/Delete Buttons - Only visible to authorized users */}
                 {canModify && (
-                  <Box pt={2} pb={2} borderTop="1px" borderColor="gray.200">
-                    <HStack gap={2}>
+                  <Box sx={{ pt: 1, pb: 1, borderTop: '1px solid', borderColor: 'divider' }}>
+                    <Stack direction="row" spacing={1}>
                       {canEdit && (
                         <Button
-                          size="sm"
-                          colorPalette="blue"
-                          bg="#4682B4"
+                          size="small"
+                          variant="contained"
+                          sx={{ bgcolor: '#4682B4', '&:hover': { bgcolor: '#3a6d96' } }}
                           onClick={() => navigate(`/alerts/${id}/edit`)}
+                          startIcon={<FaEdit />}
                         >
-                          <FaEdit style={{ marginRight: '4px' }} />
                           Edit Alert
                         </Button>
                       )}
                       <Button
-                        size="sm"
-                        colorPalette="red"
-                        bg="#DC143C"
+                        size="small"
+                        variant="contained"
+                        color="error"
                         onClick={handleDelete}
-                        loading={isDeleting}
+                        disabled={isDeleting}
+                        startIcon={<FaTrash />}
                       >
-                        <FaTrash style={{ marginRight: '4px' }} />
                         Delete Alert
                       </Button>
-                    </HStack>
+                    </Stack>
                     {isClosedAlert && !isAdmin() && canModify && (
-                      <Text fontSize="xs" color="gray.500" mt={2}>
+                      <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
                         Closed alerts can only be edited by administrators
-                      </Text>
+                      </Typography>
                     )}
                   </Box>
                 )}
 
-                <Box pt={4} borderTop="1px" borderColor="gray.200">
-                  <Text fontWeight="bold" mb={3} color="gray.600">
+                <Box sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+                  <Typography fontWeight="bold" mb={1.5} color="text.secondary">
                     Update Status
-                  </Text>
-                  <HStack gap={2} wrap="wrap">
+                  </Typography>
+                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                     {/* Mark as Seen - available for OPENED or SEEN status (any authenticated user) */}
                     <Button
-                      size="sm"
-                      colorPalette="yellow"
-                      bg="#fecf6d"
-                      color="gray.800"
+                      size="small"
+                      variant="contained"
+                      sx={{ bgcolor: '#fecf6d', color: 'text.primary', '&:hover': { bgcolor: '#e6b85c' } }}
                       onClick={() => handleOpenStatusDialog('SEEN')}
                       disabled={alert.status !== 'OPENED' && alert.status !== 'SEEN' || isUpdatingStatus}
                       title={alert.status === 'OPENED' || alert.status === 'SEEN' ? '' : 'Only available for OPENED or SEEN status'}
                     >
-                      {isUpdatingStatus ? <Spinner size="sm" /> : 'Mark as Seen'}
+                      {isUpdatingStatus ? <CircularProgress size={16} color="inherit" /> : 'Mark as Seen'}
                     </Button>
                     {/* Mark as Safe - available for OPENED or SEEN status (any authenticated user) */}
                     <Button
-                      size="sm"
-                      colorPalette="green"
-                      bg="#2d884d"
+                      size="small"
+                      variant="contained"
+                      sx={{ bgcolor: '#2d884d', color: 'white', '&:hover': { bgcolor: '#246b3e' } }}
                       onClick={() => handleOpenStatusDialog('SAFE')}
                       disabled={alert.status !== 'OPENED' && alert.status !== 'SEEN' || isUpdatingStatus}
                       title={alert.status === 'OPENED' || alert.status === 'SEEN' ? '' : 'Only available for OPENED or SEEN status'}
                     >
-                      {isUpdatingStatus ? <Spinner size="sm" /> : 'Mark as Safe'}
+                      {isUpdatingStatus ? <CircularProgress size={16} color="inherit" /> : 'Mark as Safe'}
                     </Button>
                     {/* Mark as Closed - available for OPENED, SEEN, or SAFE status (owner/admin only) */}
                     {(() => {
@@ -409,60 +406,55 @@ export default function AlertDetail() {
                           : ''
                       return (
                         <Button
-                          size="sm"
-                          colorPalette="blue"
-                          bg="#4091d7"
+                          size="small"
+                          variant="contained"
+                          sx={{ bgcolor: '#4091d7', color: 'white', '&:hover': { bgcolor: '#3578b3' } }}
                           onClick={() => setShowClosureDialog(true)}
                           disabled={!canModify || !canCloseStatus || isUpdatingStatus}
                           title={closeTitle}
                         >
-                          {isUpdatingStatus ? <Spinner size="sm" /> : 'Mark as Closed'}
+                          {isUpdatingStatus ? <CircularProgress size={16} color="inherit" /> : 'Mark as Closed'}
                         </Button>
                       )
                     })()}
-                  </HStack>
+                  </Stack>
                 </Box>
 
                 {/* Subscription Section - Always visible */}
-                <Box pt={4} borderTop="1px" borderColor="gray.200">
-                  <Text fontWeight="bold" mb={3} color="gray.600">
+                <Box sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+                  <Typography fontWeight="bold" mb={1.5} color="text.secondary">
                     Notifications
-                  </Text>
+                  </Typography>
                   <SubscribeButton
                     alertId={alert.id}
                     alertStatus={alert.status}
                     showStatus
                   />
                 </Box>
-              </VStack>
-            </Card.Body>
-          </Card.Root>
+              </Stack>
+            </CardContent>
+          </Card>
         </Box>
 
         {/* Right Column - Events Section */}
-        <Box flex={{ base: '1', lg: '0 0 55%' }} minW="0">
-          <Tabs.Root defaultValue="route" variant="line">
-            <Tabs.List bg="white" borderBottom="2px" borderColor="gray.200" mb={0} p={0}>
-              <Tabs.Trigger value="route" px={4} py={2} fontWeight="medium" color="gray.600">
-                <FaDirections style={{ marginRight: '8px' }} />
-                Route Map
-              </Tabs.Trigger>
-              <Tabs.Trigger value="history" px={4} py={2} fontWeight="medium" color="gray.600">
-                <FaCalendar style={{ marginRight: '8px' }} />
-                History
-              </Tabs.Trigger>
-            </Tabs.List>
+        <Box sx={{ flex: { xs: '1', lg: '0 0 55%' }, minWidth: 0 }}>
+          <Paper elevation={2}>
+            <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)}>
+              <Tab icon={<FaDirections />} iconPosition="start" label="Route Map" />
+              <Tab icon={<FaCalendar />} iconPosition="start" label="History" />
+            </Tabs>
 
-            <Tabs.Content value="route" p={0} mt={0}>
-              <AlertRouteMap events={events} />
-            </Tabs.Content>
-
-            <Tabs.Content value="history" p={0} mt={0}>
-              <AlertEventsList events={events} isLoading={isLoadingEvents} />
-            </Tabs.Content>
-          </Tabs.Root>
+            <Box sx={{ p: 0 }}>
+              {tabValue === 0 && (
+                <AlertRouteMap events={events} />
+              )}
+              {tabValue === 1 && (
+                <AlertEventsList events={events} isLoading={isLoadingEvents} />
+              )}
+            </Box>
+          </Paper>
         </Box>
-      </Flex>
+      </Box>
 
       <ClosureReasonDialog
         open={showClosureDialog}
@@ -482,6 +474,6 @@ export default function AlertDetail() {
         onDetectLocation={handleDetectLocation}
         isLoading={isUpdatingStatus}
       />
-    </Box>
+    </Paper>
   )
 }

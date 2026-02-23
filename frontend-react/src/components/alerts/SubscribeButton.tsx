@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Button, Spinner, HStack, Badge, Text } from '@chakra-ui/react'
+import { Button, CircularProgress, Stack, Chip } from '@mui/material'
 import { GiBell } from '../icons'
 import { alertService } from '../../services/alert.service'
 import { useAuth } from '../../context/AuthContext'
@@ -9,7 +9,7 @@ interface SubscribeButtonProps {
   alertId: string
   alertStatus: 'OPENED' | 'SEEN' | 'CLOSED' | 'SAFE'
   onSubscriptionChange?: (isSubscribed: boolean) => void
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'small' | 'medium' | 'large'
   showStatus?: boolean
 }
 
@@ -17,7 +17,7 @@ export function SubscribeButton({
   alertId,
   alertStatus,
   onSubscriptionChange,
-  size = 'sm',
+  size = 'small',
   showStatus = false
 }: SubscribeButtonProps) {
   const { user, isAuthenticated } = useAuth()
@@ -65,43 +65,24 @@ export function SubscribeButton({
     }
   }
 
-  const handleUnsubscribe = async () => {
-    if (!user) return
-
-    setIsLoading(true)
-    try {
-      await alertService.unsubscribeFromAlert(alertId)
-      setIsSubscribed(false)
-      onSubscriptionChange?.(false)
-      showSuccessToast('Unsubscribed', 'You will no longer receive notifications for this alert.')
-    } catch (error: unknown) {
-      console.error('Error unsubscribing:', error)
-      showErrorToast(error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   // Show disabled button for closed alerts
   if (alertStatus === 'CLOSED') {
     return (
-      <HStack gap={2}>
+      <Stack direction="row" spacing={1} alignItems="center">
         {showStatus && (
-          <Badge colorPalette="gray" variant="subtle">
-            Closed
-          </Badge>
+          <Chip label="Closed" size="small" color="default" variant="outlined" />
         )}
         <Button
           size={size}
-          colorPalette="gray"
-          variant="outline"
+          color="inherit"
+          variant="outlined"
           disabled
           title="Cannot subscribe to closed alerts"
+          startIcon={<GiBell />}
         >
-          <GiBell style={{ marginRight: '4px' }} />
           Subscribe
         </Button>
-      </HStack>
+      </Stack>
     )
   }
 
@@ -110,31 +91,31 @@ export function SubscribeButton({
     return (
       <Button
         size={size}
-        colorPalette="orange"
-        variant="outline"
+        color="warning"
+        variant="outlined"
         disabled
         title="Login to subscribe to alerts"
+        startIcon={<GiBell />}
       >
-        <GiBell style={{ marginRight: '4px' }} />
         Subscribe
       </Button>
     )
   }
 
   if (isCheckingSubscription) {
-    return <Spinner size="sm" color="purple.500" />
+    return <CircularProgress size={20} />
   }
 
    if (isSubscribed) {
      return (
        <Button
          size={size}
-         colorPalette="gray"
-         variant="outline"
+         color="inherit"
+         variant="outlined"
          disabled
          title="You are already subscribed to this alert"
+         startIcon={<GiBell />}
        >
-         <GiBell style={{ marginRight: '4px' }} />
          Subscribed
        </Button>
      )
@@ -143,13 +124,12 @@ export function SubscribeButton({
   return (
     <Button
       size={size}
-      colorPalette="orange"
-      variant="solid"
+      color="warning"
+      variant="contained"
       onClick={handleSubscribe}
-      loading={isLoading}
-      disabled={!canSubscribe}
+      disabled={!canSubscribe || isLoading}
+      startIcon={<GiBell />}
     >
-      <GiBell style={{ marginRight: '4px' }} />
       Subscribe
     </Button>
   )

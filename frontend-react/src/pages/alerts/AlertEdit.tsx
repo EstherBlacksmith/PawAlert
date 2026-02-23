@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, Heading, Button, VStack, Input, Textarea, Flex, Spinner, Alert, Text } from '@chakra-ui/react'
+import { Box, Typography, Button, Stack, TextField, CircularProgress, Alert as MuiAlert, Paper } from '@mui/material'
 import { useNavigate, useParams } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
@@ -94,84 +94,79 @@ export default function AlertEdit() {
 
   if (isFetching) {
     return (
-      <Flex justify="center" align="center" minH="300px">
-        <Spinner size="xl" color="brand.500" />
-      </Flex>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+        <CircularProgress color="primary" />
+      </Box>
     )
   }
 
   return (
-    <Box w="100%" mx="auto" bg="rgba(255, 255, 255, 0.85)" p={6} borderRadius="lg" boxShadow="lg">
-      <Button variant="ghost" mb={4} onClick={() => navigate(`/alerts/${id}`)}>
-        <FaArrowLeft style={{ marginRight: '8px' }} />
+    <Paper sx={{ width: '100%', mx: 'auto', bgcolor: 'rgba(255, 255, 255, 0.85)', p: 3, borderRadius: 2, boxShadow: 3 }}>
+      <Button variant="text" sx={{ mb: 2 }} onClick={() => navigate(`/alerts/${id}`)} startIcon={<FaArrowLeft />}>
         Back to Alert
       </Button>
 
-      <Heading size="lg" mb={6} color="gray.800" _dark={{ color: 'white' }}>
+      <Typography variant="h5" mb={3} color="text.primary">
         Edit Alert
-      </Heading>
+      </Typography>
 
       {error && (
-        <Alert.Root status="error" mb={6} borderRadius="md">
-          <Alert.Indicator />
-          <Box flex="1">
-            <Alert.Title fontSize="sm" fontWeight="bold">
-              {error.error || 'Error'}
-            </Alert.Title>
-            <Alert.Description fontSize="sm">
-              {error.message}
-            </Alert.Description>
-          </Box>
-        </Alert.Root>
+        <MuiAlert severity="error" sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" component="div">{error.error || 'Error'}</Typography>
+          <Typography variant="body2">{error.message}</Typography>
+        </MuiAlert>
       )}
 
-       <Box as="form" onSubmit={handleSubmit}>
-         <VStack gap={4}>
-           <Box w="full">
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Title *</Text>
-             <Input 
+       <Box component="form" onSubmit={handleSubmit}>
+         <Stack spacing={2}>
+           <Box width="100%">
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Title *</Typography>
+             <TextField 
                name="title" 
                value={formData.title} 
                onChange={handleChange} 
                required 
                placeholder="Enter alert title"
+               fullWidth
+               size="small"
              />
            </Box>
 
-           <Box w="full">
-             <Text as="label" display="block" fontWeight="medium" mb={2}>Description *</Text>
-             <Textarea 
+           <Box width="100%">
+             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Description *</Typography>
+             <TextField 
                name="description" 
                value={formData.description} 
                onChange={handleChange} 
                required
                placeholder="Enter alert description"
+               multiline
                rows={4}
+               fullWidth
+               size="small"
              />
            </Box>
 
-          <Flex w="full" gap={4} pt={4}>
+          <Stack direction="row" spacing={2} sx={{ pt: 2 }}>
             <Button 
               type="button" 
-              variant="outline" 
+              variant="outlined" 
               onClick={() => navigate(`/alerts/${id}`)}
-              flex={1}
+              sx={{ flex: 1 }}
             >
               Cancel
             </Button>
             <Button 
               type="submit" 
-              colorPalette="blue" 
-              bg="#4682B4"
-              _hover={{ bg: '#36648B' }}
-              flex={1}
-              loading={isLoading}
+              variant="contained"
+              sx={{ flex: 1, bgcolor: '#4682B4', '&:hover': { bgcolor: '#36648B' } }}
+              disabled={isLoading}
             >
-              Save Changes
+              {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
             </Button>
-          </Flex>
-        </VStack>
+          </Stack>
+        </Stack>
       </Box>
-    </Box>
+    </Paper>
   )
 }

@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import {
   Box,
-  Button,
-  Spinner,
-  HStack,
-  Badge,
+  CircularProgress,
   Table,
-  Thead,
-  Tr,
-  Th,
-  Td,
-} from '@chakra-ui/react'
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  Chip,
+  Stack,
+  Paper
+} from '@mui/material'
 import { useToast } from '../../../context/ToastContext'
 import { UserService } from '../../../services/user.service'
 import { User } from '../../../types'
@@ -44,50 +46,52 @@ const UsersTab: React.FC = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minH="400px">
-        <Spinner />
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+        <CircularProgress />
       </Box>
     )
   }
 
   return (
-    <Box overflowX="auto">
+    <TableContainer component={Paper}>
       <Table>
-        <Thead>
-          <Tr>
-            <Th>ID</Th>
-            <Th>Name</Th>
-            <Th>Email</Th>
-            <Th>Role</Th>
-            <Th>Actions</Th>
-          </Tr>
-        </Thead>
-        <tbody>
+        <TableHead>
+          <TableRow>
+            <TableCell>ID</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Role</TableCell>
+            <TableCell>Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {users.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>
-                <Badge colorScheme={user.role === 'ADMIN' ? 'red' : 'blue'}>
-                  {user.role}
-                </Badge>
-              </td>
-              <td>
-                <HStack spacing={2}>
-                  <Button size="sm" colorScheme="blue">
+            <TableRow key={user.id}>
+              <TableCell>{user.id}</TableCell>
+              <TableCell>{user.name}</TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>
+                <Chip
+                  label={user.role}
+                  color={user.role === 'ADMIN' ? 'error' : 'primary'}
+                  size="small"
+                />
+              </TableCell>
+              <TableCell>
+                <Stack direction="row" spacing={1}>
+                  <Button size="small" variant="contained" color="primary">
                     Edit
                   </Button>
-                  <Button size="sm" colorScheme="red">
+                  <Button size="small" variant="contained" color="error">
                     Delete
                   </Button>
-                </HStack>
-              </td>
-            </tr>
+                </Stack>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
+        </TableBody>
       </Table>
-    </Box>
+    </TableContainer>
   )
 }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, VStack, Text, Spinner, Badge, HStack, Icon } from '@chakra-ui/react'
+import { Box, Typography, CircularProgress, Chip, Stack } from '@mui/material'
 import { FiAlertTriangle, FiMapPin } from 'react-icons/fi'
 import { alertService } from '../../services/alert.service'
 import { Alert } from '../../types'
@@ -34,61 +34,61 @@ export default function NearbyAlerts({ latitude, longitude, radiusKm = 10 }: Nea
 
   if (isLoading) {
     return (
-      <Box textAlign="center" py={4}>
-        <Spinner size="sm" color="purple.500" />
-        <Text fontSize="sm" color="gray.500" mt={2}>Looking for nearby alerts...</Text>
+      <Box textAlign="center" py={2}>
+        <CircularProgress size={20} />
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>Looking for nearby alerts...</Typography>
       </Box>
     )
   }
 
   if (error) {
     return (
-      <Text fontSize="sm" color="gray.400" textAlign="center">{error}</Text>
+      <Typography variant="body2" color="text.disabled" textAlign="center">{error}</Typography>
     )
   }
 
   if (alerts.length === 0) {
     return (
-      <Text fontSize="sm" color="gray.500" textAlign="center">
+      <Typography variant="body2" color="text.secondary" textAlign="center">
         No active alerts in your area ({radiusKm}km radius)
-      </Text>
+      </Typography>
     )
   }
 
   return (
-    <VStack align="stretch" gap={2}>
-      <Text fontSize="sm" fontWeight="medium" color="gray.600">
+    <Stack spacing={1}>
+      <Typography variant="body2" fontWeight="medium" color="text.secondary">
         {alerts.length} active alert{alerts.length > 1 ? 's' : ''} nearby:
-      </Text>
+      </Typography>
       {alerts.slice(0, 5).map((alert) => (
         <Box
           key={alert.id}
-          p={3}
-          bg="orange.50"
-          borderRadius="md"
-          borderLeft="4px solid"
-          borderColor="orange.400"
+          sx={{
+            p: 1.5,
+            bgcolor: 'warning.50',
+            borderRadius: 1,
+            borderLeft: '4px solid',
+            borderColor: 'warning.main',
+          }}
         >
-          <HStack justify="space-between">
-            <HStack>
-              <Icon as={FiAlertTriangle} color="orange.500" />
-              <Text fontWeight="medium" fontSize="sm">{alert.title}</Text>
-            </HStack>
-            <Badge colorPalette="orange" variant="subtle">
-              {alert.status}
-            </Badge>
-          </HStack>
-          <HStack mt={1} color="gray.500">
-            <Icon as={FiMapPin} boxSize={3} />
-            <Text fontSize="xs">Near your location</Text>
-          </HStack>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <FiAlertTriangle color="#ed8936" />
+              <Typography variant="body2" fontWeight="medium">{alert.title}</Typography>
+            </Stack>
+            <Chip label={alert.status} size="small" color="warning" variant="outlined" />
+          </Stack>
+          <Stack direction="row" alignItems="center" spacing={0.5} mt={0.5} color="text.secondary">
+            <FiMapPin size={12} />
+            <Typography variant="caption">Near your location</Typography>
+          </Stack>
         </Box>
       ))}
       {alerts.length > 5 && (
-        <Text fontSize="xs" color="gray.400" textAlign="center">
+        <Typography variant="caption" color="text.disabled" textAlign="center">
           +{alerts.length - 5} more alerts
-        </Text>
+        </Typography>
       )}
-    </VStack>
+    </Stack>
   )
 }

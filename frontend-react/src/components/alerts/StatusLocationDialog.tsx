@@ -1,12 +1,12 @@
 import {
-  Box,
-  Button,
   Dialog,
-  Flex,
-  Heading,
-  Text,
-  VStack,
-} from '@chakra-ui/react'
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+  Box,
+} from '@mui/material'
 import { useState, useEffect } from 'react'
 import LocationMap from '../map/LocationMap'
 
@@ -91,51 +91,41 @@ export function StatusLocationDialog({
   if (!status) return null
 
   return (
-    <Dialog.Root open={open} onOpenChange={(details) => !details.open && handleClose()}>
-      <Dialog.Backdrop />
-      <Dialog.Positioner>
-        <Dialog.Content maxW="600px">
-          <Dialog.Header>
-            <Heading size="md">{statusLabels[status]}</Heading>
-            <Text fontSize="sm" color="gray.500" mt={1}>
-              {alertTitle}
-            </Text>
-          </Dialog.Header>
-          <Dialog.Body>
-          <VStack align="stretch" gap={4}>
-            <Text color="gray.600">
-              {statusDescriptions[status]}
-            </Text>
-            
-            <Box>
-              <LocationMap
-                latitude={latitude}
-                longitude={longitude}
-                onLocationChange={handleLocationChange}
-                onDetectLocation={onDetectLocation ? handleDetectLocation : undefined}
-                isDetectingLocation={detecting}
-                height="300px"
-              />
-            </Box>
-          </VStack>
-        </Dialog.Body>
-        <Dialog.Footer>
-          <Flex gap={2} justify="flex-end">
-            <Button variant="outline" onClick={handleClose} disabled={isLoading}>
-              Cancel
-            </Button>
-            <Button
-              colorPalette={status === 'SAFE' ? 'green' : 'yellow'}
-              onClick={handleConfirm}
-              disabled={!isValid || isLoading}
-              loading={isLoading}
-            >
-              {statusLabels[status]}
-            </Button>
-          </Flex>
-        </Dialog.Footer>
-        </Dialog.Content>
-      </Dialog.Positioner>
-    </Dialog.Root>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <DialogTitle>
+        <Typography variant="h6">{statusLabels[status]}</Typography>
+        <Typography variant="body2" color="text.secondary">
+          {alertTitle}
+        </Typography>
+      </DialogTitle>
+      <DialogContent>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          {statusDescriptions[status]}
+        </Typography>
+        <Box sx={{ height: 300 }}>
+          <LocationMap
+            latitude={latitude}
+            longitude={longitude}
+            onLocationChange={handleLocationChange}
+            onDetectLocation={onDetectLocation ? handleDetectLocation : undefined}
+            isDetectingLocation={detecting}
+            height="300px"
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button variant="outlined" onClick={handleClose} disabled={isLoading}>
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          color={status === 'SAFE' ? 'success' : 'warning'}
+          onClick={handleConfirm}
+          disabled={!isValid || isLoading}
+        >
+          {statusLabels[status]}
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 }

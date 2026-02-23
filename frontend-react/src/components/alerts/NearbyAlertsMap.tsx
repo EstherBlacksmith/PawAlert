@@ -1,13 +1,13 @@
 import { useState, useEffect, useMemo } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
-import { Box, Text, Spinner, Badge, HStack, VStack, Icon } from '@chakra-ui/react'
+import { Box, Typography, CircularProgress, Chip, Stack } from '@mui/material'
 import { FiAlertTriangle, FiMapPin, FiNavigation } from 'react-icons/fi'
 import { alertService } from '../../services/alert.service'
 import type { Alert, AlertStatus } from '../../types'
 import '../map/map.css'
 
-// Default status display names (fallback when metadata is not available)
+// Default status display names
 const DEFAULT_STATUS_NAMES: Record<AlertStatus, string> = {
   OPENED: 'Open',
   SEEN: 'Seen',
@@ -26,10 +26,10 @@ L.Icon.Default.mergeOptions({
 // Create custom marker icons based on alert status
 const createAlertIcon = (status: AlertStatus): L.DivIcon => {
   const colors: Record<AlertStatus, string> = {
-    OPENED: '#b34045', // red
-    SEEN: '#fecf6d',   // yellow/orange soft
-    SAFE: '#2d884d',   // green
-    CLOSED: '#4091d7'  // blue
+    OPENED: '#b34045',
+    SEEN: '#fecf6d',
+    SAFE: '#2d884d',
+    CLOSED: '#4091d7'
   }
   
   const color = colors[status] || '#718096'
@@ -56,7 +56,7 @@ const createAlertIcon = (status: AlertStatus): L.DivIcon => {
   })
 }
 
-// User location marker icon (blue)
+// User location marker icon
 const userLocationIcon = new L.DivIcon({
   className: 'custom-user-marker',
   html: `<div style="
@@ -120,14 +120,14 @@ function FitBounds({
 }
 
 // Get status color for badge
-const getStatusColor = (status: AlertStatus): string => {
-  const colors: Record<AlertStatus, string> = {
-    OPENED: '#b34045',
-    SEEN: '#fecf6d',
-    SAFE: '#2d884d',
-    CLOSED: '#4091d7'
+const getStatusColor = (status: AlertStatus): 'error' | 'warning' | 'success' | 'info' => {
+  const colors: Record<AlertStatus, 'error' | 'warning' | 'success' | 'info'> = {
+    OPENED: 'error',
+    SEEN: 'warning',
+    SAFE: 'success',
+    CLOSED: 'info'
   }
-  return colors[status] || 'gray'
+  return colors[status] || 'info'
 }
 
 // Format date for display
@@ -160,22 +160,16 @@ export default function NearbyAlertsMap({
       try {
         setIsLoading(true)
         setError(null)
-        console.log('[NearbyAlertsMap] Fetching alerts for location:', { latitude, longitude, radiusKm })
         const data = await alertService.getNearbyAlerts(latitude, longitude, radiusKm)
-        console.log('[NearbyAlertsMap] Received alerts:', data)
-        
-        // Validate alert data
         const validAlerts = data.filter(alert => {
           if (!alert.latitude || !alert.longitude) {
-            console.warn('[NearbyAlertsMap] Alert missing coordinates:', alert.id)
             return false
           }
           return true
         })
-        
         setAlerts(validAlerts)
       } catch (err) {
-        console.error('[NearbyAlertsMap] Error fetching nearby alerts:', err)
+        console.error('Error fetching nearby alerts:', err)
         setError('Could not load nearby alerts')
       } finally {
         setIsLoading(false)
@@ -185,116 +179,109 @@ export default function NearbyAlertsMap({
     fetchNearbyAlerts()
   }, [latitude, longitude, radiusKm])
 
-  // Get status display name (uses default fallback names)
   const getStatusDisplayName = (status: AlertStatus): string => {
     return DEFAULT_STATUS_NAMES[status] || status
   }
 
-  // Calculate map center based on user location
   const mapCenter: [number, number] = useMemo(() => {
     return [latitude, longitude]
   }, [latitude, longitude])
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <Box 
-        textAlign="center" 
-        py={6} 
-        px={4}
-        bg="gray.50"
-        borderRadius={fullHeight ? 'none' : 'md'}
-        position={fullHeight ? 'absolute' : 'relative'}
-        top={fullHeight ? 0 : 'auto'}
-        left={fullHeight ? 0 : 'auto'}
-        right={fullHeight ? 0 : 'auto'}
-        bottom={fullHeight ? 0 : 'auto'}
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Spinner size="md" color="accent.500" />
-        <Text fontSize="sm" color="gray.500" mt={3}>
-          Searching for nearby alerts...
-        </Text>
-      </Box>
-    )
-  }
+  // Show loading overlay while fetching
+  const loadingOverlay = isLoading && (
+    <Box 
+      sx={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        bgcolor: 'rgba(255, 255, 255, 0.9)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+    >
+      <CircularProgress />
+      <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+        Searching for nearby alerts...
+      </Typography>
+    </Box>
+  )
 
-  // Error state
-  if (error) {
-    return (
-      <Box 
-        textAlign="center" 
-        py={4} 
-        px={4}
-        bg="red.50"
-        borderRadius={fullHeight ? 'none' : 'md'}
-        position={fullHeight ? 'absolute' : 'relative'}
-        top={fullHeight ? 0 : 'auto'}
-        left={fullHeight ? 0 : 'auto'}
-        right={fullHeight ? 0 : 'auto'}
-        bottom={fullHeight ? 0 : 'auto'}
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Icon as={FiAlertTriangle} color="red.400" boxSize={6} mb={2} />
-        <Text fontSize="sm" color="red.500">{error}</Text>
-      </Box>
-    )
-  }
+  // Show error overlay
+  const errorOverlay = error && (
+    <Box 
+      sx={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        bgcolor: 'rgba(255, 255, 255, 0.9)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+    >
+      <FiAlertTriangle color="#ef4444" size={24} />
+      <Typography variant="body2" color="error" sx={{ mt: 1 }}>{error}</Typography>
+    </Box>
+  )
 
-  // No alerts state
-  if (alerts.length === 0) {
-    return (
-      <Box 
-        textAlign="center" 
-        py={6} 
-        px={4}
-        bg="gray.50"
-        borderRadius={fullHeight ? 'none' : 'md'}
-        position={fullHeight ? 'absolute' : 'relative'}
-        top={fullHeight ? 0 : 'auto'}
-        left={fullHeight ? 0 : 'auto'}
-        right={fullHeight ? 0 : 'auto'}
-        bottom={fullHeight ? 0 : 'auto'}
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Icon as={FiMapPin} color="gray.400" boxSize={6} mb={2} />
-        <Text fontSize="sm" color="gray.500">
-          No active alerts in your area ({radiusKm}km)
-        </Text>
-      </Box>
-    )
-  }
+  // Show no alerts overlay
+  const noAlertsOverlay = !isLoading && !error && alerts.length === 0 && (
+    <Box 
+      sx={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        bgcolor: 'rgba(255, 255, 255, 0.85)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+    >
+      <FiMapPin color="#9ca3af" size={32} />
+      <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }} fontWeight="medium">
+        No active alerts in your area
+      </Typography>
+      <Typography variant="caption" color="text.disabled">
+        Within {radiusKm}km radius
+      </Typography>
+    </Box>
+  )
 
   return (
-    <VStack 
-      gap={0} 
-      align="stretch" 
-      position={fullHeight ? 'absolute' : 'relative'}
-      top={fullHeight ? 0 : 'auto'}
-      left={fullHeight ? 0 : 'auto'}
-      right={fullHeight ? 0 : 'auto'}
-      bottom={fullHeight ? 0 : 'auto'}
-      h={fullHeight ? '100%' : 'auto'}
+    <Stack 
+      spacing={0} 
+      sx={{
+        position: fullHeight ? 'absolute' : 'relative',
+        top: fullHeight ? 0 : 'auto',
+        left: fullHeight ? 0 : 'auto',
+        right: fullHeight ? 0 : 'auto',
+        bottom: fullHeight ? 0 : 'auto',
+        height: fullHeight ? '100%' : 'auto',
+      }}
     >
-      {/* Map Container */}
       <Box
-        borderRadius={fullHeight ? 'none' : 'md'}
-        overflow="hidden"
-        border={fullHeight ? 'none' : '1px solid'}
-        borderColor="gray.200"
-        _dark={{ borderColor: 'gray.600' }}
-        h={fullHeight ? '100%' : { base: '200px', sm: '250px', md: '300px' }}
+        sx={{
+          borderRadius: fullHeight ? 0 : 1,
+          overflow: 'hidden',
+          border: fullHeight ? 'none' : '1px solid',
+          borderColor: 'divider',
+          height: fullHeight ? '100%' : { xs: '200px', sm: '250px', md: '300px' },
+          position: 'relative',
+        }}
         className="location-map-wrapper"
-        position="relative"
       >
         <MapContainer
           center={mapCenter}
@@ -308,167 +295,166 @@ export default function NearbyAlertsMap({
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           
-          {/* Fit bounds to show all markers */}
           <FitBounds alerts={alerts} userLocation={mapCenter} />
           
-          {/* User location marker */}
           <Marker 
             position={mapCenter} 
             icon={userLocationIcon}
           >
             <Popup>
-              <VStack align="start" gap={1} minWidth="150px">
-                <HStack>
-                  <Icon as={FiNavigation} color="blue.500" boxSize={4} />
-                  <Text fontWeight="bold" fontSize="sm">Your location</Text>
-                </HStack>
-              </VStack>
+              <Stack spacing={1} minWidth="150px">
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <FiNavigation color="#3182ce" size={16} />
+                  <Typography variant="body2" fontWeight="bold">Your location</Typography>
+                </Stack>
+              </Stack>
             </Popup>
           </Marker>
           
-           {/* Alert markers */}
-           {alerts
-             .filter(alert => alert.latitude != null && alert.longitude != null)
-             .map((alert) => (
-             <Marker
-               key={alert.id}
-               position={[alert.latitude, alert.longitude]}
-               icon={createAlertIcon(alert.status)}
-             >
+          {alerts
+            .filter(alert => alert.latitude != null && alert.longitude != null)
+            .map((alert) => (
+            <Marker
+              key={alert.id}
+              position={[alert.latitude, alert.longitude]}
+              icon={createAlertIcon(alert.status)}
+            >
               <Popup>
-                <VStack align="start" gap={2} minWidth="200px" p={1}>
-                  <Text fontWeight="bold" fontSize="sm" color="gray.800">
+                <Stack spacing={1} minWidth="200px" p={1}>
+                  <Typography variant="body2" fontWeight="bold" color="text.primary">
                     {alert.title}
-                  </Text>
+                  </Typography>
                   
-                  <HStack>
-                    <Badge 
-                      colorPalette={getStatusColor(alert.status)} 
-                      variant="solid"
-                      fontSize="xs"
-                    >
-                      {getStatusDisplayName(alert.status)}
-                    </Badge>
-                  </HStack>
+                  <Chip 
+                    label={getStatusDisplayName(alert.status)}
+                    size="small"
+                    color={getStatusColor(alert.status)}
+                  />
                   
                   {alert.description && (
-                    <Text fontSize="xs" color="gray.600" lineClamp={2}>
+                    <Typography variant="caption" color="text.secondary" sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                    }}>
                       {alert.description}
-                    </Text>
+                    </Typography>
                   )}
                   
-                  <Text fontSize="xs" color="gray.400">
+                  <Typography variant="caption" color="text.disabled">
                     {formatDate(alert.createdAt)}
-                  </Text>
-                </VStack>
+                  </Typography>
+                </Stack>
               </Popup>
             </Marker>
           ))}
         </MapContainer>
         
-        {/* Overlay Alert Counter Badge - only for fullHeight mode */}
-         {fullHeight && (
-           <Box
-             position="absolute"
-             top={4}
-             right={4}
-             bg="white"
-             borderRadius="md"
-             px={3}
-             py={2}
-             boxShadow="md"
-             zIndex={1000}
-           >
-            <HStack>
-              <Icon as={FiAlertTriangle} color="orange.500" boxSize={4} />
-              <Text fontSize="sm" fontWeight="medium" color="gray.700">
+        {loadingOverlay}
+        {errorOverlay}
+        {noAlertsOverlay}
+        
+        {fullHeight && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 2,
+              right: 2,
+              bgcolor: 'background.paper',
+              borderRadius: 1,
+              px: 1.5,
+              py: 1,
+              boxShadow: 2,
+              zIndex: 1000,
+            }}
+          >
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <FiAlertTriangle color="#ed8936" size={16} />
+              <Typography variant="body2" fontWeight="medium" color="text.primary">
                 {alerts.length} nearby alert{alerts.length > 1 ? 's' : ''}
-              </Text>
-              <Badge colorPalette="accent" variant="subtle" fontSize="xs">
-                {radiusKm}km
-              </Badge>
-            </HStack>
+              </Typography>
+              <Chip label={`${radiusKm}km`} size="small" />
+            </Stack>
           </Box>
         )}
         
-        {/* Overlay Legend - only for fullHeight mode */}
         {fullHeight && (
           <Box
-            position="absolute"
-            bottom={4}
-            left={4}
-            bg="white"
-            borderRadius="md"
-            px={3}
-            py={2}
-            boxShadow="md"
-            zIndex={1000}
+            sx={{
+              position: 'absolute',
+              bottom: 2,
+              left: 2,
+              bgcolor: 'background.paper',
+              borderRadius: 1,
+              px: 1.5,
+              py: 1,
+              boxShadow: 2,
+              zIndex: 1000,
+            }}
           >
-            <HStack gap={3} fontSize="xs" color="gray.500">
-              <HStack>
-                <Box w={2} h={2} borderRadius="full" bg="orange.500" />
-                <Text>Open</Text>
-              </HStack>
-              <HStack>
-                <Box w={2} h={2} borderRadius="full" bg="cyan.500" />
-                <Text>Seen</Text>
-              </HStack>
-              <HStack>
-                <Box w={2} h={2} borderRadius="full" bg="red.500" />
-                <Text>Safe</Text>
-              </HStack>
-              <HStack>
-                <Box w={2} h={2} borderRadius="full" bg="blue.500" />
-                <Text>You</Text>
-              </HStack>
-            </HStack>
+            <Stack direction="row" spacing={1.5} fontSize="xs" color="text.secondary">
+              <Stack direction="row" alignItems="center" spacing={0.5}>
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'error.main' }} />
+                <Typography variant="caption">Open</Typography>
+              </Stack>
+              <Stack direction="row" alignItems="center" spacing={0.5}>
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'warning.main' }} />
+                <Typography variant="caption">Seen</Typography>
+              </Stack>
+              <Stack direction="row" alignItems="center" spacing={0.5}>
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'success.main' }} />
+                <Typography variant="caption">Safe</Typography>
+              </Stack>
+              <Stack direction="row" alignItems="center" spacing={0.5}>
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'info.main' }} />
+                <Typography variant="caption">You</Typography>
+              </Stack>
+            </Stack>
           </Box>
         )}
       </Box>
 
-      {/* Non-fullHeight mode: Counter and Legend below map */}
       {!fullHeight && (
         <>
-          {/* Alert Counter Badge */}
-          <HStack justify="space-between" px={1}>
-            <HStack>
-              <Icon as={FiAlertTriangle} color="orange.500" boxSize={4} />
-              <Text fontSize="sm" fontWeight="medium" color="gray.700">
+          <Stack direction="row" justifyContent="space-between" alignItems="center" px={1}>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <FiAlertTriangle color="#ed8936" size={16} />
+              <Typography variant="body2" fontWeight="medium" color="text.primary">
                 {alerts.length} nearby alert{alerts.length > 1 ? 's' : ''}
-              </Text>
-            </HStack>
-            <Badge colorPalette="accent" variant="subtle" fontSize="xs">
-              {radiusKm} radius
-            </Badge>
-          </HStack>
+              </Typography>
+            </Stack>
+            <Chip label={`${radiusKm} radius`} size="small" />
+          </Stack>
 
-          {/* Legend */}
-          <HStack 
-            justify="center" 
-            gap={4} 
+          <Stack 
+            direction="row" 
+            justifyContent="center" 
+            spacing={2} 
             fontSize="xs" 
-            color="gray.500"
+            color="text.secondary"
             flexWrap="wrap"
           >
-            <HStack>
-              <Box w={3} h={3} borderRadius="full" bg="orange.500" />
-              <Text>Open</Text>
-            </HStack>
-            <HStack>
-              <Box w={3} h={3} borderRadius="full" bg="cyan.500" />
-              <Text>Seen</Text>
-            </HStack>
-            <HStack>
-              <Box w={3} h={3} borderRadius="full" bg="red.500" />
-              <Text>Safe</Text>
-            </HStack>
-            <HStack>
-              <Box w={3} h={3} borderRadius="full" bg="blue.500" />
-              <Text>You</Text>
-            </HStack>
-          </HStack>
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: 'error.main' }} />
+              <Typography variant="caption">Open</Typography>
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: 'warning.main' }} />
+              <Typography variant="caption">Seen</Typography>
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: 'success.main' }} />
+              <Typography variant="caption">Safe</Typography>
+            </Stack>
+            <Stack direction="row" alignItems="center" spacing={0.5}>
+              <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: 'info.main' }} />
+              <Typography variant="caption">You</Typography>
+            </Stack>
+          </Stack>
         </>
       )}
-    </VStack>
+    </Stack>
   )
 }

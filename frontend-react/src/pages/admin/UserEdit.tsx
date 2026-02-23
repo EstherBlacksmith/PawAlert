@@ -4,17 +4,17 @@ import {
   Box,
   Button,
   Card,
-  CardBody,
+  CardContent,
   CardHeader,
-  Heading,
-  Input,
-  VStack,
-  HStack,
+  Typography,
+  TextField,
+  Stack,
+  CircularProgress,
   FormControl,
-  FormLabel,
-  Spinner,
+  InputLabel,
   Select,
-} from '@chakra-ui/react'
+  MenuItem
+} from '@mui/material'
 import { useToast } from '../../context/ToastContext'
 import { userService } from '../../services/user.service'
 import { User } from '../../types'
@@ -80,80 +80,77 @@ const UserEdit: React.FC = () => {
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <Spinner size="xl" />
+        <CircularProgress />
       </Box>
     )
   }
 
   if (!user) {
     return (
-      <Box p={4}>
+      <Box p={2}>
         <Button onClick={() => navigate('/admin/dashboard')}>Back to Dashboard</Button>
       </Box>
     )
   }
 
   return (
-    <Box p={4}>
+    <Box p={2}>
       <Card>
-        <CardHeader>
-          <Heading>Edit User</Heading>
-        </CardHeader>
-        <CardBody>
-          <VStack spacing={4} align="stretch">
-            <FormControl>
-              <FormLabel>Name</FormLabel>
-              <Input
-                value={user.name}
-                onChange={(e) => setUser({ ...user, name: e.target.value })}
-              />
-            </FormControl>
+        <CardHeader title="Edit User" />
+        <CardContent>
+          <Stack spacing={3}>
+            <TextField
+              label="Name"
+              value={user.name}
+              onChange={(e) => setUser({ ...user, name: e.target.value })}
+              fullWidth
+            />
 
-            <FormControl>
-              <FormLabel>Email</FormLabel>
-              <Input
-                type="email"
-                value={user.email}
-                onChange={(e) => setUser({ ...user, email: e.target.value })}
-              />
-            </FormControl>
+            <TextField
+              label="Email"
+              type="email"
+              value={user.email}
+              onChange={(e) => setUser({ ...user, email: e.target.value })}
+              fullWidth
+            />
 
-            <FormControl>
-              <FormLabel>Phone</FormLabel>
-              <Input
-                value={user.phone || ''}
-                onChange={(e) => setUser({ ...user, phone: e.target.value })}
-              />
-            </FormControl>
+            <TextField
+              label="Phone"
+              value={user.phone || ''}
+              onChange={(e) => setUser({ ...user, phone: e.target.value })}
+              fullWidth
+            />
 
-            <FormControl>
-              <FormLabel>Role</FormLabel>
+            <FormControl fullWidth>
+              <InputLabel>Role</InputLabel>
               <Select
                 value={user.role || 'USER'}
+                label="Role"
                 onChange={(e) => setUser({ ...user, role: e.target.value })}
               >
-                <option value="USER">User</option>
-                <option value="ADMIN">Admin</option>
+                <MenuItem value="USER">User</MenuItem>
+                <MenuItem value="ADMIN">Admin</MenuItem>
               </Select>
             </FormControl>
 
-            <HStack spacing={2}>
+            <Stack direction="row" spacing={2}>
               <Button
-                colorScheme="blue"
+                variant="contained"
+                color="primary"
                 onClick={handleSave}
-                isLoading={saving}
+                disabled={saving}
               >
-                Save
+                {saving ? 'Saving...' : 'Save'}
               </Button>
               <Button
-                colorScheme="gray"
+                variant="contained"
                 onClick={() => navigate('/admin/dashboard')}
               >
                 Cancel
               </Button>
-            </HStack>
-          </VStack>
-        </CardBody>
+            </Stack>
+          </Stack>
+        </CardContent>
       </Card>
     </Box>
   )
