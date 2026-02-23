@@ -4,7 +4,6 @@ import {
   Button,
   Table,
   Thead,
-  Tbody,
   Tr,
   Th,
   Td,
@@ -16,7 +15,7 @@ import { useToast } from '../../../context/ToastContext'
 import { AlertService } from '../../../services/alert.service'
 import { Alert } from '../../../types'
 
-export const AlertsTab: React.FC = () => {
+const AlertsTab: React.FC = () => {
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [loading, setLoading] = useState(true)
   const toast = useToast()
@@ -63,28 +62,30 @@ export const AlertsTab: React.FC = () => {
             <Th>Actions</Th>
           </Tr>
         </Thead>
-        <Tbody>
+        <tbody>
           {alerts.map((alert) => (
-            <Tr key={alert.id}>
-              <Td>{alert.id}</Td>
-              <Td>{alert.title}</Td>
-              <Td>
+            <tr key={alert.id}>
+              <td>{alert.id}</td>
+              <td>{alert.title}</td>
+              <td>
                 <Badge colorScheme={alert.status === 'OPEN' ? 'green' : 'gray'}>
                   {alert.status}
                 </Badge>
-              </Td>
-              <Td>{new Date(alert.createdAt).toLocaleDateString()}</Td>
-              <Td>
+              </td>
+              <td>{new Date(alert.createdAt).toLocaleDateString()}</td>
+              <td>
                 <HStack spacing={2}>
                   <Button size="sm" colorScheme="blue">
                     View
                   </Button>
                 </HStack>
-              </Td>
-            </Tr>
+              </td>
+            </tr>
           ))}
-        </Tbody>
+        </tbody>
       </Table>
     </Box>
   )
 }
+
+export default AlertsTab

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, VStack, Heading, Text, Input, Button, Field, Alert, HStack } from '@chakra-ui/react'
+import { Box, VStack, Heading, Text, Input, Button, Alert, HStack } from '@chakra-ui/react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FaPaw } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
@@ -253,74 +253,78 @@ export default function Login() {
               </Alert.Root>
             )}
 
-             {/* Form */}
-             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-               <VStack gap={5} w="full">
-                 <Field.Root w="full">
-                   <Field.Label 
-                     fontSize="sm" 
-                     fontWeight="600" 
-                     color="gray.700"
-                     mb={2}
-                   >
-                     Email
-                   </Field.Label>
-                   <Input
-                     type="email"
-                     value={email}
-                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                     placeholder="Enter your email"
-                     required
-                     bg="rgba(255, 255, 255, 0.8)"
-                     borderColor="rgba(0, 0, 0, 0.1)"
-                     fontSize="md"
-                     py={3}
-                     px={4}
-                     transition="all 0.3s ease"
-                     _focus={{
-                       borderColor: 'brand.500',
-                       boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
-                       bg: 'white'
-                     }}
-                     _hover={{
-                       borderColor: 'rgba(0, 0, 0, 0.2)',
-                       bg: 'white'
-                     }}
-                   />
-                 </Field.Root>
+              {/* Form */}
+              <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+                <VStack gap={5} w="full">
+                  <Box w="full">
+                    <Text 
+                      as="label"
+                      fontSize="sm" 
+                      fontWeight="600" 
+                      color="gray.700"
+                      display="block"
+                      mb={2}
+                    >
+                      Email
+                    </Text>
+                    <Input
+                      type="email"
+                      value={email}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      required
+                      bg="rgba(255, 255, 255, 0.8)"
+                      borderColor="rgba(0, 0, 0, 0.1)"
+                      fontSize="md"
+                      py={3}
+                      px={4}
+                      transition="all 0.3s ease"
+                      _focus={{
+                        borderColor: 'brand.500',
+                        boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
+                        bg: 'white'
+                      }}
+                      _hover={{
+                        borderColor: 'rgba(0, 0, 0, 0.2)',
+                        bg: 'white'
+                      }}
+                    />
+                  </Box>
 
-                 <Field.Root w="full">
-                   <Field.Label 
-                     fontSize="sm" 
-                     fontWeight="600" 
-                     color="gray.700"
-                     mb={2}
-                   >
-                     Password
-                   </Field.Label>
-                   <Input
-                     type="password"
-                     value={password}
-                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                     placeholder="Enter your password"
-                     required
-                     bg="rgba(255, 255, 255, 0.8)"
-                     borderColor="rgba(0, 0, 0, 0.1)"
-                     fontSize="md"
-                     py={3}
-                     px={4}
-                     transition="all 0.3s ease"
-                     _focus={{
-                       borderColor: 'brand.500',
-                       boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
-                       bg: 'white'
-                     }}
-                     _hover={{
-                       borderColor: 'rgba(0, 0, 0, 0.2)',
-                       bg: 'white'
-                     }}
-                   />
-                 </Field.Root>
+                  <Box w="full">
+                    <Text 
+                      as="label"
+                      fontSize="sm" 
+                      fontWeight="600" 
+                      color="gray.700"
+                      display="block"
+                      mb={2}
+                    >
+                      Password
+                    </Text>
+                    <Input
+                      type="password"
+                      value={password}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                      placeholder="Enter your password"
+                      required
+                      bg="rgba(255, 255, 255, 0.8)"
+                      borderColor="rgba(0, 0, 0, 0.1)"
+                      fontSize="md"
+                      py={3}
+                      px={4}
+                      transition="all 0.3s ease"
+                      _focus={{
+                        borderColor: 'brand.500',
+                        boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
+                        bg: 'white'
+                      }}
+                      _hover={{
+                        borderColor: 'rgba(0, 0, 0, 0.2)',
+                        bg: 'white'
+                      }}
+                    />
+                  </Box>
 
                  <Button
                    type="submit"

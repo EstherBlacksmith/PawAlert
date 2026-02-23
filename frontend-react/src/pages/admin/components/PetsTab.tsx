@@ -4,7 +4,6 @@ import {
   Button,
   Table,
   Thead,
-  Tbody,
   Tr,
   Th,
   Td,
@@ -15,7 +14,7 @@ import { useToast } from '../../../context/ToastContext'
 import { PetService } from '../../../services/pet.service'
 import { Pet } from '../../../types'
 
-export const PetsTab: React.FC = () => {
+const PetsTab: React.FC = () => {
   const [pets, setPets] = useState<Pet[]>([])
   const [loading, setLoading] = useState(true)
   const toast = useToast()
@@ -62,24 +61,26 @@ export const PetsTab: React.FC = () => {
             <Th>Actions</Th>
           </Tr>
         </Thead>
-        <Tbody>
+        <tbody>
           {pets.map((pet) => (
-            <Tr key={pet.id}>
-              <Td>{pet.id}</Td>
-              <Td>{pet.name}</Td>
-              <Td>{pet.type}</Td>
-              <Td>{pet.owner?.name || 'N/A'}</Td>
-              <Td>
+            <tr key={pet.id}>
+              <td>{pet.id}</td>
+              <td>{pet.name}</td>
+              <td>{pet.type}</td>
+              <td>{pet.owner?.name || 'N/A'}</td>
+              <td>
                 <HStack spacing={2}>
                   <Button size="sm" colorScheme="blue">
                     View
                   </Button>
                 </HStack>
-              </Td>
-            </Tr>
+              </td>
+            </tr>
           ))}
-        </Tbody>
+        </tbody>
       </Table>
     </Box>
   )
 }
+
+export default PetsTab

@@ -91,7 +91,7 @@ export function StatusLocationDialog({
   if (!status) return null
 
   return (
-    <Dialog.Root open={open} onOpenChange={(e) => !e.open && handleClose()}>
+    <Dialog.Root open={open} onOpenChange={(details) => !details.open && handleClose()}>
       <Dialog.Backdrop />
       <Dialog.Positioner>
         <Dialog.Content maxW="600px">
@@ -102,38 +102,38 @@ export function StatusLocationDialog({
             </Text>
           </Dialog.Header>
           <Dialog.Body>
-            <VStack align="stretch" gap={4}>
-              <Text color="gray.600">
-                {statusDescriptions[status]}
-              </Text>
-              
-              <Box>
-                <LocationMap
-                  latitude={latitude}
-                  longitude={longitude}
-                  onLocationChange={handleLocationChange}
-                  onDetectLocation={onDetectLocation ? handleDetectLocation : undefined}
-                  isDetectingLocation={detecting}
-                  height="300px"
-                />
-              </Box>
-            </VStack>
-          </Dialog.Body>
-          <Dialog.Footer>
-            <Flex gap={2} justify="flex-end">
-              <Button variant="outline" onClick={handleClose} disabled={isLoading}>
-                Cancel
-              </Button>
-              <Button
-                colorPalette={status === 'SAFE' ? 'green' : 'yellow'}
-                onClick={handleConfirm}
-                disabled={!isValid || isLoading}
-                loading={isLoading}
-              >
-                {statusLabels[status]}
-              </Button>
-            </Flex>
-          </Dialog.Footer>
+          <VStack align="stretch" gap={4}>
+            <Text color="gray.600">
+              {statusDescriptions[status]}
+            </Text>
+            
+            <Box>
+              <LocationMap
+                latitude={latitude}
+                longitude={longitude}
+                onLocationChange={handleLocationChange}
+                onDetectLocation={onDetectLocation ? handleDetectLocation : undefined}
+                isDetectingLocation={detecting}
+                height="300px"
+              />
+            </Box>
+          </VStack>
+        </Dialog.Body>
+        <Dialog.Footer>
+          <Flex gap={2} justify="flex-end">
+            <Button variant="outline" onClick={handleClose} disabled={isLoading}>
+              Cancel
+            </Button>
+            <Button
+              colorPalette={status === 'SAFE' ? 'green' : 'yellow'}
+              onClick={handleConfirm}
+              disabled={!isValid || isLoading}
+              loading={isLoading}
+            >
+              {statusLabels[status]}
+            </Button>
+          </Flex>
+        </Dialog.Footer>
         </Dialog.Content>
       </Dialog.Positioner>
     </Dialog.Root>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { Box, Heading, Button, SimpleGrid, Card, Text, Flex, Spinner, Badge, IconButton, HStack, Collapsible, Input, NativeSelect, Grid, VStack } from '@chakra-ui/react'
+import { Box, Heading, Button, SimpleGrid, Card, Text, Flex, Spinner, Badge, IconButton, HStack, Collapse, Input, Grid, VStack, Select } from '@chakra-ui/react'
 import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { FaPlus, FaSearch as FaSearchIcon, FaCog, FaTimes, FaMapMarkerAlt, FaSearch, FaArrowLeft, FaChevronLeft, FaChevronRight, FaPaw } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
@@ -217,9 +217,8 @@ export default function AlertList() {
       </Flex>
 
       {/* Filter Panel */}
-      <Collapsible.Root open={isFilterOpen} onOpenChange={(e) => setIsFilterOpen(e.open)}>
-        <Collapsible.Content>
-          <Card.Root mb={6} bg="gray.50" _dark={{ bg: 'gray.800' }}>
+      <Collapse in={isFilterOpen}>
+        <Card.Root mb={6} bg="gray.50" _dark={{ bg: 'gray.800' }}>
             <Card.Body p={4}>
               <VStack align="stretch" gap={4}>
                 <Flex justify="space-between" align="center">
@@ -258,19 +257,18 @@ export default function AlertList() {
                     <Text fontSize="sm" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
                       Status
                     </Text>
-                    <NativeSelect.Root size="sm">
-                      <NativeSelect.Field
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                      >
-                        {statusOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </NativeSelect.Field>
-                    </NativeSelect.Root>
+                    <Select
+                      size="sm"
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                    >
+                      {statusOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </Select>
                   </Box>
 
                   {/* Species Filter */}
@@ -278,21 +276,20 @@ export default function AlertList() {
                     <Text fontSize="sm" mb={1} color="gray.600" _dark={{ color: 'gray.400' }}>
                       Species
                     </Text>
-                    <NativeSelect.Root size="sm">
-                      <NativeSelect.Field
-                        value={species}
-                        onChange={(e) => setSpecies(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        placeholder="All Species"
-                      >
-                        <option value="">All Species</option>
-                        {speciesOptions?.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.displayName}
-                          </option>
-                        ))}
-                      </NativeSelect.Field>
-                    </NativeSelect.Root>
+                    <Select
+                      size="sm"
+                      value={species}
+                      onChange={(e) => setSpecies(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="All Species"
+                    >
+                      <option value="">All Species</option>
+                      {speciesOptions?.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.displayName}
+                        </option>
+                      ))}
+                    </Select>
                   </Box>
 
                   {/* Pet Name Filter */}
@@ -425,8 +422,7 @@ export default function AlertList() {
               </VStack>
             </Card.Body>
           </Card.Root>
-        </Collapsible.Content>
-      </Collapsible.Root>
+      </Collapse>
 
        {/* Results */}
        {alerts.length === 0 ? (

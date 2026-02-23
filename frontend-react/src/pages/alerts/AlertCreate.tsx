@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, Heading, Button, VStack, Field, Input, Textarea, NativeSelect, Spinner, Flex, Text, Badge, HStack, Alert, SimpleGrid } from '@chakra-ui/react'
+import { Box, Heading, Button, VStack, Input, Textarea, Spinner, Flex, Text, Badge, HStack, Alert, SimpleGrid, Select } from '@chakra-ui/react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
@@ -194,57 +194,54 @@ export default function AlertCreate() {
         </Alert.Root>
       )}
 
-      <Box as="form" onSubmit={handleSubmit}>
-        <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-          <Field.Root gridColumn={{ base: '1', md: '1' }}>
-            <Field.Label>Title *</Field.Label>
-            <Input 
-              name="title" 
-              value={formData.title} 
-              onChange={handleChange} 
-              required 
-              placeholder="Alert title"
-              bg="white" 
-              color="gray.800"
-              _placeholder={{ color: 'gray.500' }}
-            />
-          </Field.Root>
+       <Box as="form" onSubmit={handleSubmit}>
+         <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+           <Box gridColumn={{ base: '1', md: '1' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Title *</Text>
+             <Input 
+               name="title" 
+               value={formData.title} 
+               onChange={handleChange} 
+               required 
+               placeholder="Alert title"
+               bg="white" 
+               color="gray.800"
+               _placeholder={{ color: 'gray.500' }}
+             />
+           </Box>
 
-          <Field.Root gridColumn={{ base: '1', md: '2' }}>
-            <Field.Label>Pet *</Field.Label>
-            <NativeSelect.Root>
-              <NativeSelect.Field 
-                name="petId" 
-                value={formData.petId} 
-                onChange={handleChange}
-                bg="white"
-                color="gray.800"
-              >
-                <option value="">Select a pet</option>
-                {pets.map((pet) => (
-                  <option key={pet.petId} value={pet.petId}>
-                    {pet.officialPetName}
-                  </option>
-                ))}
-              </NativeSelect.Field>
-              <NativeSelect.Indicator />
-            </NativeSelect.Root>
-          </Field.Root>
+           <Box gridColumn={{ base: '1', md: '2' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Pet *</Text>
+             <Select 
+               name="petId" 
+               value={formData.petId} 
+               onChange={handleChange}
+               bg="white"
+               color="gray.800"
+             >
+               <option value="">Select a pet</option>
+               {pets.map((pet) => (
+                 <option key={pet.petId} value={pet.petId}>
+                   {pet.officialPetName}
+                 </option>
+               ))}
+             </Select>
+           </Box>
 
-          <Field.Root gridColumn={{ base: '1', md: 'span 2' }}>
-            <Field.Label>Description *</Field.Label>
-            <Textarea 
-              name="description" 
-              value={formData.description} 
-              onChange={handleChange} 
-              required 
-              placeholder="Describe the situation" 
-              rows={2}
-              bg="white" 
-              color="gray.800"
-              _placeholder={{ color: 'gray.500' }}
-            />
-          </Field.Root>
+           <Box gridColumn={{ base: '1', md: 'span 2' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Description *</Text>
+             <Textarea 
+               name="description" 
+               value={formData.description} 
+               onChange={handleChange} 
+               required 
+               placeholder="Describe the situation" 
+               rows={2}
+               bg="white" 
+               color="gray.800"
+               _placeholder={{ color: 'gray.500' }}
+             />
+           </Box>
 
           {/* Location Detection Section */}
           <Box gridColumn={{ base: '1', md: 'span 2' }}>
@@ -281,40 +278,40 @@ export default function AlertCreate() {
               height="200px"
             />
 
-            {/* Manual Coordinate Input (fallback) */}
-            <HStack gap={4} mt={3}>
-              <Field.Root flex="1">
-                <Field.Label>Latitude *</Field.Label>
-                <Input 
-                  name="latitude" 
-                  type="number" 
-                  step="any" 
-                  value={formData.latitude} 
-                  onChange={handleChange} 
-                  required 
-                  placeholder="40.416775"
-                  bg="white" 
-                  color="gray.800"
-                  _placeholder={{ color: 'gray.500' }}
-                />
-              </Field.Root>
+           {/* Manual Coordinate Input (fallback) */}
+             <HStack gap={4} mt={3}>
+               <Box flex="1">
+                 <Text as="label" display="block" fontWeight="medium" mb={2}>Latitude *</Text>
+                 <Input 
+                   name="latitude" 
+                   type="number" 
+                   step="any" 
+                   value={formData.latitude} 
+                   onChange={handleChange} 
+                   required 
+                   placeholder="40.416775"
+                   bg="white" 
+                   color="gray.800"
+                   _placeholder={{ color: 'gray.500' }}
+                 />
+               </Box>
 
-              <Field.Root flex="1">
-                <Field.Label>Longitude *</Field.Label>
-                <Input 
-                  name="longitude" 
-                  type="number" 
-                  step="any" 
-                  value={formData.longitude} 
-                  onChange={handleChange} 
-                  required 
-                  placeholder="-3.703790"
-                  bg="white" 
-                  color="gray.800"
-                  _placeholder={{ color: 'gray.500' }}
-                />
-              </Field.Root>
-            </HStack>
+               <Box flex="1">
+                 <Text as="label" display="block" fontWeight="medium" mb={2}>Longitude *</Text>
+                 <Input 
+                   name="longitude" 
+                   type="number" 
+                   step="any" 
+                   value={formData.longitude} 
+                   onChange={handleChange} 
+                   required 
+                   placeholder="-3.703790"
+                   bg="white" 
+                   color="gray.800"
+                   _placeholder={{ color: 'gray.500' }}
+                 />
+               </Box>
+             </HStack>
           </Box>
 
           <Box gridColumn={{ base: '1', md: 'span 2' }} pt={2}>

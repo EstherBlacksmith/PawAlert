@@ -2,21 +2,20 @@ import React, { useState, useEffect } from 'react'
 import {
   Box,
   Button,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   Spinner,
   HStack,
   Badge,
+  Table,
+  Thead,
+  Tr,
+  Th,
+  Td,
 } from '@chakra-ui/react'
 import { useToast } from '../../../context/ToastContext'
 import { UserService } from '../../../services/user.service'
 import { User } from '../../../types'
 
-export const UsersTab: React.FC = () => {
+const UsersTab: React.FC = () => {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const toast = useToast()
@@ -63,18 +62,18 @@ export const UsersTab: React.FC = () => {
             <Th>Actions</Th>
           </Tr>
         </Thead>
-        <Tbody>
+        <tbody>
           {users.map((user) => (
-            <Tr key={user.id}>
-              <Td>{user.id}</Td>
-              <Td>{user.name}</Td>
-              <Td>{user.email}</Td>
-              <Td>
+            <tr key={user.id}>
+              <td>{user.id}</td>
+              <td>{user.name}</td>
+              <td>{user.email}</td>
+              <td>
                 <Badge colorScheme={user.role === 'ADMIN' ? 'red' : 'blue'}>
                   {user.role}
                 </Badge>
-              </Td>
-              <Td>
+              </td>
+              <td>
                 <HStack spacing={2}>
                   <Button size="sm" colorScheme="blue">
                     Edit
@@ -83,11 +82,13 @@ export const UsersTab: React.FC = () => {
                     Delete
                   </Button>
                 </HStack>
-              </Td>
-            </Tr>
+              </td>
+            </tr>
           ))}
-        </Tbody>
+        </tbody>
       </Table>
     </Box>
   )
 }
+
+export default UsersTab

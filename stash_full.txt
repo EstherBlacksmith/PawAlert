@@ -1,0 +1,640 @@
+diff --git a/frontend-react/node_modules/.vite/deps/_metadata.json b/frontend-react/node_modules/.vite/deps/_metadata.json
+index 3929ec7d..a636167c 100644
+--- a/frontend-react/node_modules/.vite/deps/_metadata.json
++++ b/frontend-react/node_modules/.vite/deps/_metadata.json
+@@ -2,91 +2,97 @@
+   "hash": "e3d520d8",
+   "configHash": "92f701ec",
+   "lockfileHash": "62c29efb",
+-  "browserHash": "6934eae4",
++  "browserHash": "7112c869",
+   "optimized": {
+     "react": {
+       "src": "../../react/index.js",
+       "file": "react.js",
+-      "fileHash": "775d936d",
++      "fileHash": "6c62ebd7",
+       "needsInterop": true
+     },
+     "react-dom": {
+       "src": "../../react-dom/index.js",
+       "file": "react-dom.js",
+-      "fileHash": "128a54eb",
++      "fileHash": "64fd7f0f",
+       "needsInterop": true
+     },
+     "react/jsx-dev-runtime": {
+       "src": "../../react/jsx-dev-runtime.js",
+       "file": "react_jsx-dev-runtime.js",
+-      "fileHash": "91e7621e",
++      "fileHash": "d9b5522f",
+       "needsInterop": true
+     },
+     "react/jsx-runtime": {
+       "src": "../../react/jsx-runtime.js",
+       "file": "react_jsx-runtime.js",
+-      "fileHash": "05e9f3d4",
++      "fileHash": "04a805ea",
+       "needsInterop": true
+     },
+     "@chakra-ui/react": {
+       "src": "../../@chakra-ui/react/dist/esm/index.js",
+       "file": "@chakra-ui_react.js",
+-      "fileHash": "a166e24d",
++      "fileHash": "5f937394",
+       "needsInterop": false
+     },
+     "axios": {
+       "src": "../../axios/index.js",
+       "file": "axios.js",
+-      "fileHash": "61252d6c",
++      "fileHash": "d63294f0",
+       "needsInterop": false
+     },
+     "leaflet": {
+       "src": "../../leaflet/dist/leaflet-src.js",
+       "file": "leaflet.js",
+-      "fileHash": "bfbe1af7",
++      "fileHash": "d2e6d919",
+       "needsInterop": true
+     },
+     "react-dom/client": {
+       "src": "../../react-dom/client.js",
+       "file": "react-dom_client.js",
+-      "fileHash": "615057d4",
++      "fileHash": "d957522d",
+       "needsInterop": true
+     },
+     "react-icons/fa": {
+       "src": "../../react-icons/fa/index.mjs",
+       "file": "react-icons_fa.js",
+-      "fileHash": "ff50300d",
++      "fileHash": "cc1ad3fb",
+       "needsInterop": false
+     },
+     "react-icons/fi": {
+       "src": "../../react-icons/fi/index.mjs",
+       "file": "react-icons_fi.js",
+-      "fileHash": "9616a38b",
++      "fileHash": "55079f39",
+       "needsInterop": false
+     },
+     "react-leaflet": {
+       "src": "../../react-leaflet/lib/index.js",
+       "file": "react-leaflet.js",
+-      "fileHash": "bc3eefc7",
++      "fileHash": "1911675b",
+       "needsInterop": false
+     },
+     "react-router-dom": {
+       "src": "../../react-router-dom/dist/index.js",
+       "file": "react-router-dom.js",
+-      "fileHash": "d30dda6c",
++      "fileHash": "7212bbc7",
++      "needsInterop": false
++    },
++    "react-icons/gi": {
++      "src": "../../react-icons/gi/index.mjs",
++      "file": "react-icons_gi.js",
++      "fileHash": "01939f6a",
+       "needsInterop": false
+     }
+   },
+   "chunks": {
++    "chunk-NB5MQSEJ": {
++      "file": "chunk-NB5MQSEJ.js"
++    },
+     "chunk-OICGFGSZ": {
+       "file": "chunk-OICGFGSZ.js"
+     },
+     "chunk-6PXSGDAH": {
+       "file": "chunk-6PXSGDAH.js"
+     },
+-    "chunk-NB5MQSEJ": {
+-      "file": "chunk-NB5MQSEJ.js"
+-    },
+     "chunk-PJEEZAML": {
+       "file": "chunk-PJEEZAML.js"
+     },
+diff --git a/frontend-react/src/components/icons/index.tsx b/frontend-react/src/components/icons/index.tsx
+index f7616cb4..d882977e 100644
+--- a/frontend-react/src/components/icons/index.tsx
++++ b/frontend-react/src/components/icons/index.tsx
+@@ -1,6 +1,26 @@
+ import React from 'react'
+ import { Icon, IconProps } from '@chakra-ui/react'
++import {
++  FaPaw,
++  FaHeart,
++  FaList,
++  FaTrash,
++  FaCalendar,
++  FaEdit,
++  FaMapMarker,
++  FaEye,
++  FaInfo,
++  FaSave,
++  FaBell,
++  FaUser,
++  FaPhone,
++  FaEnvelope,
++  FaCircle,
++  FaArrowRight,
++  FaCheckCircle,
++} from 'react-icons/fa'
+ 
++// Custom Icons
+ export const AlertIcon: React.FC<IconProps> = (props) => (
+   <Icon viewBox="0 0 24 24" {...props}>
+     <path
+@@ -45,3 +65,27 @@ export const LogoutIcon: React.FC<IconProps> = (props) => (
+     />
+   </Icon>
+ )
++
++// Export Font Awesome icons with Gi* aliases for backward compatibility
++export {
++  FaPaw as GiPawPrint,
++  FaHeart as GiHealthPotion,
++  FaArrowRight as GiSword,
++  FaPaw as GiDog,
++  FaList as GiList,
++  FaPaw as GiCat,
++  FaSave as GiSave,
++  FaTrash as GiTrashCan,
++  FaInfo as GiInfo,
++  FaEye as GiEye,
++  FaMapMarker as GiMapMarker,
++  FaCalendar as GiCalendar,
++  FaEdit as GiEdit,
++  FaBell as GiBell,
++  FaUser as GiUser,
++  FaPhone as GiSmartphone,
++  FaEnvelope as GiMail,
++  FaCircle as GiCircle,
++  FaArrowRight as GiDirectionSigns,
++  FaCheckCircle as GiCheck,
++}
+diff --git a/frontend-react/src/pages/admin/PetDetail.tsx b/frontend-react/src/pages/admin/PetDetail.tsx
+index 32bf2692..fd944f66 100644
+--- a/frontend-react/src/pages/admin/PetDetail.tsx
++++ b/frontend-react/src/pages/admin/PetDetail.tsx
+@@ -8,12 +8,12 @@ import {
+   CardHeader,
+   Heading,
+   Spinner,
+-  useToast,
+   HStack,
+   VStack,
+   Text,
+   Badge,
+ } from '@chakra-ui/react'
++import { useToast } from '../../context/ToastContext'
+ import { petService } from '../../services/pet.service'
+ import { Pet } from '../../types'
+ 
+diff --git a/frontend-react/src/pages/admin/UserDetail.tsx b/frontend-react/src/pages/admin/UserDetail.tsx
+index 9c5bc64d..6527760f 100644
+--- a/frontend-react/src/pages/admin/UserDetail.tsx
++++ b/frontend-react/src/pages/admin/UserDetail.tsx
+@@ -8,12 +8,12 @@ import {
+   CardHeader,
+   Heading,
+   Spinner,
+-  useToast,
+   HStack,
+   VStack,
+   Text,
+   Badge,
+ } from '@chakra-ui/react'
++import { useToast } from '../../context/ToastContext'
+ import { userService } from '../../services/user.service'
+ import { User } from '../../types'
+ 
+diff --git a/frontend-react/src/pages/admin/UserEdit.tsx b/frontend-react/src/pages/admin/UserEdit.tsx
+index 820ecdb5..16bf9bee 100644
+--- a/frontend-react/src/pages/admin/UserEdit.tsx
++++ b/frontend-react/src/pages/admin/UserEdit.tsx
+@@ -13,9 +13,9 @@ import {
+   FormControl,
+   FormLabel,
+   Spinner,
+-  useToast,
+   Select,
+ } from '@chakra-ui/react'
++import { useToast } from '../../context/ToastContext'
+ import { userService } from '../../services/user.service'
+ import { User } from '../../types'
+ 
+diff --git a/frontend-react/src/pages/admin/components/AlertsTab.tsx b/frontend-react/src/pages/admin/components/AlertsTab.tsx
+index e22e0cb7..e31dcbe9 100644
+--- a/frontend-react/src/pages/admin/components/AlertsTab.tsx
++++ b/frontend-react/src/pages/admin/components/AlertsTab.tsx
+@@ -9,10 +9,10 @@ import {
+   Th,
+   Td,
+   Spinner,
+-  useToast,
+   HStack,
+   Badge,
+ } from '@chakra-ui/react'
++import { useToast } from '../../../context/ToastContext'
+ import { AlertService } from '../../../services/alert.service'
+ import { Alert } from '../../../types'
+ 
+diff --git a/frontend-react/src/pages/admin/components/PetsTab.tsx b/frontend-react/src/pages/admin/components/PetsTab.tsx
+index 27d52960..eb5d2152 100644
+--- a/frontend-react/src/pages/admin/components/PetsTab.tsx
++++ b/frontend-react/src/pages/admin/components/PetsTab.tsx
+@@ -9,9 +9,9 @@ import {
+   Th,
+   Td,
+   Spinner,
+-  useToast,
+   HStack,
+ } from '@chakra-ui/react'
++import { useToast } from '../../../context/ToastContext'
+ import { PetService } from '../../../services/pet.service'
+ import { Pet } from '../../../types'
+ 
+diff --git a/frontend-react/src/pages/admin/components/UsersTab.tsx b/frontend-react/src/pages/admin/components/UsersTab.tsx
+index 0916a02e..1432e58c 100644
+--- a/frontend-react/src/pages/admin/components/UsersTab.tsx
++++ b/frontend-react/src/pages/admin/components/UsersTab.tsx
+@@ -9,10 +9,10 @@ import {
+   Th,
+   Td,
+   Spinner,
+-  useToast,
+   HStack,
+   Badge,
+ } from '@chakra-ui/react'
++import { useToast } from '../../../context/ToastContext'
+ import { UserService } from '../../../services/user.service'
+ import { User } from '../../../types'
+ 
+diff --git a/frontend-react/src/pages/pets/PetDetail.tsx b/frontend-react/src/pages/pets/PetDetail.tsx
+index d50418bd..de069226 100644
+--- a/frontend-react/src/pages/pets/PetDetail.tsx
++++ b/frontend-react/src/pages/pets/PetDetail.tsx
+@@ -8,12 +8,12 @@ import {
+   CardHeader,
+   Heading,
+   Spinner,
+-  useToast,
+   HStack,
+   VStack,
+   Text,
+   Badge,
+ } from '@chakra-ui/react'
++import { useToast } from '../../context/ToastContext'
+ import { PetService } from '../../services/pet.service'
+ import { Pet } from '../../types'
+ 
+diff --git a/frontend-react/src/pages/subscriptions/MySubscriptions.tsx b/frontend-react/src/pages/subscriptions/MySubscriptions.tsx
+index dddb0855..385af47e 100644
+--- a/frontend-react/src/pages/subscriptions/MySubscriptions.tsx
++++ b/frontend-react/src/pages/subscriptions/MySubscriptions.tsx
+@@ -1,8 +1,8 @@
+ import { useEffect, useState } from 'react'
+ import { Box, Heading, VStack, Text, Flex, Spinner, Card, Badge, HStack, Button, EmptyState, Icon } from '@chakra-ui/react'
+ import { useNavigate } from 'react-router-dom'
+-import { FaArrowLeft } from 'react-icons/fa'
+-import { GiBell, GiDirectionSigns, GiTrashCan, GiInfo, GiEye, GiArrowRight } from '../../components/icons'
++import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
++import { GiBell, GiDirectionSigns, GiTrashCan, GiInfo, GiEye } from '../../components/icons'
+ import { alertService } from '../../services/alert.service'
+ import type { AlertSubscriptionWithDetails, ErrorResponse } from '../../types'
+ import { toast } from '../../toaster'
+@@ -172,15 +172,15 @@ export default function MySubscriptions() {
+                    </Box>
+                    
+                    <HStack gap={2} flexShrink={0}>
+-                     <Button
+-                       size="sm"
+-                       colorPalette="brand"
+-                       variant="ghost"
+-                       onClick={() => navigate(`/alerts/${subscription.alertId}`)}
+-                     >
+-                       <GiArrowRight style={{ marginRight: '4px' }} />
+-                       View
+-                     </Button>
++                      <Button
++                        size="sm"
++                        colorPalette="brand"
++                        variant="ghost"
++                        onClick={() => navigate(`/alerts/${subscription.alertId}`)}
++                      >
++                        <FaArrowRight style={{ marginRight: '4px' }} />
++                        View
++                      </Button>
+                      <Button
+                        size="sm"
+                        colorPalette="red"
+diff --git a/frontend-react/src/services/alert.service.ts b/frontend-react/src/services/alert.service.ts
+index c8bd6ea8..11c8b2c3 100644
+--- a/frontend-react/src/services/alert.service.ts
++++ b/frontend-react/src/services/alert.service.ts
+@@ -8,7 +8,7 @@ export const alertService = {
+   },
+ 
+   getAllAlerts: async (): Promise<Alert[]> => {
+-    const response = await api.get<Alert[]>('/alerts')
++    const response = await api.get<Alert[]>('/alerts/admin/all')
+     return response.data
+   },
+ 
+@@ -201,3 +201,28 @@ export const alertService = {
+     return response.data
+   },
+ }
++
++// Export AlertService class for class-based imports
++export class AlertService {
++  static getAlerts = alertService.getAlerts
++  static getAllAlerts = alertService.getAllAlerts
++  static getAlert = alertService.getAlert
++  static createAlert = alertService.createAlert
++  static closeAlert = alertService.closeAlert
++  static updateAlertStatus = alertService.updateAlertStatus
++  static updateAlertTitle = alertService.updateAlertTitle
++  static updateAlertDescription = alertService.updateAlertDescription
++  static deleteAlert = alertService.deleteAlert
++  static updateAlert = alertService.updateAlert
++  static getAlertsByStatus = alertService.getAlertsByStatus
++  static getAlertEvents = alertService.getAlertEvents
++  static getActiveAlertByPetId = alertService.getActiveAlertByPetId
++  static searchAlertsWithFilters = alertService.searchAlertsWithFilters
++  static getAllAlertsForAdmin = alertService.getAllAlertsForAdmin
++  static getNearbyAlerts = alertService.getNearbyAlerts
++  static subscribeToAlert = alertService.subscribeToAlert
++  static unsubscribeFromAlert = alertService.unsubscribeFromAlert
++  static isSubscribedToAlert = alertService.isSubscribedToAlert
++  static getMySubscriptions = alertService.getMySubscriptions
++  static getAlertsByUserId = alertService.getAlertsByUserId
++}
+diff --git a/frontend-react/src/services/pet.service.ts b/frontend-react/src/services/pet.service.ts
+index 7f573240..b69e92c5 100644
+--- a/frontend-react/src/services/pet.service.ts
++++ b/frontend-react/src/services/pet.service.ts
+@@ -12,6 +12,11 @@ export const petService = {
+     return response.data
+   },
+ 
++  getPetById: async (petId: string): Promise<Pet> => {
++    const response = await api.get<Pet>(`/pets/${petId}`)
++    return response.data
++  },
++
+   createPet: async (petData: CreatePetRequest): Promise<Pet> => {
+     const response = await api.post<Pet>('/pets', petData)
+     return response.data
+@@ -79,3 +84,17 @@ export const petService = {
+     return response.data
+   },
+ }
++
++export class PetService {
++  static getPetById = petService.getPetById
++  static getPets = petService.getPets
++  static getPet = petService.getPet
++  static createPet = petService.createPet
++  static updatePet = petService.updatePet
++  static deletePet = petService.deletePet
++  static validateImage = petService.validateImage
++  static uploadImage = petService.uploadImage
++  static getAllPets = petService.getAllPets
++  static adminDeletePet = petService.adminDeletePet
++  static getPetsByUserId = petService.getPetsByUserId
++}
+diff --git a/frontend-react/src/services/user.service.ts b/frontend-react/src/services/user.service.ts
+index 0be13e4f..75e14653 100644
+--- a/frontend-react/src/services/user.service.ts
++++ b/frontend-react/src/services/user.service.ts
+@@ -162,19 +162,34 @@ export const userService = {
+     await api.delete(`/users/admin/${userId}`)
+   },
+ 
+-  // Admin: Update user by ID
+-  adminUpdateUser: async (userId: string, data: Partial<User>): Promise<User> => {
+-    console.log('adminUpdateUser called with data:', data)
+-    const response = await api.put<Record<string, unknown>>(`/users/admin/${userId}`, {
+-      newUsername: data.username,
+-      newEmail: data.email,
+-      newSurname: data.surname,
+-      newPhonenumber: data.phoneNumber,
+-      telegramChatId: data.telegramChatId,
+-      emailNotificationsEnabled: data.emailNotificationsEnabled,
+-      telegramNotificationsEnabled: data.telegramNotificationsEnabled,
+-      newRole: data.role
+-    })
+-    return transformUserResponse(response.data)
+-  },
++   // Admin: Update user by ID
++   adminUpdateUser: async (userId: string, data: Partial<User>): Promise<User> => {
++     console.log('adminUpdateUser called with data:', data)
++     const response = await api.put<Record<string, unknown>>(`/users/admin/${userId}`, {
++       newUsername: data.username,
++       newEmail: data.email,
++       newSurname: data.surname,
++       newPhonenumber: data.phoneNumber,
++       telegramChatId: data.telegramChatId,
++       emailNotificationsEnabled: data.emailNotificationsEnabled,
++       telegramNotificationsEnabled: data.telegramNotificationsEnabled,
++       newRole: data.role
++     })
++     return transformUserResponse(response.data)
++   },
++}
++
++// Export UserService class for class-based imports
++export class UserService {
++  static getUser = userService.getUser
++  static updateUser = userService.updateUser
++  static updateUsername = userService.updateUsername
++  static updateEmail = userService.updateEmail
++  static updatePhoneNumber = userService.updatePhoneNumber
++  static updateSurname = userService.updateSurname
++  static updateTelegramChatId = userService.updateTelegramChatId
++  static updateNotificationPreferences = userService.updateNotificationPreferences
++  static getAllUsers = userService.getAllUsers
++  static deleteUser = userService.deleteUser
++  static adminUpdateUser = userService.adminUpdateUser
+ }
+diff --git a/src/main/java/itacademy/pawalert/infrastructure/image/google/GoogleVisionConfig.java b/src/main/java/itacademy/pawalert/infrastructure/image/google/GoogleVisionConfig.java
+index 3ffb169c..060618d6 100644
+--- a/src/main/java/itacademy/pawalert/infrastructure/image/google/GoogleVisionConfig.java
++++ b/src/main/java/itacademy/pawalert/infrastructure/image/google/GoogleVisionConfig.java
+@@ -1,10 +1,13 @@
+ package itacademy.pawalert.infrastructure.image.google;
+ 
++import com.google.auth.oauth2.GoogleCredentials;
+ import com.google.cloud.vision.v1.ImageAnnotatorClient;
+ import com.google.cloud.vision.v1.ImageAnnotatorSettings;
+ import org.springframework.beans.factory.annotation.Value;
+ import org.springframework.context.annotation.Bean;
+ import org.springframework.context.annotation.Configuration;
++import org.springframework.core.io.ClassPathResource;
++import org.springframework.core.io.Resource;
+ 
+ import java.io.IOException;
+ import java.io.InputStream;
+@@ -17,25 +20,93 @@ public class GoogleVisionConfig {
+ 
+     @Bean
+     public ImageAnnotatorClient imageAnnotatorClient() throws IOException {
+-        // If credentials path is specified, use it
+-        if (credentialsPath != null && !credentialsPath.isEmpty()) {
++        GoogleCredentials credentials = loadCredentials();
++        
++        if (credentials != null) {
+             ImageAnnotatorSettings settings = ImageAnnotatorSettings.newBuilder()
+-                    .setCredentialsProvider(() -> {
+-                        try {
+-                            InputStream credentialsStream = getClass().getResourceAsStream("/google-credentials.json");
+-                            if (credentialsStream == null) {
+-                                throw new RuntimeException("No se encontró google-credentials.json en el classpath");
+-                            }
+-                            return com.google.auth.oauth2.GoogleCredentials.fromStream(credentialsStream);
+-
+-                        } catch (IOException e) {
+-                            throw new RuntimeException("Failed to load Google credentials", e);
+-                        }
+-                    })
++                    .setCredentialsProvider(() -> credentials)
+                     .build();
+             return ImageAnnotatorClient.create(settings);
+         }
+-        // Use default credentials (GOOGLE_APPLICATION_CREDENTIALS env var)
++        
++        // Fall back to Application Default Credentials (ADC)
+         return ImageAnnotatorClient.create();
+     }
++
++    /**
++     * Implements a robust fallback mechanism for loading Google Cloud credentials:
++     * 1. First checks the google.cloud.credentials.path property
++     * 2. Falls back to GOOGLE_APPLICATION_CREDENTIALS environment variable
++     * 3. Falls back to classpath resource /google-credentials.json
++     * 4. Returns null to allow ADC lookup
++     */
++    private GoogleCredentials loadCredentials() throws IOException {
++        // Step 1: Check google.cloud.credentials.path property
++        if (credentialsPath != null && !credentialsPath.isEmpty()) {
++            try {
++                InputStream credentialsStream = loadResourceStream(credentialsPath);
++                if (credentialsStream != null) {
++                    return GoogleCredentials.fromStream(credentialsStream);
++                }
++            } catch (IOException e) {
++                // Log and continue to next fallback
++                System.err.println("Failed to load credentials from path: " + credentialsPath + ". Error: " + e.getMessage());
++            }
++        }
++
++        // Step 2: Check GOOGLE_APPLICATION_CREDENTIALS environment variable
++        String envCredentialsPath = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
++        if (envCredentialsPath != null && !envCredentialsPath.isEmpty()) {
++            try {
++                InputStream credentialsStream = loadResourceStream(envCredentialsPath);
++                if (credentialsStream != null) {
++                    return GoogleCredentials.fromStream(credentialsStream);
++                }
++            } catch (IOException e) {
++                // Log and continue to next fallback
++                System.err.println("Failed to load credentials from GOOGLE_APPLICATION_CREDENTIALS: " + e.getMessage());
++            }
++        }
++
++        // Step 3: Check classpath resource /google-credentials.json
++        try {
++            InputStream credentialsStream = getClass().getResourceAsStream("/google-credentials.json");
++            if (credentialsStream != null) {
++                return GoogleCredentials.fromStream(credentialsStream);
++            }
++        } catch (IOException e) {
++            // Log and continue to ADC
++            System.err.println("Failed to load credentials from classpath resource: " + e.getMessage());
++        }
++
++        // Step 4: Return null to allow ADC lookup
++        return null;
++    }
++
++    /**
++     * Helper method to load a resource stream from various sources
++     */
++    private InputStream loadResourceStream(String resourcePath) throws IOException {
++        // Handle classpath resources (e.g., "classpath:/google-credentials.json")
++        if (resourcePath.startsWith("classpath:")) {
++            String path = resourcePath.substring("classpath:".length());
++            Resource resource = new ClassPathResource(path);
++            if (resource.exists()) {
++                return resource.getInputStream();
++            }
++            return null;
++        }
++
++        // Handle file system paths
++        try {
++            Resource resource = new org.springframework.core.io.FileSystemResource(resourcePath);
++            if (resource.exists()) {
++                return resource.getInputStream();
++            }
++        } catch (Exception e) {
++            // Continue to next fallback
++        }
++
++        return null;
++    }
+ }
+diff --git a/src/main/resources/application.properties b/src/main/resources/application.properties
+index 7ed994cb..3d1d10c5 100644
+--- a/src/main/resources/application.properties
++++ b/src/main/resources/application.properties
+@@ -11,22 +11,22 @@ spring.h2.console.enabled=true
+ spring.h2.console.path=/h2-console
+ 
+ # Database Configuration (H2 for testing)
+-spring.datasource.url=jdbc:h2:mem:pawalert;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+-spring.datasource.driver-class-name=org.h2.Driver
+-spring.datasource.username=sa
+-spring.datasource.password=
++# spring.datasource.url=jdbc:h2:mem:pawalert;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
++# spring.datasource.driver-class-name=org.h2.Driver
++# spring.datasource.username=sa
++# spring.datasource.password=
+ 
+-spring.jpa.hibernate.ddl-auto=create-drop
+-spring.jpa.show-sql=true
+-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
++# spring.jpa.hibernate.ddl-auto=create-drop
++# spring.jpa.show-sql=true
++# spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
+ 
+ # PostgreSQL Configuration (enable when Docker is available)
+-# spring.datasource.url=jdbc:postgresql://localhost:5432/pawalert
+-# spring.datasource.driver-class-name=org.postgresql.Driver
+-# spring.datasource.username=postgres
+-# spring.datasource.password=postgres
+-# spring.jpa.hibernate.ddl-auto=update
+-# spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
++spring.datasource.url=jdbc:postgresql://localhost:5432/pawalert
++spring.datasource.driver-class-name=org.postgresql.Driver
++spring.datasource.username=postgres
++spring.datasource.password=postgres
++spring.jpa.hibernate.ddl-auto=update
++spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+ # PostgreSQL specific settings
+ # spring.datasource.hikari.maximum-pool-size=10
+ # spring.datasource.hikari.minimum-idle=5
+@@ -53,3 +53,9 @@ telegram.bot.token=
+ # Chat ID (get from @userinfobot)
+ telegram.bot.chat_id=5351276
+ 
++# ???????????????????????????????????????????????????????
++# GOOGLE CLOUD VISION CONFIGURATION
++# ???????????????????????????????????????????????????????
++# Path to Google Cloud credentials JSON file (classpath resource)
++google.cloud.credentials.path=classpath:/google-credentials.json
++

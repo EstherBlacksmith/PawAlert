@@ -6,7 +6,6 @@ import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 import Sidebar from './Sidebar'
 import Header from './Header'
 import { useAuth } from '../../context/AuthContext'
-import bgImage from '../../assets/bg-image.jpg'
 
 export default function MainLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -18,7 +17,6 @@ export default function MainLayout() {
   return (
     <Flex
       minH="100vh"
-      backgroundImage={isAdmin() ? `url(${bgImage})` : "url('/bg-image.jpg')"}
       backgroundSize="cover"
       backgroundPosition="center"
       backgroundAttachment={isAdmin() ? 'fixed' : 'scroll'}

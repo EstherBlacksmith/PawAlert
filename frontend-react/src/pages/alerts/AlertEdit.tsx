@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, Heading, Button, VStack, Field, Input, Textarea, Flex, Spinner, Alert } from '@chakra-ui/react'
+import { Box, Heading, Button, VStack, Input, Textarea, Flex, Spinner, Alert, Text } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
@@ -125,30 +125,30 @@ export default function AlertEdit() {
         </Alert.Root>
       )}
 
-      <Box as="form" onSubmit={handleSubmit}>
-        <VStack gap={4}>
-          <Field.Root>
-            <Field.Label>Title *</Field.Label>
-            <Input 
-              name="title" 
-              value={formData.title} 
-              onChange={handleChange} 
-              required 
-              placeholder="Enter alert title"
-            />
-          </Field.Root>
+       <Box as="form" onSubmit={handleSubmit}>
+         <VStack gap={4}>
+           <Box w="full">
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Title *</Text>
+             <Input 
+               name="title" 
+               value={formData.title} 
+               onChange={handleChange} 
+               required 
+               placeholder="Enter alert title"
+             />
+           </Box>
 
-          <Field.Root>
-            <Field.Label>Description *</Field.Label>
-            <Textarea 
-              name="description" 
-              value={formData.description} 
-              onChange={handleChange} 
-              required
-              placeholder="Enter alert description"
-              rows={4}
-            />
-          </Field.Root>
+           <Box w="full">
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Description *</Text>
+             <Textarea 
+               name="description" 
+               value={formData.description} 
+               onChange={handleChange} 
+               required
+               placeholder="Enter alert description"
+               rows={4}
+             />
+           </Box>
 
           <Flex w="full" gap={4} pt={4}>
             <Button 

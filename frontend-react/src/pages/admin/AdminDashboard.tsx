@@ -12,7 +12,6 @@ import { User, Pet, Alert } from '../../types'
 import UsersTab from './components/UsersTab'
 import PetsTab from './components/PetsTab'
 import AlertsTab from './components/AlertsTab'
-import bgImage from '../../assets/bg-image.jpg'
 
 interface Stats {
   totalUsers: number
@@ -89,7 +88,6 @@ export default function AdminDashboard() {
   return (
     <Box
       minH="100vh"
-      backgroundImage={`url(${bgImage})`}
       backgroundSize="cover"
       backgroundPosition="center"
       backgroundAttachment="fixed"

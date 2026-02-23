@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, Heading, Button, VStack, Field, Input, Text, Card, Flex, Avatar, Stack, Switch, Spinner, Alert, SimpleGrid } from '@chakra-ui/react'
+import { Box, Heading, Button, VStack, Input, Text, Card, Flex, Avatar, Stack, Switch, Spinner, Alert, SimpleGrid } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
@@ -158,32 +158,32 @@ export default function Profile() {
 
             <Box as="form" onSubmit={handleSubmit}>
               <VStack gap={4}>
-                <Field.Root>
-                  <Field.Label>Username</Field.Label>
+                <Box>
+                  <Text as="label" display="block" fontWeight="medium" mb={2}>Username</Text>
                   <Input name="username" value={formData.username} onChange={handleChange} />
-                </Field.Root>
+                </Box>
 
-                <Field.Root>
-                  <Field.Label>Surname (Apellido)</Field.Label>
+                <Box>
+                  <Text as="label" display="block" fontWeight="medium" mb={2}>Surname (Apellido)</Text>
                   <Input name="surname" value={formData.surname} onChange={handleChange} placeholder="Your surname" />
-                </Field.Root>
+                </Box>
 
-                <Field.Root>
-                  <Field.Label>Email</Field.Label>
+                <Box>
+                  <Text as="label" display="block" fontWeight="medium" mb={2}>Email</Text>
                   <Input name="email" type="email" value={formData.email} onChange={handleChange} />
-                </Field.Root>
+                </Box>
 
-                <Field.Root>
-                  <Field.Label>Phone Number</Field.Label>
+                <Box>
+                  <Text as="label" display="block" fontWeight="medium" mb={2}>Phone Number</Text>
                   <Input name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} placeholder="+34 600 000 000" />
-                  <Field.HelperText>Format: optional + followed by 7-20 digits/symbols (e.g., +34600123456)</Field.HelperText>
-                </Field.Root>
+                  <Text fontSize="sm" color="gray.600" mt={1}>Format: optional + followed by 7-20 digits/symbols (e.g., +34600123456)</Text>
+                </Box>
 
-                <Field.Root>
-                  <Field.Label>Telegram Chat ID</Field.Label>
+                <Box>
+                  <Text as="label" display="block" fontWeight="medium" mb={2}>Telegram Chat ID</Text>
                   <Input name="telegramChatId" value={formData.telegramChatId} onChange={handleChange} placeholder="Optional" />
-                  <Field.HelperText>Get your Chat ID from @userinfobot on Telegram</Field.HelperText>
-                </Field.Root>
+                  <Text fontSize="sm" color="gray.600" mt={1}>Get your Chat ID from @userinfobot on Telegram</Text>
+                </Box>
               </VStack>
             </Box>
           </Card.Body>

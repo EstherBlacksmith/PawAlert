@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, VStack, Heading, Text, Input, Button, Field, HStack, Alert } from '@chakra-ui/react'
+import { Box, VStack, Heading, Text, Input, Button, HStack, Alert } from '@chakra-ui/react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FaPaw } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
@@ -216,117 +216,125 @@ export default function Register() {
           )}
 
            {/* Form */}
-           <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-             <VStack gap={{ base: 2.5, md: 3, lg: 4 }} w="full">
-               <Field.Root w="full">
-                 <Field.Label 
-                   fontSize="sm" 
-                   fontWeight="600" 
-                   color="gray.700"
-                   mb={2}
-                 >
-                   Username
-                 </Field.Label>
-                 <Input
-                   name="username"
-                   value={formData.username}
-                   onChange={handleChange}
-                   placeholder="Choose a username"
-                   required
-                   bg="rgba(255, 255, 255, 0.8)"
-                   borderColor="rgba(0, 0, 0, 0.1)"
-                   fontSize="md"
-                   py={3}
-                   px={4}
-                   transition="all 0.3s ease"
-                   _focus={{
-                     borderColor: 'brand.500',
-                     boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
-                     bg: 'white'
-                   }}
-                   _hover={{
-                     borderColor: 'rgba(0, 0, 0, 0.2)',
-                     bg: 'white'
-                   }}
-                 />
-               </Field.Root>
+            <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+              <VStack gap={{ base: 2.5, md: 3, lg: 4 }} w="full">
+                <Box w="full">
+                  <Text 
+                    as="label"
+                    fontSize="sm" 
+                    fontWeight="600" 
+                    color="gray.700"
+                    display="block"
+                    mb={2}
+                  >
+                    Username
+                  </Text>
+                  <Input
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Choose a username"
+                    required
+                    bg="rgba(255, 255, 255, 0.8)"
+                    borderColor="rgba(0, 0, 0, 0.1)"
+                    fontSize="md"
+                    py={3}
+                    px={4}
+                    transition="all 0.3s ease"
+                    _focus={{
+                      borderColor: 'brand.500',
+                      boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
+                      bg: 'white'
+                    }}
+                    _hover={{
+                      borderColor: 'rgba(0, 0, 0, 0.2)',
+                      bg: 'white'
+                    }}
+                  />
+                </Box>
 
-               <Field.Root w="full">
-                 <Field.Label 
-                   fontSize="sm" 
-                   fontWeight="600" 
-                   color="gray.700"
-                   mb={2}
-                 >
-                   Surname
-                 </Field.Label>
-                 <Input
-                   name="surname"
-                   value={formData.surname}
-                   onChange={handleChange}
-                   placeholder="Your surname"
-                   required
-                   bg="rgba(255, 255, 255, 0.8)"
-                   borderColor="rgba(0, 0, 0, 0.1)"
-                   fontSize="md"
-                   py={3}
-                   px={4}
-                   transition="all 0.3s ease"
-                   _focus={{
-                     borderColor: 'brand.500',
-                     boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
-                     bg: 'white'
-                   }}
-                   _hover={{
-                     borderColor: 'rgba(0, 0, 0, 0.2)',
-                     bg: 'white'
-                   }}
-                 />
-               </Field.Root>
+                <Box w="full">
+                  <Text 
+                    as="label"
+                    fontSize="sm" 
+                    fontWeight="600" 
+                    color="gray.700"
+                    display="block"
+                    mb={2}
+                  >
+                    Surname
+                  </Text>
+                  <Input
+                    name="surname"
+                    value={formData.surname}
+                    onChange={handleChange}
+                    placeholder="Your surname"
+                    required
+                    bg="rgba(255, 255, 255, 0.8)"
+                    borderColor="rgba(0, 0, 0, 0.1)"
+                    fontSize="md"
+                    py={3}
+                    px={4}
+                    transition="all 0.3s ease"
+                    _focus={{
+                      borderColor: 'brand.500',
+                      boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
+                      bg: 'white'
+                    }}
+                    _hover={{
+                      borderColor: 'rgba(0, 0, 0, 0.2)',
+                      bg: 'white'
+                    }}
+                  />
+                </Box>
 
-               <Field.Root w="full">
-                 <Field.Label 
-                   fontSize="sm" 
-                   fontWeight="600" 
-                   color="gray.700"
-                   mb={2}
-                 >
-                   Email
-                 </Field.Label>
-                 <Input
-                   type="email"
-                   name="email"
-                   value={formData.email}
-                   onChange={handleChange}
-                   placeholder="your@email.com"
-                   required
-                   bg="rgba(255, 255, 255, 0.8)"
-                   borderColor="rgba(0, 0, 0, 0.1)"
-                   fontSize="md"
-                   py={3}
-                   px={4}
-                   transition="all 0.3s ease"
-                   _focus={{
-                     borderColor: 'brand.500',
-                     boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
-                     bg: 'white'
-                   }}
-                   _hover={{
-                     borderColor: 'rgba(0, 0, 0, 0.2)',
-                     bg: 'white'
-                   }}
-                 />
-               </Field.Root>
+                <Box w="full">
+                  <Text 
+                    as="label"
+                    fontSize="sm" 
+                    fontWeight="600" 
+                    color="gray.700"
+                    display="block"
+                    mb={2}
+                  >
+                    Email
+                  </Text>
+                  <Input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="your@email.com"
+                    required
+                    bg="rgba(255, 255, 255, 0.8)"
+                    borderColor="rgba(0, 0, 0, 0.1)"
+                    fontSize="md"
+                    py={3}
+                    px={4}
+                    transition="all 0.3s ease"
+                    _focus={{
+                      borderColor: 'brand.500',
+                      boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
+                      bg: 'white'
+                    }}
+                    _hover={{
+                      borderColor: 'rgba(0, 0, 0, 0.2)',
+                      bg: 'white'
+                    }}
+                  />
+                </Box>
 
-               <Field.Root w="full">
-                 <Field.Label 
-                   fontSize="sm" 
-                   fontWeight="600" 
-                   color="gray.700"
-                   mb={2}
-                 >
-                   Phone Number
-                 </Field.Label>
+                <Box w="full">
+                  <Text 
+                    as="label"
+                    fontSize="sm" 
+                    fontWeight="600" 
+                    color="gray.700"
+                    display="block"
+                    mb={2}
+                  >
+                    Phone Number
+                  </Text>
                  <HStack gap={2} w="full">
                    <Box w="100px">
                      <select
@@ -372,76 +380,80 @@ export default function Register() {
                        bg: 'white'
                      }}
                    />
-                 </HStack>
-               </Field.Root>
+                  </HStack>
+                </Box>
 
-               <Field.Root w="full">
-                 <Field.Label 
-                   fontSize="sm" 
-                   fontWeight="600" 
-                   color="gray.700"
-                   mb={2}
-                 >
-                   Password
-                 </Field.Label>
-                 <Input
-                   type="password"
-                   name="password"
-                   value={formData.password}
-                   onChange={handleChange}
-                   placeholder="Create a password"
-                   required
-                   bg="rgba(255, 255, 255, 0.8)"
-                   borderColor="rgba(0, 0, 0, 0.1)"
-                   fontSize="md"
-                   py={3}
-                   px={4}
-                   transition="all 0.3s ease"
-                   _focus={{
-                     borderColor: 'brand.500',
-                     boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
-                     bg: 'white'
-                   }}
-                   _hover={{
-                     borderColor: 'rgba(0, 0, 0, 0.2)',
-                     bg: 'white'
-                   }}
-                 />
-               </Field.Root>
+                <Box w="full">
+                  <Text 
+                    as="label"
+                    fontSize="sm" 
+                    fontWeight="600" 
+                    color="gray.700"
+                    display="block"
+                    mb={2}
+                  >
+                    Password
+                  </Text>
+                  <Input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Create a password"
+                    required
+                    bg="rgba(255, 255, 255, 0.8)"
+                    borderColor="rgba(0, 0, 0, 0.1)"
+                    fontSize="md"
+                    py={3}
+                    px={4}
+                    transition="all 0.3s ease"
+                    _focus={{
+                      borderColor: 'brand.500',
+                      boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
+                      bg: 'white'
+                    }}
+                    _hover={{
+                      borderColor: 'rgba(0, 0, 0, 0.2)',
+                      bg: 'white'
+                    }}
+                  />
+                </Box>
 
-               <Field.Root w="full">
-                 <Field.Label 
-                   fontSize="sm" 
-                   fontWeight="600" 
-                   color="gray.700"
-                   mb={2}
-                 >
-                   Confirm Password
-                 </Field.Label>
-                 <Input
-                   type="password"
-                   name="confirmPassword"
-                   value={formData.confirmPassword}
-                   onChange={handleChange}
-                   placeholder="Confirm your password"
-                   required
-                   bg="rgba(255, 255, 255, 0.8)"
-                   borderColor="rgba(0, 0, 0, 0.1)"
-                   fontSize="md"
-                   py={3}
-                   px={4}
-                   transition="all 0.3s ease"
-                   _focus={{
-                     borderColor: 'brand.500',
-                     boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
-                     bg: 'white'
-                   }}
-                   _hover={{
-                     borderColor: 'rgba(0, 0, 0, 0.2)',
-                     bg: 'white'
-                   }}
-                 />
-               </Field.Root>
+                <Box w="full">
+                  <Text 
+                    as="label"
+                    fontSize="sm" 
+                    fontWeight="600" 
+                    color="gray.700"
+                    display="block"
+                    mb={2}
+                  >
+                    Confirm Password
+                  </Text>
+                  <Input
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    placeholder="Confirm your password"
+                    required
+                    bg="rgba(255, 255, 255, 0.8)"
+                    borderColor="rgba(0, 0, 0, 0.1)"
+                    fontSize="md"
+                    py={3}
+                    px={4}
+                    transition="all 0.3s ease"
+                    _focus={{
+                      borderColor: 'brand.500',
+                      boxShadow: '0 0 0 3px rgba(251, 111, 4, 0.1)',
+                      bg: 'white'
+                    }}
+                    _hover={{
+                      borderColor: 'rgba(0, 0, 0, 0.2)',
+                      bg: 'white'
+                    }}
+                  />
+                </Box>
 
                <Button
                  type="submit"

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Box, Heading, Button, VStack, Field, Input, Textarea, NativeSelect, Image, Text, Spinner, Flex, Alert, SimpleGrid } from '@chakra-ui/react'
+import { Box, Heading, Button, VStack, Input, Textarea, Image, Text, Spinner, Flex, Alert, SimpleGrid, Select } from '@chakra-ui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { petService } from '../../services/pet.service'
@@ -216,11 +216,11 @@ export default function PetEdit() {
         </Alert.Root>
       )}
 
-      <Box as="form" onSubmit={handleSubmit}>
-        <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-          {/* Image Upload Section - spans full width */}
-          <Field.Root gridColumn={{ base: '1', md: 'span 2' }}>
-            <Field.Label>Pet Photo</Field.Label>
+       <Box as="form" onSubmit={handleSubmit}>
+         <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+           {/* Image Upload Section - spans full width */}
+           <Box gridColumn={{ base: '1', md: 'span 2' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Pet Photo</Text>
             <Box
               border="2px dashed"
               borderColor={imageError ? 'red.400' : 'gray.300'}
@@ -281,108 +281,99 @@ export default function PetEdit() {
             {imageError && (
               <Text color="red.500" fontSize="sm" mt={1}>
                 {imageError}
-              </Text>
-            )}
-          </Field.Root>
+               </Text>
+             )}
+           </Box>
 
-          <Field.Root gridColumn={{ base: '1', md: '1' }}>
-            <Field.Label>Official Name *</Field.Label>
-            <Input name="officialPetName" value={formData.officialPetName} onChange={handleChange} required />
-          </Field.Root>
+           <Box gridColumn={{ base: '1', md: '1' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Official Name *</Text>
+             <Input name="officialPetName" value={formData.officialPetName} onChange={handleChange} required />
+           </Box>
 
-          <Field.Root gridColumn={{ base: '1', md: '2' }}>
-            <Field.Label>Working Name</Field.Label>
-            <Input name="workingPetName" value={formData.workingPetName} onChange={handleChange} />
-          </Field.Root>
+           <Box gridColumn={{ base: '1', md: '2' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Working Name</Text>
+             <Input name="workingPetName" value={formData.workingPetName} onChange={handleChange} />
+           </Box>
 
-          <Field.Root gridColumn={{ base: '1', md: '1' }}>
-            <Field.Label>Chip Number</Field.Label>
-            <Input name="chipNumber" value={formData.chipNumber} onChange={handleChange} />
-          </Field.Root>
+           <Box gridColumn={{ base: '1', md: '1' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Chip Number</Text>
+             <Input name="chipNumber" value={formData.chipNumber} onChange={handleChange} />
+           </Box>
 
-          <Field.Root gridColumn={{ base: '1', md: '2' }}>
-            <Field.Label>Species *</Field.Label>
-            <NativeSelect.Root>
-              <NativeSelect.Field 
-                name="species" 
-                value={formData.species} 
-                onChange={handleChange}
-                _disabled={{ opacity: speciesLoading ? 0.5 : 1, pointerEvents: speciesLoading ? 'none' : 'auto' }}
-              >
-                {speciesLoading ? (
-                  <option value="">Loading...</option>
-                ) : (
-                  speciesValues.map((item) => (
-                    <option key={item.value} value={item.value}>
-                      {item.displayName}
-                    </option>
-                  ))
-                )}
-              </NativeSelect.Field>
-              <NativeSelect.Indicator />
-            </NativeSelect.Root>
-          </Field.Root>
+           <Box gridColumn={{ base: '1', md: '2' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Species *</Text>
+             <Select 
+               name="species" 
+               value={formData.species} 
+               onChange={handleChange}
+               disabled={speciesLoading}
+             >
+               {speciesLoading ? (
+                 <option value="">Loading...</option>
+               ) : (
+                 speciesValues.map((item) => (
+                   <option key={item.value} value={item.value}>
+                     {item.displayName}
+                   </option>
+                 ))
+               )}
+             </Select>
+           </Box>
 
-          <Field.Root gridColumn={{ base: '1', md: '1' }}>
-            <Field.Label>Breed</Field.Label>
-            <Input name="breed" value={formData.breed} onChange={handleChange} />
-          </Field.Root>
+           <Box gridColumn={{ base: '1', md: '1' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Breed</Text>
+             <Input name="breed" value={formData.breed} onChange={handleChange} />
+           </Box>
 
-          <Field.Root gridColumn={{ base: '1', md: '2' }}>
-            <Field.Label>Size</Field.Label>
-            <NativeSelect.Root>
-              <NativeSelect.Field 
-                name="size" 
-                value={formData.size} 
-                onChange={handleChange}
-                _disabled={{ opacity: sizeLoading ? 0.5 : 1, pointerEvents: sizeLoading ? 'none' : 'auto' }}
-              >
-                {sizeLoading ? (
-                  <option value="">Loading...</option>
-                ) : (
-                  sizeValues.map((item) => (
-                    <option key={item.value} value={item.value}>
-                      {item.displayName}
-                    </option>
-                  ))
-                )}
-              </NativeSelect.Field>
-              <NativeSelect.Indicator />
-            </NativeSelect.Root>
-          </Field.Root>
+           <Box gridColumn={{ base: '1', md: '2' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Size</Text>
+             <Select 
+               name="size" 
+               value={formData.size} 
+               onChange={handleChange}
+               disabled={sizeLoading}
+             >
+               {sizeLoading ? (
+                 <option value="">Loading...</option>
+               ) : (
+                 sizeValues.map((item) => (
+                   <option key={item.value} value={item.value}>
+                     {item.displayName}
+                   </option>
+                 ))
+               )}
+             </Select>
+           </Box>
 
-          <Field.Root gridColumn={{ base: '1', md: '1' }}>
-            <Field.Label>Color</Field.Label>
-            <Input name="color" value={formData.color} onChange={handleChange} />
-          </Field.Root>
+           <Box gridColumn={{ base: '1', md: '1' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Color</Text>
+             <Input name="color" value={formData.color} onChange={handleChange} />
+           </Box>
 
-          <Field.Root gridColumn={{ base: '1', md: '2' }}>
-            <Field.Label>Gender</Field.Label>
-            <NativeSelect.Root>
-              <NativeSelect.Field 
-                name="gender" 
-                value={formData.gender} 
-                onChange={handleChange}
-                _disabled={{ opacity: genderLoading ? 0.5 : 1, pointerEvents: genderLoading ? 'none' : 'auto' }}
-              >
-                {genderLoading ? (
-                  <option value="">Loading...</option>
-                ) : (
-                  genderValues.map((item) => (
-                    <option key={item.value} value={item.value}>
-                      {item.displayName}
-                    </option>
-                  ))
-                )}
-              </NativeSelect.Field>
-              <NativeSelect.Indicator />
-            </NativeSelect.Root>
-          </Field.Root>
+           <Box gridColumn={{ base: '1', md: '2' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Gender</Text>
+             <Select 
+               name="gender" 
+               value={formData.gender} 
+               onChange={handleChange}
+               disabled={genderLoading}
+             >
+               {genderLoading ? (
+                 <option value="">Loading...</option>
+               ) : (
+                 genderValues.map((item) => (
+                   <option key={item.value} value={item.value}>
+                     {item.displayName}
+                   </option>
+                 ))
+               )}
+             </Select>
+           </Box>
 
-          <Field.Root gridColumn={{ base: '1', md: 'span 2' }}>
-            <Field.Label>Description</Field.Label>
-            <Textarea name="petDescription" value={formData.petDescription} onChange={handleChange} rows={2} />
-          </Field.Root>
+           <Box gridColumn={{ base: '1', md: 'span 2' }}>
+             <Text as="label" display="block" fontWeight="medium" mb={2}>Description</Text>
+             <Textarea name="petDescription" value={formData.petDescription} onChange={handleChange} rows={2} />
+           </Box>
 
           <Box gridColumn={{ base: '1', md: 'span 2' }} pt={2}>
             <Button type="submit" colorPalette="brand" bg="brand.500" _hover={{ bg: 'brand.600' }} w="full" loading={isLoading}>

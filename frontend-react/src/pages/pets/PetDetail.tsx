@@ -17,7 +17,7 @@ import { useToast } from '../../context/ToastContext'
 import { PetService } from '../../services/pet.service'
 import { Pet } from '../../types'
 
-export const PetDetail: React.FC = () => {
+const PetDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [pet, setPet] = useState<Pet | null>(null)
@@ -102,3 +102,5 @@ export const PetDetail: React.FC = () => {
     </Box>
   )
 }
+
+export default PetDetail
