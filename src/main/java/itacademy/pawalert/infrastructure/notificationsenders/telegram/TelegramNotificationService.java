@@ -43,11 +43,19 @@ public class TelegramNotificationService {
             throw new TelegramNotificationException(chatId, NotificationFailureReason.INVALID_CHAT_ID);
         }
 
+        // Validate caption is not null or empty
+        if (caption == null || caption.trim().isEmpty()) {
+            LOGGER.warn("Caption is null or empty for photo notification to chat {}", maskChatId(chatId));
+            caption = "Alert notification"; // Provide default caption
+        }
+
+        LOGGER.debug("Sending photo with caption: '{}' to chat {}", caption, maskChatId(chatId));
+
         TelegramRequest.builder()
                 .endpoint("sendPhoto")
                 .chatId(chatId)
-                .photo(photoUrl)
                 .message(caption)
+                .photo(photoUrl)
                 .build()
                 .execute(restTemplate, botToken);
         

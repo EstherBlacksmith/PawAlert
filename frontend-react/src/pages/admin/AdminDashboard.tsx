@@ -24,6 +24,7 @@ import { User, Pet, Alert } from '../../types'
 import UsersTab from './components/UsersTab'
 import PetsTab from './components/PetsTab'
 import AlertsTab from './components/AlertsTab'
+import adminBgImage from '../../assets/admin-bg-image.jpg'
 
 interface Stats {
   totalUsers: number
@@ -466,8 +467,29 @@ export default function AdminDashboard() {
   }
 
   return (
-    <Paper sx={{ bgcolor: 'rgba(255, 255, 255, 0.85)', p: 3, borderRadius: 2, boxShadow: 3 }}>
-      <Stack spacing={3}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        backgroundImage: `url(${adminBgImage})`,
+        backgroundAttachment: 'fixed',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        p: 3,
+        '&::before': {
+          content: '""',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          pointerEvents: 'none',
+          zIndex: 0
+        }
+      }}
+    >
+      <Paper sx={{ bgcolor: 'rgba(255, 255, 255, 0.95)', p: 3, borderRadius: 2, boxShadow: 3, position: 'relative', zIndex: 1 }}>
+        <Stack spacing={3}>
         {/* Header */}
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
@@ -584,6 +606,7 @@ export default function AdminDashboard() {
           </Box>
         </Card>
       </Stack>
-    </Paper>
+      </Paper>
+    </Box>
   )
 }

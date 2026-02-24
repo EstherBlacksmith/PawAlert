@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,14 +39,19 @@ public class TelegramRequest {
     public void execute(RestTemplate restTemplate, String botToken) {
         String url = TELEGRAM_API_BASE + botToken + "/" + endpoint;
         
+        LOGGER.debug("Telegram request - URL: {}", url);
+        LOGGER.debug("Telegram request - Body: {}", body);
+        
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
         
         try {
-            restTemplate.postForEntity(url, request, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+            LOGGER.debug("Telegram request successful - Response: {}", response.getBody());
         } catch (RestClientException e) {
+            LOGGER.error("Telegram request failed - URL: {}, Body: {}, Error: {}", url, body, e.getMessage(), e);
             throw translateException(chatId, e);
         }
     }
@@ -117,9 +123,14 @@ public class TelegramRequest {
         public Builder photo(String photoUrl) {
             this.body.put("photo", photoUrl);
             this.body.put("parse_mode", "HTML");
-            // Remove 'text' key, use 'caption' for photos
-            this.body.remove("text");
-            this.body.put("caption", this.body.get("caption"));
+            
+            // Transfer 'text' to 'caption' for photos (Telegram API uses caption for photo messages)
+            Object text = this.body.remove("text");
+            if (text != null && !text.toString().trim().isEmpty()) {
+                this.body.put("caption", text.toString());
+            } else {
+                this.body.put("caption", "Alert notification"); // Fallback caption
+            }
             return this;
         }
 

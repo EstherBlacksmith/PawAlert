@@ -124,8 +124,17 @@ export default function Dashboard() {
   }
 
   return (
-    <Paper sx={{ bgcolor: 'rgba(255, 255, 255, 0.85)', p: 3, borderRadius: 2, boxShadow: 3 }}>
-      <Stack spacing={3}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        flex: 1,
+        p: 3,
+        backgroundColor: 'rgba(255, 255, 255, 0.45)',
+        borderRadius: 2,
+      }}
+    >
+      <Paper sx={{ p: 3, borderRadius: 2, boxShadow: 'none', position: 'relative', zIndex: 1, backgroundColor: 'transparent' }}>
+        <Stack spacing={3}>
       {/* Welcome Section */}
       <Box>
         <Typography variant="h5" color="text.primary">
@@ -226,7 +235,8 @@ export default function Dashboard() {
           </Button>
         </Stack>
       </Box>
-      </Stack>
-    </Paper>
+       </Stack>
+      </Paper>
+    </Box>
   )
 }

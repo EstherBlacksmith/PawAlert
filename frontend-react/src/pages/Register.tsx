@@ -63,7 +63,7 @@ export default function Register() {
     setError(null)
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
+      setError('Las contraseñas no coinciden')
       return
     }
 
@@ -378,58 +378,110 @@ export default function Register() {
                        </Box>
                      </Box>
 
-                       {/* Password */}
-                       <Box>
-                         <Typography 
-                           variant="caption"
-                           fontWeight={600}
-                           color="text.secondary"
-                           sx={{ display: 'block', mb: 1 }}
-                         >
-                           Password
-                         </Typography>
-                         <TextField
-                           type={showPassword ? 'text' : 'password'}
-                           name="password"
-                           value={formData.password}
-                           onChange={handleChange}
-                           placeholder="Create a password"
-                           required
-                           fullWidth
-                           size="small"
-                           slotProps={{
-                             input: {
-                               endAdornment: (
-                                 <InputAdornment position="end">
-                                   <IconButton
-                                     aria-label="toggle password visibility"
-                                     onClick={() => setShowPassword(!showPassword)}
-                                     edge="end"
-                                     size="small"
-                                   >
-                                     {showPassword ? <FiEyeOff /> : <FiEye />}
-                                   </IconButton>
-                                 </InputAdornment>
-                               )
-                             }
-                           }}
-                           sx={{
-                             '& .MuiOutlinedInput-root': {
-                               bgcolor: 'rgba(255, 255, 255, 0.8)',
-                               transition: 'all 0.3s ease',
-                               '&:hover': {
-                                 bgcolor: 'white',
-                               },
-                               '&.Mui-focused': {
-                                 bgcolor: 'white',
-                               }
-                             }
-                           }}
-                         />
-                       </Box>
-                    </Stack>
-                  </Grid>
-                </Grid>
+                        {/* Password */}
+                        <Box>
+                          <Typography 
+                            variant="caption"
+                            fontWeight={600}
+                            color="text.secondary"
+                            sx={{ display: 'block', mb: 1 }}
+                          >
+                            Password
+                          </Typography>
+                          <TextField
+                            type={showPassword ? 'text' : 'password'}
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Create a password"
+                            required
+                            fullWidth
+                            size="small"
+                            slotProps={{
+                              input: {
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      aria-label="toggle password visibility"
+                                      onClick={() => setShowPassword(!showPassword)}
+                                      edge="end"
+                                      size="small"
+                                    >
+                                      {showPassword ? <FiEyeOff /> : <FiEye />}
+                                    </IconButton>
+                                  </InputAdornment>
+                                )
+                              }
+                            }}
+                            sx={{
+                              '& .MuiOutlinedInput-root': {
+                                bgcolor: 'rgba(255, 255, 255, 0.8)',
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                  bgcolor: 'white',
+                                },
+                                '&.Mui-focused': {
+                                  bgcolor: 'white',
+                                }
+                              }
+                            }}
+                          />
+                        </Box>
+
+                        {/* Confirm Password */}
+                        <Box>
+                          <Typography 
+                            variant="caption"
+                            fontWeight={600}
+                            color="text.secondary"
+                            sx={{ display: 'block', mb: 1 }}
+                          >
+                            Confirmar Contraseña
+                          </Typography>
+                          <TextField
+                            type={showPassword ? 'text' : 'password'}
+                            name="confirmPassword"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            placeholder="Confirm your password"
+                            required
+                            fullWidth
+                            size="small"
+                            error={formData.confirmPassword !== '' && formData.password !== formData.confirmPassword}
+                            helperText={formData.confirmPassword !== '' && formData.password !== formData.confirmPassword ? 'Las contraseñas no coinciden' : ''}
+                            slotProps={{
+                              input: {
+                                endAdornment: (
+                                  <InputAdornment position="end">
+                                    <IconButton
+                                      aria-label="toggle password visibility"
+                                      onClick={() => setShowPassword(!showPassword)}
+                                      edge="end"
+                                      size="small"
+                                    >
+                                      {showPassword ? <FiEyeOff /> : <FiEye />}
+                                    </IconButton>
+                                  </InputAdornment>
+                                )
+                              }
+                            }}
+                            sx={{
+                              '& .MuiOutlinedInput-root': {
+                                bgcolor: 'rgba(255, 255, 255, 0.8)',
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                  bgcolor: 'white',
+                                },
+                                '&.Mui-focused': {
+                                  bgcolor: 'white',
+                                }
+                              }
+                            }}
+                          />
+                        </Box>
+                     </Stack>
+                   </Grid>
+                 </Grid>
 
                 {/* Submit Button - Full width below both columns */}
                 <Button
