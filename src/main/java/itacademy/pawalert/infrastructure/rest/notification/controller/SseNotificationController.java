@@ -1,6 +1,6 @@
 package itacademy.pawalert.infrastructure.rest.notification.controller;
 
-import itacademy.pawalert.infrastructure.notification.sse.SseNotificationService;
+import itacademy.pawalert.infrastructure.notificationsenders.sse.SseNotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

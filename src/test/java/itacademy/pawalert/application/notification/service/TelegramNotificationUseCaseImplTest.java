@@ -11,7 +11,7 @@ import itacademy.pawalert.domain.pet.model.*;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.exception.UserNotFoundException;
 import itacademy.pawalert.domain.user.model.*;
-import itacademy.pawalert.infrastructure.notification.telegram.TelegramNotificationService;
+import itacademy.pawalert.infrastructure.notificationsenders.telegram.TelegramNotificationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -11,8 +11,8 @@ import itacademy.pawalert.domain.alert.model.StatusNames;
 import itacademy.pawalert.domain.pet.model.Pet;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.exception.UserNotFoundException;
-import itacademy.pawalert.infrastructure.messaging.email.EmailNotificationEvent;
-import itacademy.pawalert.infrastructure.messaging.email.EmailNotificationPublisher;
+import itacademy.pawalert.infrastructure.notificationqueues.email.EmailNotificationEvent;
+import itacademy.pawalert.infrastructure.notificationqueues.email.EmailNotificationPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
 package itacademy.pawalert.infrastructure.rest.mail.controller;
 
-import itacademy.pawalert.infrastructure.notification.mail.EmailServiceImpl;
+import itacademy.pawalert.infrastructure.notificationsenders.email.EmailServiceImpl;
 import itacademy.pawalert.infrastructure.rest.mail.dto.SendEmailRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

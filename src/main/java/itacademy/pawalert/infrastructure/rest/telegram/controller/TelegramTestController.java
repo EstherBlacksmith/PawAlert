@@ -1,7 +1,7 @@
 package itacademy.pawalert.infrastructure.rest.telegram.controller;
 
 import itacademy.pawalert.domain.user.model.TelegramChatId;
-import itacademy.pawalert.infrastructure.notification.telegram.TelegramNotificationService;
+import itacademy.pawalert.infrastructure.notificationsenders.telegram.TelegramNotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
