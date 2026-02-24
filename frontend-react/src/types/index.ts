@@ -15,6 +15,7 @@ export interface User {
 
 export interface Pet {
   petId: string
+  userId?: string
   officialPetName: string
   workingPetName?: string
   chipNumber?: string

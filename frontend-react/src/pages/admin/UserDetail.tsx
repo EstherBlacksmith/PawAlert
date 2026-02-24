@@ -66,24 +66,40 @@ const UserDetail: React.FC = () => {
   return (
     <Box p={2}>
       <Card>
-        <CardHeader title={user.name} />
+        <CardHeader title={user.username || 'User Details'} />
         <CardContent>
           <Stack spacing={2}>
             <Box>
+              <Typography variant="subtitle2" fontWeight="bold">ID:</Typography>
+              <Typography>{user.id}</Typography>
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight="bold">Username:</Typography>
+              <Typography>{user.username || 'N/A'}</Typography>
+            </Box>
+            <Box>
               <Typography variant="subtitle2" fontWeight="bold">Email:</Typography>
-              <Typography>{user.email}</Typography>
+              <Typography>{user.email || 'N/A'}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle2" fontWeight="bold">Phone:</Typography>
-              <Typography>{user.phone || 'N/A'}</Typography>
+              <Typography>{user.phoneNumber || 'N/A'}</Typography>
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight="bold">Surname:</Typography>
+              <Typography>{user.surname || 'N/A'}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle2" fontWeight="bold">Role:</Typography>
               <Chip label={user.role || 'USER'} color="primary" size="small" />
             </Box>
             <Box>
-              <Typography variant="subtitle2" fontWeight="bold">Status:</Typography>
-              <Chip label="Active" color="success" size="small" />
+              <Typography variant="subtitle2" fontWeight="bold">Email Notifications:</Typography>
+              <Chip label={user.emailNotificationsEnabled ? 'Enabled' : 'Disabled'} color={user.emailNotificationsEnabled ? 'success' : 'default'} size="small" />
+            </Box>
+            <Box>
+              <Typography variant="subtitle2" fontWeight="bold">Telegram Notifications:</Typography>
+              <Chip label={user.telegramNotificationsEnabled ? 'Enabled' : 'Disabled'} color={user.telegramNotificationsEnabled ? 'success' : 'default'} size="small" />
             </Box>
             <Stack direction="row" spacing={1}>
               <Button variant="contained" color="primary" onClick={() => navigate(`/admin/users/${id}/edit`)}>

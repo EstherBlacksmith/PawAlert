@@ -14,22 +14,38 @@ import {
 } from '@mui/material'
 import { useToast } from '../../../context/ToastContext'
 import { PetService } from '../../../services/pet.service'
-import { Pet } from '../../../types'
+import { UserService } from '../../../services/user.service'
+import { Pet, User } from '../../../types'
 
 const PetsTab: React.FC = () => {
   const [pets, setPets] = useState<Pet[]>([])
+  const [users, setUsers] = useState<Map<string, User>>(new Map())
   const [loading, setLoading] = useState(true)
   const toast = useToast()
 
   useEffect(() => {
-    loadPets()
+    loadData()
   }, [])
 
-  const loadPets = async () => {
+  const loadData = async () => {
     try {
       setLoading(true)
-      const data = await PetService.getAllPets()
-      setPets(data)
+      // Fetch both pets and users in parallel
+      const [petsData, usersData] = await Promise.all([
+        PetService.getAllPets(),
+        UserService.getAllUsers()
+      ])
+      
+      setPets(petsData)
+      
+      // Create a lookup map of userId -> user
+      const userMap = new Map<string, User>()
+      usersData.forEach(user => {
+        if (user.userId) {
+          userMap.set(user.userId, user)
+        }
+      })
+      setUsers(userMap)
     } catch (error) {
       toast({
         title: 'Error loading pets',
@@ -41,6 +57,22 @@ const PetsTab: React.FC = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Helper function to format owner name by looking up userId in the users map
+  const formatOwnerName = (pet: Pet): string => {
+    if (pet.userId) {
+      const user = users.get(pet.userId)
+      if (user) {
+        const parts = []
+        if (user.username) parts.push(user.username)
+        if (user.surname) parts.push(user.surname)
+        if (parts.length > 0) return parts.join(' ')
+      }
+      // Fallback to truncated UUID if user not found
+      return `${pet.userId.substring(0, 8)}...`
+    }
+    return 'N/A'
   }
 
   if (loading) {
@@ -65,11 +97,11 @@ const PetsTab: React.FC = () => {
         </TableHead>
         <TableBody>
           {pets.map((pet) => (
-            <TableRow key={pet.id}>
-              <TableCell>{pet.id}</TableCell>
-              <TableCell>{pet.name}</TableCell>
-              <TableCell>{pet.type}</TableCell>
-              <TableCell>{pet.owner?.name || 'N/A'}</TableCell>
+            <TableRow key={pet.petId}>
+              <TableCell>{pet.petId}</TableCell>
+              <TableCell>{pet.officialPetName}</TableCell>
+              <TableCell>{pet.species}</TableCell>
+              <TableCell>{formatOwnerName(pet)}</TableCell>
               <TableCell>
                 <Stack direction="row" spacing={1}>
                   <Button size="small" variant="contained" color="primary">

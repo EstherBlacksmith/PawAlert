@@ -25,7 +25,7 @@ const UserEdit: React.FC = () => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const toast = useToast()
+  const { showToast } = useToast()
 
   useEffect(() => {
     loadUser()
@@ -38,12 +38,12 @@ const UserEdit: React.FC = () => {
       const data = await userService.getUser(id)
       setUser(data)
     } catch (error) {
-      toast({
+      showToast({
         title: 'Error loading user',
         description: 'Failed to load user details',
-        status: 'error',
+        type: 'error',
         duration: 5000,
-        isClosable: true,
+        closable: true,
       })
       navigate('/admin/dashboard')
     } finally {
@@ -55,22 +55,22 @@ const UserEdit: React.FC = () => {
     if (!user) return
     try {
       setSaving(true)
-      await userService.updateUser(user.id, user)
-      toast({
+      await userService.adminUpdateUser(user.userId, user)
+      showToast({
         title: 'Success',
         description: 'User updated successfully',
-        status: 'success',
+        type: 'success',
         duration: 5000,
-        isClosable: true,
+        closable: true,
       })
       navigate('/admin/dashboard')
     } catch (error) {
-      toast({
+      showToast({
         title: 'Error',
         description: 'Failed to update user',
-        status: 'error',
+        type: 'error',
         duration: 5000,
-        isClosable: true,
+        closable: true,
       })
     } finally {
       setSaving(false)
@@ -100,24 +100,31 @@ const UserEdit: React.FC = () => {
         <CardContent>
           <Stack spacing={3}>
             <TextField
-              label="Name"
-              value={user.name}
-              onChange={(e) => setUser({ ...user, name: e.target.value })}
+              label="Username"
+              value={user.username || ''}
+              onChange={(e) => setUser({ ...user, username: e.target.value })}
+              fullWidth
+            />
+
+            <TextField
+              label="Surname"
+              value={user.surname || ''}
+              onChange={(e) => setUser({ ...user, surname: e.target.value })}
               fullWidth
             />
 
             <TextField
               label="Email"
               type="email"
-              value={user.email}
+              value={user.email || ''}
               onChange={(e) => setUser({ ...user, email: e.target.value })}
               fullWidth
             />
 
             <TextField
               label="Phone"
-              value={user.phone || ''}
-              onChange={(e) => setUser({ ...user, phone: e.target.value })}
+              value={user.phoneNumber || ''}
+              onChange={(e) => setUser({ ...user, phoneNumber: e.target.value })}
               fullWidth
             />
 

@@ -23,8 +23,10 @@ function extractBoolean(obj: unknown): boolean {
 
 // Transform backend user response to frontend User format
 function transformUserResponse(data: Record<string, unknown>): User {
+  const id = data.id as string
   return {
-    userId: data.id as string,
+    id: id,
+    userId: id,
     username: extractValue(data.username),
     email: extractValue(data.email),
     surname: extractValue(data.surname),
