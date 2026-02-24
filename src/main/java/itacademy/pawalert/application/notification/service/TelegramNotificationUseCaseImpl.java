@@ -12,8 +12,8 @@ import itacademy.pawalert.domain.pet.model.Pet;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.exception.UserNotFoundException;
 import itacademy.pawalert.domain.user.model.TelegramChatId;
-import itacademy.pawalert.infrastructure.messaging.TelegramNotificationPublisher;
-import itacademy.pawalert.infrastructure.messaging.event.TelegramNotificationEvent;
+import itacademy.pawalert.infrastructure.messaging.telegram.TelegramNotificationEvent;
+import itacademy.pawalert.infrastructure.messaging.telegram.TelegramNotificationPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

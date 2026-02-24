@@ -1,6 +1,5 @@
 package itacademy.pawalert.infrastructure.messaging.telegram;
 
-import itacademy.pawalert.infrastructure.messaging.event.TelegramNotificationEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

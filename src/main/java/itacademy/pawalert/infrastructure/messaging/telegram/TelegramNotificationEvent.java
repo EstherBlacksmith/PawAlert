@@ -1,4 +1,4 @@
-package itacademy.pawalert.infrastructure.messaging.event;
+package itacademy.pawalert.infrastructure.messaging.telegram;
 
 import itacademy.pawalert.domain.alert.model.StatusNames;
 import itacademy.pawalert.domain.notification.model.NotificationEvent;

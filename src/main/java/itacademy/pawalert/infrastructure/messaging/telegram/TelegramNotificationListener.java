@@ -1,10 +1,7 @@
-package itacademy.pawalert.infrastructure.messaging;
+package itacademy.pawalert.infrastructure.messaging.telegram;
 
 import itacademy.pawalert.domain.notification.exception.TelegramNotificationException;
 import itacademy.pawalert.domain.notification.model.NotificationFailureReason;
-import itacademy.pawalert.infrastructure.messaging.event.TelegramNotificationEvent;
-import itacademy.pawalert.infrastructure.messaging.telegram.TelegramFailedNotificationRepository;
-import itacademy.pawalert.infrastructure.messaging.telegram.TelegramQueueConfig;
 import itacademy.pawalert.infrastructure.notification.telegram.TelegramNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

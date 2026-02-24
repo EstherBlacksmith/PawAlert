@@ -1,9 +1,7 @@
-package itacademy.pawalert.infrastructure.messaging;
+package itacademy.pawalert.infrastructure.messaging.telegram;
 
 import itacademy.pawalert.application.notification.port.outbound.NotificationPublisherPort;
 import itacademy.pawalert.domain.alert.model.NotificationChannel;
-import itacademy.pawalert.infrastructure.messaging.event.TelegramNotificationEvent;
-import itacademy.pawalert.infrastructure.messaging.telegram.TelegramQueueConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
