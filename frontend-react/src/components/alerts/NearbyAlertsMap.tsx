@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { Box, Typography, CircularProgress, Chip, Stack } from '@mui/material'
 import { FiAlertTriangle, FiMapPin, FiNavigation } from 'react-icons/fi'
-import { alertService } from '../../services/alert.service'
 import type { Alert, AlertStatus } from '../../types'
 import '../map/map.css'
+import { alertService } from '../../services/alert.service'
 
 // Default status display names
 const DEFAULT_STATUS_NAMES: Record<AlertStatus, string> = {
@@ -79,6 +79,9 @@ const userLocationIcon = new L.DivIcon({
 interface NearbyAlertsMapProps {
   latitude: number
   longitude: number
+  alerts?: Alert[]
+  isLoading?: boolean
+  error?: string | null
   radiusKm?: number
   fullHeight?: boolean
 }
@@ -148,36 +151,43 @@ const formatDate = (dateString: string): string => {
 export default function NearbyAlertsMap({ 
   latitude, 
   longitude, 
+  alerts: propAlerts,
+  isLoading: propIsLoading,
+  error: propError,
   radiusKm = 10,
   fullHeight = false
 }: NearbyAlertsMapProps) {
-  const [alerts, setAlerts] = useState<Alert[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  // Internal state for when props are not provided (standalone usage like Login.tsx)
+  const [internalAlerts, setInternalAlerts] = useState<Alert[]>([])
+  const [internalIsLoading, setInternalIsLoading] = useState(false)
+  const [internalError, setInternalError] = useState<string | null>(null)
 
+  // Determine if we're using props or internal state
+  const isControlled = propAlerts !== undefined
+  const alerts = isControlled ? propAlerts : internalAlerts
+  const isLoading = isControlled ? (propIsLoading ?? false) : internalIsLoading
+  const error = isControlled ? (propError ?? null) : internalError
+
+  // Fetch alerts internally if not provided via props
   useEffect(() => {
-    const fetchNearbyAlerts = async () => {
+    if (isControlled) return // Skip if controlled by parent
+
+    const fetchAlerts = async () => {
       try {
-        setIsLoading(true)
-        setError(null)
+        setInternalIsLoading(true)
+        setInternalError(null)
         const data = await alertService.getNearbyAlerts(latitude, longitude, radiusKm)
-        const validAlerts = data.filter(alert => {
-          if (!alert.latitude || !alert.longitude) {
-            return false
-          }
-          return true
-        })
-        setAlerts(validAlerts)
+        setInternalAlerts(data)
       } catch (err) {
         console.error('Error fetching nearby alerts:', err)
-        setError('Could not load nearby alerts')
+        setInternalError('Unable to load nearby alerts')
       } finally {
-        setIsLoading(false)
+        setInternalIsLoading(false)
       }
     }
 
-    fetchNearbyAlerts()
-  }, [latitude, longitude, radiusKm])
+    fetchAlerts()
+  }, [latitude, longitude, radiusKm, isControlled])
 
   const getStatusDisplayName = (status: AlertStatus): string => {
     return DEFAULT_STATUS_NAMES[status] || status

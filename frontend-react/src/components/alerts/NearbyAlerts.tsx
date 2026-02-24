@@ -1,38 +1,17 @@
-import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Box, Typography, CircularProgress, Chip, Stack } from '@mui/material'
 import { FiAlertTriangle, FiMapPin } from 'react-icons/fi'
-import { alertService } from '../../services/alert.service'
 import { Alert } from '../../types'
 
 interface NearbyAlertsProps {
-  latitude: number
-  longitude: number
+  alerts?: Alert[]
+  isLoading?: boolean
+  error?: string | null
   radiusKm?: number
 }
 
-export default function NearbyAlerts({ latitude, longitude, radiusKm = 10 }: NearbyAlertsProps) {
+export default function NearbyAlerts({ alerts = [], isLoading = false, error = null, radiusKm = 10 }: NearbyAlertsProps) {
   const navigate = useNavigate()
-  const [alerts, setAlerts] = useState<Alert[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    const fetchNearbyAlerts = async () => {
-      try {
-        setIsLoading(true)
-        const data = await alertService.getNearbyAlerts(latitude, longitude, radiusKm)
-        setAlerts(data)
-      } catch (err) {
-        console.error('Error fetching nearby alerts:', err)
-        setError('Unable to load nearby alerts')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchNearbyAlerts()
-  }, [latitude, longitude, radiusKm])
 
   if (isLoading) {
     return (

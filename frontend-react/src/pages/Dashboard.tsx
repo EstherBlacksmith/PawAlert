@@ -115,24 +115,11 @@ export default function Dashboard() {
   })
   const [showMap, setShowMap] = useState(false)
   const [hasAttemptedLocation, setHasAttemptedLocation] = useState(false)
-
-  // Load saved location from localStorage on mount
-  const loadSavedLocation = useCallback(() => {
-    try {
-      const saved = localStorage.getItem(LOCATION_STORAGE_KEY)
-      if (saved) {
-        const parsed: StoredLocation = JSON.parse(saved)
-        // Check if saved location is less than 1 hour old
-        const oneHour = 60 * 60 * 1000
-        if (Date.now() - parsed.timestamp < oneHour) {
-          return parsed
-        }
-      }
-    } catch (e) {
-      console.error('Error loading saved location:', e)
-    }
-    return null
-  }, [])
+  
+  // Shared nearby alerts state - single source of truth for both map and list
+  const [nearbyAlerts, setNearbyAlerts] = useState<Alert[]>([])
+  const [nearbyAlertsLoading, setNearbyAlertsLoading] = useState(false)
+  const [nearbyAlertsError, setNearbyAlertsError] = useState<string | null>(null)
 
   // Save location to localStorage
   const saveLocation = useCallback((lat: number, lon: number) => {
@@ -158,22 +145,16 @@ export default function Dashboard() {
     const initLocation = async () => {
       if (hasAttemptedLocation) return
       
-      // First check for saved location
-      const savedLocation = loadSavedLocation()
-      if (savedLocation) {
-        // We have a recent saved location, the useLocation hook will use it
-        // Just mark as attempted
-        setHasAttemptedLocation(true)
-        return
-      }
-      
-      // No saved location, try to detect
+      // Mark as attempted to prevent multiple calls
       setHasAttemptedLocation(true)
+      
+      // Always call detectLocation - it will use GPS, fallback to IP, or use dev default
+      // The saved location in localStorage is just for reference, not for skipping detection
       await detectLocation()
     }
     
     initLocation()
-  }, [detectLocation, hasAttemptedLocation, loadSavedLocation])
+  }, [detectLocation, hasAttemptedLocation])
 
   // Save location when we get it
   useEffect(() => {
@@ -181,6 +162,27 @@ export default function Dashboard() {
       saveLocation(latitude, longitude)
     }
   }, [latitude, longitude, source, saveLocation])
+
+  // Fetch nearby alerts when location or radius changes - SINGLE API CALL
+  useEffect(() => {
+    const fetchNearbyAlerts = async () => {
+      if (!latitude || !longitude) return
+      
+      try {
+        setNearbyAlertsLoading(true)
+        setNearbyAlertsError(null)
+        const data = await alertService.getNearbyAlerts(latitude, longitude, radiusKm)
+        setNearbyAlerts(data)
+      } catch (err) {
+        console.error('Error fetching nearby alerts:', err)
+        setNearbyAlertsError('Unable to load nearby alerts')
+      } finally {
+        setNearbyAlertsLoading(false)
+      }
+    }
+
+    fetchNearbyAlerts()
+  }, [latitude, longitude, radiusKm])
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -431,18 +433,22 @@ export default function Dashboard() {
             
             <Divider sx={{ mb: 2 }} />
             
-            {/* Show Map or List based on toggle */}
+            {/* Show Map or List based on toggle - BOTH USE SAME DATA */}
             <Collapse in={showMap}>
               <NearbyAlertsMap 
                 latitude={latitude} 
                 longitude={longitude} 
+                alerts={nearbyAlerts}
+                isLoading={nearbyAlertsLoading}
+                error={nearbyAlertsError}
                 radiusKm={radiusKm}
               />
             </Collapse>
             <Collapse in={!showMap}>
               <NearbyAlerts 
-                latitude={latitude} 
-                longitude={longitude} 
+                alerts={nearbyAlerts}
+                isLoading={nearbyAlertsLoading}
+                error={nearbyAlertsError}
                 radiusKm={radiusKm}
               />
             </Collapse>
@@ -470,4 +476,4 @@ export default function Dashboard() {
        </Paper>
      </Box>
    )
- }
+}
