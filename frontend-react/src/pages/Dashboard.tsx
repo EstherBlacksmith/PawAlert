@@ -1,11 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Box, Grid, Typography, Card, CardContent, Stack, CircularProgress, Paper, Button } from '@mui/material'
+import { Box, Grid, Typography, Card, CardContent, Stack, CircularProgress, Paper, Button, Chip, Alert as MuiAlert, FormControl, InputLabel, Select, MenuItem, IconButton, Collapse, Divider } from '@mui/material'
 import { GiPawPrint, GiHealthPotion, GiCheck, GiSword, GiBell, GiCat } from '../components/icons'
+import { FiRadio, FiMapPin, FiRefreshCw, FiMap, FiList, FiNavigation } from 'react-icons/fi'
 import { useAuth } from '../context/AuthContext'
 import { petService } from '../services/pet.service'
 import { alertService } from '../services/alert.service'
 import { Alert } from '../types'
+import { useLocation } from '../hooks/useLocation'
+import NearbyAlerts from '../components/alerts/NearbyAlerts'
+import NearbyAlertsMap from '../components/alerts/NearbyAlertsMap'
+
+// LocalStorage key for persisting location
+const LOCATION_STORAGE_KEY = 'pawalert_last_location'
+const RADIUS_STORAGE_KEY = 'pawalert_nearby_radius'
+
+interface StoredLocation {
+  latitude: number
+  longitude: number
+  timestamp: number
+}
+
+// Radius options in kilometers
+const RADIUS_OPTIONS = [
+  { value: 5, label: '5 km' },
+  { value: 10, label: '10 km' },
+  { value: 25, label: '25 km' },
+  { value: 50, label: '50 km' },
+]
 
 interface StatCardProps {
   icon: React.ElementType
@@ -84,6 +106,81 @@ export default function Dashboard() {
     mySubscriptions: 0,
   })
   const [isLoading, setIsLoading] = useState(true)
+  
+  // Location and nearby alerts state
+  const { latitude, longitude, source, error: locationError, isLoading: locationLoading, detectLocation } = useLocation()
+  const [radiusKm, setRadiusKm] = useState<number>(() => {
+    const saved = localStorage.getItem(RADIUS_STORAGE_KEY)
+    return saved ? parseInt(saved, 10) : 10
+  })
+  const [showMap, setShowMap] = useState(false)
+  const [hasAttemptedLocation, setHasAttemptedLocation] = useState(false)
+
+  // Load saved location from localStorage on mount
+  const loadSavedLocation = useCallback(() => {
+    try {
+      const saved = localStorage.getItem(LOCATION_STORAGE_KEY)
+      if (saved) {
+        const parsed: StoredLocation = JSON.parse(saved)
+        // Check if saved location is less than 1 hour old
+        const oneHour = 60 * 60 * 1000
+        if (Date.now() - parsed.timestamp < oneHour) {
+          return parsed
+        }
+      }
+    } catch (e) {
+      console.error('Error loading saved location:', e)
+    }
+    return null
+  }, [])
+
+  // Save location to localStorage
+  const saveLocation = useCallback((lat: number, lon: number) => {
+    try {
+      const toStore: StoredLocation = {
+        latitude: lat,
+        longitude: lon,
+        timestamp: Date.now()
+      }
+      localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(toStore))
+    } catch (e) {
+      console.error('Error saving location:', e)
+    }
+  }, [])
+
+  // Save radius preference
+  useEffect(() => {
+    localStorage.setItem(RADIUS_STORAGE_KEY, String(radiusKm))
+  }, [radiusKm])
+
+  // Auto-detect location on mount
+  useEffect(() => {
+    const initLocation = async () => {
+      if (hasAttemptedLocation) return
+      
+      // First check for saved location
+      const savedLocation = loadSavedLocation()
+      if (savedLocation) {
+        // We have a recent saved location, the useLocation hook will use it
+        // Just mark as attempted
+        setHasAttemptedLocation(true)
+        return
+      }
+      
+      // No saved location, try to detect
+      setHasAttemptedLocation(true)
+      await detectLocation()
+    }
+    
+    initLocation()
+  }, [detectLocation, hasAttemptedLocation, loadSavedLocation])
+
+  // Save location when we get it
+  useEffect(() => {
+    if (latitude && longitude && source === 'gps') {
+      saveLocation(latitude, longitude)
+    }
+  }, [latitude, longitude, source, saveLocation])
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -235,8 +332,142 @@ export default function Dashboard() {
           </Button>
         </Stack>
       </Box>
+
+      {/* Nearby Alerts Section */}
+      <Box>
+        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <FiRadio size={24} color="#ed8936" />
+            <Typography variant="h6" color="text.primary">
+              Alertas en tu zona
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            {/* Radius Selector */}
+            <FormControl size="small" sx={{ minWidth: 100 }}>
+              <InputLabel id="radius-select-label">Radius</InputLabel>
+              <Select
+                labelId="radius-select-label"
+                value={radiusKm}
+                label="Radius"
+                onChange={(e) => setRadiusKm(Number(e.target.value))}
+              >
+                {RADIUS_OPTIONS.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {/* Map/List Toggle */}
+            <IconButton 
+              onClick={() => setShowMap(!showMap)} 
+              title={showMap ? 'Show list' : 'Show map'}
+              sx={{ 
+                bgcolor: showMap ? 'primary.main' : 'grey.100',
+                color: showMap ? 'white' : 'text.secondary',
+                '&:hover': { bgcolor: showMap ? 'primary.dark' : 'grey.200' }
+              }}
+            >
+              {showMap ? <FiList /> : <FiMap />}
+            </IconButton>
+          </Stack>
+        </Stack>
+
+        {/* Location Status and Content */}
+        {locationLoading ? (
+          <Card elevation={2} sx={{ p: 3 }}>
+            <Box textAlign="center">
+              <CircularProgress size={24} />
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Detecting your location...
+              </Typography>
+            </Box>
+          </Card>
+        ) : locationError ? (
+          <Card elevation={2} sx={{ p: 3 }}>
+            <MuiAlert 
+              severity="warning" 
+              icon={<FiMapPin />}
+              action={
+                <Button 
+                  color="inherit" 
+                  size="small" 
+                  startIcon={<FiRefreshCw />}
+                  onClick={() => detectLocation()}
+                >
+                  Retry
+                </Button>
+              }
+            >
+              <Typography variant="body2">{locationError}</Typography>
+            </MuiAlert>
+          </Card>
+        ) : latitude && longitude ? (
+          <Card elevation={2} sx={{ p: 2, overflow: 'visible' }}>
+            {/* Location source indicator */}
+            <Stack direction="row" alignItems="center" spacing={1} mb={2}>
+              <FiNavigation size={14} />
+              <Typography variant="caption" color="text.secondary">
+                Location: {latitude.toFixed(4)}, {longitude.toFixed(4)}
+                {source && (
+                  <Chip 
+                    label={source === 'gps' ? 'GPS' : source === 'ip' ? 'IP' : 'Default'} 
+                    size="small" 
+                    sx={{ ml: 1 }}
+                    color={source === 'gps' ? 'success' : source === 'ip' ? 'warning' : 'default'}
+                  />
+                )}
+              </Typography>
+              <IconButton 
+                size="small" 
+                onClick={() => detectLocation()}
+                title="Refresh location"
+                sx={{ ml: 'auto' }}
+              >
+                <FiRefreshCw size={14} />
+              </IconButton>
+            </Stack>
+            
+            <Divider sx={{ mb: 2 }} />
+            
+            {/* Show Map or List based on toggle */}
+            <Collapse in={showMap}>
+              <NearbyAlertsMap 
+                latitude={latitude} 
+                longitude={longitude} 
+                radiusKm={radiusKm}
+              />
+            </Collapse>
+            <Collapse in={!showMap}>
+              <NearbyAlerts 
+                latitude={latitude} 
+                longitude={longitude} 
+                radiusKm={radiusKm}
+              />
+            </Collapse>
+          </Card>
+        ) : (
+          <Card elevation={2} sx={{ p: 3 }}>
+            <Box textAlign="center">
+              <FiMapPin size={32} color="#9ca3af" />
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Enable location access to see nearby alerts
+              </Typography>
+              <Button
+                variant="outlined"
+                startIcon={<FiNavigation />}
+                onClick={() => detectLocation()}
+                sx={{ mt: 2 }}
+              >
+                Enable Location
+              </Button>
+            </Box>
+          </Card>
+        )}
+      </Box>
        </Stack>
-      </Paper>
-    </Box>
-  )
-}
+       </Paper>
+     </Box>
+   )
+ }
