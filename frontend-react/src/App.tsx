@@ -96,6 +96,11 @@ function App() {
             <AdminPetDetail />
           </AdminRoute>
         } />
+        <Route path="admin/pets/:id/edit" element={
+          <AdminRoute>
+            <PetEdit />
+          </AdminRoute>
+        } />
         <Route path="admin/users/:id" element={
           <AdminRoute>
             <UserDetail />

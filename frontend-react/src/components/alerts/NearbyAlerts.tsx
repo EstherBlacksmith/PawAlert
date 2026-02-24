@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Box, Typography, CircularProgress, Chip, Stack } from '@mui/material'
 import { FiAlertTriangle, FiMapPin } from 'react-icons/fi'
 import { alertService } from '../../services/alert.service'
@@ -11,6 +12,7 @@ interface NearbyAlertsProps {
 }
 
 export default function NearbyAlerts({ latitude, longitude, radiusKm = 10 }: NearbyAlertsProps) {
+  const navigate = useNavigate()
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -63,12 +65,17 @@ export default function NearbyAlerts({ latitude, longitude, radiusKm = 10 }: Nea
       {alerts.slice(0, 5).map((alert) => (
         <Box
           key={alert.id}
+          onClick={() => navigate(`/alerts/${alert.id}`)}
           sx={{
             p: 1.5,
             bgcolor: 'warning.50',
             borderRadius: 1,
             borderLeft: '4px solid',
             borderColor: 'warning.main',
+            cursor: 'pointer',
+            '&:hover': {
+              bgcolor: 'warning.100',
+            },
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="center">

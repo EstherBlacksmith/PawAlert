@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Box, Typography, Button, Stack, TextField, CircularProgress, Alert as MuiAlert, Grid, FormControl, InputLabel, Select, MenuItem, Paper } from '@mui/material'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { petService } from '../../services/pet.service'
 import { useEnumValues } from '../../hooks/useMetadata'
@@ -10,7 +10,11 @@ import { ErrorResponse } from '../../types'
 export default function PetEdit() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
+  
+  // Check if we're in admin context
+  const isAdminContext = location.pathname.startsWith('/admin')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isFetching, setIsFetching] = useState(true)
@@ -165,7 +169,12 @@ export default function PetEdit() {
         }
         await petService.updatePet(id, dataToSend)
       }
-      navigate('/pets')
+      // Navigate based on context - admin goes back to admin pet detail, user goes to their pet list
+      if (isAdminContext) {
+        navigate(`/admin/pets/${id}`)
+      } else {
+        navigate('/pets')
+      }
     } catch (error: any) {
       console.error('Error updating pet:', error)
       // Handle backend error response
@@ -193,7 +202,7 @@ export default function PetEdit() {
 
   return (
     <Paper sx={{ width: '100%', mx: 'auto', bgcolor: 'rgba(255, 255, 255, 0.85)', p: 3, borderRadius: 2, boxShadow: 3 }}>
-      <Button variant="text" sx={{ mb: 2 }} onClick={() => navigate(`/pets/${id}`)} startIcon={<FaArrowLeft />}>
+      <Button variant="text" sx={{ mb: 2 }} onClick={() => navigate(isAdminContext ? `/admin/pets/${id}` : `/pets/${id}`)} startIcon={<FaArrowLeft />}>
         Back to Pet
       </Button>
 

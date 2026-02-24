@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   Box,
   CircularProgress,
@@ -10,7 +11,12 @@ import {
   TableRow,
   Button,
   Stack,
-  Paper
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions
 } from '@mui/material'
 import { useToast } from '../../../context/ToastContext'
 import { PetService } from '../../../services/pet.service'
@@ -18,10 +24,14 @@ import { UserService } from '../../../services/user.service'
 import { Pet, User } from '../../../types'
 
 const PetsTab: React.FC = () => {
+  const navigate = useNavigate()
   const [pets, setPets] = useState<Pet[]>([])
   const [users, setUsers] = useState<Map<string, User>>(new Map())
   const [loading, setLoading] = useState(true)
-  const toast = useToast()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [petToDelete, setPetToDelete] = useState<Pet | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const { showToast } = useToast()
 
   useEffect(() => {
     loadData()
@@ -47,12 +57,11 @@ const PetsTab: React.FC = () => {
       })
       setUsers(userMap)
     } catch (error) {
-      toast({
+      showToast({
         title: 'Error loading pets',
         description: 'Failed to load pets',
-        status: 'error',
+        type: 'error',
         duration: 5000,
-        isClosable: true,
       })
     } finally {
       setLoading(false)
@@ -73,6 +82,44 @@ const PetsTab: React.FC = () => {
       return `${pet.userId.substring(0, 8)}...`
     }
     return 'N/A'
+  }
+
+  const handleDeleteClick = (pet: Pet) => {
+    setPetToDelete(pet)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!petToDelete || !petToDelete.petId) return
+
+    try {
+      setDeleting(true)
+      await PetService.deletePet(petToDelete.petId)
+      showToast({
+        title: 'Pet deleted',
+        description: `Pet "${petToDelete.officialPetName || petToDelete.petId}" has been deleted successfully`,
+        type: 'success',
+        duration: 5000,
+      })
+      setDeleteDialogOpen(false)
+      setPetToDelete(null)
+      // Refresh the pet list
+      await loadData()
+    } catch (error) {
+      showToast({
+        title: 'Error deleting pet',
+        description: 'Failed to delete pet. Please try again.',
+        type: 'error',
+        duration: 5000,
+      })
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false)
+    setPetToDelete(null)
   }
 
   if (loading) {
@@ -104,8 +151,29 @@ const PetsTab: React.FC = () => {
               <TableCell>{formatOwnerName(pet)}</TableCell>
               <TableCell>
                 <Stack direction="row" spacing={1}>
-                  <Button size="small" variant="contained" color="primary">
+                  <Button 
+                    size="small" 
+                    variant="contained" 
+                    color="primary"
+                    onClick={() => navigate(`/admin/pets/${pet.petId}`)}
+                  >
                     View
+                  </Button>
+                  <Button 
+                    size="small" 
+                    variant="contained" 
+                    color="secondary"
+                    onClick={() => navigate(`/admin/pets/${pet.petId}/edit`)}
+                  >
+                    Edit
+                  </Button>
+                  <Button 
+                    size="small" 
+                    variant="contained" 
+                    color="error"
+                    onClick={() => handleDeleteClick(pet)}
+                  >
+                    Delete
                   </Button>
                 </Stack>
               </TableCell>
@@ -113,6 +181,30 @@ const PetsTab: React.FC = () => {
           ))}
         </TableBody>
       </Table>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete pet "{petToDelete?.officialPetName || petToDelete?.petId}"? 
+            This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} disabled={deleting}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteConfirm} 
+            color="error" 
+            variant="contained"
+            disabled={deleting}
+          >
+            {deleting ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </TableContainer>
   )
 }
