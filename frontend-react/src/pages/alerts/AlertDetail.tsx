@@ -292,9 +292,13 @@ export default function AlertDetail() {
                      <Typography color="text.secondary" sx={{ mt: 0.5, fontSize: '0.875rem' }}>
                         Created by: <Box component="span" fontWeight={600}>{userName}</Box>
                       </Typography>
-                      <Typography color="text.secondary" sx={{ fontSize: '0.875rem' }}>
-                        Pet: <Box component="span" fontWeight={600} sx={{ cursor: 'pointer', '&:hover': { color: 'primary.main', textDecoration: 'underline' } }} onClick={() => navigate(`/pets/${alert.petId}`)}>{workingPetName}</Box>
-                      </Typography>
+                       <Typography color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                         Pet: <Box component="span" fontWeight={600} sx={{ cursor: 'pointer', '&:hover': { color: 'primary.main', textDecoration: 'underline' } }} onClick={() => {
+                           if (alert.petId) {
+                             navigate(`/pets/${alert.petId}`)
+                           }
+                         }}>{workingPetName}</Box>
+                       </Typography>
                   </Box>
                  <Chip 
                    label={alert.status}

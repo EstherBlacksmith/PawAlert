@@ -65,8 +65,8 @@ const PetDetail: React.FC = () => {
 
   return (
     <Paper sx={{ p: 3, bgcolor: 'rgba(255, 255, 255, 0.85)', borderRadius: 2, boxShadow: 3 }}>
-      <Button variant="text" sx={{ mb: 2 }} onClick={() => navigate('/pets')} startIcon={<FaArrowLeft />}>
-        Back to Pets
+      <Button variant="text" sx={{ mb: 2 }} onClick={() => navigate(-1)} startIcon={<FaArrowLeft />}>
+        Back
       </Button>
 
       <Card elevation={2}>

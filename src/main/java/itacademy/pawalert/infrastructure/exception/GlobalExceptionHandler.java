@@ -5,6 +5,7 @@ import itacademy.pawalert.domain.alert.exception.*;
 import itacademy.pawalert.domain.image.exception.ImageUploadException;
 import itacademy.pawalert.domain.image.exception.ImageValidationException;
 import itacademy.pawalert.domain.notification.exception.EmailSendException;
+import itacademy.pawalert.domain.notification.exception.TelegramNotificationException;
 import itacademy.pawalert.domain.pet.exception.PetNotFoundException;
 import itacademy.pawalert.domain.user.exception.CannotModifyLastAdminException;
 import itacademy.pawalert.domain.user.exception.UserNotFoundException;
@@ -144,6 +145,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleImageValidationException(ImageValidationException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(400, "Image upload exception", ex.getMessage()));
+    }
+
+    @ExceptionHandler(TelegramNotificationException.class)
+    public ResponseEntity<ErrorResponse> handleTelegramNotificationException(TelegramNotificationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "Telegram message sending exception", ex.getMessage()));
     }
 
     @ExceptionHandler(CannotModifyLastAdminException.class)

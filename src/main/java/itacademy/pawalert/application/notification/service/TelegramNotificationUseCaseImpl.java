@@ -8,8 +8,10 @@ import itacademy.pawalert.application.pet.service.PetService;
 import itacademy.pawalert.application.user.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.StatusNames;
+import itacademy.pawalert.domain.notification.exception.TelegramNotificationException;
 import itacademy.pawalert.domain.pet.model.Pet;
 import itacademy.pawalert.domain.user.User;
+import itacademy.pawalert.domain.user.exception.UserNotFoundException;
 import itacademy.pawalert.domain.user.model.TelegramChatId;
 import itacademy.pawalert.infrastructure.notification.telegram.TelegramNotificationService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +46,7 @@ public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseC
     public void notifyStatusChange(UUID userId, UUID alertId, StatusNames newStatus) {
         // 1. Get the specific user
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+                .orElseThrow(() -> new UserNotFoundException("User not found: " + userId));
 
         // 2. Check if user wants telegram notifications
         if (!user.telegramNotificationsEnabled()) {
@@ -66,16 +68,11 @@ public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseC
         String message = formatter.formatTelegramMessage(alert, pet, newStatus);
         String chatIdValue = user.telegramChatId().value();
 
-        // Try to send photo if available
+        // Send photo if available, otherwise send text message
         String petImageUrl = pet.getPetImage() != null ? pet.getPetImage().value() : null;
         if (petImageUrl != null && !petImageUrl.isEmpty()) {
-            try {
-                telegramService.sendPhotoWithCaption(chatIdValue, petImageUrl, message);
-                log.info("Sent photo notification to user {} for alert {}", userId, alertId);
-            } catch (Exception photoException) {
-                log.warn("Failed to send photo to Telegram for user {}, falling back to text: {}", userId, photoException.getMessage());
-                telegramService.sendToUser(chatIdValue, message);
-            }
+            telegramService.sendPhotoWithCaption(chatIdValue, petImageUrl, message);
+            log.info("Sent photo notification to user {} for alert {}", userId, alertId);
         } else {
             telegramService.sendToUser(chatIdValue, message);
         }
