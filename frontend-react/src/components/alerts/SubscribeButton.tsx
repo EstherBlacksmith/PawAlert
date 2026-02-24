@@ -65,6 +65,23 @@ export function SubscribeButton({
     }
   }
 
+  const handleUnsubscribe = async () => {
+    if (!user) return
+
+    setIsLoading(true)
+    try {
+      await alertService.unsubscribeFromAlert(alertId)
+      setIsSubscribed(false)
+      onSubscriptionChange?.(false)
+      showSuccessToast('Unsubscribed!', 'You will no longer receive notifications for this alert.')
+    } catch (error: unknown) {
+      console.error('Error unsubscribing:', error)
+      showErrorToast(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   // Show disabled button for closed alerts
   if (alertStatus === 'CLOSED') {
     return (
@@ -112,11 +129,12 @@ export function SubscribeButton({
          size={size}
          color="inherit"
          variant="outlined"
-         disabled
-         title="You are already subscribed to this alert"
+         onClick={handleUnsubscribe}
+         disabled={isLoading}
+         title="Click to unsubscribe from this alert"
          startIcon={<GiBell />}
        >
-         Subscribed
+         Unsubscribe
        </Button>
      )
    }

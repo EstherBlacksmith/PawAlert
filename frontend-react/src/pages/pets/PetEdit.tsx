@@ -380,7 +380,14 @@ export default function PetEdit() {
            </Grid>
 
           <Grid item xs={12} sx={{ pt: 1 }}>
-            <Button type="submit" variant="contained" color="primary" fullWidth disabled={isLoading}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              disabled={isLoading || !user}
+              sx={{ '&:disabled': { opacity: 0.6, cursor: 'not-allowed' } }}
+            >
               {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Update Pet'}
             </Button>
           </Grid>

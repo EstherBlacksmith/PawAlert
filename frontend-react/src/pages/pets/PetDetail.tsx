@@ -13,15 +13,20 @@ import {
 } from '@mui/material'
 import { FaArrowLeft, FaEdit } from 'react-icons/fa'
 import { useToast } from '../../context/ToastContext'
+import { useAuth } from '../../context/AuthContext'
 import { PetService } from '../../services/pet.service'
 import { Pet } from '../../types'
 
 const PetDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [pet, setPet] = useState<Pet | null>(null)
   const [loading, setLoading] = useState(true)
   const toast = useToast()
+  
+  // Check if user can edit this pet
+  const canEdit = user && (user.userId === pet?.userId)
 
   useEffect(() => {
     loadPet()
@@ -117,7 +122,14 @@ const PetDetail: React.FC = () => {
               </Box>
             )}
             <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-              <Button variant="contained" color="primary" onClick={() => navigate(`/pets/${id}/edit`)} startIcon={<FaEdit />}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate(`/pets/${id}/edit`)}
+                disabled={!canEdit}
+                sx={{ '&:disabled': { opacity: 0.6, cursor: 'not-allowed' } }}
+                startIcon={<FaEdit />}
+              >
                 Edit
               </Button>
               <Button variant="outlined" onClick={() => navigate('/pets')}>

@@ -347,8 +347,13 @@ export default function AlertDetail() {
                         <Button
                           size="small"
                           variant="contained"
-                          sx={{ bgcolor: '#4682B4', '&:hover': { bgcolor: '#3a6d96' } }}
+                          sx={{
+                            bgcolor: '#4682B4',
+                            '&:hover': { bgcolor: '#3a6d96' },
+                            '&:disabled': { opacity: 0.6, cursor: 'not-allowed' }
+                          }}
                           onClick={() => navigate(`/alerts/${id}/edit`)}
+                          disabled={!canEdit}
                           startIcon={<FaEdit />}
                         >
                           Edit Alert
@@ -359,7 +364,8 @@ export default function AlertDetail() {
                         variant="contained"
                         color="error"
                         onClick={handleDelete}
-                        disabled={isDeleting}
+                        disabled={isDeleting || !canModify}
+                        sx={{ '&:disabled': { opacity: 0.6, cursor: 'not-allowed' } }}
                         startIcon={<FaTrash />}
                       >
                         Delete Alert

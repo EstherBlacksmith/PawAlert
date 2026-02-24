@@ -148,19 +148,24 @@ export default function AlertEdit() {
            </Box>
 
           <Stack direction="row" spacing={2} sx={{ pt: 2 }}>
-            <Button 
-              type="button" 
-              variant="outlined" 
+            <Button
+              type="button"
+              variant="outlined"
               onClick={() => navigate(`/alerts/${id}`)}
               sx={{ flex: 1 }}
             >
               Cancel
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               variant="contained"
-              sx={{ flex: 1, bgcolor: '#4682B4', '&:hover': { bgcolor: '#36648B' } }}
-              disabled={isLoading}
+              sx={{
+                flex: 1,
+                bgcolor: '#4682B4',
+                '&:hover': { bgcolor: '#36648B' },
+                '&:disabled': { opacity: 0.6, cursor: 'not-allowed' }
+              }}
+              disabled={isLoading || !user}
             >
               {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Save Changes'}
             </Button>
