@@ -72,8 +72,8 @@ public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseC
             try {
                 telegramService.sendPhotoWithCaption(chatIdValue, petImageUrl, message);
                 log.info("Sent photo notification to user {} for alert {}", userId, alertId);
-            } catch (Exception e) {
-                log.warn("Failed to send photo to Telegram for user {}, falling back to text: {}", userId, e.getMessage());
+            } catch (Exception photoException) {
+                log.warn("Failed to send photo to Telegram for user {}, falling back to text: {}", userId, photoException.getMessage());
                 telegramService.sendToUser(chatIdValue, message);
             }
         } else {
