@@ -8,6 +8,7 @@ public enum NotificationChannel implements AlertDisplayableEnum {
     PUSH("Push"),
     SMS("Sms"),
     WHATSAPP("WhatsApp"),
+    TELEGRAM("Telegram"),
     ALL("All");
 
     private final String value;

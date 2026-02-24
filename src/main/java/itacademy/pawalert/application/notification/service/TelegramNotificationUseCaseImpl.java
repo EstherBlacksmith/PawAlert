@@ -8,12 +8,12 @@ import itacademy.pawalert.application.pet.service.PetService;
 import itacademy.pawalert.application.user.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
 import itacademy.pawalert.domain.alert.model.StatusNames;
-import itacademy.pawalert.domain.notification.exception.TelegramNotificationException;
 import itacademy.pawalert.domain.pet.model.Pet;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.exception.UserNotFoundException;
 import itacademy.pawalert.domain.user.model.TelegramChatId;
-import itacademy.pawalert.infrastructure.notification.telegram.TelegramNotificationService;
+import itacademy.pawalert.infrastructure.messaging.TelegramNotificationPublisher;
+import itacademy.pawalert.infrastructure.messaging.event.TelegramNotificationEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -23,23 +23,23 @@ import java.util.UUID;
 @Service
 public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseCase {
 
-    private final UserRepositoryPort userRepository;  // ← ADD
-    private final TelegramNotificationService telegramService;
+    private final UserRepositoryPort userRepository;
     private final AlertNotificationFormatter formatter;
     private final AlertRepositoryPort alertRepository;
     private final PetService petService;
+    private final TelegramNotificationPublisher publisher;
 
-    public TelegramNotificationUseCaseImpl(
+    public TelegramNotificationUseCaseImpl (
             UserRepositoryPort userRepository,  // ← ADD
-            TelegramNotificationService telegramService,
             AlertNotificationFormatter formatter,
             AlertRepositoryPort alertRepository,
-            PetService petService) {
+            PetService petService,
+            TelegramNotificationPublisher publisher) {
         this.userRepository = userRepository;
-        this.telegramService = telegramService;
         this.formatter = formatter;
         this.alertRepository = alertRepository;
         this.petService = petService;
+        this.publisher = publisher;
     }
 
     @Override
@@ -67,14 +67,20 @@ public class TelegramNotificationUseCaseImpl implements TelegramNotificationUseC
         // 5. Format and send with new format
         String message = formatter.formatTelegramMessage(alert, pet, newStatus);
         String chatIdValue = user.telegramChatId().value();
-
-        // Send photo if available, otherwise send text message
         String petImageUrl = pet.getPetImage() != null ? pet.getPetImage().value() : null;
-        if (petImageUrl != null && !petImageUrl.isEmpty()) {
-            telegramService.sendPhotoWithCaption(chatIdValue, petImageUrl, message);
-            log.info("Sent photo notification to user {} for alert {}", userId, alertId);
-        } else {
-            telegramService.sendToUser(chatIdValue, message);
-        }
+
+        // 6. Create and publish event (NEW!)
+        TelegramNotificationEvent event = TelegramNotificationEvent.create(
+                userId,
+                alertId,
+                newStatus,
+                chatIdValue,
+                message,
+                petImageUrl
+        );
+
+        publisher.publish(event);
+
+        log.info("Notification event published for user {} alert {}", userId, alertId);
     }
 }

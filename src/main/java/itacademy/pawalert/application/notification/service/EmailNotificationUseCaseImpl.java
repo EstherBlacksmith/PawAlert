@@ -4,7 +4,6 @@ import itacademy.pawalert.application.alert.port.outbound.AlertRepositoryPort;
 import itacademy.pawalert.application.alert.service.AlertNotificationFormatter;
 import itacademy.pawalert.application.exception.AlertNotFoundException;
 import itacademy.pawalert.application.notification.port.inbound.EmailNotificationUseCase;
-import itacademy.pawalert.application.notification.port.outbound.EmailServicePort;
 import itacademy.pawalert.application.pet.port.inbound.GetPetUseCase;
 import itacademy.pawalert.application.user.port.outbound.UserRepositoryPort;
 import itacademy.pawalert.domain.alert.model.Alert;
@@ -12,26 +11,30 @@ import itacademy.pawalert.domain.alert.model.StatusNames;
 import itacademy.pawalert.domain.pet.model.Pet;
 import itacademy.pawalert.domain.user.User;
 import itacademy.pawalert.domain.user.exception.UserNotFoundException;
+import itacademy.pawalert.infrastructure.messaging.email.EmailNotificationEvent;
+import itacademy.pawalert.infrastructure.messaging.email.EmailNotificationPublisher;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class EmailNotificationUseCaseImpl implements EmailNotificationUseCase {
 
-    private final EmailServicePort emailService;
+    private final EmailNotificationPublisher publisher;
     private final UserRepositoryPort userRepository;
     private final GetPetUseCase getPetUseCase;
     private final AlertRepositoryPort alertRepository;
     private final AlertNotificationFormatter formatter;
 
     public EmailNotificationUseCaseImpl(
-            EmailServicePort emailService,
+             EmailNotificationPublisher publisher,
             UserRepositoryPort userRepository,
             GetPetUseCase getPetUseCase,
             AlertRepositoryPort alertRepository,
             AlertNotificationFormatter formatter) {
-        this.emailService = emailService;
+        this.publisher = publisher;
         this.userRepository = userRepository;
         this.getPetUseCase = getPetUseCase;
         this.alertRepository = alertRepository;
@@ -56,6 +59,15 @@ public class EmailNotificationUseCaseImpl implements EmailNotificationUseCase {
         // Use formatEmailBody to get HTML with pet image
         String body = formatter.formatEmailBody(alert, pet, newStatus, newStatus);
 
-        emailService.sendToUser(user.email().value(), subject, body);
-    }
+        EmailNotificationEvent event = EmailNotificationEvent.create(
+                userId,
+                alertId,
+                newStatus,
+                user.email().value(),
+                subject,
+                body
+        );
+
+        publisher.publish(event);
+        log.info("Email notification event published for user {} alert {}", userId, alertId);}
 }
