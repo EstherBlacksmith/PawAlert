@@ -8,6 +8,7 @@ import { userService } from '../../services/user.service'
 import { petService } from '../../services/pet.service'
 import type { Alert as AlertType, ErrorResponse, AlertStatus, AlertEvent } from '../../types'
 import { useAuth } from '../../context/AuthContext'
+import { useNotifications } from '../../context/NotificationContext'
 import { useLocation } from '../../hooks/useLocation'
 import { ClosureReasonDialog, ClosureReason } from '../../components/alerts/ClosureReasonDialog'
 import { StatusLocationDialog } from '../../components/alerts/StatusLocationDialog'
@@ -27,6 +28,7 @@ export default function AlertDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { user, isAdmin } = useAuth()
+  const { clearBadgeForAlert } = useNotifications()
   const location = useLocation()
   
   const [alert, setAlert] = useState<AlertType | null>(null)
@@ -58,6 +60,10 @@ export default function AlertDetail() {
         if (id) {
           const data = await alertService.getAlert(id)
           setAlert(data)
+          
+          // Clear badge count when user views the alert
+          console.log('[AlertDetail] Clearing badge for alert:', id);
+          clearBadgeForAlert(id)
           
           // Fetch user name if userId is available
           if (data.userId) {

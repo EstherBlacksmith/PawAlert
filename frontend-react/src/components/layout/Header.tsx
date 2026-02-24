@@ -1,13 +1,20 @@
-import { Box, AppBar, Toolbar, Typography, IconButton, Avatar, Menu, MenuItem, Divider } from '@mui/material'
+import { Box, AppBar, Toolbar, Typography, IconButton, Avatar, Menu, MenuItem, Divider, Badge } from '@mui/material'
 import { FaBell, FaUser, FaSignOutAlt } from 'react-icons/fa'
 import { useAuth } from '../../context/AuthContext'
+import { useNotifications } from '../../context/NotificationContext'
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function Header() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+   const { user, logout } = useAuth()
+   const { unreadBadgeCount } = useNotifications()
+   const navigate = useNavigate()
+   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+   // Log badge count changes
+   useEffect(() => {
+     console.log('[Header] Badge count updated:', unreadBadgeCount);
+   }, [unreadBadgeCount]);
 
   const handleLogout = () => {
     logout()
@@ -74,7 +81,9 @@ export default function Header() {
               },
             }}
           >
-            <FaBell />
+            <Badge badgeContent={unreadBadgeCount} color="error" max={99}>
+              <FaBell />
+            </Badge>
           </IconButton>
 
           <IconButton

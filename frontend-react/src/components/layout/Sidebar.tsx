@@ -3,6 +3,7 @@ import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, IconBu
 import { useLocation, useNavigate } from 'react-router-dom'
 import { FaHome, FaPaw, FaExclamationTriangle, FaUser, FaShieldAlt, FaBell, FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 import { useAuth } from '../../context/AuthContext'
+import { useNotifications } from '../../context/NotificationContext'
 import ConnectionStatus from '../notifications/ConnectionStatus'
 import { alertService } from '../../services/alert.service'
 
@@ -86,11 +87,16 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
-  const { isAdmin, user } = useAuth()
-  const [openedAlertsCount, setOpenedAlertsCount] = useState(0)
-  const [subscriptionsCount, setSubscriptionsCount] = useState(0)
+   const { isAdmin, user } = useAuth()
+   const { unreadBadgeCount } = useNotifications()
+   const [openedAlertsCount, setOpenedAlertsCount] = useState(0)
 
-  useEffect(() => {
+   // Log badge count changes
+   useEffect(() => {
+     console.log('[Sidebar] Badge count updated:', unreadBadgeCount);
+   }, [unreadBadgeCount]);
+
+   useEffect(() => {
     const fetchCounts = async () => {
       if (!user?.userId) return
       
@@ -101,10 +107,6 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           userId: user.userId
         })
         setOpenedAlertsCount(alerts.length)
-
-        // Fetch user's subscriptions count
-        const subscriptions = await alertService.getMySubscriptions()
-        setSubscriptionsCount(subscriptions.length)
       } catch (error) {
         console.error('Error fetching sidebar counts:', error)
       }
@@ -151,7 +153,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         <NavItem to="/alerts" icon={<FaExclamationTriangle />} isCollapsed={isCollapsed} badge={openedAlertsCount}>
           My Alerts
         </NavItem>
-        <NavItem to="/subscriptions" icon={<FaBell />} isCollapsed={isCollapsed} badge={subscriptionsCount}>
+        <NavItem to="/subscriptions" icon={<FaBell />} isCollapsed={isCollapsed} badge={unreadBadgeCount}>
           My Subscriptions
         </NavItem>
         <NavItem to="/profile" icon={<FaUser />} isCollapsed={isCollapsed}>

@@ -10,12 +10,16 @@ interface NotificationContextType {
   notifications: NotificationMessage[];
   clearNotifications: () => void;
   isConnected: boolean;
+  unreadBadgeCount: number;
+  clearBadgeForAlert: (alertId: string) => void;
+  decrementBadgeCount: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<NotificationMessage[]>([]);
+  const [unreadBadgeCount, setUnreadBadgeCount] = useState(0);
   const navigate = useNavigate();
 
   const handleNotification = useCallback((notification: NotificationMessage) => {
@@ -24,6 +28,15 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       const updated = [notification, ...prev];
       return updated.slice(0, MAX_NOTIFICATIONS);
     });
+
+    // Increment badge count for NEW_ALERT notifications
+    if (notification.type === 'NEW_ALERT') {
+      setUnreadBadgeCount((prev) => {
+        const newCount = prev + 1;
+        console.log('[NotificationContext] NEW_ALERT received - Badge count incremented to:', newCount);
+        return newCount;
+      });
+    }
 
     // Determine toast type and color based on notification type and alert status
     let toastType: 'info' | 'warning' | 'success' | 'error' = 'info';
@@ -87,12 +100,30 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     setNotifications([]);
   }, []);
 
+  const clearBadgeForAlert = useCallback((alertId: string) => {
+    // Decrement badge count when user views an alert
+    console.log('[NotificationContext] clearBadgeForAlert called for alertId:', alertId);
+    setUnreadBadgeCount((prev) => {
+      const newCount = Math.max(0, prev - 1);
+      console.log('[NotificationContext] Badge count updated from', prev, 'to', newCount);
+      return newCount;
+    });
+  }, []);
+
+  const decrementBadgeCount = useCallback(() => {
+    // Decrement badge count (ensure it doesn't go below 0)
+    setUnreadBadgeCount((prev) => Math.max(0, prev - 1));
+  }, []);
+
   return (
     <NotificationContext.Provider
       value={{
         notifications,
         clearNotifications,
         isConnected,
+        unreadBadgeCount,
+        clearBadgeForAlert,
+        decrementBadgeCount,
       }}
     >
       {children}
