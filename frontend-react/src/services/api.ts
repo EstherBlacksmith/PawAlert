@@ -36,8 +36,10 @@ api.interceptors.response.use(
       localStorage.removeItem('userId')
       localStorage.removeItem('username')
       localStorage.removeItem('email')
-      // Redirect to login page
-      window.location.href = '/login'
+      // Only redirect to login if not already on login or register page
+      if (!window.location.pathname.match(/^\/(login|register)$/)) {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }

@@ -441,9 +441,11 @@ export default function AlertList() {
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                         {alert.description}
                       </Typography>
-                      <Typography variant="caption" color="text.disabled" sx={{ mb: 2, flex: 1 }}>
-                        Location: {alert.latitude != null ? alert.latitude.toFixed(4) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(4) : 'N/A'}
-                      </Typography>
+                       <Typography variant="caption" color="text.disabled" sx={{ mb: 2, flex: 1 }}>
+                         {alert.latitude != null && alert.longitude != null 
+                           ? `Location: ${alert.latitude.toFixed(4)}, ${alert.longitude.toFixed(4)}`
+                           : 'Location not available'}
+                       </Typography>
                       <Box sx={{ display: 'flex', mt: 'auto', gap: 1, justifyContent: 'space-between', alignItems: 'center' }}>
                          <IconButton component={Link} to={`/alerts/${alert.id}`} size="small" color="primary">
                            <FaSearchIcon />

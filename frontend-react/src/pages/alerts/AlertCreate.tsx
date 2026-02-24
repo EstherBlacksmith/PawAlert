@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Box, Typography, Button, Stack, TextField, CircularProgress, Alert as MuiAlert, Grid, FormControl, InputLabel, Select, MenuItem, Chip, Paper } from '@mui/material'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { FaArrowLeft } from 'react-icons/fa'
+import { useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { FaArrowLeft, FaPlus } from 'react-icons/fa'
 import { alertService } from '../../services/alert.service'
 import { petService } from '../../services/pet.service'
 import { Pet, ErrorResponse } from '../../types'
@@ -199,25 +199,42 @@ export default function AlertCreate() {
              />
            </Grid>
 
-           <Grid item xs={12}>
-             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Pet *</Typography>
-             <FormControl fullWidth size="small">
-               <InputLabel>Select a pet</InputLabel>
-               <Select
-                 name="petId" 
-                 value={formData.petId} 
-                 onChange={handleChange}
-                 label="Select a pet"
-               >
-                 <MenuItem value="">Select a pet</MenuItem>
-                 {pets.map((pet) => (
-                   <MenuItem key={pet.petId} value={pet.petId}>
-                     {pet.officialPetName}
-                   </MenuItem>
-                 ))}
-               </Select>
-             </FormControl>
-           </Grid>
+            <Grid item xs={12}>
+              <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Pet *</Typography>
+              {pets.length === 0 ? (
+                <Box sx={{ p: 2, border: '1px dashed', borderColor: 'grey.400', borderRadius: 1, textAlign: 'center' }}>
+                  <Typography color="text.secondary" sx={{ mb: 1 }}>
+                    You don't have any pets registered yet.
+                  </Typography>
+                  <Button 
+                    component={Link} 
+                    to="/pets/create" 
+                    variant="outlined" 
+                    size="small"
+                    startIcon={<FaPlus />}
+                  >
+                    Add Your First Pet
+                  </Button>
+                </Box>
+              ) : (
+                <FormControl fullWidth size="small">
+                  <InputLabel>Select a pet</InputLabel>
+                  <Select
+                    name="petId" 
+                    value={formData.petId} 
+                    onChange={handleChange}
+                    label="Select a pet"
+                  >
+                    <MenuItem value="">Select a pet</MenuItem>
+                    {pets.map((pet) => (
+                      <MenuItem key={pet.petId} value={pet.petId}>
+                        {pet.officialPetName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            </Grid>
 
            <Grid item xs={12}>
              <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Description *</Typography>
@@ -301,11 +318,11 @@ export default function AlertCreate() {
              </Grid>
           </Grid>
 
-          <Grid item xs={12} sx={{ pt: 1 }}>
-            <Button type="submit" variant="contained" color="primary" fullWidth disabled={isLoading}>
-              {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Create Alert'}
-            </Button>
-          </Grid>
+           <Grid item xs={12} sx={{ pt: 1 }}>
+             <Button type="submit" variant="contained" color="primary" fullWidth disabled={isLoading || pets.length === 0}>
+               {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Create Alert'}
+             </Button>
+           </Grid>
         </Grid>
       </Box>
     </Paper>

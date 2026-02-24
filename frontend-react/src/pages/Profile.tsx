@@ -163,7 +163,7 @@ export default function Profile() {
                   </Box>
 
                   <Box>
-                    <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Surname (Apellido)</Typography>
+                    <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Surname</Typography>
                     <TextField name="surname" value={formData.surname} onChange={handleChange} placeholder="Your surname" fullWidth size="small" />
                   </Box>
 

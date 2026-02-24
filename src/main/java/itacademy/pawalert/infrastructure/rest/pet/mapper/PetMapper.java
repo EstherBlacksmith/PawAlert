@@ -13,17 +13,18 @@ public class PetMapper {
 
     public PetDTO toDTO(Pet pet) {
         return PetDTO.builder()
+                .userId(pet.getUserId().toString())
                 .petId(pet.getPetId().toString())
-                .chipNumber(pet.getChipNumber().value())
-                .officialPetName(pet.getOfficialPetName().value())
-                .workingPetName(pet.getWorkingPetName().value())
+                .chipNumber(pet.getChipNumber() != null ? pet.getChipNumber().value() : null)
+                .officialPetName(pet.getOfficialPetName() != null ? pet.getOfficialPetName().value() : null)
+                .workingPetName(pet.getWorkingPetName() != null ? pet.getWorkingPetName().value() : null)
                 .species(pet.getSpecies().name())
-                .breed(pet.getBreed().value())
+                .breed(pet.getBreed() != null ? pet.getBreed().value() : null)
                 .size(pet.getSize().name())
-                .color(pet.getColor().value())
-                .gender(pet.getGender().toString())
-                .petDescription(pet.getPetDescription().value())
-                .petImage(pet.getPetImage().value())
+                .color(pet.getColor() != null ? pet.getColor().value() : null)
+                .gender(pet.getGender().name())
+                .petDescription(pet.getPetDescription() != null ? pet.getPetDescription().value() : null)
+                .petImage(pet.getPetImage() != null ? pet.getPetImage().value() : null)
                 .build();
     }
 
@@ -31,16 +32,16 @@ public class PetMapper {
         return new Pet(
                 UUID.fromString(petDTO.getUserId()),
                 UUID.fromString(petDTO.getPetId()),
-                ChipNumber.of(petDTO.getChipNumber()),
+                ChipNumber.ofNullable(petDTO.getChipNumber()),
                 PetOfficialName.of(petDTO.getOfficialPetName()),
-                PetWorkingName.of(petDTO.getWorkingPetName()),
+                PetWorkingName.ofNullable(petDTO.getWorkingPetName()),
                 Species.valueOf(petDTO.getSpecies()),
-                Breed.of(petDTO.getBreed()),
+                Breed.ofNullable(petDTO.getBreed()),
                 Size.valueOf(petDTO.getSize()),
-                Color.of(petDTO.getColor()),
+                Color.ofNullable(petDTO.getColor()),
                 Gender.valueOf(petDTO.getGender()),
-                PetDescription.of(petDTO.getPetDescription()),
-                PetImage.of(petDTO.getPetImage())
+                PetDescription.ofNullable(petDTO.getPetDescription()),
+                PetImage.ofNullable(petDTO.getPetImage())
         );
     }
 
@@ -48,15 +49,16 @@ public class PetMapper {
         return new PetResponse(
                 pet.getPetId().toString(),
                 pet.getUserId().toString(),
-                pet.getChipNumber().value(),
-                pet.getWorkingPetName().value(),
+                pet.getChipNumber() != null ? pet.getChipNumber().value() : null,
+                pet.getOfficialPetName() != null ? pet.getOfficialPetName().value() : null,
+                pet.getWorkingPetName() != null ? pet.getWorkingPetName().value() : null,
                 pet.getSpecies().name(),
-                pet.getBreed().value(),
+                pet.getBreed() != null ? pet.getBreed().value() : null,
                 pet.getSize().name(),
-                pet.getColor().color(),
+                pet.getColor() != null ? pet.getColor().value() : null,
                 pet.getGender().name(),
-                pet.getPetDescription().description(),
-                pet.getPetImage().petImage()
+                pet.getPetDescription() != null ? pet.getPetDescription().value() : null,
+                pet.getPetImage() != null ? pet.getPetImage().value() : null
         );
     }
 

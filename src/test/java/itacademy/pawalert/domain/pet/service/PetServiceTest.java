@@ -64,7 +64,7 @@ class PetServiceTest {
                 .size(Size.MEDIUM)
                 .color(Color.of("Golden"))
                 .gender(Gender.MALE)
-                .petDescription(PetDescription.of("Friendly dog"))
+                .petDescription(PetDescription.of("Friendly golden retriever dog"))
                 .petImage(new PetImage("http://example.com/image.jpg"))
                 .build();
     }
@@ -121,7 +121,7 @@ class PetServiceTest {
             UpdatePetRequest request = new UpdatePetRequest(
                     "NewName",      // officialPetName
                     null,           // workingPetName
-                    "Cat",          // petDescription
+                    "A cat that is very friendly",          // petDescription
                     null,           // species
                     "Small",        // breed
                     null,           // size
@@ -140,7 +140,7 @@ class PetServiceTest {
 
             // Then
             assertEquals("NewName", result.getOfficialPetName().value());
-            assertEquals("Cat", result.getPetDescription().value());
+            assertEquals("A cat that is very friendly", result.getPetDescription().value());
             assertEquals("Small", result.getBreed().value());
             assertEquals("White", result.getColor().value());
         }
@@ -268,7 +268,7 @@ class PetServiceTest {
         @DisplayName("Should update chipNumber when provided")
         void updatePet_whenChipNumberProvided_updatesChipNumber() {
             // Given
-            String newChipNumber = "987654321098765";
+            String newChipNumber = "076654321098765";
             UpdatePetRequest request = new UpdatePetRequest(
                     null,  // officialPetName
                     null,  // workingPetName
@@ -297,7 +297,7 @@ class PetServiceTest {
         @DisplayName("Should update petDescription when provided")
         void updatePet_whenDescriptionProvided_updatesDescription() {
             // Given
-            String newDescription = "Updated description";
+            String newDescription = "Updated description for the pet";
             UpdatePetRequest request = new UpdatePetRequest(
                     null,  // officialPetName
                     null,  // workingPetName
@@ -443,7 +443,7 @@ class PetServiceTest {
             when(petRepositoryPort.findById(petId)).thenReturn(Optional.of(testPet));
             Pet originalPet = petService.getPetById(petId);
 
-            String newChipNumber = "987654321098765";
+            String newChipNumber = "076654321098765";
             UpdatePetRequest request = new UpdatePetRequest(
                     null,  // officialPetName
                     null,  // workingPetName

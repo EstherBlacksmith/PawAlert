@@ -18,10 +18,18 @@ public record ChipNumber(String value) {
     }
 
     public static ChipNumber empty() {
-        return new ChipNumber(null, true);  // Permite null
+        return new ChipNumber(null, true);
     }
 
     public static ChipNumber of(String value) {
+        validate(value);
+        return new ChipNumber(value.trim(), true);
+    }
+
+    public static ChipNumber ofNullable(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
         validate(value);
         return new ChipNumber(value.trim(), true);
     }

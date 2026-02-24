@@ -436,7 +436,7 @@ export default function Register() {
                             color="text.secondary"
                             sx={{ display: 'block', mb: 1 }}
                           >
-                            Confirmar Contraseña
+                            Confirm Password
                           </Typography>
                           <TextField
                             type={showPassword ? 'text' : 'password'}

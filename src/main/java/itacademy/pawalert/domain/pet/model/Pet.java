@@ -84,16 +84,16 @@ public class Pet {
         return new PetEntity(
                 this.petId.toString(),
                 this.userId.toString(),
-                this.chipNumber.value(),
-                this.officialPetName.value(),
-                this.workingPetName.value(),
+                this.chipNumber != null ? this.chipNumber.value() : null,
+                this.officialPetName != null ? this.officialPetName.value() : null,
+                this.workingPetName != null ? this.workingPetName.value() : null,
                 this.species.toString(),
-                this.breed.value(),
+                this.breed != null ? this.breed.value() : null,
                 this.size.toString(),
-                this.color.value(),
+                this.color != null ? this.color.value() : null,
                 this.gender.toString(),
-                this.petDescription.value(),
-                this.petImage.value()
+                this.petDescription != null ? this.petDescription.value() : null,
+                this.petImage != null ? this.petImage.value() : null
         );
     }
 
@@ -101,16 +101,16 @@ public class Pet {
         return new Pet.PetBuilder()
                 .userId(this.userId)
                 .petId(this.petId)
-                .chipNumber(request.hasChipNumber() ? ChipNumber.of(request.chipNumber()) : this.chipNumber)
+                .chipNumber(request.hasChipNumber() ? ChipNumber.ofNullable(request.chipNumber()) : this.chipNumber)
                 .officialPetName(request.hasOfficialPetName() ? PetOfficialName.of(request.officialPetName()) : this.officialPetName)
-                .workingPetName(request.hasWorkingPetName() ? PetWorkingName.of(request.workingPetName()) : this.workingPetName)
+                .workingPetName(request.hasWorkingPetName() ? PetWorkingName.ofNullable(request.workingPetName()) : this.workingPetName)
                 .species(request.hasSpecies() ? Species.fromString(request.species()) : this.species)
-                .breed(request.hasBreed() ? Breed.of(request.breed()) : this.breed)
+                .breed(request.hasBreed() ? Breed.ofNullable(request.breed()) : this.breed)
                 .size(request.hasSize() ? Size.fromString(request.size()) : this.size)
                 .gender(request.hasGender() ? Gender.fromString(request.gender()) : this.gender)
-                .color(request.hasColor() ? Color.of(request.color()) : this.color)
-                .petDescription(request.hasPetDescription() ? PetDescription.of(request.petDescription()) : this.petDescription)
-                .petImage(request.hasPetImage() ? PetImage.of(request.petImage()) : this.petImage)
+                .color(request.hasColor() ? Color.ofNullable(request.color()) : this.color)
+                .petDescription(request.hasPetDescription() ? PetDescription.ofNullable(request.petDescription()) : this.petDescription)
+                .petImage(request.hasPetImage() ? PetImage.ofNullable(request.petImage()) : this.petImage)
                 .build();
     }
 

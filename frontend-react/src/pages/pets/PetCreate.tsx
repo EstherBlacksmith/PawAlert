@@ -28,8 +28,8 @@ export default function PetCreate() {
   
   // Fetch enum values from backend
   const { values: speciesValues, loading: loadingSpecies } = useEnumValues('Species')
-  const { values: sizeValues, loading: loadingSize } = useEnumValues('Size')
-  const { values: genderValues, loading: loadingGender } = useEnumValues('Gender')
+  const { values: sizeValues, loading: sizeLoading } = useEnumValues('Size')
+  const { values: genderValues, loading: genderLoading } = useEnumValues('Gender')
   
   const [formData, setFormData] = useState({
     officialPetName: '',
@@ -43,6 +43,12 @@ export default function PetCreate() {
     petDescription: '',
     petImage: '',
   })
+
+  const isFormValid = 
+    formData.officialPetName.trim().length >= 3 &&
+    formData.species !== '' &&
+    formData.size !== '' &&
+    formData.gender !== ''
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -292,40 +298,40 @@ export default function PetCreate() {
              <TextField name="breed" value={formData.breed} onChange={handleChange} placeholder={!formData.breed ? "Detected from image" : ""} fullWidth size="small" />
            </Grid>
 
-           <Grid item xs={12} sm={6}>
-             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Size</Typography>
-             <FormControl fullWidth size="small">
-               <InputLabel>Select size</InputLabel>
-               <Select name="size" value={formData.size} onChange={handleChange} disabled={loadingSize} label="Select size">
-                 <MenuItem value="">Select size</MenuItem>
-                 {sizeValues.map((size) => (
-                   <MenuItem key={size.value} value={size.value}>
-                     {size.displayName}
-                   </MenuItem>
-                 ))}
-               </Select>
-             </FormControl>
-           </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Size *</Typography>
+              <FormControl fullWidth size="small">
+                <InputLabel>Select size</InputLabel>
+                <Select name="size" value={formData.size} onChange={handleChange} disabled={sizeLoading} label="Select size">
+                  <MenuItem value="">Select size</MenuItem>
+                  {sizeValues.map((size) => (
+                    <MenuItem key={size.value} value={size.value}>
+                      {size.displayName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-           <Grid item xs={12} sm={6}>
-             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Color</Typography>
-             <TextField name="color" value={formData.color} onChange={handleChange} placeholder={!formData.color ? "Detected from image" : ""} fullWidth size="small" />
-           </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Color</Typography>
+              <TextField name="color" value={formData.color} onChange={handleChange} placeholder={!formData.color ? "Detected from image" : ""} fullWidth size="small" />
+            </Grid>
 
-           <Grid item xs={12} sm={6}>
-             <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Gender</Typography>
-             <FormControl fullWidth size="small">
-               <InputLabel>Select gender</InputLabel>
-               <Select name="gender" value={formData.gender} onChange={handleChange} disabled={loadingGender} label="Select gender">
-                 <MenuItem value="">Select gender</MenuItem>
-                 {genderValues.map((gender) => (
-                   <MenuItem key={gender.value} value={gender.value}>
-                     {gender.displayName}
-                   </MenuItem>
-                 ))}
-               </Select>
-             </FormControl>
-           </Grid>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Gender *</Typography>
+              <FormControl fullWidth size="small">
+                <InputLabel>Select gender</InputLabel>
+                <Select name="gender" value={formData.gender} onChange={handleChange} disabled={genderLoading} label="Select gender">
+                  <MenuItem value="">Select gender</MenuItem>
+                  {genderValues.map((gender) => (
+                    <MenuItem key={gender.value} value={gender.value}>
+                      {gender.displayName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
            <Grid item xs={12}>
              <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Description</Typography>
@@ -341,11 +347,11 @@ export default function PetCreate() {
              />
            </Grid>
 
-          <Grid item xs={12} sx={{ pt: 1 }}>
-            <Button type="submit" variant="contained" color="primary" fullWidth disabled={isLoading}>
-              {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Add Pet'}
-            </Button>
-          </Grid>
+           <Grid item xs={12} sx={{ pt: 1 }}>
+             <Button type="submit" variant="contained" color="primary" fullWidth disabled={isLoading || !isFormValid}>
+               {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Add Pet'}
+             </Button>
+           </Grid>
         </Grid>
       </Box>
     </Paper>

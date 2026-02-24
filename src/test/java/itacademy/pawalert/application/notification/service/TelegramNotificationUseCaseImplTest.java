@@ -160,7 +160,7 @@ class TelegramNotificationUseCaseImplTest {
         when(alert.getPetId()).thenReturn(petId);
 
         Pet pet = mock(Pet.class);
-        when(pet.getPetImage()).thenReturn(PetImage.of(""));
+        when(pet.getPetImage()).thenReturn(PetImage.ofNullable(""));
 
         String expectedMessage = "Test notification message";
 

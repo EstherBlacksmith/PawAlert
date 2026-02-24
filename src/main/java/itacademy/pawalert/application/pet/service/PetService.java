@@ -52,16 +52,16 @@ public class PetService implements
         Pet pet = Pet.builder()
                 .petId(petId)
                 .userId(UUID.fromString(request.userId()))
-                .chipNumber(new ChipNumber(request.chipNumber()))
+                .chipNumber(ChipNumber.ofNullable(request.chipNumber()))
                 .officialPetName(PetOfficialName.of(request.officialPetName()))
-                .workingPetName(PetWorkingName.of(request.workingPetName()))
+                .workingPetName(PetWorkingName.ofNullable(request.workingPetName()))
                 .species(Species.valueOf(request.species()))
-                .breed(Breed.of(request.breed()))
+                .breed(Breed.ofNullable(request.breed()))
                 .size(Size.valueOf(request.size()))
-                .color(Color.of(request.color()))
+                .color(Color.ofNullable(request.color()))
                 .gender(Gender.valueOf(request.gender()))
-                .petDescription(PetDescription.of(request.petDescription()))
-                .petImage(PetImage.of(request.petImage()))
+                .petDescription(PetDescription.ofNullable(request.petDescription()))
+                .petImage(PetImage.ofNullable(request.petImage()))
                 .build();
 
         return petRepositoryPort.save(pet);

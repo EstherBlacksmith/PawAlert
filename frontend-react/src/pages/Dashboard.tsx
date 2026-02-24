@@ -339,7 +339,7 @@ export default function Dashboard() {
           <Stack direction="row" alignItems="center" spacing={1}>
             <FiRadio size={24} color="#ed8936" />
             <Typography variant="h6" color="text.primary">
-              Alertas en tu zona
+              Alerts in Your Area
             </Typography>
           </Stack>
           <Stack direction="row" alignItems="center" spacing={1}>

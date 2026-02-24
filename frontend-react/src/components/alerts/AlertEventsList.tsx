@@ -8,23 +8,31 @@ interface AlertEventsListProps {
 }
 
 // Helper to get event type display text
-const getEventTypeDisplay = (eventType: string): string => {
-  switch (eventType) {
+const getEventTypeDisplay = (event: AlertEvent): string => {
+  switch (event.eventType) {
     case 'STATUS_CHANGED':
+      // If status didn't change, it's actually a location update
+      if (event.previousStatus === event.newStatus) {
+        return 'Location Updated'
+      }
       return 'Status Changed'
     case 'TITLE_CHANGED':
       return 'Title Changed'
     case 'DESCRIPTION_CHANGED':
       return 'Description Changed'
     default:
-      return eventType
+      return event.eventType
   }
 }
 
 // Helper to get event color based on type
-const getEventColor = (eventType: string): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
-  switch (eventType) {
+const getEventColor = (event: AlertEvent): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
+  switch (event.eventType) {
     case 'STATUS_CHANGED':
+      // Location updates (same status) get a different color
+      if (event.previousStatus === event.newStatus) {
+        return 'success'
+      }
       return 'info'
     case 'TITLE_CHANGED':
       return 'primary'
@@ -163,49 +171,49 @@ export function AlertEventsList({ events, isLoading }: AlertEventsListProps) {
                 </Box>
                 
                 <Box flex={1}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
-                    <Chip
-                      label={getEventTypeDisplay(event.eventType)}
-                      color={getEventColor(event.eventType)}
-                      size="small"
-                      sx={{
-                        bgcolor: event.eventType === 'STATUS_CHANGED' ? getStatusPastelColor(event.newStatus) : undefined,
-                        color: event.eventType === 'STATUS_CHANGED' ? '#6b7280' : undefined,
-                      }}
-                    />
-                    <Typography variant="caption" color="text.secondary">
-                      {formatDate(event.changedAt)}
-                    </Typography>
-                  </Stack>
-                  
-                  {/* Status change */}
-                  {event.eventType === 'STATUS_CHANGED' && (
-                    <Typography variant="body2" color="text.primary" fontWeight="medium">
-                      {formatStatusChange(event)}
-                      {event.closureReason && (
-                        <Typography component="span" variant="body2" color="text.secondary" fontStyle="italic">
-                          {' '}(Reason: {event.closureReason})
-                        </Typography>
-                      )}
-                    </Typography>
-                  )}
-                  
-                  {/* Value change */}
-                  {formatValueChange(event) && (
-                    <Typography variant="body2" color="text.secondary">
-                      {formatValueChange(event)}
-                    </Typography>
-                  )}
-                  
-                  {/* Location */}
-                  {event.latitude != null && event.longitude != null && (
-                    <Stack direction="row" spacing={0.5} alignItems="center" mt={1} color="text.secondary">
-                      <GiMapMarker size={10} />
-                      <Typography variant="caption">
-                        {event.latitude.toFixed(6)}, {event.longitude.toFixed(6)}
-                      </Typography>
-                    </Stack>
-                  )}
+                   <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
+                     <Chip
+                       label={getEventTypeDisplay(event)}
+                       color={getEventColor(event)}
+                       size="small"
+                       sx={{
+                         bgcolor: event.eventType === 'STATUS_CHANGED' ? getStatusPastelColor(event.newStatus) : undefined,
+                         color: event.eventType === 'STATUS_CHANGED' ? '#6b7280' : undefined,
+                       }}
+                     />
+                     <Typography variant="caption" color="text.secondary">
+                       {formatDate(event.changedAt)}
+                     </Typography>
+                   </Stack>
+                   
+                   {/* Status change - only show if status actually changed */}
+                   {event.eventType === 'STATUS_CHANGED' && event.previousStatus !== event.newStatus && (
+                     <Typography variant="body2" color="text.primary" fontWeight="medium">
+                       {formatStatusChange(event)}
+                       {event.closureReason && (
+                         <Typography component="span" variant="body2" color="text.secondary" fontStyle="italic">
+                           {' '}(Reason: {event.closureReason})
+                         </Typography>
+                       )}
+                     </Typography>
+                   )}
+                   
+                   {/* Value change */}
+                   {formatValueChange(event) && (
+                     <Typography variant="body2" color="text.secondary">
+                       {formatValueChange(event)}
+                     </Typography>
+                   )}
+                   
+                   {/* Location */}
+                   {event.latitude != null && event.longitude != null && (
+                     <Stack direction="row" spacing={0.5} alignItems="center" mt={1} color="text.secondary">
+                       <GiMapMarker size={10} />
+                       <Typography variant="caption">
+                         {event.latitude.toFixed(6)}, {event.longitude.toFixed(6)}
+                       </Typography>
+                     </Stack>
+                   )}
                 </Box>
               </Stack>
             </Box>

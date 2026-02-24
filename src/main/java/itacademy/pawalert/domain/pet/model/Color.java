@@ -4,13 +4,20 @@ package itacademy.pawalert.domain.pet.model;
 public record Color(String color) {
 
     public Color {
-        if (color == null || color.isBlank()) {
-            throw new IllegalArgumentException("The color cannot be empty");
-        }
     }
 
     public static Color of(String color) {
-        return new Color(color);
+        if (color == null || color.isBlank()) {
+            throw new IllegalArgumentException("The color cannot be empty");
+        }
+        return new Color(color.trim());
+    }
+
+    public static Color ofNullable(String color) {
+        if (color == null || color.isBlank()) {
+            return null;
+        }
+        return new Color(color.trim());
     }
 
     public String value() {

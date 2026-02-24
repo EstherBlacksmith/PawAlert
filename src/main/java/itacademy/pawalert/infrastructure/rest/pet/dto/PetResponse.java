@@ -4,6 +4,7 @@ public record PetResponse(
         String petId,
         String userId,
         String chipNumber,
+        String officialPetName,
         String workingPetName,
         String species,
         String breed,

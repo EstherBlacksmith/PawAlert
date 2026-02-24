@@ -51,8 +51,9 @@ export default function AlertDetail() {
   const canModify = user && (isAdmin() || alert?.userId === user.userId)
   
   // For CLOSED alerts, only admin can edit
+  // SEEN/SAFE alerts cannot be edited by anyone (backend enforces this)
   const isClosedAlert = alert?.status === 'CLOSED'
-  const canEdit = canModify && (!isClosedAlert || isAdmin())
+  const canEdit = canModify && (alert?.status === 'OPENED' || (isAdmin() && isClosedAlert))
 
   useEffect(() => {
     const fetchAlert = async () => {
@@ -328,12 +329,14 @@ export default function AlertDetail() {
                   <Typography fontWeight="bold" mb={0.5} color="text.secondary">
                     Location
                   </Typography>
-                  <Stack direction="row" spacing={1} color="text.secondary">
-                    <FaMapMarkerAlt />
-                    <Typography>
-                      {alert.latitude != null ? alert.latitude.toFixed(6) : 'N/A'}, {alert.longitude != null ? alert.longitude.toFixed(6) : 'N/A'}
-                    </Typography>
-                  </Stack>
+                   <Stack direction="row" spacing={1} color="text.secondary">
+                     <FaMapMarkerAlt />
+                     <Typography>
+                       {alert.latitude != null && alert.longitude != null 
+                         ? `${alert.latitude.toFixed(6)}, ${alert.longitude.toFixed(6)}`
+                         : 'Location not available'}
+                     </Typography>
+                   </Stack>
                 </Box>
 
                 {alert.closureReason && (

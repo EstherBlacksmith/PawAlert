@@ -9,7 +9,7 @@ public record PetWorkingName(String value) {
 
     public PetWorkingName {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("The name cant be empty");
+            throw new IllegalArgumentException("The name can't be empty");
         }
 
         value = value.trim();

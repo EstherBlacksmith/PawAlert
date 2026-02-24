@@ -81,7 +81,7 @@ public class SecurityConfig implements WebMvcConfigurer {
 
                 // Configure authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
+                // Public endpoints
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/images/**").permitAll()
@@ -91,6 +91,12 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/api/alerts/public/**").permitAll()
                         .requestMatchers("/api/notifications/stream").permitAll()
                         .requestMatchers("/").permitAll()
+                        
+                        // Swagger/OpenAPI endpoints
+                        .requestMatchers("/v3/api-docs").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
 
 
                         // Static resources
