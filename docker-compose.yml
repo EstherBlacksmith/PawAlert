@@ -47,6 +47,7 @@ services:
       - "8081:8080"
     depends_on:
       - postgres
+      - rabbitmq
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/pawalert
       - SPRING_DATASOURCE_USERNAME=postgres

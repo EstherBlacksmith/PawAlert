@@ -5,6 +5,7 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import MainLayout from './components/layout/MainLayout'
 import PetList from './pages/pets/PetList'
+import PublicPetList from './pages/pets/PublicPetList'
 import PetCreate from './pages/pets/PetCreate'
 import PetEdit from './pages/pets/PetEdit'
 import PetDetail from './pages/pets/PetDetail'
@@ -19,6 +20,7 @@ import AdminPetDetail from './pages/admin/PetDetail'
 import UserDetail from './pages/admin/UserDetail'
 import UserEdit from './pages/admin/UserEdit'
 import MySubscriptions from './pages/subscriptions/MySubscriptions'
+import NearbyAlertsPage from './pages/alerts/NearbyAlertsPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth()
@@ -77,11 +79,13 @@ function App() {
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="pets" element={<PetList />} />
+        <Route path="pets/public" element={<PublicPetList />} />
         <Route path="pets/create" element={<PetCreate />} />
         <Route path="pets/:id" element={<PetDetail />} />
         <Route path="pets/:id/edit" element={<PetEdit />} />
         <Route path="alerts" element={<AlertList />} />
         <Route path="alerts/create" element={<AlertCreate />} />
+        <Route path="alerts/nearby" element={<NearbyAlertsPage />} />
         <Route path="alerts/:id" element={<AlertDetail />} />
         <Route path="alerts/:id/edit" element={<AlertEdit />} />
         <Route path="subscriptions" element={<MySubscriptions />} />

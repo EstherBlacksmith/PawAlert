@@ -165,6 +165,33 @@ public class PetController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/public/all")
+    @Operation(summary = "Get all public pets",
+            description = "Retrieves all pets in the system. Public endpoint accessible without authentication.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of pets retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PetDTO.class)))
+    })
+    public ResponseEntity<List<PetDTO>> getAllPublicPets() {
+        List<Pet> pets = getPetUseCase.getAllPets();
+        return ResponseEntity.ok(petMapper.toDTOList(pets));
+    }
+
+    @GetMapping("/all")
+    @Operation(summary = "Get all pets", description = "Retrieves all pets in the system. Requires authentication.")
+    @SecurityRequirement(name = "Bearer JWT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of pets retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = PetDTO.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid")
+    })
+    public ResponseEntity<List<PetDTO>> getAllPetsAuthenticated() {
+        // Verify user is authenticated
+        getCurrentUserId();
+        List<Pet> pets = getPetUseCase.getAllPets();
+        return ResponseEntity.ok(petMapper.toDTOList(pets));
+    }
+
     @GetMapping("/my-pets")
     @Operation(summary = "Obtener mis mascotas", description = "Recupera todas las mascotas del usuario autenticado con opciones de filtrado y ordenamiento. Requiere autenticación.")
     @SecurityRequirement(name = "Bearer JWT")

@@ -1,11 +1,8 @@
-import { useEffect, useState } from 'react'
 import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, Divider, Badge } from '@mui/material'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { FaHome, FaPaw, FaExclamationTriangle, FaUser, FaShieldAlt, FaBell, FaArrowLeft, FaArrowRight } from 'react-icons/fa'
+import { FaHome, FaPaw, FaExclamationTriangle, FaMapMarkerAlt, FaShieldAlt, FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 import { useAuth } from '../../context/AuthContext'
-import { useNotifications } from '../../context/NotificationContext'
 import ConnectionStatus from '../notifications/ConnectionStatus'
-import { alertService } from '../../services/alert.service'
 
 interface NavItemProps {
   to: string
@@ -18,7 +15,9 @@ interface NavItemProps {
 function NavItem({ to, icon, children, isCollapsed, badge }: NavItemProps) {
   const location = useLocation()
   const navigate = useNavigate()
-  const isActive = location.pathname === to || location.pathname.startsWith(to + '/')
+  // For URLs with query params, check the pathname only
+  const toPathname = to.split('?')[0]
+  const isActive = location.pathname === toPathname || location.pathname.startsWith(toPathname + '/')
 
   return (
     <ListItem disablePadding sx={{ display: 'block' }}>
@@ -87,33 +86,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
-   const { isAdmin, user } = useAuth()
-   const { unreadBadgeCount } = useNotifications()
-   const [openedAlertsCount, setOpenedAlertsCount] = useState(0)
-
-   // Log badge count changes
-   useEffect(() => {
-     console.log('[Sidebar] Badge count updated:', unreadBadgeCount);
-   }, [unreadBadgeCount]);
-
-   useEffect(() => {
-    const fetchCounts = async () => {
-      if (!user?.userId) return
-      
-      try {
-        // Fetch user's OPENED alerts count
-        const alerts = await alertService.searchAlertsWithFilters({
-          status: 'OPENED',
-          userId: user.userId
-        })
-        setOpenedAlertsCount(alerts.length)
-      } catch (error) {
-        console.error('Error fetching sidebar counts:', error)
-      }
-    }
-
-    fetchCounts()
-  }, [user?.userId])
+  const { isAdmin } = useAuth()
 
   return (
     <Box
@@ -144,20 +117,18 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
       </Box>
 
       <List sx={{ px: 0, flex: 1 }}>
+        {/* General Navigation Links */}
         <NavItem to="/dashboard" icon={<FaHome />} isCollapsed={isCollapsed}>
           Dashboard
         </NavItem>
-        <NavItem to="/pets" icon={<FaPaw />} isCollapsed={isCollapsed}>
-          My Pets
+        <NavItem to="/alerts" icon={<FaExclamationTriangle />} isCollapsed={isCollapsed}>
+          All Alerts
         </NavItem>
-        <NavItem to="/alerts?myAlerts=true" icon={<FaExclamationTriangle />} isCollapsed={isCollapsed} badge={openedAlertsCount}>
-          My Alerts
+        <NavItem to="/pets/public" icon={<FaPaw />} isCollapsed={isCollapsed}>
+          All Pets
         </NavItem>
-        <NavItem to="/subscriptions" icon={<FaBell />} isCollapsed={isCollapsed} badge={unreadBadgeCount}>
-          My Subscriptions
-        </NavItem>
-        <NavItem to="/profile" icon={<FaUser />} isCollapsed={isCollapsed}>
-          Profile
+        <NavItem to="/alerts/nearby" icon={<FaMapMarkerAlt />} isCollapsed={isCollapsed}>
+          Nearby Alerts
         </NavItem>
         {isAdmin() && (
           <NavItem to="/admin/dashboard" icon={<FaShieldAlt />} isCollapsed={isCollapsed}>

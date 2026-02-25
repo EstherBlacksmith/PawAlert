@@ -190,7 +190,7 @@ export default function Dashboard() {
       try {
         const [pets, alerts, subscriptions] = await Promise.all([
           petService.getPets(),
-          alertService.getAlerts(),
+          alertService.getAlerts({ userId: user?.id }),
           alertService.getMySubscriptions(),
         ])
 
@@ -311,7 +311,7 @@ export default function Dashboard() {
          </Grid>
        </Grid>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - User-specific actions */}
       <Box>
         <Typography variant="h6" mb={2} color="text.primary">
           Quick Actions
@@ -344,6 +344,30 @@ export default function Dashboard() {
             }}
           >
             Create Alert
+          </Button>
+          <Button
+            variant="outlined"
+            size="large"
+            startIcon={<GiPawPrint />}
+            onClick={() => navigate('/pets')}
+            sx={{
+              px: 4,
+              py: 1.5,
+            }}
+          >
+            My Pets
+          </Button>
+          <Button
+            variant="outlined"
+            size="large"
+            startIcon={<GiBell />}
+            onClick={() => navigate('/subscriptions')}
+            sx={{
+              px: 4,
+              py: 1.5,
+            }}
+          >
+            My Subscriptions
           </Button>
         </Stack>
       </Box>

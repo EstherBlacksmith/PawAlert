@@ -7,6 +7,18 @@ export const petService = {
     return response.data
   },
 
+  // Get all public pets (no authentication required)
+  getPublicPets: async (): Promise<Pet[]> => {
+    const response = await api.get<Pet[]>('/pets/public/all')
+    return response.data
+  },
+
+  // Get all pets (authentication required)
+  getAllPetsAuthenticated: async (): Promise<Pet[]> => {
+    const response = await api.get<Pet[]>('/pets/all')
+    return response.data
+  },
+
   getPet: async (petId: string): Promise<Pet> => {
     const response = await api.get<Pet>(`/pets/${petId}`)
     return response.data
@@ -88,6 +100,8 @@ export const petService = {
 export class PetService {
   static getPetById = petService.getPetById
   static getPets = petService.getPets
+  static getPublicPets = petService.getPublicPets
+  static getAllPetsAuthenticated = petService.getAllPetsAuthenticated
   static getPet = petService.getPet
   static createPet = petService.createPet
   static updatePet = petService.updatePet
