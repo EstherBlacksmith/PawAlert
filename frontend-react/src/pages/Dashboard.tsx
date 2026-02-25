@@ -270,35 +270,35 @@ export default function Dashboard() {
            />
          </Grid>
          <Grid item xs={12} sm={6} md={2.4}>
-           <StatCard
-             icon={GiHealthPotion}
-             label="Open Alerts"
-             value={stats.openAlerts}
-             color="red"
-             gradientColors="linear-gradient(to bottom right, #b34045, #8b2e32)"
-             onClick={() => navigate('/alerts?status=OPENED')}
-           />
-         </Grid>
+            <StatCard
+              icon={GiHealthPotion}
+              label="Open Alerts"
+              value={stats.openAlerts}
+              color="red"
+              gradientColors="linear-gradient(to bottom right, #b34045, #8b2e32)"
+              onClick={() => navigate('/alerts?status=OPENED&myAlerts=true')}
+            />
+          </Grid>
          <Grid item xs={12} sm={6} md={2.4}>
-           <StatCard
-             icon={GiSword}
-             label="In Progress"
-             value={stats.inProgressAlerts}
-             color="orange"
-             gradientColors="linear-gradient(to bottom right, #ff9800, #f57c00)"
-             onClick={() => navigate('/alerts?status=SEEN,SAFE')}
-           />
-         </Grid>
+            <StatCard
+              icon={GiSword}
+              label="In Progress"
+              value={stats.inProgressAlerts}
+              color="orange"
+              gradientColors="linear-gradient(to bottom right, #ff9800, #f57c00)"
+              onClick={() => navigate('/alerts?status=SEEN,SAFE&myAlerts=true')}
+            />
+          </Grid>
          <Grid item xs={12} sm={6} md={2.4}>
-           <StatCard
-             icon={GiCheck}
-             label="Resolved"
-             value={stats.resolvedAlerts}
-             color="green"
-             gradientColors="linear-gradient(to bottom right, #2d884d, #1f5a34)"
-             onClick={() => navigate('/alerts?status=CLOSED')}
-           />
-         </Grid>
+            <StatCard
+              icon={GiCheck}
+              label="Resolved"
+              value={stats.resolvedAlerts}
+              color="green"
+              gradientColors="linear-gradient(to bottom right, #2d884d, #1f5a34)"
+              onClick={() => navigate('/alerts?status=CLOSED&myAlerts=true')}
+            />
+          </Grid>
          <Grid item xs={12} sm={6} md={2.4}>
            <StatCard
              icon={GiBell}
