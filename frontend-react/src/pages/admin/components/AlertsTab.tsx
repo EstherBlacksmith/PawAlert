@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Box,
@@ -25,7 +25,8 @@ import {
   FormControl,
   InputLabel,
   IconButton,
-  Typography
+  Typography,
+  TableSortLabel
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import ClearIcon from '@mui/icons-material/Clear'
@@ -47,6 +48,11 @@ const AlertsTab: React.FC = () => {
   const [searchText, setSearchText] = useState('')
   const [debouncedSearchText, setDebouncedSearchText] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('')
+  
+  // Sorting state
+  type AlertSortField = 'title' | 'status' | 'created'
+  const [sortField, setSortField] = useState<AlertSortField | ''>('')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
   
   // Debounce search text (300ms)
   useEffect(() => {
@@ -135,6 +141,45 @@ const AlertsTab: React.FC = () => {
       return '-'
     }
   }
+
+  // Handle sort
+  const handleSort = (field: AlertSortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDirection('asc')
+    }
+  }
+
+  // Apply sorting to alerts data
+  const sortedAlerts = useMemo(() => {
+    if (!sortField) return alerts
+    
+    return [...alerts].sort((a, b) => {
+      let aValue: string | null
+      let bValue: string | null
+      
+      // Handle created field specially since it's computed from events
+      if (sortField === 'created') {
+        aValue = getCreationDate(a.id)
+        bValue = getCreationDate(b.id)
+      } else {
+        aValue = a[sortField] as string | null
+        bValue = b[sortField] as string | null
+      }
+      
+      // Handle undefined/null values
+      if (aValue == null && bValue == null) return 0
+      if (aValue == null) return sortDirection === 'asc' ? 1 : -1
+      if (bValue == null) return sortDirection === 'asc' ? -1 : 1
+      
+      // Compare values
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [alerts, sortField, sortDirection, alertEvents])
 
   const handleClearFilters = () => {
     setSearchText('')
@@ -255,14 +300,38 @@ const AlertsTab: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Created</TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortField === 'title'}
+                  direction={sortField === 'title' ? sortDirection : 'asc'}
+                  onClick={() => handleSort('title')}
+                >
+                  Title
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortField === 'status'}
+                  direction={sortField === 'status' ? sortDirection : 'asc'}
+                  onClick={() => handleSort('status')}
+                >
+                  Status
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortField === 'created'}
+                  direction={sortField === 'created' ? sortDirection : 'asc'}
+                  onClick={() => handleSort('created')}
+                >
+                  Created
+                </TableSortLabel>
+              </TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {alerts.map((alert) => (
+            {sortedAlerts.map((alert) => (
             <TableRow key={alert.id}>
               <TableCell>{alert.id}</TableCell>
               <TableCell>{alert.title}</TableCell>

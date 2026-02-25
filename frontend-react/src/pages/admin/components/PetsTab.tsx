@@ -24,7 +24,8 @@ import {
   FormControl,
   InputLabel,
   IconButton,
-  Typography
+  Typography,
+  TableSortLabel
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import ClearIcon from '@mui/icons-material/Clear'
@@ -46,6 +47,11 @@ const PetsTab: React.FC = () => {
   // Filter state
   const [searchText, setSearchText] = useState('')
   const [speciesFilter, setSpeciesFilter] = useState<string>('')
+  
+  // Sorting state
+  type PetSortField = 'officialPetName' | 'species' | 'owner'
+  const [sortField, setSortField] = useState<PetSortField | ''>('')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
   useEffect(() => {
     loadData()
@@ -66,6 +72,45 @@ const PetsTab: React.FC = () => {
       return matchesSearch && matchesSpecies
     })
   }, [pets, searchText, speciesFilter])
+
+  // Handle sort
+  const handleSort = (field: PetSortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDirection('asc')
+    }
+  }
+
+  // Apply sorting to filtered data
+  const sortedPets = useMemo(() => {
+    if (!sortField) return filteredPets
+    
+    return [...filteredPets].sort((a, b) => {
+      let aValue: string | undefined
+      let bValue: string | undefined
+      
+      // Handle owner field specially since it's computed
+      if (sortField === 'owner') {
+        aValue = formatOwnerName(a)
+        bValue = formatOwnerName(b)
+      } else {
+        aValue = a[sortField] as string | undefined
+        bValue = b[sortField] as string | undefined
+      }
+      
+      // Handle undefined/null values
+      if (aValue == null && bValue == null) return 0
+      if (aValue == null) return sortDirection === 'asc' ? 1 : -1
+      if (bValue == null) return sortDirection === 'asc' ? -1 : 1
+      
+      // Compare values
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [filteredPets, sortField, sortDirection, users])
 
   const handleClearFilters = () => {
     setSearchText('')
@@ -216,14 +261,38 @@ const PetsTab: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Owner</TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortField === 'officialPetName'}
+                  direction={sortField === 'officialPetName' ? sortDirection : 'asc'}
+                  onClick={() => handleSort('officialPetName')}
+                >
+                  Name
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortField === 'species'}
+                  direction={sortField === 'species' ? sortDirection : 'asc'}
+                  onClick={() => handleSort('species')}
+                >
+                  Type
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortField === 'owner'}
+                  direction={sortField === 'owner' ? sortDirection : 'asc'}
+                  onClick={() => handleSort('owner')}
+                >
+                  Owner
+                </TableSortLabel>
+              </TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredPets.map((pet) => (
+            {sortedPets.map((pet) => (
             <TableRow key={pet.petId}>
               <TableCell>{pet.petId}</TableCell>
               <TableCell>{pet.officialPetName}</TableCell>

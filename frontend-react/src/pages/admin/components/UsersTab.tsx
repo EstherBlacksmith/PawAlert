@@ -25,7 +25,8 @@ import {
   FormControl,
   InputLabel,
   IconButton,
-  Typography
+  Typography,
+  TableSortLabel
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import ClearIcon from '@mui/icons-material/Clear'
@@ -45,6 +46,10 @@ const UsersTab: React.FC = () => {
   // Filter state
   const [searchText, setSearchText] = useState('')
   const [roleFilter, setRoleFilter] = useState<string>('')
+  
+  // Sorting state
+  const [sortField, setSortField] = useState<keyof User | ''>('')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
   useEffect(() => {
     loadUsers()
@@ -65,6 +70,36 @@ const UsersTab: React.FC = () => {
       return matchesSearch && matchesRole
     })
   }, [users, searchText, roleFilter])
+
+  // Handle sort
+  const handleSort = (field: keyof User) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDirection('asc')
+    }
+  }
+
+  // Apply sorting to filtered data
+  const sortedUsers = useMemo(() => {
+    if (!sortField) return filteredUsers
+    
+    return [...filteredUsers].sort((a, b) => {
+      const aValue = a[sortField]
+      const bValue = b[sortField]
+      
+      // Handle undefined/null values
+      if (aValue == null && bValue == null) return 0
+      if (aValue == null) return sortDirection === 'asc' ? 1 : -1
+      if (bValue == null) return sortDirection === 'asc' ? -1 : 1
+      
+      // Compare values
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+      return 0
+    })
+  }, [filteredUsers, sortField, sortDirection])
 
   const handleClearFilters = () => {
     setSearchText('')
@@ -183,14 +218,38 @@ const UsersTab: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Role</TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortField === 'username'}
+                  direction={sortField === 'username' ? sortDirection : 'asc'}
+                  onClick={() => handleSort('username')}
+                >
+                  Name
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortField === 'email'}
+                  direction={sortField === 'email' ? sortDirection : 'asc'}
+                  onClick={() => handleSort('email')}
+                >
+                  Email
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortField === 'role'}
+                  direction={sortField === 'role' ? sortDirection : 'asc'}
+                  onClick={() => handleSort('role')}
+                >
+                  Role
+                </TableSortLabel>
+              </TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredUsers.map((user) => (
+            {sortedUsers.map((user) => (
             <TableRow key={user.id}>
               <TableCell>{user.id}</TableCell>
               <TableCell>{user.name}</TableCell>
