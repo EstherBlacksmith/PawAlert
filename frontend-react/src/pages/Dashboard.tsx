@@ -10,6 +10,7 @@ import { Alert } from '../types'
 import { useLocation } from '../hooks/useLocation'
 import NearbyAlerts from '../components/alerts/NearbyAlerts'
 import NearbyAlertsMap from '../components/alerts/NearbyAlertsMap'
+import userBgImage from '../assets/user-bg-image.jpeg'
 
 // LocalStorage key for persisting location
 const LOCATION_STORAGE_KEY = 'pawalert_last_location'
@@ -226,13 +227,25 @@ export default function Dashboard() {
     <Box
       sx={{
         minHeight: '100vh',
-        flex: 1,
+        backgroundImage: `url(${userBgImage})`,
+        backgroundAttachment: 'fixed',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         p: 3,
-        backgroundColor: 'rgba(255, 255, 255, 0.45)',
-        borderRadius: 2,
+        '&::before': {
+          content: '""',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          pointerEvents: 'none',
+          zIndex: 0
+        }
       }}
     >
-      <Paper sx={{ p: 3, borderRadius: 2, boxShadow: 'none', position: 'relative', zIndex: 1, backgroundColor: 'transparent' }}>
+      <Paper sx={{ bgcolor: 'rgba(255, 255, 255, 0.95)', p: 3, borderRadius: 2, boxShadow: 3, position: 'relative', zIndex: 1 }}>
         <Stack spacing={3}>
       {/* Welcome Section */}
       <Box>
