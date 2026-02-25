@@ -17,29 +17,29 @@ public class MailTestController {
     private EmailServiceImpl emailService;
 
     /**
-     * Endpoint de prueba para enviar emails.
-     * NOTA: En producción, debes eliminar este endpoint o protegerlo.
+     * Test endpoint for sending emails.
+     * NOTE: In production, you should remove this endpoint or protect it.
      */
     @PostMapping("/send")
     public ResponseEntity<Map<String, String>> sendEmail(@Valid @RequestBody SendEmailRequest request) {
-        // Usamos sendHtmlEmail que es más flexible
+        // We use sendHtmlEmail which is more flexible
         emailService.sendToUser(request.getTo(), request.getSubject(), request.getContent());
         return ResponseEntity.ok(Map.of(
                 "status", "success",
-                "message", "Email enviado correctamente a " + request.getTo()
+                "message", "Email sent successfully to " + request.getTo()
         ));
     }
 
     /**
-     * Endpoint simple de prueba (hardcoded).
+     * Simple test endpoint (hardcoded).
      */
     @PostMapping("/test")
     public ResponseEntity<Map<String, String>> sendTestEmail() {
         try {
-            emailService.sendToUser("arikhel@gmail.com", "Contenido de prueba", "Contenido de prueba");
+            emailService.sendToUser("arikhel@gmail.com", "Test content", "Test content");
             return ResponseEntity.ok(Map.of(
                     "status", "success",
-                    "message", "Email de prueba enviado"
+                    "message", "Test email sent"
             ));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
@@ -54,13 +54,13 @@ public class MailTestController {
     public ResponseEntity<Map<String, String>> sendDirectEmail() {
         try {
             emailService.sendToUser(
-                    "arikhel@gmail.com",  // ← Tu email para probar
+                    "arikhel@gmail.com",  // <- Your email for testing
                     "Test PawAlert",
-                    "<h1>¡Hola!</h1><p>Este es un email de prueba.</p>"
+                    "<h1>Hello!</h1><p>This is a test email.</p>"
             );
             return ResponseEntity.ok(Map.of(
                     "status", "success",
-                    "message", "Email enviado"
+                    "message", "Email sent"
             ));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
@@ -72,6 +72,6 @@ public class MailTestController {
 
     @GetMapping("/test-simple")
     public ResponseEntity<String> testSimple() {
-        return ResponseEntity.ok("El endpoint funciona");
+        return ResponseEntity.ok("The endpoint is working");
     }
 }

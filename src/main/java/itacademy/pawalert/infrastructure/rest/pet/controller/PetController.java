@@ -58,13 +58,13 @@ public class PetController {
     }
 
     @PostMapping
-    @Operation(summary = "Crear una nueva mascota", description = "Crea una nueva mascota para el usuario autenticado. Requiere autenticación con un token JWT válido.")
+    @Operation(summary = "Create a new pet", description = "Creates a new pet for the authenticated user. Requires authentication with a valid JWT token.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Mascota creada exitosamente",
+            @ApiResponse(responseCode = "201", description = "Pet created successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = PetResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Datos de mascota inválidos"),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido")
+            @ApiResponse(responseCode = "400", description = "Invalid pet data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid")
     })
     public ResponseEntity<PetResponse> createPet(
             @Valid @RequestBody CreatePetRequest request) {
@@ -93,14 +93,14 @@ public class PetController {
 
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener mascota por ID", description = "Recupera una mascota específica por su identificador único.")
+    @Operation(summary = "Get pet by ID", description = "Retrieves a specific pet by its unique identifier.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Mascota recuperada exitosamente",
+            @ApiResponse(responseCode = "200", description = "Pet retrieved successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = PetDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Mascota no encontrada")
+            @ApiResponse(responseCode = "404", description = "Pet not found")
     })
     public ResponseEntity<PetDTO> getPet(
-            @Parameter(description = "ID de la mascota (formato UUID)", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
+            @Parameter(description = "Pet ID (UUID format)", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
             @PathVariable("id") String petId) {
         UUID petIdConverted = UUID.fromString(petId);
 
@@ -110,17 +110,17 @@ public class PetController {
     }
 
     @PatchMapping("/{petId}")
-    @Operation(summary = "Actualizar mascota", description = "Actualiza la información de una mascota existente. Requiere autenticación.")
+    @Operation(summary = "Update pet", description = "Updates information for an existing pet. Requires authentication.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Mascota actualizada exitosamente",
+            @ApiResponse(responseCode = "200", description = "Pet updated successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = PetDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Datos de actualización inválidos"),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido"),
-            @ApiResponse(responseCode = "404", description = "Mascota no encontrada")
+            @ApiResponse(responseCode = "400", description = "Invalid update data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid"),
+            @ApiResponse(responseCode = "404", description = "Pet not found")
     })
     public ResponseEntity<PetDTO> updatePet(
-            @Parameter(description = "ID de la mascota (formato UUID)", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
+            @Parameter(description = "Pet ID (UUID format)", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
             @PathVariable String petId,
             @Valid @RequestBody UpdatePetRequest request) {
 
@@ -147,17 +147,17 @@ public class PetController {
     }
 
     @DeleteMapping("/{petId}")
-    @Operation(summary = "Eliminar mascota", description = "Elimina una mascota por su identificador único. Requiere autenticación.")
+    @Operation(summary = "Delete pet", description = "Deletes a pet by its unique identifier. Requires authentication.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Mascota eliminada exitosamente"),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido"),
-            @ApiResponse(responseCode = "404", description = "Mascota no encontrada")
+            @ApiResponse(responseCode = "204", description = "Pet deleted successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid"),
+            @ApiResponse(responseCode = "404", description = "Pet not found")
     })
     public ResponseEntity<Void> deletePet(
-            @Parameter(description = "ID de la mascota (formato UUID)", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
+            @Parameter(description = "Pet ID (UUID format)", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
             @PathVariable String petId) {
-        String userId = getCurrentUserId();  // Obtiene el usuario autenticado
+        String userId = getCurrentUserId();  // Gets the authenticated user
         deletePetUseCase.deletePetdById(
                 UUID.fromString(petId),
                 UUID.fromString(userId)
@@ -193,27 +193,27 @@ public class PetController {
     }
 
     @GetMapping("/my-pets")
-    @Operation(summary = "Obtener mis mascotas", description = "Recupera todas las mascotas del usuario autenticado con opciones de filtrado y ordenamiento. Requiere autenticación.")
+    @Operation(summary = "Get my pets", description = "Retrieves all pets for the authenticated user with filtering and sorting options. Requires authentication.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de mascotas recuperada exitosamente",
+            @ApiResponse(responseCode = "200", description = "List of pets retrieved successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = PetDTO.class))),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido")
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid")
     })
     public ResponseEntity<List<PetDTO>> getMyPets(
-            @Parameter(description = "Filtrar por nombre de mascota")
+            @Parameter(description = "Filter by pet name")
             @RequestParam(required = false) String name,
-            @Parameter(description = "Filtrar por raza")
+            @Parameter(description = "Filter by breed")
             @RequestParam(required = false) String breed,
-            @Parameter(description = "Filtrar por especie")
+            @Parameter(description = "Filter by species")
             @RequestParam(required = false) String species,
-            @Parameter(description = "Filtrar por género")
+            @Parameter(description = "Filter by gender")
             @RequestParam(required = false) String gender,
-            @Parameter(description = "Filtrar por tamaño")
+            @Parameter(description = "Filter by size")
             @RequestParam(required = false) String size,
-            @Parameter(description = "Campo para ordenar (por defecto: officialPetName)")
+            @Parameter(description = "Field to sort by (default: officialPetName)")
             @RequestParam(defaultValue = "officialPetName") String sortBy,
-            @Parameter(description = "Dirección de ordenamiento (ASC o DESC)")
+            @Parameter(description = "Sort direction (ASC or DESC)")
             @RequestParam(defaultValue = "ASC") String sortDirection
     ) {
         String userId = getCurrentUserId();
@@ -239,16 +239,16 @@ public class PetController {
     }
 
     @PostMapping("/validate-image")
-    @Operation(summary = "Validar imagen de mascota", description = "Valida una imagen de mascota para asegurar que contiene una mascota válida. Requiere autenticación.")
+    @Operation(summary = "Validate pet image", description = "Validates a pet image to ensure it contains a valid pet. Requires authentication.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Imagen validada exitosamente",
+            @ApiResponse(responseCode = "200", description = "Image validated successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ImageValidationResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Imagen inválida o no proporcionada"),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido")
+            @ApiResponse(responseCode = "400", description = "Invalid image or no image provided"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid")
     })
     public ResponseEntity<ImageValidationResponse> validateImage(
-            @Parameter(description = "Archivo de imagen a validar", required = true)
+            @Parameter(description = "Image file to validate", required = true)
             @RequestParam("file") MultipartFile file) {
 
         if (file.isEmpty()) {
@@ -268,13 +268,13 @@ public class PetController {
 
     @GetMapping("/admin/all")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Obtener todas las mascotas (Solo Admin)", description = "Recupera todas las mascotas del sistema. Este endpoint requiere rol ADMIN.")
+    @Operation(summary = "Get all pets (Admin Only)", description = "Retrieves all pets in the system. This endpoint requires ADMIN role.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de todas las mascotas recuperada exitosamente",
+            @ApiResponse(responseCode = "200", description = "List of all pets retrieved successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = PetDTO.class))),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido"),
-            @ApiResponse(responseCode = "403", description = "Prohibido - El usuario no tiene rol ADMIN")
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - User does not have ADMIN role")
     })
     public ResponseEntity<List<PetDTO>> getAllPets() {
         List<Pet> pets = getPetUseCase.getAllPets();
@@ -283,16 +283,16 @@ public class PetController {
 
     @DeleteMapping("/admin/{petId}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Eliminar mascota (Solo Admin)", description = "Elimina una mascota por su identificador. Este endpoint requiere rol ADMIN.")
+    @Operation(summary = "Delete pet (Admin Only)", description = "Deletes a pet by its identifier. This endpoint requires ADMIN role.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Mascota eliminada exitosamente"),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido"),
-            @ApiResponse(responseCode = "403", description = "Prohibido - El usuario no tiene rol ADMIN"),
-            @ApiResponse(responseCode = "404", description = "Mascota no encontrada")
+            @ApiResponse(responseCode = "204", description = "Pet deleted successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - User does not have ADMIN role"),
+            @ApiResponse(responseCode = "404", description = "Pet not found")
     })
     public ResponseEntity<Void> deletePetByAdmin(
-            @Parameter(description = "ID de la mascota (formato UUID)", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
+            @Parameter(description = "Pet ID (UUID format)", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
             @PathVariable String petId) {
         UUID petIdConverted = UUID.fromString(petId);
         // Pass null for userId - admin can delete any pet

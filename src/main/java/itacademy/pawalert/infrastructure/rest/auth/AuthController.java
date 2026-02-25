@@ -31,12 +31,12 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    @Operation(summary = "Iniciar sesión", description = "Autentica un usuario con sus credenciales (email y contraseña) y devuelve un token JWT. No requiere autenticación previa.")
+    @Operation(summary = "Log in", description = "Authenticates a user with their credentials (email and password) and returns a JWT token. No prior authentication required.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Autenticación exitosa, token JWT generado",
+            @ApiResponse(responseCode = "200", description = "Authentication successful, JWT token generated",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = AuthResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Credenciales inválidas o datos faltantes"),
-            @ApiResponse(responseCode = "401", description = "Email o contraseña incorrectos")
+            @ApiResponse(responseCode = "400", description = "Invalid credentials or missing data"),
+            @ApiResponse(responseCode = "401", description = "Incorrect email or password")
     })
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         // Look for a user with the email

@@ -29,19 +29,19 @@ public class AdminController {
 
     @PostMapping("/alerts/{alertId}/notify")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Reenviar notificaciones de alerta", description = "Reenvía las notificaciones de una alerta específica a todos los suscriptores. Este endpoint requiere rol ADMIN.")
+    @Operation(summary = "Resend alert notifications", description = "Resends notifications for a specific alert to all subscribers. This endpoint requires ADMIN role.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Notificaciones reenviadas exitosamente",
+            @ApiResponse(responseCode = "200", description = "Notifications resent successfully",
                     content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido"),
-            @ApiResponse(responseCode = "403", description = "Prohibido - El usuario no tiene rol ADMIN"),
-            @ApiResponse(responseCode = "404", description = "Alerta no encontrada")
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - User does not have ADMIN role"),
+            @ApiResponse(responseCode = "404", description = "Alert not found")
     })
     public ResponseEntity<String> relaunchNotification(
-            @Parameter(description = "ID de la alerta (formato UUID)", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
+            @Parameter(description = "Alert ID (UUID format)", required = true, example = "550e8400-e29b-41d4-a716-446655440000")
             @PathVariable UUID alertId) {
         notificationService.relaunchNotification(alertId);
-        return ResponseEntity.ok("Notificaciones reenviadas");
+        return ResponseEntity.ok("Notifications resent");
     }
 }

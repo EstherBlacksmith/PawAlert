@@ -25,12 +25,12 @@ public class SseNotificationController {
     private final SseNotificationService sseNotificationService;
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    @Operation(summary = "Suscribirse a notificaciones en tiempo real", description = "Establece una conexión SSE (Server-Sent Events) para recibir notificaciones en tiempo real. Requiere autenticación.")
+    @Operation(summary = "Subscribe to real-time notifications", description = "Establishes an SSE (Server-Sent Events) connection to receive real-time notifications. Requires authentication.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Conexión SSE establecida exitosamente",
+            @ApiResponse(responseCode = "200", description = "SSE connection established successfully",
                     content = @Content(mediaType = "text/event-stream")),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido")
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid")
     })
     public SseEmitter subscribe() {
         log.info("New SSE subscription request");
@@ -38,12 +38,12 @@ public class SseNotificationController {
     }
 
     @GetMapping("/connected-count")
-    @Operation(summary = "Obtener número de clientes conectados", description = "Retorna el número de clientes actualmente conectados al servicio de notificaciones SSE. Requiere autenticación.")
+    @Operation(summary = "Get connected client count", description = "Returns the number of clients currently connected to the SSE notification service. Requires authentication.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Número de clientes conectados recuperado exitosamente",
+            @ApiResponse(responseCode = "200", description = "Connected client count retrieved successfully",
                     content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido")
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid")
     })
     public int getConnectedCount() {
         return sseNotificationService.getConnectedCount();

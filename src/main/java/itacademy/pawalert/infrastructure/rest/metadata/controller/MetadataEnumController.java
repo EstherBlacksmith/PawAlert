@@ -26,9 +26,9 @@ public class MetadataEnumController {
     private final MetadataEnumService metadataEnumService;
 
     @GetMapping("/get-metadata")
-    @Operation(summary = "Obtener metadatos del sistema", description = "Recupera información de metadatos del sistema incluyendo enumeraciones y datos de referencia. Este es un endpoint público que no requiere autenticación.")
+    @Operation(summary = "Get system metadata", description = "Retrieves system metadata information including enumerations and reference data. This is a public endpoint that does not require authentication.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Metadatos recuperados exitosamente",
+            @ApiResponse(responseCode = "200", description = "Metadata retrieved successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = MetadataEnumListDto.class)))
     })
     public ResponseEntity<List<MetadataEnumListDto>> getMetadata() {

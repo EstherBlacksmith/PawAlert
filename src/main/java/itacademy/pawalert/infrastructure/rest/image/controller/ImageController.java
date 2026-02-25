@@ -40,16 +40,16 @@ public class ImageController {
     }
 
     @PostMapping("/validate")
-    @Operation(summary = "Validar imagen", description = "Valida una imagen para asegurar que cumple con los requisitos del sistema. Requiere autenticación.")
+    @Operation(summary = "Validate image", description = "Validates an image to ensure it meets system requirements. Requires authentication.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Imagen validada exitosamente",
+            @ApiResponse(responseCode = "200", description = "Image validated successfully",
                     content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "400", description = "Imagen inválida"),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido")
+            @ApiResponse(responseCode = "400", description = "Invalid image"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid")
     })
     public ResponseEntity<ImageValidationResult> validate(
-            @Parameter(description = "Archivo de imagen a validar", required = true)
+            @Parameter(description = "Image file to validate", required = true)
             @RequestParam MultipartFile file) {
         ImageValidationResult result = validationService.validate(file);
         return ResponseEntity.ok(result);
@@ -57,18 +57,18 @@ public class ImageController {
 
 
     @PostMapping("/upload")
-    @Operation(summary = "Cargar imagen", description = "Carga una imagen al servidor en la carpeta especificada. Requiere autenticación.")
+    @Operation(summary = "Upload image", description = "Uploads an image to the server in the specified folder. Requires authentication.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Imagen cargada exitosamente",
+            @ApiResponse(responseCode = "200", description = "Image uploaded successfully",
                     content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "400", description = "Archivo inválido o carpeta no especificada"),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido")
+            @ApiResponse(responseCode = "400", description = "Invalid file or folder not specified"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid")
     })
     public ResponseEntity<String> upload(
-            @Parameter(description = "Archivo de imagen a cargar", required = true)
+            @Parameter(description = "Image file to upload", required = true)
             @RequestParam MultipartFile file,
-            @Parameter(description = "Carpeta de destino para la imagen", required = true)
+            @Parameter(description = "Destination folder for the image", required = true)
             @RequestParam String folder) {
         String url = uploadService.upload(file, folder);
 
@@ -76,16 +76,16 @@ public class ImageController {
     }
 
     @PostMapping("/analyze")
-    @Operation(summary = "Analizar imagen de mascota", description = "Analiza una imagen de mascota usando visión por computadora para detectar características. Requiere autenticación.")
+    @Operation(summary = "Analyze pet image", description = "Analyzes a pet image using computer vision to detect characteristics. Requires authentication.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Análisis completado exitosamente",
+            @ApiResponse(responseCode = "200", description = "Analysis completed successfully",
                     content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "400", description = "Imagen inválida o no contiene una mascota"),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido")
+            @ApiResponse(responseCode = "400", description = "Invalid image or does not contain a pet"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid")
     })
     public ResponseEntity<PetAnalysisResult> analyze(
-            @Parameter(description = "Archivo de imagen a analizar", required = true)
+            @Parameter(description = "Image file to analyze", required = true)
             @RequestParam MultipartFile file)
             throws IOException {
 
@@ -95,20 +95,20 @@ public class ImageController {
     }
 
     /**
-     * Endpoint para clasificar imagen de mascota (perro vs gato)
-     * Formato de respuesta compatible con el frontend
+     * Endpoint to classify pet image (dog vs cat)
+     * Response format compatible with the frontend
      */
     @PostMapping("/classify")
-    @Operation(summary = "Clasificar especie de mascota", description = "Clasifica una imagen de mascota como perro, gato u otra especie. Requiere autenticación.")
+    @Operation(summary = "Classify pet species", description = "Classifies a pet image as dog, cat, or other species. Requires authentication.")
     @SecurityRequirement(name = "Bearer JWT")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Clasificación completada exitosamente",
+            @ApiResponse(responseCode = "200", description = "Classification completed successfully",
                     content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "400", description = "Error al procesar la imagen"),
-            @ApiResponse(responseCode = "401", description = "No autorizado - Token JWT faltante o inválido")
+            @ApiResponse(responseCode = "400", description = "Error processing the image"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token missing or invalid")
     })
     public ResponseEntity<Map<String, Object>> classify(
-            @Parameter(description = "Archivo de imagen a clasificar", required = true)
+            @Parameter(description = "Image file to classify", required = true)
             @RequestParam MultipartFile file) {
         try {
             PetAnalysisResult result = petImageAnalyzer.analyze(file.getBytes());
@@ -129,12 +129,12 @@ public class ImageController {
 
                 response.put("classification", classification);
                 response.put("confidence", result.speciesConfidence());
-                response.put("message", "Imagen clasificada como " + classification);
+                response.put("message", "Image classified as " + classification);
             } else {
                 response.put("classification", "unknown");
                 response.put("confidence", 0.0);
                 response.put("message", result.validationMessage() != null ?
-                        result.validationMessage() : "No se detectó una mascota válida");
+                        result.validationMessage() : "No valid pet detected");
             }
 
             return ResponseEntity.ok(response);
@@ -143,7 +143,7 @@ public class ImageController {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("classification", "error");
             errorResponse.put("confidence", 0.0);
-            errorResponse.put("message", "Error al procesar la imagen: " + e.getMessage());
+            errorResponse.put("message", "Error processing the image: " + e.getMessage());
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
