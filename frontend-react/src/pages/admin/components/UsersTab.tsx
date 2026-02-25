@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Box,
@@ -17,11 +17,21 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  DialogActions
+  DialogActions,
+  TextField,
+  InputAdornment,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  IconButton,
+  Typography
 } from '@mui/material'
+import SearchIcon from '@mui/icons-material/Search'
+import ClearIcon from '@mui/icons-material/Clear'
 import { useToast } from '../../../context/ToastContext'
 import { UserService } from '../../../services/user.service'
-import { User } from '../../../types'
+import { User, UserRole } from '../../../types'
 
 const UsersTab: React.FC = () => {
   const navigate = useNavigate()
@@ -31,10 +41,35 @@ const UsersTab: React.FC = () => {
   const [userToDelete, setUserToDelete] = useState<User | null>(null)
   const [deleting, setDeleting] = useState(false)
   const { showToast } = useToast()
+  
+  // Filter state
+  const [searchText, setSearchText] = useState('')
+  const [roleFilter, setRoleFilter] = useState<string>('')
 
   useEffect(() => {
     loadUsers()
   }, [])
+
+  // Client-side filtering with useMemo
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => {
+      // Text search filter (username, email, surname)
+      const matchesSearch = !searchText || 
+        (user.username?.toLowerCase().includes(searchText.toLowerCase())) ||
+        (user.email?.toLowerCase().includes(searchText.toLowerCase())) ||
+        (user.surname?.toLowerCase().includes(searchText.toLowerCase()))
+      
+      // Role filter
+      const matchesRole = !roleFilter || user.role === roleFilter
+      
+      return matchesSearch && matchesRole
+    })
+  }, [users, searchText, roleFilter])
+
+  const handleClearFilters = () => {
+    setSearchText('')
+    setRoleFilter('')
+  }
 
   const loadUsers = async () => {
     try {
@@ -100,19 +135,62 @@ const UsersTab: React.FC = () => {
   }
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Role</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {users.map((user) => (
+    <Box>
+      {/* Filter Bar */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" useFlexGap>
+          <TextField
+            placeholder="Search by username, email, or surname..."
+            size="small"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ minWidth: 300, flexGrow: 1 }}
+          />
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>Role</InputLabel>
+            <Select
+              value={roleFilter}
+              label="Role"
+              onChange={(e) => setRoleFilter(e.target.value)}
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="USER">USER</MenuItem>
+              <MenuItem value="ADMIN">ADMIN</MenuItem>
+            </Select>
+          </FormControl>
+          <IconButton 
+            onClick={handleClearFilters} 
+            title="Clear filters"
+            disabled={!searchText && !roleFilter}
+          >
+            <ClearIcon />
+          </IconButton>
+        </Stack>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          Showing {filteredUsers.length} of {users.length} users
+        </Typography>
+      </Paper>
+
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Role</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredUsers.map((user) => (
             <TableRow key={user.id}>
               <TableCell>{user.id}</TableCell>
               <TableCell>{user.name}</TableCell>
@@ -156,6 +234,7 @@ const UsersTab: React.FC = () => {
           ))}
         </TableBody>
       </Table>
+    </TableContainer>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
@@ -180,7 +259,7 @@ const UsersTab: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </TableContainer>
+    </Box>
   )
 }
 

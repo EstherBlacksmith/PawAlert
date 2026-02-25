@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Box, Typography, Button, Stack, TextField, CircularProgress, Alert as MuiAlert, Grid, FormControl, InputLabel, Select, MenuItem, Paper } from '@mui/material'
+import { Box, Typography, Button, TextField, CircularProgress, Alert as MuiAlert, Grid, FormControl, InputLabel, Select, MenuItem, Paper, Divider } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { petService } from '../../services/pet.service'
@@ -257,6 +257,14 @@ export default function PetCreate() {
              )}
            </Grid>
 
+           {/* Identification Section */}
+           <Grid item xs={12}>
+             <Divider sx={{ my: 1 }} />
+             <Typography variant="subtitle2" color="primary" sx={{ mb: 1, mt: 1 }}>
+               IDENTIFICATION
+             </Typography>
+           </Grid>
+
            <Grid item xs={12} sm={6}>
              <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Official Name *</Typography>
              <TextField name="officialPetName" value={formData.officialPetName} onChange={handleChange} required fullWidth size="small" />
@@ -270,6 +278,14 @@ export default function PetCreate() {
            <Grid item xs={12} sm={6}>
              <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Chip Number</Typography>
              <TextField name="chipNumber" value={formData.chipNumber} onChange={handleChange} fullWidth size="small" />
+           </Grid>
+
+           {/* Physical Characteristics Section */}
+           <Grid item xs={12}>
+             <Divider sx={{ my: 1 }} />
+             <Typography variant="subtitle2" color="primary" sx={{ mb: 1, mt: 1 }}>
+               PHYSICAL CHARACTERISTICS
+             </Typography>
            </Grid>
 
            <Grid item xs={12} sm={6}>
@@ -332,6 +348,14 @@ export default function PetCreate() {
                 </Select>
               </FormControl>
             </Grid>
+
+           {/* Additional Info Section */}
+           <Grid item xs={12}>
+             <Divider sx={{ my: 1 }} />
+             <Typography variant="subtitle2" color="primary" sx={{ mb: 1, mt: 1 }}>
+               ADDITIONAL INFO
+             </Typography>
+           </Grid>
 
            <Grid item xs={12}>
              <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Description</Typography>

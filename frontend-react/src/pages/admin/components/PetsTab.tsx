@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Box,
@@ -16,8 +16,18 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  DialogActions
+  DialogActions,
+  TextField,
+  InputAdornment,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  IconButton,
+  Typography
 } from '@mui/material'
+import SearchIcon from '@mui/icons-material/Search'
+import ClearIcon from '@mui/icons-material/Clear'
 import { useToast } from '../../../context/ToastContext'
 import { PetService } from '../../../services/pet.service'
 import { UserService } from '../../../services/user.service'
@@ -32,10 +42,35 @@ const PetsTab: React.FC = () => {
   const [petToDelete, setPetToDelete] = useState<Pet | null>(null)
   const [deleting, setDeleting] = useState(false)
   const { showToast } = useToast()
+  
+  // Filter state
+  const [searchText, setSearchText] = useState('')
+  const [speciesFilter, setSpeciesFilter] = useState<string>('')
 
   useEffect(() => {
     loadData()
   }, [])
+
+  // Client-side filtering with useMemo
+  const filteredPets = useMemo(() => {
+    return pets.filter(pet => {
+      // Text search filter (pet name, working name, chip number)
+      const matchesSearch = !searchText || 
+        (pet.officialPetName?.toLowerCase().includes(searchText.toLowerCase())) ||
+        (pet.workingPetName?.toLowerCase().includes(searchText.toLowerCase())) ||
+        (pet.chipNumber?.toLowerCase().includes(searchText.toLowerCase()))
+      
+      // Species filter
+      const matchesSpecies = !speciesFilter || pet.species === speciesFilter
+      
+      return matchesSearch && matchesSpecies
+    })
+  }, [pets, searchText, speciesFilter])
+
+  const handleClearFilters = () => {
+    setSearchText('')
+    setSpeciesFilter('')
+  }
 
   const loadData = async () => {
     try {
@@ -131,19 +166,64 @@ const PetsTab: React.FC = () => {
   }
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>Owner</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {pets.map((pet) => (
+    <Box>
+      {/* Filter Bar */}
+      <Paper sx={{ p: 2, mb: 2 }}>
+        <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap" useFlexGap>
+          <TextField
+            placeholder="Search by pet name or chip number..."
+            size="small"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon color="action" />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ minWidth: 300, flexGrow: 1 }}
+          />
+          <FormControl size="small" sx={{ minWidth: 120 }}>
+            <InputLabel>Species</InputLabel>
+            <Select
+              value={speciesFilter}
+              label="Species"
+              onChange={(e) => setSpeciesFilter(e.target.value)}
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="DOG">DOG</MenuItem>
+              <MenuItem value="CAT">CAT</MenuItem>
+              <MenuItem value="BIRD">BIRD</MenuItem>
+              <MenuItem value="OTHER">OTHER</MenuItem>
+            </Select>
+          </FormControl>
+          <IconButton 
+            onClick={handleClearFilters} 
+            title="Clear filters"
+            disabled={!searchText && !speciesFilter}
+          >
+            <ClearIcon />
+          </IconButton>
+        </Stack>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          Showing {filteredPets.length} of {pets.length} pets
+        </Typography>
+      </Paper>
+
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Owner</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredPets.map((pet) => (
             <TableRow key={pet.petId}>
               <TableCell>{pet.petId}</TableCell>
               <TableCell>{pet.officialPetName}</TableCell>
@@ -181,6 +261,7 @@ const PetsTab: React.FC = () => {
           ))}
         </TableBody>
       </Table>
+    </TableContainer>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
@@ -205,7 +286,7 @@ const PetsTab: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </TableContainer>
+    </Box>
   )
 }
 

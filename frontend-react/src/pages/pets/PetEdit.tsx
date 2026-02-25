@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Box, Typography, Button, Stack, TextField, CircularProgress, Alert as MuiAlert, Grid, FormControl, InputLabel, Select, MenuItem, Paper } from '@mui/material'
+import { Box, Typography, Button, TextField, CircularProgress, Alert as MuiAlert, Grid, FormControl, InputLabel, Select, MenuItem, Paper, Divider } from '@mui/material'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { FaArrowLeft } from 'react-icons/fa'
 import { petService } from '../../services/pet.service'
@@ -48,16 +48,6 @@ export default function PetEdit() {
         if (id) {
           const pet = await petService.getPet(id)
           setPetOwnerId(pet.userId)
-          
-          // Check if user has permission to edit
-          console.log('[DEBUG] user object:', user)
-          console.log('[DEBUG] user?.userId:', user?.userId)
-          console.log('[DEBUG] pet.userId:', pet.userId)
-          console.log('[DEBUG] user?.role:', user?.role)
-          console.log('[DEBUG] userId comparison:', user?.userId, '===', pet.userId, '?', user?.userId === pet.userId)
-          
-          // Don't check permissions on frontend - let backend handle it
-          // The backend will return 403 if user doesn't have permission
           
           setFormData({
             officialPetName: pet.officialPetName,
@@ -286,6 +276,14 @@ export default function PetEdit() {
              )}
            </Grid>
 
+           {/* Identification Section */}
+           <Grid item xs={12}>
+             <Divider sx={{ my: 1 }} />
+             <Typography variant="subtitle2" color="primary" sx={{ mb: 1, mt: 1 }}>
+               IDENTIFICATION
+             </Typography>
+           </Grid>
+
            <Grid item xs={12} sm={6}>
              <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Official Name *</Typography>
              <TextField name="officialPetName" value={formData.officialPetName} onChange={handleChange} required fullWidth size="small" />
@@ -299,6 +297,14 @@ export default function PetEdit() {
            <Grid item xs={12} sm={6}>
              <Typography variant="caption" fontWeight="medium" sx={{ display: 'block', mb: 1 }}>Chip Number</Typography>
              <TextField name="chipNumber" value={formData.chipNumber} onChange={handleChange} fullWidth size="small" />
+           </Grid>
+
+           {/* Physical Characteristics Section */}
+           <Grid item xs={12}>
+             <Divider sx={{ my: 1 }} />
+             <Typography variant="subtitle2" color="primary" sx={{ mb: 1, mt: 1 }}>
+               PHYSICAL CHARACTERISTICS
+             </Typography>
            </Grid>
 
            <Grid item xs={12} sm={6}>
@@ -381,6 +387,14 @@ export default function PetEdit() {
                  )}
                </Select>
              </FormControl>
+           </Grid>
+
+           {/* Additional Info Section */}
+           <Grid item xs={12}>
+             <Divider sx={{ my: 1 }} />
+             <Typography variant="subtitle2" color="primary" sx={{ mb: 1, mt: 1 }}>
+               ADDITIONAL INFO
+             </Typography>
            </Grid>
 
            <Grid item xs={12}>
