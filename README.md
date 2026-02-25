@@ -82,8 +82,8 @@ PawAlert follows **Hexagonal Architecture** (Ports & Adapters) with **Domain-Dri
 │  └────────────────────────────────────────────────────────┘ │
 │                                                             │
 │  ┌──────────────┐  ┌──────────────┐  ┌────────────────────┐ │
-│  │ Inbound Ports │  │Outbound Ports│  │ Domain Services   │ │
-│  │ (Use Cases)   │  │(Repositories)│  │ (Business Logic)  │ │
+│  │ Inbound Ports│  │Outbound Ports│  │ Domain Services    │ │
+│  │ (Use Cases)  │  │(Repositories)│  │ (Business Logic)   │ │
 │  └──────────────┘  └──────────────┘  └────────────────────┘ │
 └─────────────────────────────────────────────────────────────┘
           │                │                    
@@ -91,8 +91,8 @@ PawAlert follows **Hexagonal Architecture** (Ports & Adapters) with **Domain-Dri
 ┌─────────────────────────────────────────────────────────────┐
 │                        DOMAIN                               │
 │  ┌─────────────┐ ┌─────────────┐ ┌───────────────────────┐  │
-│  │ Alert        │ │ Pet         │ │ User                 │  │
-│  │ Entities     │ │ Entities    │ │ Entities             │  │
+│  │ Alert       │ │ Pet         │ │ User                  │  │
+│  │ Entities    │ │ Entities    │ │ Entities              │  │
 │  └─────────────┘ └─────────────┘ └───────────────────────┘  │
 │                                                             │
 │  ┌────────────────────────────────────────────────────────┐ │
