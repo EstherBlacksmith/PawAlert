@@ -150,7 +150,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
         <NavItem to="/pets" icon={<FaPaw />} isCollapsed={isCollapsed}>
           My Pets
         </NavItem>
-        <NavItem to="/alerts" icon={<FaExclamationTriangle />} isCollapsed={isCollapsed} badge={openedAlertsCount}>
+        <NavItem to="/alerts?myAlerts=true" icon={<FaExclamationTriangle />} isCollapsed={isCollapsed} badge={openedAlertsCount}>
           My Alerts
         </NavItem>
         <NavItem to="/subscriptions" icon={<FaBell />} isCollapsed={isCollapsed} badge={unreadBadgeCount}>

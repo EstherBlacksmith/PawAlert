@@ -110,17 +110,37 @@ const PetDetail: React.FC = () => {
               <Typography fontWeight="bold">Description:</Typography>
               <Typography>{pet.petDescription || 'N/A'}</Typography>
             </Box>
-            {pet.petImage && (
-              <Box>
-                <Typography fontWeight="bold" mb={1}>Photo:</Typography>
+            <Box>
+              <Typography fontWeight="bold" mb={1}>Photo:</Typography>
+              {pet.petImage ? (
                 <Box
                   component="img"
                   src={pet.petImage}
                   alt={pet.officialPetName}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.nextElementSibling?.classList.remove('hidden');
+                  }}
                   sx={{ maxWidth: '300px', borderRadius: 1 }}
                 />
-              </Box>
-            )}
+              ) : null}
+              {!pet.petImage && (
+                <Box 
+                  sx={{ 
+                    width: '200px', 
+                    height: '150px', 
+                    bgcolor: 'grey.100', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    borderRadius: 1
+                  }}
+                >
+                  <Typography sx={{ fontSize: '3rem' }}>🐾</Typography>
+                </Box>
+              )}
+            </Box>
             <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
               <Button
                 variant="contained"

@@ -35,7 +35,7 @@ export default function AlertList() {
     const [isFilterOpen, setIsFilterOpen] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     
-    // Filter state
+    // Filter state - check for myAlerts query param to enable user filter by default
     const [status, setStatus] = useState<string>(searchParams.get('status') || '')
     const [species, setSpecies] = useState<string>('')
     const [petName, setPetName] = useState('')
@@ -43,7 +43,7 @@ export default function AlertList() {
     const [createdFrom, setCreatedFrom] = useState('')
     const [createdTo, setCreatedTo] = useState('')
     const [radiusKm, setRadiusKm] = useState<string>('10')
-    const [showMyAlertsOnly, setShowMyAlertsOnly] = useState(false)
+    const [showMyAlertsOnly, setShowMyAlertsOnly] = useState(searchParams.get('myAlerts') === 'true')
     
     // Location state
     const [userLatitude, setUserLatitude] = useState<number | null>(null)

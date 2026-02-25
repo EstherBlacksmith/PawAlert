@@ -6,7 +6,7 @@ import { FaArrowLeft, FaMapMarkerAlt, FaEdit, FaTrash, FaCalendar, FaDirections 
 import { alertService } from '../../services/alert.service'
 import { userService } from '../../services/user.service'
 import { petService } from '../../services/pet.service'
-import type { Alert as AlertType, ErrorResponse, AlertStatus, AlertEvent } from '../../types'
+import type { Alert as AlertType, ErrorResponse, AlertStatus, AlertEvent, Pet } from '../../types'
 import { useAuth } from '../../context/AuthContext'
 import { useNotifications } from '../../context/NotificationContext'
 import { useLocation } from '../../hooks/useLocation'
@@ -44,7 +44,7 @@ export default function AlertDetail() {
     status: 'SEEN' | 'SAFE' | null
   }>({ isOpen: false, status: null })
   const [userName, setUserName] = useState<string>('Unknown')
-  const [workingPetName, setWorkingPetName] = useState<string>('Unknown')
+  const [pet, setPet] = useState<Pet | null>(null)
   const [tabValue, setTabValue] = useState(0)
 
   // Authorization check: admin or alert owner can modify
@@ -81,10 +81,10 @@ export default function AlertDetail() {
           if (data.petId) {
             try {
               const petData = await petService.getPet(data.petId)
-              setWorkingPetName(petData.workingPetName || petData.officialPetName || 'Unknown')
+              setPet(petData)
             } catch (petError) {
               console.error('Error fetching pet:', petError)
-              setWorkingPetName('Unknown')
+              setPet(null)
             }
           }
           
@@ -300,12 +300,12 @@ export default function AlertDetail() {
                         Created by: <Box component="span" fontWeight={600}>{userName}</Box>
                       </Typography>
                        <Typography color="text.secondary" sx={{ fontSize: '0.875rem' }}>
-                         Pet: <Box component="span" fontWeight={600} sx={{ cursor: 'pointer', '&:hover': { color: 'primary.main', textDecoration: 'underline' } }} onClick={() => {
-                           if (alert.petId) {
-                             navigate(`/pets/${alert.petId}`)
-                           }
-                         }}>{workingPetName}</Box>
-                       </Typography>
+                          Pet: <Box component="span" fontWeight={600} sx={{ cursor: 'pointer', '&:hover': { color: 'primary.main', textDecoration: 'underline' } }} onClick={() => {
+                            if (alert.petId) {
+                              navigate(`/pets/${alert.petId}`)
+                            }
+                          }}>{pet?.workingPetName || pet?.officialPetName || 'Unknown'}</Box>
+                        </Typography>
                   </Box>
                  <Chip 
                    label={alert.status}
@@ -315,9 +315,42 @@ export default function AlertDetail() {
                      fontWeight: 'bold'
                    }}
                  />
-               </Box>
+                 </Box>
 
-              <Stack spacing={2}>
+              {/* Pet Photo Section */}
+              {pet?.petImage ? (
+                <Box
+                  component="img"
+                  src={pet.petImage}
+                  alt={pet.officialPetName || 'Pet'}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    if (target.nextElementSibling) {
+                      target.nextElementSibling.classList.remove('hidden');
+                    }
+                  }}
+                  sx={{ width: '100%', maxHeight: 300, objectFit: 'cover', borderRadius: 1, mb: 2 }}
+                />
+              ) : null}
+              {!pet?.petImage && (
+                <Box 
+                  sx={{ 
+                    width: '100%', 
+                    height: 200, 
+                    bgcolor: 'grey.100', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    borderRadius: 1,
+                    mb: 2
+                  }}
+                >
+                  <Typography sx={{ fontSize: '4rem', opacity: 0.5 }}>🐾</Typography>
+                </Box>
+              )}
+
+               <Stack spacing={2}>
                 <Box>
                   <Typography fontWeight="bold" mb={0.5} color="text.secondary">
                     Description

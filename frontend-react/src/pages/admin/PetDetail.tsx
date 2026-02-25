@@ -118,8 +118,8 @@ const AdminPetDetail: React.FC = () => {
         <Divider />
         <CardContent>
           {/* Pet Image */}
-          {pet.petImage && (
-            <Box sx={{ mb: 3, textAlign: 'center' }}>
+          <Box sx={{ mb: 3, textAlign: 'center' }}>
+            {pet.petImage ? (
               <Box
                 component="img"
                 src={pet.petImage}
@@ -131,8 +131,22 @@ const AdminPetDetail: React.FC = () => {
                   boxShadow: 2
                 }}
               />
-            </Box>
-          )}
+            ) : (
+              <Box 
+                sx={{ 
+                  width: '100%', 
+                  height: 200, 
+                  bgcolor: 'grey.100', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  borderRadius: 2
+                }}
+              >
+                <Typography sx={{ fontSize: '4rem' }}>🐾</Typography>
+              </Box>
+            )}
+          </Box>
 
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
